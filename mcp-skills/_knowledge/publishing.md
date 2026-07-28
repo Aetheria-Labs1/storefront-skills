@@ -1,1 +1,0 @@
-../../reference/publishing.md

@@ -1,1 +1,0 @@
-../../reference/competitor-remix.md

@@ -1,1 +1,0 @@
-../../reference/page-redesign.md

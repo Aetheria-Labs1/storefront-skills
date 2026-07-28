@@ -1,1 +1,0 @@
-../../reference/animation-system.md

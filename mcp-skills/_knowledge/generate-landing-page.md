@@ -1,1 +1,0 @@
-../../reference/generate-landing-page.md
