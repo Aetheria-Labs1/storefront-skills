@@ -1,6 +1,7 @@
 # Product Detail Page (PDP) Generation
 
 > Reference: `vibe://docs/generation-guide` | `vibe://skills/generation-protocol`
+> **Workflow:** See `generation-protocol.md` for Phase 0-4 execution (context gathering, HTML generation, validation, publishing). This doc covers page-type-specific patterns only.
 
 Generate high-converting product detail pages. BuyBox island is REQUIRED. Sticky CTA adds +12% CVR. Reviews placement adds +22% CVR. Variant swatches reduce bounce 15%.
 
@@ -22,45 +23,16 @@ Generate high-converting product detail pages. BuyBox island is REQUIRED. Sticky
 9. Sticky CTA (mobile)  — +12% CVR, appears after scrolling past BuyBox
 ```
 
-## Phase 0 — Context (ALWAYS first, in order)
+## Page-Specific Context Calls
 
-```
-get_workspace_details   → workspace ID, plan tier
-get_connected_stores    → store domain, Shopify data
-get_brand_kit           → logo, fonts, colors, voice, border radius
-get_design_md           → brand brief, design philosophy, don'ts
-```
-
-Then page-specific:
+After the standard 4 context calls, also fetch:
 ```
 get_product(product_id) → title, variants, images, price, metafields
 get_navigation          → navbar/footer links
 list_products           → related products for cross-sell
 ```
 
-## Phase 2A — Raw HTML + Tailwind (No Islands)
-
-Generate the FULL page as plain HTML + Tailwind CSS. Use `data-placeholder` where islands go:
-
-```html
-<div data-placeholder="BuyBox" class="min-h-[200px] border border-dashed border-gray-300 rounded-lg p-4">
-  Buy panel renders here
-</div>
-```
-
-Rules:
-- All colors via `--lx-*` variables (set in `theme_css`)
-- Mobile-first responsive design (375px base)
-- Hero height: 420-550px (Seton.de data: -11% bounce, +19% engagement)
-- CTA buttons: min 48px height, use `--lx-accent-color`
-- Price MUST be visible without scrolling
-- Single h1 (product title), h2 per section
-
-## Phase 2B — Island Mapping
-
-Replace placeholders with actual islands. Use `vibe://schema/island/{name}` for prop shapes.
-
-### Required Islands
+## Required Islands
 
 | Island | Placement | Props Source |
 |--------|-----------|-------------|
@@ -78,6 +50,12 @@ Replace placeholders with actual islands. Use `vibe://schema/island/{name}` for 
 <!-- StickyCart -->
 <div data-island="StickyCart" data-props='{"product":{"title":"...","price":"$29.99"},"threshold":600}'></div>
 ```
+
+## Page-Specific Rules
+
+- Price MUST be visible without scrolling
+- Single h1 (product title), h2 per section
+- Hero height: 420-550px (Seton.de data: -11% bounce, +19% engagement)
 
 ## Niche Variants
 
@@ -103,22 +81,8 @@ Replace placeholders with actual islands. Use `vibe://schema/island/{name}` for 
 - Color variant swatches visible on first viewport
 - Free returns messaging prominent (82% say returns influence purchase)
 
-## Visual Verification (REQUIRED)
+## Verification Checklist
 
-After `publish_vibe_page` returns `preview_url`:
-
-**Claude Code (Playwright MCP):**
-```
-browser_navigate → preview_url
-browser_take_screenshot → full page capture
-Check: BuyBox renders, price visible, variants selectable, mobile layout intact
-If broken → update_page_section → re-verify
-```
-
-**Codex:** Use built-in browser to open preview URL and inspect.
-**Other IDEs:** Provide URL: "Preview: {url} — verify at 375px mobile width"
-
-### Verification Checklist
 - [ ] BuyBox island hydrates (shows product, not empty div)
 - [ ] Price visible without scrolling on mobile
 - [ ] Variant selector works (swatches clickable)
@@ -127,12 +91,6 @@ If broken → update_page_section → re-verify
 - [ ] Brand colors applied via `--lx-accent-color` (not default purple)
 - [ ] Mobile: no horizontal scroll, single column stack
 - [ ] CTA contrast ratio >= 4.5:1 (WCAG AA)
-
-## Quality Gates
-
-1. `validate_vibe_page` — structural validation (REQUIRED)
-2. `check_page_integrity` — archetype-specific rules
-3. Visual verification — browser screenshot (REQUIRED)
 
 ## Section CSS Pattern
 

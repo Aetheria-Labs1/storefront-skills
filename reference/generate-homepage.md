@@ -1,6 +1,7 @@
 # Brand Homepage Generation
 
 > Reference: `vibe://docs/generation-guide` | `vibe://skills/generation-protocol`
+> **Workflow:** See `generation-protocol.md` for Phase 0-4 execution (context gathering, HTML generation, validation, publishing). This doc covers page-type-specific patterns only.
 
 Generate brand-first homepages. Navigation-driven, multi-CTA, storytelling-focused. Category grid adds +18% engagement. Featured products carousel drives discovery. Navbar + Footer islands REQUIRED.
 
@@ -22,16 +23,9 @@ Generate brand-first homepages. Navigation-driven, multi-CTA, storytelling-focus
 9. Footer              — full nav columns + legal + social (REQUIRED island)
 ```
 
-## Phase 0 — Context (ALWAYS first, in order)
+## Page-Specific Context Calls
 
-```
-get_workspace_details   → workspace ID, plan tier
-get_connected_stores    → store domain, Shopify data
-get_brand_kit           → logo, fonts, colors, voice, brand story
-get_design_md           → brand brief, design philosophy, positioning
-```
-
-Then page-specific:
+After the standard 4 context calls, also fetch:
 ```
 get_navigation          → header nav links, footer columns, collection hierarchy
 list_products           → identify bestsellers, new arrivals, featured items
@@ -39,37 +33,14 @@ list_products           → identify bestsellers, new arrivals, featured items
 
 `get_navigation` is CRITICAL for homepages — it provides the full site structure.
 
-## Phase 2A — Raw HTML + Tailwind (No Islands)
+## Page-Specific Rules
 
-Generate full page as plain HTML + Tailwind. Mark island positions:
-
-```html
-<!-- Navbar placeholder -->
-<div data-placeholder="SiteHeader" class="h-16 border-b border-gray-200">
-  Navigation renders here
-</div>
-
-<!-- Product grid placeholder -->
-<div data-placeholder="EditorialProductGrid" class="min-h-[400px] grid grid-cols-2 md:grid-cols-4 gap-4">
-  Product cards render here
-</div>
-
-<!-- Footer placeholder -->
-<div data-placeholder="Footer" class="bg-gray-900 text-white py-12">
-  Footer renders here
-</div>
-```
-
-Rules:
-- All colors via `--lx-*` variables (set in `theme_css`)
 - Multiple CTAs to DIFFERENT destinations (explore, shop, learn — not all same link)
 - Full-width hero (lifestyle imagery, not product-only)
 - Max-width 7xl for content sections
 - Mobile: hamburger nav, single column, touch-friendly targets (48px min)
 
-## Phase 2B — Island Mapping
-
-### Required Islands
+## Required Islands
 
 | Island | Placement | Props Source |
 |--------|-----------|-------------|
@@ -127,22 +98,8 @@ Use `vibe://schema/island/SiteHeader` and `vibe://schema/island/Footer` for exac
 | Newsletter with incentive | 10-15% signup rates | Industry avg |
 | Editorial mid-page (brand story) | Increases time-on-site, reduces bounce | Awwwards analysis |
 
-## Visual Verification (REQUIRED)
+## Verification Checklist
 
-After `publish_vibe_page` returns `preview_url`:
-
-**Claude Code (Playwright MCP):**
-```
-browser_navigate → preview_url
-browser_take_screenshot → full page capture
-Check: nav renders, hero visible, categories grid, footer complete
-If broken → update_page_section → re-verify
-```
-
-**Codex:** Use built-in browser to open preview URL.
-**Other IDEs:** "Preview: {url} — verify navigation works, collections display"
-
-### Verification Checklist
 - [ ] SiteHeader island renders with navigation links from `get_navigation`
 - [ ] Hero communicates brand value prop in 3 seconds (not product-specific)
 - [ ] Multiple CTAs go to DIFFERENT destinations (shop, about, collections)
@@ -153,12 +110,6 @@ If broken → update_page_section → re-verify
 - [ ] Brand colors applied via `--lx-*` variables (not defaults)
 - [ ] Fonts loading (not system fallback)
 - [ ] Heading hierarchy: single h1 in hero, h2 per section
-
-## Quality Gates
-
-1. `validate_vibe_page` — structural validation (REQUIRED)
-2. `check_page_integrity` — archetype-specific rules
-3. Visual verification — browser screenshot (REQUIRED)
 
 ## Page Feels Editorial, Not Catalog
 

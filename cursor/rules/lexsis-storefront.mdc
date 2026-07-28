@@ -298,36 +298,36 @@ Uses: qa-recipe, publishing
 
 ## Reference Files
 
-Deep knowledge lives in `reference/` alongside this rule. Read the relevant file when needed — do NOT load all at once.
+Deep knowledge lives in `../../reference/` (the repo root). Read the relevant file when needed — do NOT load all at once.
 
 ### Knowledge
-- `reference/generation-protocol.md` — How Pages Are Built
-- `reference/cro-research.md` — 2026 Landing Page Best Practices
-- `reference/storefront-craft.md` — Start Here
-- `reference/workflow-orchestration.md` — Execution Engine
-- `reference/conversion-psychology.md` — Storefront Design Intelligence
-- `reference/visual-craft.md` — Typography, Spacing, Color & Polish
-- `reference/island-patterns.md` — Wrapper HTML & Combination Recipes
-- `reference/qa-recipe.md` — QA Recipe
+- `../../reference/generation-protocol.md` — How Pages Are Built
+- `../../reference/cro-research.md` — 2026 Landing Page Best Practices
+- `../../reference/storefront-craft.md` — Start Here
+- `../../reference/workflow-orchestration.md` — Execution Engine
+- `../../reference/conversion-psychology.md` — Storefront Design Intelligence
+- `../../reference/visual-craft.md` — Typography, Spacing, Color & Polish
+- `../../reference/island-patterns.md` — Wrapper HTML & Combination Recipes
+- `../../reference/qa-recipe.md` — QA Recipe
 
 ### Operational
-- `reference/page-generation.md` — Storefront Page Generation
-- `reference/design-assets.md` — Design Assets & Brand Management
-- `reference/publishing.md` — Storefront Publishing & Lifecycle
-- `reference/page-editing.md` — Storefront Page Editing
-- `reference/analytics.md` — Storefront Analytics & Experiments
-- `reference/generate-pdp.md` — Product Detail Page (PDP) Generation
-- `reference/generate-landing-page.md` — Campaign / Ad Landing Page Generation
-- `reference/generate-homepage.md` — Brand Homepage Generation
-- `reference/generate-collection.md` — Collection / Category Page Generation
-- `reference/generate-listicle.md` — SEO Listicle / Comparison Page Generation
-- `reference/generate-bundle-page.md` — Bundle Builder Page Generation
-- `reference/generate-editorial.md` — Editorial / Magazine-Style Page Generation
-- `reference/ad-to-page.md` — Ad Creative to Landing Page
-- `reference/page-redesign.md` — Page Redesign (Modernize/Refresh Existing Page)
-- `reference/competitor-remix.md` — Competitor Remix (Rebuild from Reference URL)
-- `reference/personalization-variant.md` — Personalization Variant (Persona-Specific Page Versions)
-- `reference/ab-test-variant.md` — A/B Test Variant (Hypothesis-Driven Experiment)
-- `reference/section-library.md` — Quick Section Insert
-- `reference/cart-composition.md` — DrawerShell + Atomic Islands
-- `reference/cart-v2-management.md` — MCP Workflow
+- `../../reference/page-generation.md` — Storefront Page Generation
+- `../../reference/design-assets.md` — Design Assets & Brand Management
+- `../../reference/publishing.md` — Storefront Publishing & Lifecycle
+- `../../reference/page-editing.md` — Storefront Page Editing
+- `../../reference/analytics.md` — Storefront Analytics & Experiments
+- `../../reference/generate-pdp.md` — Product Detail Page (PDP) Generation
+- `../../reference/generate-landing-page.md` — Campaign / Ad Landing Page Generation
+- `../../reference/generate-homepage.md` — Brand Homepage Generation
+- `../../reference/generate-collection.md` — Collection / Category Page Generation
+- `../../reference/generate-listicle.md` — SEO Listicle / Comparison Page Generation
+- `../../reference/generate-bundle-page.md` — Bundle Builder Page Generation
+- `../../reference/generate-editorial.md` — Editorial / Magazine-Style Page Generation
+- `../../reference/ad-to-page.md` — Ad Creative to Landing Page
+- `../../reference/page-redesign.md` — Page Redesign (Modernize/Refresh Existing Page)
+- `../../reference/competitor-remix.md` — Competitor Remix (Rebuild from Reference URL)
+- `../../reference/personalization-variant.md` — Personalization Variant (Persona-Specific Page Versions)
+- `../../reference/ab-test-variant.md` — A/B Test Variant (Hypothesis-Driven Experiment)
+- `../../reference/section-library.md` — Quick Section Insert
+- `../../reference/cart-composition.md` — DrawerShell + Atomic Islands
+- `../../reference/cart-v2-management.md` — MCP Workflow

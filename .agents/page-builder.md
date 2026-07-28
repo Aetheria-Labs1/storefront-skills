@@ -47,8 +47,6 @@ If you receive a `CRO_BLUEPRINT` JSON (from cro-analyzer), use it as your plan:
 
 ## Flow Selection
 
-Based on what the user provides:
-
 | Input | Flow |
 |-------|------|
 | Ad creative (image/screenshot) | `analyze_ad_creative` → extract style → generate message-matched page |
@@ -63,152 +61,28 @@ Based on what the user provides:
 ## Standard Flow (5 Phases)
 
 ### Phase 0 — Context Gathering (ALL PARALLEL)
-
-Fire these simultaneously — no dependencies:
-
-1. `get_workspace_details` → workspace_id, plan tier
-2. `get_connected_stores` → store domain, Shopify data
-3. `get_brand_kit` → logo, fonts, colors, voice, border radius
-4. `get_design_md` → brand brief, philosophy, don'ts
-5. `list_products(limit: 10)` → product catalog
-6. `get_navigation` → store nav links
-7. `search_design_library({ query: "hero" })` → existing brand assets
-8. `get_credits_balance` → check before expensive ops
-
----
+`get_workspace_details`, `get_connected_stores`, `get_brand_kit`, `get_design_md`, `list_products`, `get_navigation`, `search_design_library`, `get_credits_balance`
 
 ### Phase 1 — Asset Preparation
-
-**Decision tree:**
-1. `search_design_library` first — if brand has relevant assets, USE THEM
-2. If no good match → `generate_asset` (descriptive prompt, match brand colors)
-3. If need product-on-background → `edit_asset` (composite product + generated bg)
-4. If need to verify → `view_asset(asset_id)`
-
-Collect all image URLs before Phase 2.
-
----
+`search_design_library` → `generate_asset` → `edit_asset` → `view_asset`
+Prefer library over generation. Collect all URLs before Phase 2.
 
 ### Phase 2 — HTML Generation (Two-Phase)
-
-#### Phase 2A — Raw HTML + Tailwind
-
-Generate the FULL page as plain HTML + Tailwind. Focus on:
-- Layout, visual hierarchy, spacing, typography
-- Use `data-placeholder="IslandName"` divs where islands will go
-- Write all copy, set all colors via `--lx-*` CSS variables
-- Mobile-first responsive design
-- Shared keyframes for animations (fadeUp, fadeIn, scaleIn, slideInLeft, slideInRight)
-
-#### Phase 2B — Island Mapping
-
-Replace placeholders with actual island markers:
-```html
-<div data-island="BuyBox" data-props='{"productId":"gid://shopify/Product/123","ctaText":"Add to Cart"}'></div>
-```
-
-Use `get_island_schema({island_name})` to get exact prop shapes for each island.
-
----
+- **2A**: Raw HTML + Tailwind, `data-placeholder` divs for islands, `--lx-*` CSS vars
+- **2B**: Replace placeholders with `data-island` markers (use `get_island_schema` for prop shapes)
 
 ### Phase 3 — Validation
-
-```
-validate_vibe_page({ page: vibePageJSON })
-```
-
-If errors: fix and re-validate. Common fixes:
-- Missing section IDs → add kebab-case IDs
-- Invalid island props → check schema
-- CSS using @import → remove, use Tailwind instead
-- JS using fetch/eval → remove, use IntersectionObserver only
-
----
+`validate_vibe_page` — fix errors, re-validate (max 2 loops)
 
 ### Phase 4 — Draft Publish + Verify
-
-1. `publish_vibe_page({ page, title, handle })` → returns `preview_url`
-2. If Playwright available: `browser_navigate(preview_url)` → screenshot → verify
-3. If no Playwright: return preview URL with verification checklist
-
-**Never call `publish_page` unless user explicitly says "publish live" or "make it live".**
+`publish_vibe_page` → preview URL. Never publish live unless user explicitly requests it.
 
 ---
 
-## VibePage JSON Schema
-
-```json
-{
-  "head": {
-    "title": "Page Title — Brand Name",
-    "fonts": ["https://fonts.googleapis.com/css2?family=..."],
-    "use_cart_v2": true
-  },
-  "theme_css": ":root { --lx-accent-color: #4F46E5; --lx-font-heading: 'Playfair Display', serif; ... }",
-  "sections": [
-    { "id": "hero", "html": "<section>...</section>", "css": "", "js": "" }
-  ]
-}
-```
-
-**Rules:**
-- Tailwind CSS in class attributes (CDN loaded by renderer)
-- `--lx-*` CSS variables for brand colors/fonts (set in `theme_css`)
-- Islands: `data-island="Name"` + `data-props='JSON'`
-- Section IDs: unique, kebab-case
-- Section JS: sandboxed — NO fetch, XHR, eval, localStorage. Only DOM + IntersectionObserver
-- No `@import`, no external CSS URLs, no inline `<style>`/`<script>` in HTML
-- Shared keyframes already loaded: fadeUp, fadeIn, scaleIn, slideInLeft, slideInRight, marquee, float, shimmer, wordFade, pulseRing
-
----
-
-## CSS Variables
-
-| Variable | Purpose |
-|----------|---------|
-| `--lx-accent-color` | Primary CTA color |
-| `--lx-accent-color-hover` | Hover state |
-| `--lx-text-color` | Primary text |
-| `--lx-text-muted` | Secondary text |
-| `--lx-bg-color` | Page background |
-| `--lx-bg-surface` | Card backgrounds |
-| `--lx-border-color` | Borders/dividers |
-| `--lx-font-heading` | Heading font family |
-| `--lx-font-body` | Body font family |
-| `--lx-surface-alt` | Alternating section bg |
-
----
-
-## Page Type Section Sequences
-
-### Landing Page (Cold Traffic)
-hero → social-proof-bar → benefits-grid → product-demo → testimonials → ingredients/specs → comparison → faq → final-cta
-
-### PDP (Product Detail Page)
-product-hero (image+BuyBox) → trust-bar → reviews → cross-sell → sticky-cta
-
-### Collection Page
-category-hero → filter-bar → product-grid → featured-product → testimonials
-
-### Homepage
-hero → collections-grid → featured-products → brand-story → testimonials → newsletter
-
-### Editorial
-full-bleed-hero → intro-copy → image-text-alternating → pull-quote → product-embed → cta
-
-### Listicle
-intro → numbered-items → comparison-table → verdict → cta
-
-### Bundle Page
-bundle-hero → included-items → savings-calculator → reviews → urgency-cta
-
----
-
-## Key Islands (Use `get_island_schema` for full props)
+## Key Islands
 
 | Island | When to use |
 |--------|-------------|
-| `HeroMedia` | Full-bleed hero background (image/carousel/video + parallax/ken-burns effects). Uses `MediaLoop` primitive internally. |
 | `BuyBox` | Any page with add-to-cart (PDP, landing, bundle) |
 | `CartDrawer` / `DrawerShell` | Cart V2 drawer (set `use_cart_v2: true` in head) |
 | `ReviewCarousel` | Social proof sections |
@@ -222,59 +96,19 @@ bundle-hero → included-items → savings-calculator → reviews → urgency-ct
 | `CountdownTimer` | Real deadline urgency |
 | `InventoryIndicator` | Real stock scarcity |
 
----
-
-## Quality Bar
-
-- **Mobile-first**: All sections must work at 375px width
-- **CSS vars only**: Never hardcode colors — always use `var(--lx-*)`
-- **Heading hierarchy**: One `h1` per page, then h2 per section, h3 for subsections
-- **No fetch/eval** in section JS
-- **Images**: Always include `alt` text, use `loading="lazy"` except hero
-- **CTA above fold**: Primary action visible without scroll on mobile
-- **Tap targets**: Minimum 48px for buttons on mobile
-
----
-
-## Anti-Patterns (NEVER DO)
-
-- Autoplay video (loses 7% CVR)
-- Inline styles overriding CSS vars
-- Multiple h1 tags
-- Carousel as hero (banner blindness)
-- Navigation links on landing pages (exit opportunities)
-- Generic stock photography
-- CTA copy saying "Submit" or "Click Here"
-- More than 2 competing CTAs per viewport
-- Section JS with network calls
-- Missing section IDs
-
----
-
-## Playwright Visual Verification
-
-When Playwright MCP available:
-1. `browser_navigate` to preview_url
-2. `browser_wait_for` load
-3. `browser_take_screenshot` (desktop)
-4. `browser_resize` 375x812 → `browser_take_screenshot` (mobile)
-5. Check: hero renders, CTA visible above fold, no broken images, colors match brand kit
-
-When NOT available:
-> "Page published as draft. Preview: [url]. Please verify:
-> - [ ] Hero renders correctly with brand colors
-> - [ ] CTA visible above fold on mobile
-> - [ ] No broken images
-> - [ ] Copy reads naturally
-> - [ ] Islands are interactive (BuyBox adds to cart)
->
-> Say 'publish live' when ready."
+Use `get_island_schema({island_name})` for full prop shapes.
 
 ---
 
 ## Cost Control
 
 - **Always** `get_credits_balance` before `generate_asset`
-- Prefer `search_design_library` over `generate_asset` (free vs 1 credit)
+- Prefer `search_design_library` over `generate_asset` (free vs credits)
 - Use `medium` quality for `generate_asset` unless user requests high
 - One `validate_vibe_page` call usually sufficient (don't loop more than 2x)
+
+---
+
+## Visual Verification
+
+After `publish_vibe_page`, verify via Playwright if available (navigate → screenshot desktop + mobile → check hero, CTA above fold, no broken images, brand colors match) or provide preview URL with checklist to user. See `generation-protocol.md` for full verification protocol.

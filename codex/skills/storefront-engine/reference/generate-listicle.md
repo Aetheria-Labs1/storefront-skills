@@ -1,6 +1,7 @@
 # SEO Listicle / Comparison Page Generation
 
 > References: `vibe://docs/generation-guide`, `vibe://skills/generation-protocol`
+> **Workflow:** See `generation-protocol.md` for Phase 0-4 execution (context gathering, HTML generation, validation, publishing). This doc covers page-type-specific patterns only.
 
 Generate SEO-optimized long-form listicle and comparison pages (>2000 words) with proper heading hierarchy, anchor navigation, and embedded commerce islands.
 
@@ -21,15 +22,10 @@ Generate SEO-optimized long-form listicle and comparison pages (>2000 words) wit
 - Real testimonials with names increase trust **+22% CVR** (Digital Applied 2026)
 - E-E-A-T signals (author byline, last-updated date, methodology) correlate with higher search placement and user trust
 
-## Generation Flow (5 Phases)
+## Page-Specific Context Calls
 
-### Phase 0 — Context & SEO Research
-
+After the standard 4 context calls, also fetch:
 ```
-get_workspace_details    → workspace ID, plan tier
-get_connected_stores     → store domain, Shopify data
-get_brand_kit            → logo, fonts, colors, voice
-get_design_md            → brand brief, design philosophy
 list_products            → full product catalog (select featured items)
 get_navigation           → navbar/footer links for internal linking
 ```
@@ -40,7 +36,7 @@ Determine from user input:
 - Comparison criteria (price, features, use case, rating)
 - Author name for E-E-A-T byline
 
-### Phase 1 — Asset Discovery
+## Asset Discovery
 
 For each product in the listicle:
 1. `search_design_library` — find existing product/lifestyle imagery
@@ -50,9 +46,7 @@ For each product in the listicle:
 
 Generate one hero asset for the page header (style: `editorial`, purpose: `hero_bg`, aspect: `landscape`).
 
-### Phase 2A — Raw HTML + Tailwind (No Islands)
-
-Generate the FULL page as plain HTML + Tailwind first. Use `data-placeholder` where islands will go. Focus on layout, hierarchy, spacing, and typography. All colors via `--lx-*` CSS variables.
+## Section Architecture
 
 Write 8-12 sections:
 
@@ -171,25 +165,18 @@ Write 8-12 sections:
 - 3-4 card grid linking to related listicles/collections
 - Anchor text optimized for adjacent keywords
 
-### Phase 2B — Island Mapping
+## Required Islands
 
-Replace all `data-placeholder` divs with hydrated islands:
+Each product entry gets its own BuyBox island:
 
 ```html
-<!-- Replace each placeholder -->
 <div data-island="BuyBox" data-props='{"product":{"title":"...","price":"$29.99","variants":[{"id":"...","title":"Default"}]}}'></div>
 ```
 
-Use `get_island_schema("BuyBox")` to confirm exact prop shape. Each product entry gets its own BuyBox island.
+Use `get_island_schema("BuyBox")` to confirm exact prop shape.
 
-### Phase 3 — Validation
+## SEO Validation Checks
 
-```
-validate_vibe_page(page_data)
-check_page_integrity(page_id)
-```
-
-SEO quality checks:
 - Exactly one h1 tag (hero)
 - h2 for each product entry, h3 for sub-features
 - All anchor nav links resolve to section IDs
@@ -197,24 +184,8 @@ SEO quality checks:
 - Total word count > 2000
 - No duplicate section IDs
 
-### Phase 4 — Publish & Verify
+## Verification Checklist
 
-```
-publish_vibe_page(page_data) → returns preview_url
-```
-
-**Visual Verification (REQUIRED):**
-
-For Claude Code (Playwright MCP):
-```
-browser_navigate → preview_url
-browser_take_screenshot → full page capture
-```
-
-For Codex: use built-in browser to open preview_url and inspect.
-For other IDEs: provide preview URL and instruct user to verify at 375px and 1280px.
-
-**Checklist:**
 - [ ] Sticky TOC visible and functional on desktop
 - [ ] All anchor links scroll to correct sections
 - [ ] Product images rendering (not broken placeholders)
@@ -225,7 +196,7 @@ For other IDEs: provide preview URL and instruct user to verify at 375px and 128
 - [ ] FAQ accordion functional
 - [ ] No horizontal scroll on mobile
 
-## Quality Bar
+## Quality Bar (Listicle-Specific)
 
 - Total word count > 2000 across all sections
 - Proper heading hierarchy: h1 (hero) → h2 (entries) → h3 (features)
@@ -236,6 +207,3 @@ For other IDEs: provide preview URL and instruct user to verify at 375px and 128
 - Winner badge on recommended product (+25% CTR)
 - Author byline + last-updated date (E-E-A-T)
 - Internal linking structure via `get_navigation`
-- All `--lx-*` CSS variables (NOT `--color-*`)
-- Mobile-first: readable at 375px width
-- No fetch/XHR, eval, localStorage, @import, duplicate IDs

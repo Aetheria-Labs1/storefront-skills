@@ -100,16 +100,44 @@ Codex supports skills rather than plugin-defined slash commands. Use natural lan
 
 Page-type and specialist workflows such as `generate-pdp.md`, `generate-homepage.md`, `ab-test-variant.md`, and `cart-v2-management.md` remain shared references used by these skills. They are not duplicated as standalone Codex skills.
 
+## Workflow Sequence
+
+The 5-step pipeline — each command feeds into the next:
+
+```
+/plan-page → /asset-prep → /generate → /audit-cro → /optimize
+```
+
+| Step | What it does | Output |
+|------|-------------|--------|
+| `/plan-page` | Discover requirements, design section layout | Approved page plan |
+| `/asset-prep` | Source images/video (library + AI + external MCPs) | Asset manifest |
+| `/generate` | Generate HTML + wire islands + publish draft | Preview URL |
+| `/audit-cro` | 12-point CRO scoring via Playwright | CRO blueprint |
+| `/optimize` | Apply CRO fixes section-by-section | Updated page |
+
+Each step is independent — start anywhere. `/plan-page` → `/generate` skips asset-prep if the brand library has everything. `/audit-cro` works on any existing page without prior steps.
+
 ## Claude Code Commands (after installing core)
+
+### Core Pipeline
 
 | Command | What It Does |
 |---------|-------------|
+| `/plan-page` | Plan a page — gather requirements, design section layout, get approval |
+| `/asset-prep` | Source assets — library search + AI generation + external MCPs (video, research) |
 | `/generate` | Generate a Shopify page — auto-detects type (PDP, landing, collection, homepage, editorial, listicle, bundle) |
 | `/optimize` | CRO-optimize an existing page — fix CTAs, trust signals, mobile UX |
+
+### Specialist
+
+| Command | What It Does |
+|---------|-------------|
 | `/remix` | Rebuild a competitor page or ad creative adapted to your brand |
 | `/experiment` | Set up A/B tests, personalization variants, monitor results |
 | `/cart` | Configure Cart V2 drawer — upsells, progress bars, conditional rules |
 | `/publish` | QA check and publish a page to Shopify |
+| `/analyze-page` | Screenshot a URL and extract design tokens + CRO patterns |
 | `/search-docs` | Search documentation — islands, skills, conversion patterns, workflows |
 
 ## MCP Server
@@ -132,10 +160,24 @@ Codex workflows use Codex Browser when enabled. Browser is optional; URL analysi
 ## How It Works
 
 ```
-Skills (this repo)          → teaches AI how to build pages
-MCP Server (mcp.trylexsis.com) → provides tools (generate, publish, analyze)
-Playwright (optional)       → visual verification via screenshots
+Skills (this repo)              → teaches AI how to build pages
+MCP Server (mcp.trylexsis.com) → provides tools (generate, publish, analyze, assets)
+Playwright (optional)          → visual verification via screenshots
+External MCPs (optional)       → video generation, image research, stock photography
 ```
+
+## External MCPs (Optional)
+
+The `/asset-prep` workflow detects and uses these MCPs when installed:
+
+| MCP | What it adds | Install |
+|-----|-------------|---------|
+| **Playwright** | Visual QA, page screenshots, CRO audit | `/plugin install playwright@claude-plugins-official` |
+| **Exa** | Image research, mood boards, competitor screenshots | Exa MCP plugin |
+| **HiggsField** | AI video generation for hero sections | HiggsField MCP |
+| **OpenArt** | Specialized AI illustration beyond built-in styles | OpenArt MCP |
+
+None are required. The core workflow (plan → generate → publish) works with just the Lexsis AI MCP. External MCPs add richer asset sourcing for `/asset-prep`.
 
 ## Repo Structure
 

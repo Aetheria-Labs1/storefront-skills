@@ -146,6 +146,22 @@ python3 scripts/validate-frontmatter.py
 /your-new-command
 ```
 
+## Reference Files (Single Source of Truth)
+
+All reference `.md` files live in `reference/` at the repo root. Distribution packages (codex, vertical plugins) contain copies for standalone installation.
+
+**Editing reference content:**
+1. Edit in `reference/` only
+2. Run `scripts/sync-reference.sh`
+3. Commit both the source and synced copies
+
+**CI enforces this**: `scripts/check-sync.py` fails the build if copies diverge.
+
+**Do NOT:**
+- Create `cursor/rules/reference/` (cursor reads root directly via relative paths)
+- Edit files in `codex/skills/storefront-engine/reference/` directly
+- Edit vertical plugin `*-expertise.md` files directly
+
 ## Style Guide
 
 - Use ATX headings (`#`, `##`, not underlines)

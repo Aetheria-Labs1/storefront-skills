@@ -1,6 +1,7 @@
 # Bundle Builder Page Generation
 
 > References: `vibe://docs/generation-guide`, `vibe://skills/generation-protocol`
+> **Workflow:** See `generation-protocol.md` for Phase 0-4 execution (context gathering, HTML generation, validation, publishing). This doc covers page-type-specific patterns only.
 
 Generate interactive bundle-builder pages with step-based UX, discount tier visualization, live price calculation, and progress indicators via the BundleBuilder island.
 
@@ -23,21 +24,12 @@ Generate interactive bundle-builder pages with step-based UX, discount tier visu
 - Mobile sticky summary at bottom leverages Fitts' Law (infinite-width targets at screen edge)
 - Free shipping threshold indicators in cart: "Add $15 more for free shipping" activates Goal-Gradient Effect
 
-## Generation Flow (5 Phases)
+## Page-Specific Context Calls
 
-### Phase 0 — Context Gathering
-
+After the standard 4 context calls, also fetch:
 ```
-get_workspace_details    → workspace ID, plan tier
-get_connected_stores     → store domain, Shopify data
-get_brand_kit            → logo, fonts, colors, voice
-get_design_md            → brand brief + guidelines
 list_products            → bundleable products catalog
 get_navigation           → navbar/footer links
-```
-
-Then fetch island schema:
-```
 get_island_schema("BundleBuilder") → props shape, config, slots
 ```
 
@@ -47,18 +39,14 @@ Determine from user input:
 - Discount tiers (default: 2 items = 10%, 3 = 15%, 4+ = 20%)
 - Bundle theme/name (e.g., "Build Your Skincare Routine")
 
-### Phase 1 — Asset Discovery
+## Asset Discovery
 
 1. `search_design_library` — hero imagery, lifestyle shots showing bundles/boxes
 2. `generate_asset` — hero background if none found (style: `photography`, purpose: `hero_bg`, aspect: `landscape`)
 3. Product images come from `get_product(id)` for each bundleable item
 4. `view_asset` — verify hero asset quality
 
-### Phase 2A — Raw HTML + Tailwind (No Islands)
-
-Generate the FULL page as plain HTML + Tailwind first. Mark interactive zones with `data-placeholder`. All colors via `--lx-*` CSS variables.
-
-Write 7 sections:
+## Section Architecture (7 sections)
 
 **Section 1: Hero (Savings Hook)**
 - h1: "Build Your [Category] Bundle & Save Up to [max]%"
@@ -207,7 +195,7 @@ Write 7 sections:
 </div>
 ```
 
-### Phase 2B — Island Mapping
+## Required Islands
 
 Replace `data-placeholder="BundleBuilder"` with the hydrated island:
 
@@ -230,38 +218,16 @@ Replace `data-placeholder="BundleBuilder"` with the hydrated island:
 
 Use `get_island_schema("BundleBuilder")` to confirm exact prop shape before mapping.
 
-### Phase 3 — Validation
+## Bundle-Specific Validation Checks
 
-```
-validate_vibe_page(page_data)
-check_page_integrity(page_id)
-```
-
-Additional checks:
 - BundleBuilder island has valid product IDs from the store
 - Discount tiers are logically sequential (higher qty = higher discount)
 - Sticky elements (progress bar, mobile summary) don't overlap
 - Price displays use consistent currency formatting
 - Island props match schema from `get_island_schema`
 
-### Phase 4 — Publish & Verify
+## Verification Checklist
 
-```
-publish_vibe_page(page_data) → returns preview_url
-```
-
-**Visual Verification (REQUIRED):**
-
-For Claude Code (Playwright MCP):
-```
-browser_navigate → preview_url
-browser_take_screenshot → full page capture
-```
-
-For Codex: use built-in browser to open preview_url and inspect.
-For other IDEs: provide preview URL and instruct user to verify at 375px and 1280px.
-
-**Checklist:**
 - [ ] Hero CTA scrolls to product grid
 - [ ] Step progress indicator sticky and visible
 - [ ] Discount tier cards rendering with correct percentages
@@ -272,7 +238,7 @@ For other IDEs: provide preview URL and instruct user to verify at 375px and 128
 - [ ] Progress bar updates as items added (island handles this)
 - [ ] Dollar savings shown alongside percentage
 
-## Quality Bar
+## Quality Bar (Bundle-Specific)
 
 - BundleBuilder island correctly configured with valid product IDs and discount tiers
 - Discount tier visualization shows both percentage AND dollar savings (+12% completion)
@@ -281,9 +247,7 @@ For other IDEs: provide preview URL and instruct user to verify at 375px and 128
 - Step progress indicator sticky and functional
 - Mobile: sticky bottom summary bar, swipeable product grid (2-col)
 - "X bundles sold today" social proof (real, not fabricated)
-- All `--lx-*` CSS variables (NOT `--color-*`)
 - Proper heading hierarchy (h1 hero, h2 per section)
 - FAQ includes Schema.org FAQPage JSON-LD
-- No fetch/XHR, eval, localStorage, @import, duplicate IDs
 - Minimum 2 items required before checkout CTA enables
 - Currency formatting consistent throughout

@@ -246,3 +246,9 @@ Wait — **no external URLs in CSS `url()`**. Use inline style on an element ins
 4. **Don't over-generate** — 2-4 assets per page max. Use CSS gradients/colors for the rest
 5. **Don't use `quality: "high"` for everything** — reserve for hero/primary images only
 6. **Don't forget alt text** — decorative images get `alt="" aria-hidden="true"`, meaningful ones get descriptive alt
+
+---
+
+## Beyond Built-In Tools
+
+For video generation, reference imagery research, stock photography, or specialized AI illustration via external MCPs (Exa, HiggsField, OpenArt, etc.), see `asset-pipeline.md`.

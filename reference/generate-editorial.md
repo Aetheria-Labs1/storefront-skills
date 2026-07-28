@@ -1,6 +1,7 @@
 # Editorial / Magazine-Style Page Generation
 
 > References: `vibe://docs/generation-guide`, `vibe://skills/generation-protocol`
+> **Workflow:** See `generation-protocol.md` for Phase 0-4 execution (context gathering, HTML generation, validation, publishing). This doc covers page-type-specific patterns only.
 
 Generate long-form editorial pages with cinematic visuals, magazine layout patterns, and restrained shoppable product moments (max 2-3 commerce touchpoints per 1000 words).
 
@@ -36,15 +37,10 @@ Generate long-form editorial pages with cinematic visuals, magazine layout patte
 
 **Radian style:** Cinematic scroll-snap, pagination indicators (01/09), progressive disclosure through chapters, geographic coordinates as design elements
 
-## Generation Flow (5 Phases)
+## Page-Specific Context Calls
 
-### Phase 0 — Context & Creative Direction
-
+After the standard 4 context calls, also fetch:
 ```
-get_workspace_details    → workspace ID, plan tier
-get_connected_stores     → store domain, Shopify data
-get_brand_kit            → logo, fonts, colors, voice
-get_design_md            → brand brief + tone of voice + design philosophy
 list_products            → products to weave into narrative (select 2-5)
 get_navigation           → navbar/footer links
 ```
@@ -63,7 +59,7 @@ Determine from user input:
 - Visual mood (minimal/luxe/raw/warm/cool)
 - Tone of voice (aspirational, intimate, bold, poetic)
 
-### Phase 1 — Asset Discovery (Heavy — Editorial Is Image-Driven)
+## Asset Discovery (Heavy — Editorial Is Image-Driven)
 
 Editorial pages require 6-10 high-quality images. ALWAYS prioritize existing brand photography over generation:
 
@@ -76,11 +72,9 @@ Editorial pages require 6-10 high-quality images. ALWAYS prioritize existing bra
 
 Budget: up to 6-8 assets for editorial. Always prefer library over generation.
 
-### Phase 2A — Raw HTML + Tailwind (No Islands)
+## Section Architecture (8-10 sections)
 
-Generate the FULL page as plain HTML + Tailwind first. Use `data-placeholder` where islands will go. All colors via `--lx-*` CSS variables. Total narrative content MUST exceed 800 words.
-
-Write 8-10 sections with generous whitespace (section padding 80-120px vertical):
+Write with generous whitespace (section padding 80-120px vertical). Total narrative content MUST exceed 800 words.
 
 **Section 1: Full-Bleed Cinematic Hero**
 - Full-viewport image (min-height: 80vh or 100vh)
@@ -231,7 +225,7 @@ Write 8-10 sections with generous whitespace (section padding 80-120px vertical)
 **Section 10: Footer**
 - Standard brand footer via `get_navigation`
 
-### Phase 2B — Island Mapping
+## Required Islands
 
 Replace `data-placeholder="EditorialProductGrid"` with hydrated islands. Maximum 2-3 commerce islands total (editorial restraint):
 
@@ -248,42 +242,8 @@ Replace `data-placeholder="EditorialProductGrid"` with hydrated islands. Maximum
 
 Use `get_island_schema("EditorialProductGrid")` to confirm exact prop shape.
 
-### Phase 3 — Validation
+## Verification Checklist
 
-```
-validate_vibe_page(page_data)
-check_page_integrity(page_id)
-```
-
-Editorial-specific checks:
-- Hero image is high quality and full-bleed
-- Text legible over all image backgrounds (contrast via gradient overlay)
-- Commerce islands do NOT interrupt narrative flow (placed after peaks only)
-- Maximum 2-3 commerce touchpoints total
-- Total narrative word count > 800
-- Pull quote section has adequate padding (py-24+)
-- Image aspect ratios consistent within asymmetric grids
-- Reading column max-w-3xl for prose (comfortable reading)
-- Section padding 80-120px vertical throughout
-
-### Phase 4 — Publish & Verify
-
-```
-publish_vibe_page(page_data) → returns preview_url
-```
-
-**Visual Verification (REQUIRED):**
-
-For Claude Code (Playwright MCP):
-```
-browser_navigate → preview_url
-browser_take_screenshot → full page capture
-```
-
-For Codex: use built-in browser to open preview_url and inspect.
-For other IDEs: provide preview URL and instruct user to verify at 375px and 1280px.
-
-**Checklist:**
 - [ ] Cinematic hero: full-bleed, high-quality image, text legible via gradient
 - [ ] Drop cap rendering on opening paragraph
 - [ ] Generous whitespace between sections (80-120px)
@@ -297,7 +257,7 @@ For other IDEs: provide preview URL and instruct user to verify at 375px and 128
 - [ ] No horizontal scroll on mobile
 - [ ] Editorial feel preserved — not a product catalog
 
-## Quality Bar
+## Quality Bar (Editorial-Specific)
 
 - Cinematic full-bleed hero (min-height: 80vh, gradient overlay for text contrast)
 - Magazine layout patterns: drop cap, pull quotes, asymmetric grids, full-bleed images
@@ -310,7 +270,4 @@ For other IDEs: provide preview URL and instruct user to verify at 375px and 128
 - All images via `search_design_library` first (editorial = real photography, not AI)
 - Asymmetric/editorial grid layouts (not uniform boxes)
 - Pull quotes: large italic font, generous padding, visual separation
-- All `--lx-*` CSS variables (NOT `--color-*`)
-- Mobile-first: single column, images stack, readable without pinching
 - Contextual alt text on all images (narrative, not just product names)
-- No fetch/XHR, eval, localStorage, @import, duplicate IDs

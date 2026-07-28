@@ -1,6 +1,7 @@
 # Campaign / Ad Landing Page Generation
 
 > Reference: `vibe://docs/generation-guide` | `vibe://skills/generation-protocol`
+> **Workflow:** See `generation-protocol.md` for Phase 0-4 execution (context gathering, HTML generation, validation, publishing). This doc covers page-type-specific patterns only.
 
 Generate high-converting post-click landing pages. ZERO navigation (+30% CVR from reduced distraction). Single CTA repeated 3x minimum. Message-match from ad creative is non-negotiable.
 
@@ -31,16 +32,9 @@ Generate high-converting post-click landing pages. ZERO navigation (+30% CVR fro
 10. Final CTA         — restate offer + guarantee + urgency
 ```
 
-## Phase 0 — Context (ALWAYS first, in order)
+## Page-Specific Context Calls
 
-```
-get_workspace_details       → workspace ID, plan tier
-get_connected_stores        → store domain, Shopify data
-get_brand_kit               → logo, fonts, colors, voice, border radius
-get_design_md               → brand brief, design philosophy, don'ts
-```
-
-Then page-specific:
+After the standard 4 context calls, also fetch:
 ```
 analyze_ad_creative(url)    → extract headline, claims, colors, CTA, tone, product
 match_persona_to_ad(...)    → target persona (demographics, pain points, motivations)
@@ -71,30 +65,7 @@ list_products               → catalog context
 - Before/after transformations front and center
 - Price reveal after desire built (younger demo more price-sensitive)
 
-## Phase 2A — Raw HTML + Tailwind (No Islands)
-
-Generate full page as plain HTML + Tailwind. Mark island positions:
-
-```html
-<!-- NO navigation header — logo only, non-clickable -->
-<header class="py-4 px-6">
-  <img src="..." alt="Brand" class="h-8 mx-auto" />
-</header>
-
-<!-- BuyBox placeholder -->
-<div data-placeholder="BuyBox" class="min-h-[180px] p-4 border border-dashed rounded-lg">
-  Commerce panel renders here
-</div>
-```
-
-Rules:
-- All colors via `--lx-*` variables
-- NO `<nav>` elements, NO anchor links in header/footer
-- CTA buttons: min 48px height, full-width on mobile, `--lx-accent-color`
-- Max-width: 5xl (narrower than PDP — focused reading lane)
-- Mobile sticky CTA bar at bottom
-
-## Phase 2B — Island Mapping
+## Required Islands
 
 Only ONE commerce island needed (BuyBox). Minimal islands = fast page load.
 
@@ -103,6 +74,13 @@ Only ONE commerce island needed (BuyBox). Minimal islands = fast page load.
 ```
 
 Use `vibe://schema/island/BuyBox` for exact prop shape.
+
+## Page-Specific Rules
+
+- NO `<nav>` elements, NO anchor links in header/footer — logo only, non-clickable
+- CTA buttons: min 48px height, full-width on mobile, `--lx-accent-color`
+- Max-width: 5xl (narrower than PDP — focused reading lane)
+- Mobile sticky CTA bar at bottom
 
 ## Hero Patterns by Niche
 
@@ -135,22 +113,8 @@ Use `vibe://schema/island/BuyBox` for exact prop shape.
 - Fake "live viewer" counts
 - Urgency on health/wellness products (erodes trust in category)
 
-## Visual Verification (REQUIRED)
+## Verification Checklist
 
-After `publish_vibe_page` returns `preview_url`:
-
-**Claude Code (Playwright MCP):**
-```
-browser_navigate → preview_url
-browser_take_screenshot → full page capture
-Check: no nav links, CTA 3x visible, headline matches ad, mobile layout
-If broken → update_page_section → re-verify
-```
-
-**Codex:** Use built-in browser to open preview URL.
-**Other IDEs:** "Preview: {url} — verify no navigation exists, CTA appears 3x"
-
-### Verification Checklist
 - [ ] ZERO navigation links (no header nav, no footer nav, logo not clickable)
 - [ ] Headline matches ad creative within 2-word difference
 - [ ] CTA button appears minimum 3 times (hero, offer, final)
@@ -160,12 +124,6 @@ If broken → update_page_section → re-verify
 - [ ] Mobile: sticky bottom CTA bar present
 - [ ] Brand colors applied via `--lx-accent-color`
 - [ ] No autoplay video (click-to-play only)
-
-## Quality Gates
-
-1. `validate_vibe_page` — structural check (REQUIRED)
-2. `check_page_integrity` — archetype rules
-3. Visual verification — screenshot (REQUIRED)
 
 ## Conversion Data Reference
 

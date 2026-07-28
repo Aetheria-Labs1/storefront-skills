@@ -1,6 +1,7 @@
 # Collection / Category Page Generation
 
 > Reference: `vibe://docs/generation-guide` | `vibe://skills/generation-protocol`
+> **Workflow:** See `generation-protocol.md` for Phase 0-4 execution (context gathering, HTML generation, validation, publishing). This doc covers page-type-specific patterns only.
 
 Generate browsable product listing pages. Grid-focused with EditorialProductGrid island. Quick-add buttons add +15% add-to-cart from grid. Consistent card aspect ratios prevent layout shift. Mid-grid promotional cards every 6-8 products drive AOV.
 
@@ -21,16 +22,9 @@ Generate browsable product listing pages. Grid-focused with EditorialProductGrid
 8. Footer              — full nav + payment icons (REQUIRED island)
 ```
 
-## Phase 0 — Context (ALWAYS first, in order)
+## Page-Specific Context Calls
 
-```
-get_workspace_details   → workspace ID, plan tier
-get_connected_stores    → store domain, Shopify data
-get_brand_kit           → logo, fonts, colors, voice, border radius
-get_design_md           → brand brief, design philosophy, don'ts
-```
-
-Then page-specific:
+After the standard 4 context calls, also fetch:
 ```
 get_navigation          → navbar/footer links, collection hierarchy, breadcrumb
 list_products           → all products in target collection (titles, prices, images, variants, tags)
@@ -42,38 +36,15 @@ Critical extractions from `list_products`:
 - Variant data per product (for color swatches on cards)
 - Sale/compare-at prices (for badge display)
 
-## Phase 2A — Raw HTML + Tailwind (No Islands)
+## Page-Specific Rules
 
-Generate full page as plain HTML + Tailwind. Mark island positions:
-
-```html
-<!-- SiteHeader placeholder -->
-<div data-placeholder="SiteHeader" class="h-16 border-b">
-  Navigation + breadcrumb renders here
-</div>
-
-<!-- Product Grid placeholder -->
-<div data-placeholder="EditorialProductGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 min-h-[600px]">
-  Product cards render here
-</div>
-
-<!-- Footer placeholder -->
-<div data-placeholder="Footer" class="bg-gray-900 text-white py-12">
-  Footer renders here
-</div>
-```
-
-Rules:
-- All colors via `--lx-*` variables (set in `theme_css`)
 - Grid is the STAR — hero banner stays short (max 300px desktop, 200px mobile)
 - Tighter section padding than other page types: `py-8 md:py-12`
 - Consistent card aspect ratios (1:1 or 3:4) with `object-fit: cover`
 - Product titles truncated to 2 lines max (prevent layout break)
 - Price always visible on card (never hidden behind interaction)
 
-## Phase 2B — Island Mapping
-
-### Required Islands
+## Required Islands
 
 | Island | Placement | Props Source |
 |--------|-----------|-------------|
@@ -142,22 +113,8 @@ Example placements:
 - "Clear" link in sheet header
 - Sort dropdown: separate from filters, always accessible
 
-## Visual Verification (REQUIRED)
+## Verification Checklist
 
-After `publish_vibe_page` returns `preview_url`:
-
-**Claude Code (Playwright MCP):**
-```
-browser_navigate → preview_url
-browser_take_screenshot → full page capture
-Check: grid renders, cards aligned, images consistent, quick-add visible
-If broken → update_page_section → re-verify
-```
-
-**Codex:** Use built-in browser to open preview URL.
-**Other IDEs:** "Preview: {url} — verify grid layout at 375px, 768px, 1280px"
-
-### Verification Checklist
 - [ ] Grid renders with correct column count per breakpoint
 - [ ] All product images same aspect ratio (no layout jank)
 - [ ] Prices visible on every card (including sale strikethrough)
@@ -168,12 +125,6 @@ If broken → update_page_section → re-verify
 - [ ] Breadcrumb: Home > Collections > [Name] correct
 - [ ] Mobile: 2-col grid, no horizontal overflow
 - [ ] Brand colors via `--lx-*` variables applied
-
-## Quality Gates
-
-1. `validate_vibe_page` — structural validation (REQUIRED)
-2. `check_page_integrity` — archetype-specific rules
-3. Visual verification — browser screenshot (REQUIRED)
 
 ## Collection-Specific CRO Data
 

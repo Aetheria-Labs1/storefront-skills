@@ -158,3 +158,4 @@ Use descriptive kebab-case: `hero`, `product-gallery`, `social-proof`, `ingredie
 4. **`edit_asset` for composites** — product-on-background, texture overlays
 5. **Place URLs directly in HTML** — `<img src="${url}" />` or inline `style="background-image: url(...)"`
 6. **Load `design-enrichment` skill** for full asset generation pipeline details
+7. **For video, reference imagery, or external AI tools** → see `asset-pipeline.md` for multi-source strategy
