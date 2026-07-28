@@ -15,11 +15,11 @@ Set up A/B tests, personalization variants, and monitor experiment results.
 
 Three workflows depending on intent:
 
-**View analytics and experiment results**:
-See `reference/analytics.md` for the analytics and experiments dashboard workflow.
+**View analytics and experiment results:**
+1. Read `vibe://skills/analytics` — execute the analytics dashboard workflow
 
 **Create a personalization variant** (persona-specific page version):
-See `reference/personalization-variant.md` for the personalization workflow.
+1. Read `vibe://skills/personalization-variant` — execute the personalization workflow
 
 **Create an A/B test variant** (hypothesis-driven experiment):
-See `reference/ab-test-variant.md` for the A/B test workflow.
+1. Read `vibe://skills/ab-test-variant` — execute the A/B test workflow

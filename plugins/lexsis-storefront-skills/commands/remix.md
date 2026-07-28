@@ -17,7 +17,7 @@ Rebuild a competitor page or ad creative adapted to your brand.
 Two entry points:
 
 **From an ad creative** (image/screenshot → landing page):
-See `reference/ad-to-page.md` for the full ad-to-page workflow.
+1. Read `vibe://skills/ad-to-page` — execute the ad-to-page workflow
 
 **From a competitor URL** (screenshot → extract → rebuild):
-See `reference/competitor-remix.md` for the competitor remix workflow.
+1. Read `vibe://skills/competitor-remix` — execute the competitor remix workflow

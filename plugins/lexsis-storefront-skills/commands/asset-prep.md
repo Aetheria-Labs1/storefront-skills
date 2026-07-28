@@ -14,7 +14,8 @@ Multi-source asset preparation — built-in generation + external MCPs for video
 
 ## Workflow
 
-See `reference/asset-pipeline.md` for the full asset sourcing workflow (decision tree, external MCP integration, per-page budgets, video patterns).
+1. Read `vibe://skills/asset-pipeline` — load the full asset sourcing workflow
+2. Execute: decision tree → source per section → verify → produce asset manifest
 
 ## Prerequisites
 

@@ -14,4 +14,5 @@ Plan a storefront page before generation — gathers requirements, designs secti
 
 ## Workflow
 
-See `reference/plan-page.md` for the full planning workflow (Steps 1-5: assess signals, adaptive discovery, generate plan, present for approval, hand off to /generate).
+1. Read `vibe://skills/plan-page` — load the full planning workflow
+2. Execute Steps 1-5: assess signals → adaptive discovery → generate plan → present for approval → hand off to /generate

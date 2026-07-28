@@ -17,7 +17,9 @@ CRO-optimize an existing page — analyzes weaknesses and applies section-by-sec
 Two modes depending on scope:
 
 **Section edits** (swap copy, restyle, add/remove sections):
-See `reference/page-editing.md` for edit operations (update, add, remove, reorder sections).
+1. Read `vibe://skills/page-editing` — load edit operations (update, add, remove, reorder)
+2. Execute the edit flow
 
 **Full page redesign** (modernize using performance data):
-See `reference/page-redesign.md` for the data-informed redesign workflow (inspect → analyze performance → categorize sections → apply updates → verify).
+1. Read `vibe://skills/page-redesign` — load the data-informed redesign workflow
+2. Execute: inspect → analyze performance → categorize sections → apply updates → verify

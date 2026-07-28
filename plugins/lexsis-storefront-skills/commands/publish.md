@@ -13,4 +13,5 @@ QA check and publish a page — validates structure, verifies islands, checks mo
 
 ## Workflow
 
-See `reference/publishing.md` for the full publish workflow (validate → preview → visual verify → publish live).
+1. Read `vibe://skills/publishing` — load the full publish workflow
+2. Execute: validate → preview → visual verify → publish live

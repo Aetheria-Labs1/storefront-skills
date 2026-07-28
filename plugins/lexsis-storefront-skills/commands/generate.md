@@ -10,7 +10,6 @@ Generate a complete Shopify storefront page with conversion-optimized patterns.
 ## Context
 
 - **storefront-craft**: Load first on any generation task.
-- **workflow-orchestration**: Tool sequences, parallelization, flow selection.
 - **conversion-psychology**: Read before generating any ecommerce page.
 - **island-patterns**: How to embed, wrap, and combine React islands.
 
@@ -22,15 +21,14 @@ Generate a complete Shopify storefront page with conversion-optimized patterns.
 > Do NOT proceed to Phase 0 until a page plan is confirmed by the user.
 > Exception: If user explicitly says "skip planning" or "just build it".
 
-See `reference/page-generation.md` for the full generation flow (Phase 0-4).
-See `reference/generation-protocol.md` for VibePage schema, CSS variables, island integration, and visual verification.
+1. Read `vibe://skills/plan-page` — execute planning (signal check → questions → plan → approval)
+2. Read `vibe://skills/generation-protocol` — execute Phase 0-4 (context → assets → HTML → validate → publish)
+3. Read the page-type doc matching the plan (e.g. `vibe://skills/generate-pdp`) — apply CRO patterns
 
 ## Ad-to-Page Shortcut
 
-When converting an ad creative to a landing page:
-1. `analyze_ad_creative` → extract headline, claims, colors, tone, CTA
-2. `match_persona_to_ad` → identify target audience
-3. Continue with standard Phase 0-4 using extracted context
-4. Ensure "scent continuity" — ad headline ≈ page hero headline
-
-See `reference/ad-to-page.md` for the full ad-to-page workflow.
+When user provides an ad creative:
+1. Read `vibe://skills/ad-to-page` — execute the ad-to-page workflow
+2. `analyze_ad_creative` → extract headline, claims, colors, tone, CTA
+3. `match_persona_to_ad` → identify target audience
+4. Continue with Phase 0-4 using extracted context

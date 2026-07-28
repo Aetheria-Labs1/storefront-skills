@@ -9,8 +9,6 @@ Configure the Cart V2 drawer — upsells, progress bars, conditional rules, and 
 
 ## Workflow
 
-**Cart composition** (DrawerShell + atomic islands):
-See `reference/cart-composition.md` for the cart architecture and island composition patterns.
-
-**Cart management** (MCP tool workflow for configuration):
-See `reference/cart-v2-management.md` for the step-by-step cart setup workflow.
+1. Read `vibe://skills/cart-composition` — load cart architecture and island composition patterns
+2. Read `vibe://skills/cart-v2-management` — load the step-by-step cart setup workflow
+3. Execute configuration
