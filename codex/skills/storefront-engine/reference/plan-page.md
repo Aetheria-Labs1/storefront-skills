@@ -4,6 +4,20 @@ Reference material for Phase -1 planning. Load when generating a page plan.
 
 ---
 
+## Template Search (ALWAYS do this first)
+
+Before planning custom sections, search the template library for pre-built sections:
+
+```
+search_section_templates({ query: "<describe what you need>", section: "<type>", industry: "<vertical>", mood: "<mood>" })
+```
+
+Templates are conversion-proven, pixel-perfect, and faster than generating from scratch. Use them as the starting point — swap copy, images, and colors to match the brand kit.
+
+**Available filters:** section (hero, social-proof, trust, faq, etc.), industry (beauty, fashion, supplements, food, home, tech), mood (clinical, editorial, bold, clean, neutral, minimal, warm).
+
+---
+
 ## Section Templates by Page Type
 
 ### Landing Page (8-10 sections)

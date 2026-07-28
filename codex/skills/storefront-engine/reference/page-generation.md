@@ -16,13 +16,23 @@ get_design_md            → brand brief + design philosophy + don'ts
 list_products            → product catalog (for commerce islands)
 get_navigation           → navbar/footer links
 search_design_library    → existing brand assets (hero images, lifestyle shots)
+search_section_templates → pre-built section templates matching the brief
 ```
 
-All 7 calls can run in parallel. Wait for all before proceeding.
+All 8 calls can run in parallel. Wait for all before proceeding.
 
-### Phase 1 — Asset Preparation
+> **Template-first rule:** Always search `search_section_templates` before generating sections from scratch. Matching templates are faster, conversion-proven, and pixel-perfect. Only generate custom HTML when no template fits the brief.
 
-Decision tree per section:
+### Phase 1 — Template Selection + Asset Preparation
+
+**Step 1: Search templates for each section in the page plan:**
+```
+search_section_templates({ query: "hero with video background for fashion", section: "hero", industry: "fashion", mood: "editorial" })
+```
+- If a matching template is found (score > 0.7): USE IT. Swap placeholder content for brand-specific copy/images.
+- If no match: generate from scratch in Phase 2.
+
+**Step 2: Asset preparation (for both template-based and custom sections):**
 1. `search_design_library` — check existing assets FIRST (always)
 2. `generate_asset` — only if library has nothing suitable
 3. `edit_asset` — composite/modify if needed

@@ -9,6 +9,16 @@ Insert common section patterns into existing pages — one section at a time, ma
 - Filling a gap in page structure (e.g., "add social proof between hero and product")
 - Quick iteration on page layout without regenerating the whole page
 
+## Template Search (do this FIRST)
+
+Before building any section from scratch, search the template library:
+
+```
+search_section_templates({ query: "video testimonial carousel with stars", section: "social-proof", mood: "warm" })
+```
+
+If a match is found → use the template's HTML/CSS/JS directly, swap placeholder content with brand-specific copy/images. Only generate custom HTML when no template matches.
+
 ## Prerequisites
 
 - Target page must already exist (use `page-generation` skill for new pages)

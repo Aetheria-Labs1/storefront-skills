@@ -52,12 +52,15 @@ For each competitor section:
 - Static HTML+Tailwind section? (most common)
 - Requires custom interactivity? Flag for JS sandbox
 
-### Step 5 — Source User's Own Assets
+### Step 5 — Match Existing Templates + Source Assets
 
 ```
+search_section_templates({ query: "<competitor section description>", section: "<type>", industry: "<vertical>" })
 search_design_library({ query: "<relevant product/category>" })
 list_products({ limit: 10 })
 ```
+
+For each competitor section, check if a pre-built template matches the pattern. Templates give you proven HTML/CSS/JS — just swap content.
 
 Replace ALL competitor imagery with user's own assets. Generate new if needed:
 ```
