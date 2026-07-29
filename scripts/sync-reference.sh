@@ -36,26 +36,4 @@ while IFS= read -r -d '' existing; do
 done < <(find "$CODEX_REF/islands" -type f -print0 2>/dev/null)
 echo "  $island_count island files synced"
 
-# --- Vertical plugins: copy with rename ---
-echo "Syncing vertical plugins..."
-declare -A VERTICALS=(
-  [beauty]="plugins/lexsis-beauty-skills/skills/storefront-engine/reference/beauty-expertise.md"
-  [fashion]="plugins/lexsis-fashion-skills/skills/storefront-engine/reference/fashion-expertise.md"
-  [food]="plugins/lexsis-food-skills/skills/storefront-engine/reference/food-expertise.md"
-  [home]="plugins/lexsis-home-skills/skills/storefront-engine/reference/home-expertise.md"
-  [luxury]="plugins/lexsis-luxury-skills/skills/storefront-engine/reference/luxury-expertise.md"
-  [supplements]="plugins/lexsis-supplements-skills/skills/storefront-engine/reference/supplements-expertise.md"
-)
-
-vert_count=0
-for vertical in "${!VERTICALS[@]}"; do
-  src="$ROOT_REF/vertical-${vertical}.md"
-  dst="$REPO_ROOT/${VERTICALS[$vertical]}"
-  if [ -f "$src" ] && [ -d "$(dirname "$dst")" ]; then
-    cp "$src" "$dst"
-    vert_count=$((vert_count + 1))
-  fi
-done
-echo "  $vert_count vertical files synced"
-
 echo "Sync complete."

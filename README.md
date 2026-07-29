@@ -8,11 +8,8 @@
 # 1. Register marketplace (one-time)
 /plugin marketplace add lexsis https://github.com/Aetheria-Labs1/storefront-skills
 
-# 2. Install core skills (required — all page types + workflows)
+# 2. Install (includes all verticals, workflows, and MCP config)
 /plugin install lexsis-storefront-skills@lexsis
-
-# 3. Add your industry vertical (optional)
-/plugin install lexsis-beauty-skills@lexsis
 ```
 
 Done. Skills auto-load, MCP auto-configures, commands available immediately.
@@ -65,19 +62,14 @@ cp -r storefront-skills/cursor/rules/* .cursor/rules/
 2. Upload `gpt/knowledge.md` as Knowledge file
 </details>
 
-## Available Plugins
+## What's Included
 
-| Plugin | Type | What It Adds |
-|--------|------|-------------|
-| `lexsis-storefront-skills` | **Core** | 12 Codex skills, 10 Claude commands, 257 references, and MCP config |
-| `lexsis-beauty-skills` | Vertical | Beauty/skincare patterns |
-| `lexsis-supplements-skills` | Vertical | Supplement/wellness patterns |
-| `lexsis-fashion-skills` | Vertical | Fashion/apparel patterns |
-| `lexsis-food-skills` | Vertical | Food/beverage DTC patterns |
-| `lexsis-home-skills` | Vertical | Home goods/decor patterns |
-| `lexsis-luxury-skills` | Vertical | Luxury/premium patterns |
-
-> Traffic source skills (Meta, Google, TikTok) shipping separately — coming soon.
+One plugin — everything included:
+- 10 Claude commands + 12 Codex skills + 2 agents
+- 49 reference docs (CRO patterns, verticals, workflows)
+- 47 island schemas
+- Vertical expertise built-in: beauty, supplements, fashion, food, luxury, home
+- Traffic source patterns: Meta, Google, TikTok
 
 ## Codex Skills
 

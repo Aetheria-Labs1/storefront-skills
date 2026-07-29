@@ -49,29 +49,6 @@ else:
     if not (missing or extra or mismatched):
         print(f"Codex: all {len(ref_files)} reference files match plugin")
 
-# --- Guard 3: Vertical plugins match root reference ---
-VERTICALS = {
-    "beauty": "plugins/lexsis-beauty-skills/skills/storefront-engine/reference/beauty-expertise.md",
-    "fashion": "plugins/lexsis-fashion-skills/skills/storefront-engine/reference/fashion-expertise.md",
-    "food": "plugins/lexsis-food-skills/skills/storefront-engine/reference/food-expertise.md",
-    "home": "plugins/lexsis-home-skills/skills/storefront-engine/reference/home-expertise.md",
-    "luxury": "plugins/lexsis-luxury-skills/skills/storefront-engine/reference/luxury-expertise.md",
-    "supplements": "plugins/lexsis-supplements-skills/skills/storefront-engine/reference/supplements-expertise.md",
-}
-
-vert_ok = 0
-for vertical, target in VERTICALS.items():
-    src = Path(f"reference/vertical-{vertical}.md")
-    dst = Path(target)
-    if src.exists() and dst.exists():
-        if not filecmp.cmp(src, dst, shallow=False):
-            errors.append(f"Vertical {vertical} diverged: {src} != {dst}")
-        else:
-            vert_ok += 1
-
-if vert_ok:
-    print(f"Verticals: {vert_ok}/{len(VERTICALS)} match root")
-
 # --- Report ---
 if errors:
     for e in errors:
