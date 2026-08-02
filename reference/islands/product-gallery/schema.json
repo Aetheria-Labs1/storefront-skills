@@ -3,7 +3,7 @@
   "category": "commerce",
   "usage_hint": "PDP image gallery with thumbnails, multiple layouts (horizontal/vertical/grid), transitions (fade/slide/zoom/kenBurns), and optional autoplay. Syncs with variant changes when listenForVariant:true.",
   "when_to_use": "Use on product detail pages to display product images with navigation. Supports horizontal/vertical thumbnail rails, grid mode, and variant-driven image swaps.",
-  "when_not_to_use": "Not for hero banners (use ProductHero). Not for card media (use ProductCard). Not for standalone image carousels (use MediaSlideshow primitive).",
+  "when_not_to_use": "Not for hero banners (use ProductHero). Not for card media (use MediaCarousel). Not for standalone image carousels (use MediaSlideshow primitive).",
   "defaultHydrate": "immediate",
   "combine_with": [
     "BuyBox (product context)",
@@ -88,9 +88,9 @@
       "type": "enum",
       "required": false,
       "values": [
-        "bottom",
-        "right",
         "left",
+        "right",
+        "bottom",
         "top"
       ]
     },

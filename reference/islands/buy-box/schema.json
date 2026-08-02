@@ -3,7 +3,7 @@
   "category": "commerce",
   "usage_hint": "Full-featured product purchase interface with variant selection, quantity picker, and add-to-cart functionality. Primary CTA for PDP layouts.",
   "when_to_use": "Use on product detail pages where customers need to select options and add items to cart. Supports variants, subscription plans, out-of-stock notify-me, and animated feedback.",
-  "when_not_to_use": "Not for collection pages (use QuickAdd or ProductCard instead). Not for sticky follow-up CTAs (use StickyBar). Not for lightweight inline add-to-cart (use QuickAdd).",
+  "when_not_to_use": "Not for collection pages (use QuickAdd instead). Not for sticky follow-up CTAs (use StickyBar). Not for lightweight inline add-to-cart (use QuickAdd).",
   "defaultHydrate": "immediate",
   "combine_with": [
     "CartDrawer (REQUIRED for cart feedback)",

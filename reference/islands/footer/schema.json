@@ -2,7 +2,7 @@
   "name": "Footer",
   "category": "navigation",
   "usage_hint": "Site-wide footer with links, logo, newsletter signup, social icons, and copyright. Always placed at bottom of page.",
-  "when_to_use": "Every page needs a footer. Supports multiple layouts (simple, columns, centered, editorialGrid, newsletterSplit) and both hydration mode (custom HTML with data-lx-footer tags) and legacy mode (React-rendered). Newsletter form auto-submits to configured endpoint.",
+  "when_to_use": "Every page needs a footer. Supports multiple layouts (simple, columns, centered, editorialGrid, newsletterSplit) and both hydration mode (custom HTML with data-lx-footer tags) and legacy mode (React-rendered). Hydration mode's newsletter form captures automatically \u2014 no endpoint to configure.",
   "when_not_to_use": "For minimal page templates without site-wide footer (rare). For mid-page newsletter blocks use a dedicated newsletter island.",
   "defaultHydrate": "immediate",
   "combine_with": [
@@ -18,7 +18,7 @@
   "examples": [
     {
       "label": "Hydration mode with newsletter form",
-      "html": "<div data-island=\"Footer\" data-props='{\"newsletterEndpoint\":\"/api/newsletter\",\"successMessage\":\"Thanks!\"}'><footer data-lx-footer=\"root\"><form data-lx-footer=\"newsletter-form\"><input data-lx-footer=\"newsletter-input\" type=\"email\"/><button>Subscribe</button></form><div data-lx-footer=\"newsletter-success\" style=\"display:none;\"></div><p>&copy; <span data-lx-footer=\"year\"></span> All rights reserved.</p></footer></div>"
+      "html": "<div data-island=\"Footer\" data-props='{\"successMessage\":\"Thanks!\"}'><footer data-lx-footer=\"root\"><form data-lx-footer=\"newsletter-form\"><input data-lx-footer=\"newsletter-input\" type=\"email\"/><button>Subscribe</button></form><div data-lx-footer=\"newsletter-success\" style=\"display:none;\"></div><p>&copy; <span data-lx-footer=\"year\"></span> All rights reserved.</p></footer></div>"
     },
     {
       "label": "Legacy simple layout",

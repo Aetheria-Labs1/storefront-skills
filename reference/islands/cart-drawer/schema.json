@@ -2,14 +2,14 @@
   "name": "CartDrawer",
   "category": "commerce",
   "usage_hint": "Slide-in cart drawer that displays added items, quantities, and subtotal with checkout link. Opens automatically on cart:open events. Must be present on all commerce pages.",
-  "when_to_use": "Include on EVERY page where any cart-capable island exists (BuyBox, StickyBar, QuickAdd, ProductCard). Provides cart confirmation, line item management (update qty, remove), and checkout navigation.",
+  "when_to_use": "Include on EVERY page where any cart-capable island exists (BuyBox, StickyBar, QuickAdd, ProductCarousel). Provides cart confirmation, line item management (update qty, remove), and checkout navigation.",
   "when_not_to_use": "Never omit CartDrawer if you have add-to-cart functionality. Skipping it leaves users with no cart feedback or access to their cart.",
   "defaultHydrate": "idle",
   "combine_with": [
     "BuyBox",
     "StickyBar",
     "QuickAdd",
-    "ProductCard",
+    "ProductCarousel",
     "BundleBuilder (all cart-capable islands require CartDrawer for feedback)"
   ],
   "anti_patterns": [

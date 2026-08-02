@@ -3,7 +3,7 @@
   "category": "unknown",
   "usage_hint": "Self-contained cross-sell/upsell inside the cart drawer. Reads config from $cartConfig.upsells, evaluates triggers against $cartLines, fetches recommended products, and self-hides when no triggers match. No external rules needed.",
   "when_to_use": "Inside DrawerShell to show product recommendations based on cart contents. Config comes from commerce_config.upsells \u2014 the island is fully reactive to cart state changes.",
-  "when_not_to_use": "Outside cart context. For static product grids use EditorialProductGrid or ProductCarousel.",
+  "when_not_to_use": "Outside cart context. For static product grids use ProductCarousel.",
   "defaultHydrate": "immediate",
   "combine_with": [
     "DrawerShell",

@@ -14,7 +14,7 @@
     "Using StickyBar without BuyBox: StickyBar is a follow-up CTA, not the primary purchase interface",
     "Omitting showAfter or misconfiguring it: bar may appear too early or not at all",
     "Missing CartDrawer: users get no cart feedback after clicking the sticky bar CTA",
-    "Using on collection pages: wrong pattern; use QuickAdd in ProductCard instead"
+    "Using on collection pages: wrong pattern; use QuickAdd in product grids instead"
   ],
   "examples": [
     {

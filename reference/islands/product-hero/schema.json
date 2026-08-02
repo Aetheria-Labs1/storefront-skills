@@ -1,37 +1,32 @@
 {
   "name": "ProductHero",
   "category": "commerce",
-  "usage_hint": "Premium full-height hero gallery for PDP split layouts. Designed for side-by-side media + BuyBox layouts with floating arrows, thumbnail rail, and per-image object-fit control. Uses MediaSlideshow primitive.",
+  "usage_hint": "Premium full-height hero gallery for PDP split layouts. Supports fade/slide/zoom/kenBurns transitions, thumbnail rail, autoplay, hover-advance, and variant sync. Fully CSS-customizable via data-part attributes and --lx-hero-* properties.",
   "when_to_use": "Use for high-end PDP layouts where media occupies 50-60% of viewport height and sits alongside BuyBox. Ideal for fashion, furniture, premium goods where large immersive media is key.",
-  "when_not_to_use": "Not for compact galleries (use ProductGallery). Not for hero banners on landing pages (this is PDP-specific). Not for card-based media (use ProductCard).",
-  "defaultHydrate": "immediate",
+  "when_not_to_use": "Not for compact galleries (use ProductGallery). Not for hero banners on landing pages. Not for card-based media (use MediaCarousel).",
+  "defaultHydrate": "visible",
   "combine_with": [
     "BuyBox (side-by-side split layout)",
     "VariantSwatches (when listenForVariant:true",
     "hero updates images on variant change)"
   ],
   "anti_patterns": [
-    "Using on mobile without testing: full-height hero can push BuyBox too far down; test stacked layouts",
-    "Setting maxHeight too high: can create excessive whitespace on smaller screens",
-    "Using floatingArrows on small images: arrows may overlap content awkwardly",
-    "Setting hoverAdvance:true on touch devices: no hover on mobile, feature is lost"
+    "Using on mobile without testing: full-height hero can push BuyBox too far down",
+    "Setting maxHeight too high: creates whitespace on smaller screens",
+    "Using autoplay with very short interval (<2000ms): disorienting"
   ],
   "examples": [
     {
-      "label": "Split-left hero with thumbnail rail",
-      "html": "<div data-island=\"ProductHero\" data-props='{\"images\":[{\"url\":\"https://via.placeholder.com/800\",\"alt\":\"Product image 1\"},{\"url\":\"https://via.placeholder.com/800\",\"alt\":\"Product image 2\"}],\"layout\":\"splitLeft\",\"thumbnails\":\"rail\",\"thumbnailPosition\":\"left\",\"navigation\":\"floatingArrows\",\"maxHeight\":\"85vh\",\"transition\":\"fade\"}'></div>"
+      "label": "Split-left hero with thumbnail rail and autoplay",
+      "html": "<div data-island=\"ProductHero\" data-props='{\"images\":[{\"url\":\"https://via.placeholder.com/800x1000\",\"alt\":\"Product 1\"},{\"url\":\"https://via.placeholder.com/800x1000\",\"alt\":\"Product 2\"},{\"url\":\"https://via.placeholder.com/800x1000\",\"alt\":\"Product 3\"}],\"layout\":\"splitLeft\",\"thumbnails\":\"rail\",\"thumbnailPosition\":\"left\",\"autoplay\":true,\"transition\":\"fade\"}'></div>"
     },
     {
-      "label": "Full-height hero with autoplay",
-      "html": "<div data-island=\"ProductHero\" data-props='{\"images\":[{\"url\":\"https://via.placeholder.com/800\"},{\"url\":\"https://via.placeholder.com/800\"}],\"layout\":\"fullHeight\",\"autoplay\":true,\"interval\":4000,\"transition\":\"kenBurns\",\"navigation\":\"floatingArrows\"}'></div>"
+      "label": "Full-height cinematic with kenBurns",
+      "html": "<div data-island=\"ProductHero\" data-props='{\"images\":[{\"url\":\"https://via.placeholder.com/1200x800\",\"alt\":\"Hero 1\"},{\"url\":\"https://via.placeholder.com/1200x800\",\"alt\":\"Hero 2\"}],\"layout\":\"fullHeight\",\"transition\":\"kenBurns\",\"autoplay\":true,\"thumbnails\":\"none\",\"navigation\":\"none\"}'></div>"
     },
     {
-      "label": "Hero with variant sync and dots",
-      "html": "<div data-island=\"ProductHero\" data-props='{\"images\":[{\"url\":\"https://via.placeholder.com/800\"}],\"listenForVariant\":true,\"thumbnails\":\"dots\",\"navigation\":\"none\"}'></div>"
-    },
-    {
-      "label": "Split-right with custom aspect ratio",
-      "html": "<div data-island=\"ProductHero\" data-props='{\"images\":[{\"url\":\"https://via.placeholder.com/800\"}],\"layout\":\"splitRight\",\"aspectRatio\":\"1:1\",\"maxHeight\":\"90vh\",\"transition\":\"slide\"}'></div>"
+      "label": "Hover-advance, no arrows",
+      "html": "<div data-island=\"ProductHero\" data-props='{\"images\":[{\"url\":\"https://via.placeholder.com/800\",\"alt\":\"A\"},{\"url\":\"https://via.placeholder.com/800\",\"alt\":\"B\"}],\"hoverAdvance\":true,\"thumbnails\":\"rail\",\"navigation\":\"none\"}'></div>"
     }
   ],
   "props": {
@@ -70,9 +65,9 @@
       "type": "enum",
       "required": false,
       "values": [
-        "bottom",
+        "left",
         "right",
-        "left"
+        "bottom"
       ],
       "default": "left"
     },
@@ -130,8 +125,11 @@
     },
     "showIndicators": {
       "type": "boolean",
-      "required": false,
-      "default": "false"
+      "required": false
+    },
+    "className": {
+      "type": "string",
+      "required": false
     }
   },
   "variants": [
@@ -142,14 +140,25 @@
   ],
   "css_vars": [
     "--lx-accent-color",
-    "--lx-border-color"
+    "--lx-border-color",
+    "--lx-hero-",
+    "--lx-hero-arrow-bg",
+    "--lx-hero-arrow-offset",
+    "--lx-hero-arrow-size",
+    "--lx-hero-bg",
+    "--lx-hero-radius",
+    "--lx-hero-thumb-gap",
+    "--lx-hero-thumb-radius",
+    "--lx-hero-thumb-size",
+    "--lx-hero-transition-duration"
   ],
   "parts": [
-    "main-image",
+    "dot",
     "media-pane",
     "nav-next",
     "nav-prev",
     "root",
+    "slide",
     "thumbnail",
     "thumbnail-rail"
   ],

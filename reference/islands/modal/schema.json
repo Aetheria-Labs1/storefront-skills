@@ -65,9 +65,9 @@
       "required": false,
       "values": [
         "fullscreen",
+        "right",
         "center",
-        "bottom",
-        "right"
+        "bottom"
       ],
       "default": "center"
     },

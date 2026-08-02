@@ -3,7 +3,7 @@
   "category": "engagement",
   "usage_hint": "Email signup form with validation, loading states, and success feedback \u2014 typically used in footer, modal, or dedicated newsletter sections.",
   "when_to_use": "For newsletter signups, discount code capture (pair with discount prop), product launch waitlists, or general lead capture. Works inline or nested in a Modal island for exit-intent popups.",
-  "when_not_to_use": "For complex multi-field forms (name, phone, etc.; use a custom form island). Don't use for transactional email collection at checkout (Shopify handles that). Avoid if you lack an email backend (endpoint prop required for real signups; test mode works without).",
+  "when_not_to_use": "For complex multi-field forms (name, phone, etc.; use a custom form island). Don't use for transactional email collection at checkout (Shopify handles that).",
   "defaultHydrate": "immediate",
   "combine_with": [
     "Modal (exit-intent/popup)",
@@ -12,7 +12,6 @@
     "SocialProofPopup"
   ],
   "anti_patterns": [
-    "No endpoint prop in production (form submits to void; always wire up endpoint for real signups)",
     "Promising a discount without delivering it (set discount prop but no follow-up email; damages trust)",
     "Using inside a Modal without setting showOnce:true on the modal (spams users every page load)",
     "Overly aggressive placement (multiple EmailCapture islands on one page; stick to one primary location)",
@@ -21,19 +20,19 @@
   "examples": [
     {
       "label": "Newsletter signup (footer, default variant)",
-      "html": "<div data-island=\"EmailCapture\" data-props='{\"placeholder\":\"Enter your email for updates\",\"buttonText\":\"Subscribe\",\"successMessage\":\"Thanks! Check your inbox to confirm.\",\"endpoint\":\"/api/newsletter/subscribe\",\"variant\":\"default\"}'></div>"
+      "html": "<div data-island=\"EmailCapture\" data-props='{\"placeholder\":\"Enter your email for updates\",\"buttonText\":\"Subscribe\",\"successMessage\":\"Thanks! Check your inbox to confirm.\",\"variant\":\"default\"}'></div>"
     },
     {
       "label": "Discount offer (compact, with discount message)",
-      "html": "<div data-island=\"EmailCapture\" data-props='{\"placeholder\":\"Your email\",\"buttonText\":\"Get 10% Off\",\"successMessage\":\"Code sent! Check your email.\",\"discount\":\"\ud83c\udf89 Get 10% off your first order\",\"endpoint\":\"/api/shopify/discount-signup\",\"variant\":\"compact\"}'></div>"
+      "html": "<div data-island=\"EmailCapture\" data-props='{\"placeholder\":\"Your email\",\"buttonText\":\"Get 10% Off\",\"successMessage\":\"Code sent! Check your email.\",\"discount\":\"\ud83c\udf89 Get 10% off your first order\",\"variant\":\"compact\"}'></div>"
     },
     {
       "label": "Product launch waitlist (default, custom copy)",
-      "html": "<div data-island=\"EmailCapture\" data-props='{\"placeholder\":\"Enter your email to get early access\",\"buttonText\":\"Join Waitlist\",\"successMessage\":\"You're on the list! We'll notify you at launch.\",\"endpoint\":\"/api/waitlist/join\",\"variant\":\"default\"}'></div>"
+      "html": "<div data-island=\"EmailCapture\" data-props='{\"placeholder\":\"Enter your email to get early access\",\"buttonText\":\"Join Waitlist\",\"successMessage\":\"You're on the list! We'll notify you at launch.\",\"variant\":\"default\"}'></div>"
     },
     {
       "label": "Exit-intent modal email capture (nested in Modal)",
-      "html": "<div data-island=\"Modal\" data-props='{\"trigger\":\"exit_intent\",\"triggerValue\":5000,\"position\":\"center\",\"size\":\"md\",\"headline\":\"Wait! Before you go...\",\"body\":\"Join our newsletter and get 15% off your first order.\",\"showOnce\":true,\"children\":[{\"island\":\"EmailCapture\",\"props\":{\"placeholder\":\"Your email address\",\"buttonText\":\"Claim My Discount\",\"discount\":\"15% OFF\",\"endpoint\":\"/api/modal-signup\",\"variant\":\"compact\"}}]}'></div>"
+      "html": "<div data-island=\"Modal\" data-props='{\"trigger\":\"exit_intent\",\"triggerValue\":5000,\"position\":\"center\",\"size\":\"md\",\"headline\":\"Wait! Before you go...\",\"body\":\"Join our newsletter and get 15% off your first order.\",\"showOnce\":true,\"children\":[{\"island\":\"EmailCapture\",\"props\":{\"placeholder\":\"Your email address\",\"buttonText\":\"Claim My Discount\",\"discount\":\"15% OFF\",\"variant\":\"compact\"}}]}'></div>"
     }
   ],
   "props": {
@@ -51,10 +50,6 @@
       "type": "string",
       "required": false,
       "default": "You're in! Check your inbox."
-    },
-    "endpoint": {
-      "type": "string",
-      "required": false
     },
     "discount": {
       "type": "string",

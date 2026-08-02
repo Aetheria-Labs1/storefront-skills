@@ -1,13 +1,13 @@
 {
   "name": "QuickAdd",
   "category": "commerce",
-  "usage_hint": "Lightweight add-to-cart button for collection pages. Shows single-variant instant add or multi-variant dropdown selector. Used inside ProductCard or standalone in grids.",
+  "usage_hint": "Lightweight add-to-cart button for collection pages. Shows single-variant instant add or multi-variant dropdown selector. Used inside ProductCarousel or standalone in grids.",
   "when_to_use": "Use on collection pages where space is limited and you need quick add-to-cart without navigating to PDP. Ideal for cards, grids, and list views.",
   "when_not_to_use": "Not for PDP main purchase UI (use BuyBox). Not for sticky follow-up CTAs (use StickyBar). Not when you need quantity selection or detailed variant info (use BuyBox).",
   "defaultHydrate": "interaction",
   "combine_with": [
     "CartDrawer (REQUIRED for cart feedback)",
-    "ProductCard (QuickAdd is commonly used inside ProductCard)"
+    "ProductCarousel (QuickAdd is commonly used inside product grids)"
   ],
   "anti_patterns": [
     "Using on PDP: wrong pattern; PDP should use BuyBox for full purchase experience",

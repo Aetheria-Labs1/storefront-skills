@@ -3,7 +3,7 @@
   "category": "commerce",
   "usage_hint": "Horizontal scrolling product carousel with arrow navigation and responsive grid columns. Displays ProductCard instances with staggered fade-up animations.",
   "when_to_use": "Use for \"Related Products\", \"You May Also Like\", \"Trending\", or \"Recently Viewed\" sections on PDP or landing pages. Provides quick product browsing without leaving the page.",
-  "when_not_to_use": "Not for static grids (use EditorialProductGrid). Not for full-width collections (use collection page with standard grid). Not for single product display (use ProductCard island directly).",
+  "when_not_to_use": "Not for full-width collections (use collection page with standard grid). Not for single product display (use BuyBox or QuickAdd).",
   "defaultHydrate": "immediate",
   "combine_with": [
     "CartDrawer (REQUIRED if showQuickAdd:true)",

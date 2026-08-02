@@ -1,21 +1,20 @@
 {
   "name": "StatCards",
-  "category": "social_proof",
-  "usage_hint": "Animated stat cards that count up on scroll. Renders percentage/number statistics with configurable layout (vertical/horizontal/inline) and visual style (glass/solid/gradient/headless). Ideal as overlay cards on hero sections or standalone social proof rows.",
-  "when_to_use": "For displaying key metrics (conversion rates, customer counts, satisfaction scores, revenue figures) that benefit from scroll-triggered count-up animation. Use on hero overlays, trust sections, or above-the-fold proof points where animated numbers draw attention and reinforce credibility.",
-  "when_not_to_use": "For static numbers that don't need animation (use plain HTML). For live/real-time data that updates continuously (use a dashboard widget). For single isolated stats (overkill — use inline text). For very long numbers (>7 digits) that are hard to read during animation.",
+  "category": "unknown",
+  "usage_hint": "Animated stat cards that count up on scroll. Renders percentage/number statistics with configurable layout and visual style. Perfect as overlay cards on hero sections or standalone social proof rows.",
+  "when_to_use": "For displaying key metrics (conversion rates, customer counts, satisfaction scores) that benefit from scroll-triggered count-up animation. Use on hero overlays, trust sections, or above-the-fold proof points.",
+  "when_not_to_use": "For static numbers that don't need animation (use plain HTML). For live/real-time data that updates continuously (use a dashboard widget). For single isolated stats (overkill \u2014 use inline text).",
   "defaultHydrate": "visible",
   "combine_with": [
-    "HeroMedia",
-    "TrustBadgeBar",
-    "SocialProofPopup"
+    "HeroMedia (overlay cards on hero)",
+    "TrustBadgeBar (adjacent social proof)",
+    "SocialProofPopup (complementary urgency)"
   ],
   "anti_patterns": [
-    "Too many items (>6): overwhelming and dilutes impact — pick top 3-4 metrics",
+    "Too many items (>6): overwhelming and dilutes impact \u2014 pick top 3-4 metrics",
     "Placing below fold where animation isn't seen on first load (defeats the purpose of count-up)",
     "Using with animate:false AND glass style (static glass cards look like broken UI without the reveal)",
-    "Decimal values with long suffixes (e.g. 99.87% satisfaction) — round for impact",
-    "Using gradient style on dark backgrounds without adjusting --lx-stat-gradient (gradient may be invisible)"
+    "Decimal values with long suffixes (e.g. 99.87% satisfaction) \u2014 round for impact"
   ],
   "examples": [
     {
@@ -39,55 +38,61 @@
     "items": {
       "type": "array",
       "required": true,
-      "items": {
-        "type": "object",
-        "shape": {
-          "value": "number (required)",
-          "suffix": "?string (e.g. '%', '+', 'k', 'M')",
-          "prefix": "?string (e.g. '$', '#')",
-          "label": "string (required)",
-          "sublabel": "?string"
-        }
+      "shape": {
+        "value": "number",
+        "suffix": "?string",
+        "prefix": "?string",
+        "label": "string",
+        "sublabel": "?string"
       }
     },
     "layout": {
       "type": "enum",
       "required": false,
-      "values": ["vertical", "horizontal", "inline"],
+      "values": [
+        "horizontal",
+        "vertical",
+        "inline"
+      ],
       "default": "horizontal"
     },
     "style": {
       "type": "enum",
       "required": false,
-      "values": ["glass", "solid", "gradient", "headless"],
+      "values": [
+        "headless",
+        "solid",
+        "glass",
+        "gradient"
+      ],
       "default": "glass"
     },
     "animate": {
       "type": "boolean",
       "required": false,
-      "default": true
+      "default": "true"
     },
     "duration": {
       "type": "number",
       "required": false,
-      "default": 2000
+      "default": "2000"
     },
     "threshold": {
       "type": "number",
       "required": false,
-      "default": 0.3
+      "default": "0.3"
     },
     "stagger": {
       "type": "number",
       "required": false,
-      "default": 200
+      "default": "200"
     }
   },
   "variants": [
-    "glass",
+    "headless",
     "solid",
-    "gradient",
-    "headless"
+    "glass",
+    "gradient"
   ],
   "css_vars": [
     "--lx-stat-bg",
@@ -111,5 +116,5 @@
     "sublabel",
     "suffix"
   ],
-  "example": "<div data-island=\"StatCards\" data-props='{\"items\":[{\"value\":98,\"suffix\":\"%\",\"label\":\"Satisfaction\"}]}'></div>"
+  "example": "<div data-island=\"StatCards\" data-props='{\"items\":[{\"value\":0,\"label\":\"example-label\"}]}'></div>"
 }

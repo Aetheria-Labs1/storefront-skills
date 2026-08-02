@@ -6,10 +6,10 @@
   "when_not_to_use": "When wishlist functionality isn't implemented in your store. For compare lists (different feature). When you need custom wishlist UI (use the primitive directly instead).",
   "defaultHydrate": "immediate",
   "combine_with": [
-    "ProductCard",
     "BuyBox",
-    "ProductImage",
-    "ProductGrid"
+    "ProductCarousel",
+    "ProductGallery",
+    "ProductHero"
   ],
   "anti_patterns": [
     "Passing both productId and variantId when only productId is needed (wishlist is product-level, not variant-level)",

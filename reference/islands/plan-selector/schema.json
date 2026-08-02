@@ -1,0 +1,114 @@
+{
+  "name": "PlanSelector",
+  "category": "commerce",
+  "usage_hint": "Subscribe-and-save plan cards \u2014 large radio cards (Autoship vs One-Time) with per-card price, compare-at, per-unit cost, benefit checklist, and live re-pricing from a tier selector. The dominant DTC PDP purchase pattern.",
+  "when_to_use": "On PDPs offering a subscription plan alongside one-time purchase, styled as prominent selectable cards. Emits subscription:changed so a BuyBox with listenForEvents picks up the selling plan and price with no extra wiring. Set listenForTiers:true to re-price cards live from a QuantityBreaks selector (emitEvents:true). Add data-island-container to the placement div to inject custom HTML (e.g. a QuantityBreaks island) inside the first plan card body.",
+  "when_not_to_use": "For a lightweight inline toggle use SubscriptionToggle. For quantity-only discounts without a subscription option use QuantityBreaks alone. Not a cart CTA \u2014 pair with BuyBox or ProceedToCart for add-to-cart.",
+  "defaultHydrate": "immediate",
+  "combine_with": [
+    "QuantityBreaks",
+    "BuyBox",
+    "CartDrawer",
+    "PaymentOptions"
+  ],
+  "anti_patterns": [
+    "Using together with SubscriptionToggle on the same page (both emit subscription:changed \u2014 they fight)",
+    "Omitting a BuyBox/ProceedToCart CTA (PlanSelector selects, it does not add to cart)",
+    "Styling selection via inline overrides (target [data-part=\"plan\"][data-selected=\"true\"] in CSS instead)",
+    "Doing price math in props at runtime (pass pre-formatted strings; tiers:changed payloads carry pre-computed subscribe prices)"
+  ],
+  "examples": [
+    {
+      "label": "Subscribe & Save vs one-time with benefits checklist",
+      "html": "<div data-island=\"PlanSelector\" data-props='{\"plans\":[{\"id\":\"subscribe\",\"title\":\"Subscribe &amp; Save 20%\",\"price\":\"$19.95\",\"compareAtPrice\":\"$24.95\",\"note\":\"Free shipping \u00b7 Cancel anytime\",\"sellingPlanId\":\"sp-monthly\",\"frequency\":\"monthly\",\"benefits\":[\"20% off every month\",\"Free shipping on all orders\",\"Pause or cancel anytime\",\"Exclusive subscriber offers\"]},{\"id\":\"one-time\",\"title\":\"One-time purchase\",\"price\":\"$24.95\",\"note\":\"No subscription\"}],\"defaultPlanId\":\"subscribe\"}'></div>"
+    },
+    {
+      "label": "Re-priced live by a QuantityBreaks tier selector",
+      "html": "<div data-island=\"PlanSelector\" data-props='{\"listenForTiers\":true,\"plans\":[{\"id\":\"subscribe\",\"title\":\"Autoship &amp; Save\",\"price\":\"$28.99\",\"compareAtPrice\":\"$36.50\",\"perUnit\":\"$0.67/Serving\",\"sellingPlanId\":\"sp-30d\",\"frequency\":\"every 30 days\",\"benefits\":[\"FREE Avg 2-Day Shipping Today\",\"Cancel, Pause Or Change At Anytime\"]},{\"id\":\"one-time\",\"title\":\"One-Time Purchase\",\"price\":\"$36.50\",\"perUnit\":\"$0.83/Serving\"}]}'></div>"
+    },
+    {
+      "label": "Container slot \u2014 tier selector injected inside the first plan card",
+      "html": "<div data-island=\"PlanSelector\" data-island-container data-props='{\"listenForTiers\":true,\"plans\":[{\"id\":\"subscribe\",\"title\":\"Autoship &amp; Save\",\"price\":\"$28.99\",\"compareAtPrice\":\"$36.50\",\"perUnit\":\"$0.67/Serving\",\"sellingPlanId\":\"sp-30d\",\"benefits\":[\"Cancel, Pause Or Change At Anytime\"]},{\"id\":\"one-time\",\"title\":\"One-Time Purchase\",\"price\":\"$36.50\",\"perUnit\":\"$0.83/Serving\"}]}'><div data-island=\"QuantityBreaks\" data-props='{\"variantId\":\"gid://shopify/ProductVariant/1\",\"variant\":\"columns\",\"showCta\":false,\"emitEvents\":true,\"tiers\":[{\"quantity\":1,\"eyebrow\":\"30 Days\",\"label\":\"1 Pack\",\"perUnit\":\"$28.99/pack\",\"price\":\"$28.99\",\"savings\":\"20% off\"}]}'></div></div>"
+    }
+  ],
+  "props": {
+    "plans": {
+      "type": "array",
+      "required": true,
+      "shape": {
+        "id": "string",
+        "title": "string",
+        "price": "string",
+        "compareAtPrice": "?string",
+        "perUnit": "?string",
+        "sellingPlanId": "?string",
+        "frequency": "?string",
+        "benefits": "?array<string>",
+        "note": "?string",
+        "badge": "?string",
+        "static": "?boolean"
+      }
+    },
+    "defaultPlanId": {
+      "type": "string",
+      "required": false
+    },
+    "variant": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "stacked",
+        "minimal",
+        "cards"
+      ],
+      "default": "cards"
+    },
+    "listenForTiers": {
+      "type": "boolean",
+      "required": false,
+      "default": "false"
+    },
+    "emitEvents": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
+    "showBenefits": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
+    "__innerHTML": {
+      "type": "string",
+      "required": false,
+      "default": ""
+    }
+  },
+  "variants": [
+    "stacked",
+    "minimal",
+    "cards"
+  ],
+  "css_vars": [
+    "--lx-accent-color",
+    "--lx-border-color",
+    "--lx-surface",
+    "--lx-text-color"
+  ],
+  "parts": [
+    "benefit-item",
+    "cadence-line",
+    "plan",
+    "plan-badge",
+    "plan-benefits",
+    "plan-compare",
+    "plan-note",
+    "plan-per-unit",
+    "plan-price",
+    "plan-radio",
+    "plan-slot",
+    "plan-title",
+    "root"
+  ],
+  "example": "<div data-island=\"PlanSelector\" data-props='{\"plans\":[{\"id\":\"example-id\",\"title\":\"example-title\",\"price\":\"example-price\"}]}'></div>"
+}
