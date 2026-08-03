@@ -11,13 +11,16 @@ Insert common section patterns into existing pages — one section at a time, ma
 
 ## Template Search (do this FIRST)
 
-Before building any section from scratch, search the template library:
+Before building any section from scratch, search the template library. Search returns metadata only (no markup) — fetch markup for the ids you pick with `get_section_template`:
 
 ```
 search_section_templates({ query: "video testimonial carousel with stars", section: "social-proof", mood: "warm" })
+get_section_template({ ids: ["<chosen id from results>"] })
 ```
 
 If a match is found → use the template's HTML/CSS/JS directly, swap placeholder content with brand-specific copy/images. Only generate custom HTML when no template matches.
+
+For a whole page instead of one section, check `search_page_kits` first — it returns curated groupings of existing templates (hero + buy-box + reviews + faq, etc.) that already share one palette/vertical, avoiding the mismatched-brand-imagery problem of hand-picking sections one at a time.
 
 ## Prerequisites
 
@@ -187,3 +190,5 @@ Key rules for islands:
 |---------|-------------|
 | `get_theme_json` | `get_brand_kit` (includes theme data) |
 | `provision_store` | Handle via Shopify OAuth onboarding, not MCP |
+| `extract_brand_design` / `capture_design_source` / `list_design_sources` | No replacement — design DNA extraction from a reference URL is not currently an MCP tool |
+| `search_section_templates` returning `html`/`css`/`js` inline | Search is metadata-only now; call `get_section_template({ ids })` for markup |

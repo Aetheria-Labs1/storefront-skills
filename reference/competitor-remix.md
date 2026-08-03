@@ -22,11 +22,7 @@ These three calls ALWAYS run first. No exceptions.
 
 ### Step 2 — Capture Reference Design
 
-```
-capture_design_source({ url })
-```
-
-Screenshots the page and extracts structural layout data.
+There is no MCP tool for automated screenshot + design-token extraction from a URL. Use whatever browser tooling is available in your environment (Playwright MCP's `browser_navigate` + `browser_take_screenshot`, or Codex's built-in browser) to view the reference URL directly.
 
 The agent should analyze the screenshot to extract the competitor's design DNA: color palette, typography, spacing rhythm, border radius, shadow depth, image treatment style, overall aesthetic (minimal, bold, editorial, etc.).
 
@@ -56,11 +52,12 @@ For each competitor section:
 
 ```
 search_section_templates({ query: "<competitor section description>", section: "<type>", industry: "<vertical>" })
+get_section_template({ ids: ["<chosen id from results>"] })
 search_design_library({ query: "<relevant product/category>" })
 list_products({ limit: 10 })
 ```
 
-For each competitor section, check if a pre-built template matches the pattern. Templates give you proven HTML/CSS/JS — just swap content.
+For each competitor section, check if a pre-built template matches the pattern (`search_section_templates` returns metadata only — call `get_section_template` for the ids you want). Templates give you proven HTML/CSS/JS — just swap content.
 
 Replace ALL competitor imagery with user's own assets. Generate new if needed:
 ```

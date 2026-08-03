@@ -6,15 +6,22 @@ Reference material for Phase -1 planning. Load when generating a page plan.
 
 ## Template Search (ALWAYS do this first)
 
-Before planning custom sections, search the template library for pre-built sections:
+Before planning custom sections, search the template library for pre-built sections. Search returns metadata only (no markup) — fetch it separately for the ids you pick:
 
 ```
-search_section_templates({ query: "<describe what you need>", section: "<type>", industry: "<vertical>", mood: "<mood>" })
+search_section_templates({ query: "<describe what you need>", section: "<type>", industry: "<vertical>", mood: "<mood>", page_type: "<page_type>" })
+get_section_template({ ids: ["<chosen id from results>"] })
+```
+
+For a whole page instead of one section at a time, search curated page-kits first — coherent multi-section groupings (hero + buy-box + reviews + faq, etc.) that already share one palette/vertical:
+
+```
+search_page_kits({ query: "<describe the page you need>", page_type: "<pdp|landing|homepage|collection>", industry: "<vertical>", mood: "<mood>" })
 ```
 
 Templates are conversion-proven, pixel-perfect, and faster than generating from scratch. Use them as the starting point — swap copy, images, and colors to match the brand kit.
 
-**Available filters:** section (hero, social-proof, trust, faq, etc.), industry (beauty, fashion, supplements, food, home, tech), mood (clinical, editorial, bold, clean, neutral, minimal, warm).
+**Available filters:** section (hero, social-proof, trust, faq, etc.), industry (beauty, fashion, supplements, food, home, tech), mood (bold, clean, warm, editorial, soft, minimal, clinical, rugged, dramatic, neutral, luxurious, calm, modern), page_type (pdp, landing, homepage, collection), islands (filter by islands_used).
 
 ---
 

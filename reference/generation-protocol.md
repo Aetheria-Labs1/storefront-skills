@@ -196,7 +196,10 @@ These tools appeared in older skill versions but are no longer available:
 |---------|-------------|
 | `get_theme_json` | `get_brand_kit` (includes theme data) |
 | `provision_store` | Handle via onboarding flow, not page generation |
-| `get_island_catalog` (tool) | Use resource `vibe://catalog/islands` instead |
+| `extract_brand_design` / `capture_design_source` / `list_design_sources` | No replacement — no MCP tool for reference-URL design extraction currently exists |
+| `search_section_templates` returning `html`/`css`/`js` inline | Search is metadata-only now; call `get_section_template({ ids })` for markup |
+
+`get_island_catalog` and `get_island_schema` remain active tools — use them for island discovery and schema lookups, alongside the `vibe://catalog/islands` resource.
 
 ---
 

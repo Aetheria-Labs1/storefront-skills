@@ -131,8 +131,8 @@ Then proceed to page generation using this analysis as context.
 
 ## Fallback (No @Browser Available)
 
-If @Browser is not available or not enabled:
-1. Use `extract_brand_design({ url })` from Lexsis AI MCP for server-side screenshot + token extraction
+If @Browser is not available or not enabled, there is currently no MCP tool for server-side screenshot + design-token extraction from a URL:
+1. Ask the user to paste a screenshot of the reference page, or describe its layout/palette directly
 2. Note limitations: no DOM access, no mobile viewport test, no interaction detection
 3. Suggest: "Enable the Browser plugin in Codex settings for deeper page analysis (DOM inspection, mobile testing, interaction detection)."
 
