@@ -1,6 +1,6 @@
 {
   "id": "hero-fullwidth",
-  "html": "<section class=\"w-full py-12 md:py-16 lg:py-20\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"relative aspect-video w-full rounded-xl overflow-hidden shadow-2xl\"><div data-island=\"VideoPlayer\" data-props='{\"src\":\"{{VIDEO_SRC}}\",\"poster\":\"{{POSTER_URL}}\",\"autoplay\":false,\"muted\":false,\"controls\":true,\"aspectRatio\":\"16/9\"}'></div><div class=\"absolute inset-0 flex items-center justify-center pointer-events-none\"><div class=\"w-20 h-20 bg-white/90 rounded-full flex items-center justify-center shadow-lg\"><svg class=\"w-8 h-8 text-gray-900 ml-1\" fill=\"currentColor\" viewBox=\"0 0 24 24\"><path d=\"M8 5v14l11-7z\"/></svg></div></div></div></div></section>",
+  "html": "<section class=\"w-full py-12 md:py-16 lg:py-20\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"relative aspect-video w-full rounded-xl overflow-hidden shadow-2xl\"><div data-island=\"VideoPlayer\" data-props='{\"src\":\"{{VIDEO_SRC}}\",\"poster\":\"{{POSTER_URL}}\",\"autoplay\":false,\"muted\":false,\"aspectRatio\":\"16/9\"}'></div><div class=\"absolute inset-0 flex items-center justify-center pointer-events-none\"><div class=\"w-20 h-20 bg-white/90 rounded-full flex items-center justify-center shadow-lg\"><svg class=\"w-8 h-8 text-gray-900 ml-1\" fill=\"currentColor\" viewBox=\"0 0 24 24\"><path d=\"M8 5v14l11-7z\"/></svg></div></div></div></div></section>",
   "css": "",
   "js": ""
 }

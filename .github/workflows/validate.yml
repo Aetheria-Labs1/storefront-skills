@@ -34,5 +34,8 @@ jobs:
       - name: Validate skill frontmatter
         run: python3 scripts/validate-frontmatter.py
 
+      - name: Validate island layout props
+        run: python3 scripts/validate-island-layouts.py
+
       - name: Check cross-platform sync
         run: python3 scripts/check-sync.py

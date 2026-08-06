@@ -1,1 +1,6 @@
-{"id":"payment-methods","html":"<div class=\"border-t pt-3 mt-3\" style=\"border-color: var(--lx-border-color)\"><div data-island=\"PaymentOptions\" data-props='{\"variant\":\"expandable\"}'></div></div>","css":"","js":""}
+{
+  "id": "payment-methods",
+  "html": "<div class=\"border-t pt-3 mt-3\" style=\"border-color: var(--lx-border-color)\"><div data-island=\"PaymentOptions\" data-props='{\"variant\":\"expandable\",\"price\":{{PRICE_CENTS}}}'></div></div>",
+  "css": "",
+  "js": ""
+}

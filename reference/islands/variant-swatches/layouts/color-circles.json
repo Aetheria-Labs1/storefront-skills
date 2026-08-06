@@ -1,6 +1,6 @@
 {
   "id": "swatches-color-circles",
-  "html": "<div class=\"space-y-3\"><label class=\"text-sm font-medium\" style=\"color: var(--lx-text-color)\">Color: <span class=\"font-normal\" style=\"color: var(--lx-text-muted)\">{{SELECTED_COLOR}}</span></label><div data-island=\"VariantSwatches\" data-props='{\"variants\":{{VARIANTS_ARRAY}},\"values\":{{VALUES_ARRAY}},\"layout\":\"circles\",\"size\":\"md\",\"showLabel\":true,\"showStock\":true}'></div></div>",
+  "html": "<div class=\"space-y-3\"><label class=\"text-sm font-medium\" style=\"color: var(--lx-text-color)\">Color: <span class=\"font-normal\" style=\"color: var(--lx-text-muted)\">{{SELECTED_COLOR}}</span></label><div data-island=\"VariantSwatches\" data-props='{\"variants\":{{VARIANTS_ARRAY}},\"values\":{{VALUES_ARRAY}},\"type\":\"color\"}'></div></div>",
   "css": "",
   "js": ""
 }
