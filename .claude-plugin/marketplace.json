@@ -9,53 +9,13 @@
   "plugins": [
     {
       "name": "lexsis-storefront-skills",
-      "description": "Core skills for AI-powered Shopify page generation — 28 skills, 7 commands, 2 agents, auto MCP config. PDP, landing pages, homepages, collections, editorials, bundles, A/B tests, and more.",
-      "author": { "name": "Aetheria Labs" },
+      "description": "AI storefront generation for Shopify \u2014 13 skills (plan, asset-prep, generate, optimize, remix, experiment, cart, publish + more), 2 agents, 49 island schemas, full reference corpus.",
+      "author": {
+        "name": "Aetheria Labs"
+      },
       "source": "./plugins/lexsis-storefront-skills",
       "category": "development",
       "homepage": "https://trylexsis.com"
-    },
-    {
-      "name": "lexsis-beauty-skills",
-      "description": "Beauty/skincare industry expertise — ingredient displays, before/after patterns, shade finders, routine builders. Install lexsis-storefront-skills first.",
-      "author": { "name": "Aetheria Labs" },
-      "source": "./plugins/lexsis-beauty-skills",
-      "category": "development"
-    },
-    {
-      "name": "lexsis-supplements-skills",
-      "description": "Supplement/wellness industry expertise — clinical data layouts, dosage info, subscription patterns, trust signals. Install lexsis-storefront-skills first.",
-      "author": { "name": "Aetheria Labs" },
-      "source": "./plugins/lexsis-supplements-skills",
-      "category": "development"
-    },
-    {
-      "name": "lexsis-fashion-skills",
-      "description": "Fashion/apparel industry expertise — size guides, lookbooks, model specs, style pairing. Install lexsis-storefront-skills first.",
-      "author": { "name": "Aetheria Labs" },
-      "source": "./plugins/lexsis-fashion-skills",
-      "category": "development"
-    },
-    {
-      "name": "lexsis-food-skills",
-      "description": "Food/beverage DTC industry expertise — flavor profiles, subscription boxes, recipe integration. Install lexsis-storefront-skills first.",
-      "author": { "name": "Aetheria Labs" },
-      "source": "./plugins/lexsis-food-skills",
-      "category": "development"
-    },
-    {
-      "name": "lexsis-luxury-skills",
-      "description": "Luxury/premium brand expertise — editorial restraint, heritage storytelling, exclusivity. Install lexsis-storefront-skills first.",
-      "author": { "name": "Aetheria Labs" },
-      "source": "./plugins/lexsis-luxury-skills",
-      "category": "development"
-    },
-    {
-      "name": "lexsis-home-skills",
-      "description": "Home goods/decor industry expertise — room scenes, measurement guides, material specs. Install lexsis-storefront-skills first.",
-      "author": { "name": "Aetheria Labs" },
-      "source": "./plugins/lexsis-home-skills",
-      "category": "development"
     }
   ]
 }

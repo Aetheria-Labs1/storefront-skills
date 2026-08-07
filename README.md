@@ -1,6 +1,14 @@
 # Lexsis AI — Storefront Skills
 
-> Native AI workflows for building high-converting Shopify storefronts with Claude Code and OpenAI Codex.
+> Native AI workflows for building high-converting Shopify storefronts. One canonical skill set ([Agent Skills standard](https://agentskills.io)), consumable from Claude Code, OpenAI Codex, Cursor, and custom GPTs.
+
+## The one-line install
+
+```bash
+npx skills add Aetheria-Labs1/storefront-skills
+```
+
+[skills.sh](https://skills.sh) symlinks the canonical `skills/` into whichever agents you use. Or install per-platform:
 
 ## Install (Claude Code)
 
@@ -8,193 +16,116 @@
 # 1. Register marketplace (one-time)
 /plugin marketplace add lexsis https://github.com/Aetheria-Labs1/storefront-skills
 
-# 2. Install (includes all verticals, workflows, and MCP config)
+# 2. Install
 /plugin install lexsis-storefront-skills@lexsis
 ```
 
-Done. Skills auto-load, MCP auto-configures, commands available immediately.
+Skills auto-load, the MCP auto-configures, and every skill is invocable as `/skill-name`.
 
 ## Install (OpenAI Codex)
 
-Run these commands in your terminal:
-
 ```bash
-# 1. Register the Lexsis marketplace (one-time)
 codex plugin marketplace add Aetheria-Labs1/storefront-skills --ref main
-
-# 2. Install the storefront plugin
 codex plugin add lexsis-storefront-skills@lexsis-storefront
 ```
 
-Start a new Codex task after installation. Complete the `lexsis-ai` OAuth prompt when Codex requests access to the bundled MCP server.
+Or zero-install: clone the repo anywhere inside your project — Codex discovers `.agents/skills/` automatically. Invoke with `$skill-name` (`$generate`, `$cart`) or let Codex select from your request. Complete the `lexsis-ai` OAuth prompt when Codex requests MCP access.
 
-Codex selects skills automatically from your request. You can also invoke any workflow directly with `$skill-name`, for example `$generate`, `$browser-analyze`, or `$cart`. Plugin-defined slash commands such as `/generate` are Claude-only.
+## Install (Cursor)
 
-Verify or update the installation:
+Nothing to copy. Cursor reads the Agent Skills standard from `.agents/skills/` natively — clone the repo (or use `npx skills add`) and the skills appear. The old `cursor/rules/*.mdc` file is gone as of v5.0.0.
 
-```bash
-# Show installed plugin and version
-codex plugin list
-
-# Fetch marketplace updates, then reinstall the latest plugin version
-codex plugin marketplace upgrade lexsis-storefront
-codex plugin add lexsis-storefront-skills@lexsis-storefront
-```
-
-Codex Browser is optional. URL analysis and draft QA use it when available; otherwise skills fall back to Lexsis server-side design extraction.
-
-## Install (Other Platforms)
-
-<details>
-<summary><strong>Cursor</strong></summary>
-
-```bash
-git clone https://github.com/Aetheria-Labs1/storefront-skills.git
-mkdir -p .cursor/rules
-cp -r storefront-skills/cursor/rules/* .cursor/rules/
-```
-</details>
-
-<details>
-<summary><strong>Custom GPT</strong></summary>
+## Install (Custom GPT)
 
 1. Copy `gpt/instructions.md` → paste into GPT Instructions
-2. Upload `gpt/knowledge.md` as Knowledge file
-</details>
+2. Upload `gpt/knowledge.md` as a Knowledge file
+
+Both files are **generated** from the canonical skills by `scripts/build-distributions.py` — never edit them by hand.
 
 ## What's Included
 
-One plugin — everything included:
-- 10 Claude commands + 12 Codex skills + 2 agents
-- 49 reference docs (CRO patterns, verticals, workflows)
-- 47 island schemas
-- Vertical expertise built-in: beauty, supplements, fashion, food, luxury, home
-- Traffic source patterns: Meta, Google, TikTok
+- **13 skills** — one directory per workflow under `skills/`, spec-compliant SKILL.md each
+- **2 agents** (cro-analyzer, page-builder) for Claude Code
+- **50 reference docs** (CRO patterns, verticals, traffic sources, workflows) under `skills/storefront-engine/references/`
+- **49 island schemas** with layouts under `references/islands/`
+- Vertical expertise: beauty, supplements, fashion, food, luxury, home
+- Traffic-source patterns: Meta, Google, TikTok
 
-## Codex Skills
+## Skills
 
-Codex supports skills rather than plugin-defined slash commands. Use natural language for automatic skill selection, or select one directly with `$skill-name`.
+Invoke as `/name` (Claude Code) or `$name` (Codex); most also trigger automatically from a matching request.
 
-| Skill | What It Does |
+| Skill | What it does |
 |-------|--------------|
-| `$storefront-engine` | Route broad, multi-step storefront requests to the right workflow |
-| `$browser-analyze` | Audit a storefront URL using Codex Browser when available |
-| `$analyze-page` | Turn page evidence into a reproducible design and CRO brief |
-| `$cart` | Configure Cart V2 composition, upsells, and behavior |
-| `$experiment` | Set up A/B tests and personalization variants |
-| `$extract-island` | Convert a page component into a reusable island layout |
-| `$generate` | Generate a Shopify page with planning, validation, and draft-first publishing |
-| `$optimize` | Improve an existing page for conversion |
-| `$plan-page` | Create a page blueprint before generation |
-| `$publish` | Validate, preview, and publish with explicit live approval |
-| `$remix` | Adapt competitor or ad patterns to a brand |
-| `$search-docs` | Search Lexsis workflows, island schemas, and reference material |
-
-Page-type and specialist workflows such as `generate-pdp.md`, `generate-homepage.md`, `ab-test-variant.md`, and `cart-v2-management.md` remain shared references used by these skills. They are not duplicated as standalone Codex skills.
+| `plan-page` | Discover requirements, design section layout, get plan approval |
+| `asset-prep` | Source images/video — brand library first, then generation, import, external MCPs |
+| `generate` | Generate a Shopify page — auto-detects type (PDP, landing, collection, homepage, editorial, listicle, bundle) |
+| `optimize` | CRO-optimize an existing page — CTAs, trust signals, mobile UX |
+| `remix` | Rebuild a competitor page or ad creative adapted to your brand |
+| `experiment` | A/B tests, personalization variants, results monitoring |
+| `cart` | Cart V2 drawer — upsells, progress bars, conditional rules |
+| `publish` | QA, draft preview, and go-live (only after explicit approval) |
+| `analyze-page` | Turn a reference URL into a reproducible design + CRO brief |
+| `browser-analyze` | Deep URL analysis via a browser tool when available |
+| `search-docs` | Search Lexsis docs — islands, workflows, troubleshooting |
+| `storefront-engine` | Orchestrator for broad multi-step requests; owns the reference corpus |
+| `extract-island` | Maintainer tool — convert a live component into a reusable island layout (explicit invocation only) |
 
 ## Workflow Sequence
 
-The 5-step pipeline — each command feeds into the next:
+Every page moves through one contiguous sequence — **Phase 1 Plan → Phase 2 Context → Phase 3 Assets → Phase 4 Build → Phase 5 Ship**:
 
 ```
-/plan-page → /asset-prep → /generate → /audit-cro → /optimize
+/plan-page → /asset-prep → /generate → /optimize
 ```
 
-| Step | What it does | Output |
-|------|-------------|--------|
-| `/plan-page` | Discover requirements, design section layout | Approved page plan |
-| `/asset-prep` | Source images/video (library + AI + external MCPs) | Asset manifest |
-| `/generate` | Generate HTML + wire islands + publish draft | Preview URL |
-| `/audit-cro` | 12-point CRO scoring via Playwright | CRO blueprint |
-| `/optimize` | Apply CRO fixes section-by-section | Updated page |
+| Step | Output |
+|------|--------|
+| `/plan-page` | Approved page plan (Phase 1 — mandatory gate) |
+| `/asset-prep` | Asset manifest |
+| `/generate` | Draft page + preview URL (Phases 2-5) |
+| `/optimize` | CRO fixes applied section-by-section |
 
-Each step is independent — start anywhere. `/plan-page` → `/generate` skips asset-prep if the brand library has everything. `/audit-cro` works on any existing page without prior steps.
-
-## Claude Code Commands (after installing core)
-
-### Core Pipeline
-
-| Command | What It Does |
-|---------|-------------|
-| `/plan-page` | Plan a page — gather requirements, design section layout, get approval |
-| `/asset-prep` | Source assets — library search + AI generation + external MCPs (video, research) |
-| `/generate` | Generate a Shopify page — auto-detects type (PDP, landing, collection, homepage, editorial, listicle, bundle) |
-| `/optimize` | CRO-optimize an existing page — fix CTAs, trust signals, mobile UX |
-
-### Specialist
-
-| Command | What It Does |
-|---------|-------------|
-| `/remix` | Rebuild a competitor page or ad creative adapted to your brand |
-| `/experiment` | Set up A/B tests, personalization variants, monitor results |
-| `/cart` | Configure Cart V2 drawer — upsells, progress bars, conditional rules |
-| `/publish` | QA check and publish a page to Shopify |
-| `/analyze-page` | Screenshot a URL and extract design tokens + CRO patterns |
-| `/search-docs` | Search documentation — islands, skills, conversion patterns, workflows |
+Each step is independent — start anywhere. `/plan-page` → `/generate` skips asset-prep when the brand library has everything.
 
 ## MCP Server
 
-Core plugin auto-configures the Lexsis AI MCP server.
-
-- **Codex:** complete OAuth when prompted. No manual MCP configuration is required.
-- **Claude Code:** get an API key at [app.trylexsis.com/settings/api-key](https://app.trylexsis.com/settings/api-key), then add it to the `lexsis-ai` MCP server's `Authorization` header in Claude Code settings.
-
-## Visual Verification
-
-Skills instruct Claude to screenshot pages after generation. Install [Playwright MCP](https://playwright.dev/docs/getting-started-mcp) for automatic visual QA:
-
-```bash
-/plugin install playwright@claude-plugins-official
-```
-
-Codex workflows use Codex Browser when enabled. Browser is optional; URL analysis falls back to Lexsis server-side extraction when it is unavailable.
-
-## How It Works
-
-```
-Skills (this repo)              → teaches AI how to build pages
-MCP Server (mcp.trylexsis.com) → provides tools (generate, publish, analyze, assets)
-Playwright (optional)          → visual verification via screenshots
-External MCPs (optional)       → video generation, image research, stock photography
-```
+- **Codex:** complete OAuth when prompted; no manual config.
+- **Claude Code:** get an API key at [app.trylexsis.com/settings/api-key](https://app.trylexsis.com/settings/api-key), then add it to the `lexsis-ai` MCP server's `Authorization` header.
 
 ## External MCPs (Optional)
 
-The `/asset-prep` workflow detects and uses these MCPs when installed:
+`asset-prep` detects and uses these when installed — none required:
 
-| MCP | What it adds | Install |
-|-----|-------------|---------|
-| **Playwright** | Visual QA, page screenshots, CRO audit | `/plugin install playwright@claude-plugins-official` |
-| **Exa** | Image research, mood boards, competitor screenshots | Exa MCP plugin |
-| **HiggsField** | AI video generation for hero sections | HiggsField MCP |
-| **OpenArt** | Specialized AI illustration beyond built-in styles | OpenArt MCP |
-
-None are required. The core workflow (plan → generate → publish) works with just the Lexsis AI MCP. External MCPs add richer asset sourcing for `/asset-prep`.
+| MCP | Adds |
+|-----|------|
+| **Playwright** | Visual QA, screenshots, CRO audit |
+| **Exa** | Image research, mood boards, competitor screenshots |
+| **HiggsField** | AI video generation for hero sections |
+| **OpenArt** | Specialized AI illustration |
 
 ## Repo Structure
 
 ```
 storefront-skills/
-├── plugins/                         ← Claude Code marketplace plugins
-│   ├── lexsis-storefront-skills/    ← Core (required)
-│   ├── lexsis-beauty-skills/        ← Vertical add-ons
-│   ├── lexsis-supplements-skills/
-│   ├── lexsis-fashion-skills/
-│   ├── lexsis-food-skills/
-│   ├── lexsis-home-skills/
-│   └── lexsis-luxury-skills/
-├── codex/                           ← OpenAI Codex format
-├── cursor/                          ← Cursor rules
-└── gpt/                             ← Custom GPT knowledge
+├── skills/                          ← CANONICAL — one dir per skill (Agent Skills spec)
+│   └── storefront-engine/
+│       └── references/              ← shared reference corpus + island schemas
+├── .agents/skills → skills/         ← Codex + Cursor native discovery (symlink)
+├── plugins/lexsis-storefront-skills/← Claude Code plugin (skills → symlink, agents, MCP config)
+├── codex/                           ← Codex plugin manifest + MCP config
+├── gpt/                             ← GENERATED — custom GPT instructions + knowledge
+├── cursor/                          ← pointer README (Cursor needs no copies)
+└── scripts/build-distributions.py   ← regenerates gpt/, validates everything (CI gate)
 ```
+
+One source of truth: edit `skills/`, run `python3 scripts/build-distributions.py`, commit. CI fails on drift.
+
+> **Windows note:** the fan-out uses symlinks — clone with `git config core.symlinks true`.
 
 ## Contributing
 
-We welcome contributions! See [CONTRIBUTING.md](./CONTRIBUTING.md) for:
-- How to add a new vertical plugin
-- How to add a core skill or command
-- Skill file structure and conventions
-- PR process and local testing
+See [CONTRIBUTING.md](./CONTRIBUTING.md). Short version: edit canonical `skills/` only; the build script and CI keep every distribution in sync. Skill frontmatter must pass the [Agent Skills spec](https://agentskills.io/specification) (name = directory name, ≤64 chars; description ≤500 chars).
 
 ## License
 

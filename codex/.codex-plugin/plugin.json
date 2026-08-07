@@ -1,7 +1,7 @@
 {
   "name": "lexsis-storefront-skills",
-  "version": "4.2.0",
-  "description": "AI-powered Shopify storefront builder with 12 Codex skills for generation, CRO, experimentation, and publishing.",
+  "version": "5.0.0",
+  "description": "AI-powered Shopify storefront builder \u2014 13 skills for planning, asset prep, generation, CRO, experimentation, and publishing.",
   "author": {
     "name": "Aetheria Labs",
     "email": "hello@trylexsis.com"

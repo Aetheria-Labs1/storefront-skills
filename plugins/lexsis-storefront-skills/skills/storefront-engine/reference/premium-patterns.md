@@ -1,1 +1,0 @@
-../../../../../reference/premium-patterns.md
