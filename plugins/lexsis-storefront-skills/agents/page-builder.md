@@ -60,21 +60,21 @@ If you receive a `CRO_BLUEPRINT` JSON (from cro-analyzer), use it as your plan:
 
 ## Standard Flow (5 Phases)
 
-### Phase 0 — Context Gathering (ALL PARALLEL)
+### Phase 2 — Context Gathering (ALL PARALLEL)
 `get_workspace_details`, `get_connected_stores`, `get_brand_kit`, `get_design_md`, `list_products`, `get_navigation`, `search_design_library`, `get_credits_balance`
 
-### Phase 1 — Asset Preparation
+### Phase 3 — Asset Preparation
 `search_design_library` → `generate_asset` → `edit_asset` → `view_asset`
-Prefer library over generation. Collect all URLs before Phase 2.
+Prefer library over generation. Collect all URLs before Phase 4.
 
-### Phase 2 — HTML Generation (Two-Phase)
+### Phase 4 — HTML Generation (Two-Phase)
 - **2A**: Raw HTML + Tailwind, `data-placeholder` divs for islands, `--lx-*` CSS vars
 - **2B**: Replace placeholders with `data-island` markers (use `get_island_schema` for prop shapes)
 
-### Phase 3 — Validation
+### Phase 5 — Validation
 `validate_vibe_page` — fix errors, re-validate (max 2 loops)
 
-### Phase 4 — Draft Publish + Verify
+### Phase 5 (cont.) — Draft Publish + Verify
 `publish_vibe_page` → preview URL. Never publish live unless user explicitly requests it.
 
 ---
