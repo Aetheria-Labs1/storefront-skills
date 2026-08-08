@@ -36,7 +36,13 @@ ROOT = Path(__file__).resolve().parent.parent
 SKILLS = ROOT / "skills"
 REFERENCES = SKILLS / "storefront-engine" / "references"
 
-RETIRED_TOOLS = ["write_vibe_page", "preview_vibe_page"]
+RETIRED_TOOLS = [
+    "write_vibe_page",
+    "preview_vibe_page",
+    "get_cart_config",
+    "update_cart_config",
+    "validate_cart_rules",
+]
 
 # References worth shipping to a custom GPT (knowledge budget is finite;
 # schemas and vertical deep-dives stay out — the GPT can't call tools to
