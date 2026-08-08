@@ -155,23 +155,25 @@ Decision tree per image:
 
 Collect all image URLs before Phase 4.
 
-### Phase 4: Build (Agent writes VibePage)
+### Phase 4: Build (Agent writes source-format HTML)
 
-1. Set `theme_css` from brand tokens (map flat columns → CSS vars)
-2. Write each section's HTML using Tailwind classes + CSS vars
-3. Place island markers where interactive commerce is needed
+1. Generate `theme_css` with `compile_theme` (brand tokens → WCAG-checked CSS vars)
+2. Write each section as plain HTML (Tailwind classes + CSS vars), delimited by `<!-- section: id -->`
+3. Place `<lx-island name="X">` elements (props as a JSON `<script>` child) where interactive commerce is needed — see `references/source-format.md`
 4. Embed asset URLs directly in `<img src="...">` and `background-image`
-5. Add section `css` only for custom keyframes/animations
-6. Add section `js` only for scroll-triggered reveals (IntersectionObserver)
+5. Add a section `<style>` block only for custom keyframes/animations (or use `data-behavior="gsap-*"` presets)
+6. Add a section `<script>` block only for custom scroll/DOM work
 
-Sub-steps when writing HTML (see `references/generation-protocol.md`): **4a — raw HTML + Tailwind** (structure and copy first), then **4b — island mapping** (swap interactive placeholders for `data-island` markers with schema-valid `data-props`).
+Sub-steps (see `references/generation-protocol.md`): **4a — draft source HTML** (structure, copy, islands in place), then **4b — compile & fix** (`compile_page_source` reports issues; fix and re-compile).
 
 ### Phase 5: Validate + Ship ❌ SEQUENTIAL
 
 ```
-validate_vibe_page({ page })                → { valid, errors, warnings }; fix and re-validate
-publish_vibe_page({ slug, page, publish: false })  → draft + preview URL
+compile_page_source({ source, head, theme_css, scripts })  → compiled page + issues; fix and re-compile
+create_page_from_source({ source, head, theme_css, scripts, slug, publish: false })  → draft + preview URL
 ```
+
+(Legacy JSON path — `validate_vibe_page` / `publish_vibe_page` — still works for pages authored as VibePage JSON; edit those with `update_page_section` or migrate via `update_section_from_source`.)
 
 Report the preview URL. Call `publish_page` ONLY after the user explicitly says to go live.
 

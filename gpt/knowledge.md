@@ -1213,7 +1213,7 @@ Generate a complete Shopify storefront page — auto-detects page type (landing,
 
 Generate high-quality Shopify storefront pages using the Lexsis AI MCP tools.
 
-> **Prerequisites**: Read `vibe://docs/generation-guide` and `vibe://skills/generation-protocol` first — they define the VibePage schema, CSS variable system, island integration, and visual verification step.
+> **Prerequisites**: Read `vibe://docs/generation-guide`, `vibe://skills/generation-protocol`, and `vibe://skills/source-format` first — they define the source authoring format, CSS variable system, island integration, and visual verification step.
 
 ## Generation Flow (Two-Phase)
 
@@ -1241,39 +1241,29 @@ Decision tree per section:
 
 Budget: 3-5 generated assets per page max. Existing assets = free.
 
-### Phase 4a — Raw HTML Generation (No Islands)
+### Phase 4a — Draft Source HTML
 
-Generate complete VibePage JSON with pure HTML + Tailwind CSS:
-- Place `data-placeholder="IslandName"` divs where islands will go
-- Focus entirely on visual design: layout, typography, color, spacing, imagery
-- Apply brand CSS variables in `theme_css`
-- Use Google Fonts URLs in `head.fonts`
-- Write real copy (never Lorem Ipsum)
+Author the page in **source format** (see `vibe://skills/source-format`) — plain HTML, never JSON-escaped:
+- Sections delimited by `<!-- section: id -->` comments
+- Islands as `<lx-island name="BuyBox"><script type="application/json">{...props}</script></lx-island>` — use `vibe://schema/island/{name}` for exact prop shapes
+- Section CSS in a `<style>` block, section JS in a `<script>` block per section
+- Generate `theme_css` with `compile_theme` (WCAG-checked, from brand kit colors)
+- Focus on visual design: layout, typography, color, spacing, imagery; animations via `data-behavior="gsap-*"` presets or shared keyframes
+- Write real copy naturally (apostrophes/quotes are fine — never escape anything; never Lorem Ipsum)
 - Use asset URLs from Phase 3 in `<img>` tags
 
-This renders instantly in any browser — iterate on design here.
-
-### Phase 4b — Island Mapping
-
-Replace placeholders with actual islands:
-```html
-<div data-island="BuyBox" data-props='{"product":{"title":"...","price":"$29.99","variants":[{"id":"v1","title":"Default","available":true}]}}'></div>
-```
-
-Use `vibe://schema/island/{name}` resource to get exact prop shapes for each island.
-
-### Phase 5 — Validate
+### Phase 4b — Compile & Fix
 
 ```
-validate_vibe_page(page_json)
+compile_page_source(source, head, theme_css, scripts)   → compiled page + issues
 ```
 
-Fix any errors. Common issues: duplicate section IDs, invalid island names, missing required props, inline `<style>`/`<script>` tags.
+Fix reported issues in the source and re-compile. Common issues: duplicate section IDs, invalid island names, malformed props JSON, missing headless hooks, external scripts in section HTML.
 
-### Phase 5 (cont.) — Publish + Visual Verify
+### Phase 5 — Publish + Visual Verify
 
 ```
-publish_vibe_page(slug, page, archetype, publish=false)  → preview_url
+create_page_from_source(source, head, theme_css, scripts, slug, archetype, publish=false)  → preview_url
 ```
 
 **Visual verification is REQUIRED before marking complete:**
@@ -1292,7 +1282,7 @@ publish_vibe_page(slug, page, archetype, publish=false)  → preview_url
 - [ ] Islands hydrated (BuyBox shows product data, not empty div)
 - [ ] CTA contrast ≥ 4.5:1
 
-If issues → `update_page_section` → re-screenshot.
+If issues → `update_section_from_source` (one section per call) → re-screenshot.
 When satisfied, return the draft preview. Call `publish_page(page_id)` only after the user explicitly approves a live publish.
 
 ## Page Type Templates
@@ -2254,23 +2244,25 @@ Decision tree per image:
 
 Collect all image URLs before Phase 4.
 
-### Phase 4: Build (Agent writes VibePage)
+### Phase 4: Build (Agent writes source-format HTML)
 
-1. Set `theme_css` from brand tokens (map flat columns → CSS vars)
-2. Write each section's HTML using Tailwind classes + CSS vars
-3. Place island markers where interactive commerce is needed
+1. Generate `theme_css` with `compile_theme` (brand tokens → WCAG-checked CSS vars)
+2. Write each section as plain HTML (Tailwind classes + CSS vars), delimited by `<!-- section: id -->`
+3. Place `<lx-island name="X">` elements (props as a JSON `<script>` child) where interactive commerce is needed — see `references/source-format.md`
 4. Embed asset URLs directly in `<img src="...">` and `background-image`
-5. Add section `css` only for custom keyframes/animations
-6. Add section `js` only for scroll-triggered reveals (IntersectionObserver)
+5. Add a section `<style>` block only for custom keyframes/animations (or use `data-behavior="gsap-*"` presets)
+6. Add a section `<script>` block only for custom scroll/DOM work
 
-Sub-steps when writing HTML (see `references/generation-protocol.md`): **4a — raw HTML + Tailwind** (structure and copy first), then **4b — island mapping** (swap interactive placeholders for `data-island` markers with schema-valid `data-props`).
+Sub-steps (see `references/generation-protocol.md`): **4a — draft source HTML** (structure, copy, islands in place), then **4b — compile & fix** (`compile_page_source` reports issues; fix and re-compile).
 
 ### Phase 5: Validate + Ship ❌ SEQUENTIAL
 
 ```
-validate_vibe_page({ page })                → { valid, errors, warnings }; fix and re-validate
-publish_vibe_page({ slug, page, publish: false })  → draft + preview URL
+compile_page_source({ source, head, theme_css, scripts })  → compiled page + issues; fix and re-compile
+create_page_from_source({ source, head, theme_css, scripts, slug, publish: false })  → draft + preview URL
 ```
+
+(Legacy JSON path — `validate_vibe_page` / `publish_vibe_page` — still works for pages authored as VibePage JSON; edit those with `update_page_section` or migrate via `update_section_from_source`.)
 
 Report the preview URL. Call `publish_page` ONLY after the user explicitly says to go live.
 
@@ -2523,51 +2515,49 @@ Use descriptive kebab-case: `hero`, `product-gallery`, `social-proof`, `ingredie
 3. get_brand_kit              → logo, fonts, colors, voice, border radius
 4. get_design_md              → brand brief, design philosophy, don'ts
 5. [page-type specific tools] → products, navigation, ad creatives, etc.
-6. Generate page (two-phase)
-7. validate_vibe_page         → structural/safety check
-8. publish_vibe_page          → returns preview_url
-9. Visual verification        → screenshot and verify
+6. compile_theme              → WCAG-checked --lx-* theme_css from brand colors
+7. Generate page (two-phase, SOURCE FORMAT — see source-format.md)
+8. compile_page_source        → dry-run compile + validation issues
+9. create_page_from_source    → persists page, returns preview_url
+10. Visual verification       → screenshot and verify
 ```
 
 Steps 1-4 are ALWAYS run first. They establish context. Steps 5+ vary by skill.
+
+> **Authoring format**: write pages in the HTML-native **source format** (`source-format.md`) — plain HTML sections delimited by `<!-- section: id -->`, islands as `<lx-island name>` with a JSON `<script>` child. The compiler produces VibePage JSON and does all escaping. The legacy JSON tools (`validate_vibe_page`, `publish_vibe_page`, `update_page_section`) still work for editing pages that were authored as JSON.
 
 ---
 
 ## Two-Phase Generation (Fast Iteration Pattern)
 
-### Phase 4a — Raw HTML + Tailwind (No Islands)
+### Phase 4a — Draft Source HTML
 
-Generate the FULL page as plain HTML + Tailwind CSS first:
+Generate the FULL page as source-format HTML first:
+- Plain HTML + Tailwind, sections delimited by `<!-- section: id -->`
 - Focus on layout, visual hierarchy, spacing, typography
-- Use placeholder `<div>` elements where islands will go (mark with `data-placeholder="BuyBox"`)
-- Write all copy, set all colors via `--lx-*` CSS variables
-- Ensure mobile-first responsive design
-- Apply shared keyframes for animations (fadeUp, fadeIn, scaleIn, etc.)
+- Write all copy naturally — apostrophes/quotes need no escaping
+- Set all colors via `--lx-*` CSS variables (from `compile_theme`)
+- Mobile-first responsive; shared keyframes or `data-behavior="gsap-*"` presets for animation
+- Islands go in directly as `<lx-island name="BuyBox">` with a JSON `<script>` child — use `get_island_schema({island_name})` for exact prop shapes
 
-This phase is fast to iterate on — pure HTML renders instantly.
+### Phase 4b — Compile & Fix
 
-### Phase 4b — Island Mapping
-
-Replace placeholder divs with actual island markers:
-```html
-<!-- Phase 4a placeholder -->
-<div data-placeholder="BuyBox" class="...">Buy button goes here</div>
-
-<!-- Phase 4b final -->
-<div data-island="BuyBox" data-props='{"product":{"title":"...","price":"$29.99","variants":[...]}}'></div>
-```
-
-Use `get_island_schema({island_name})` resource (`vibe://schema/island/{name}`) to get exact prop shapes.
+Run `compile_page_source { source, head, theme_css, scripts }`:
+- Returns the compiled VibePage + compile issues + publish validation
+- Fix reported issues in the source (unknown islands, bad props, missing hooks) and re-compile
+- When clean, `create_page_from_source` persists it (the agent-authored source is stored too, retrievable via `get_page_source` for later edits)
 
 ### Why Two-Phase?
-- HTML renders in any browser preview — fast visual feedback
-- Island hydration requires the renderer — slower feedback loop
+- Source HTML renders in any browser preview — fast visual feedback
+- Compile is instant and deterministic — validation before anything persists
 - Separates design decisions from data-wiring decisions
-- Easier to iterate on layout without breaking island props
+- Escaping failures are impossible: the compiler, not the model, writes `data-props`
 
 ---
 
-## VibePage JSON Structure
+## VibePage JSON Structure (storage format — compiler output)
+
+> You normally don't write this by hand anymore — the source-format compiler produces it. It remains the storage/render format and what the legacy JSON tools accept.
 
 ```json
 {
@@ -2585,12 +2575,12 @@ Use `get_island_schema({island_name})` resource (`vibe://schema/island/{name}`) 
 
 ### Rules
 - **Tailwind CSS** in HTML class attributes (renderer includes Tailwind CDN)
-- **CSS Variables** (`--lx-*`) for all brand colors/fonts — set in `theme_css`
-- **Islands** via `data-island="Name"` + `data-props='JSON'` attributes
+- **CSS Variables** (`--lx-*`) for all brand colors/fonts — set in `theme_css` (generate with `compile_theme`)
+- **Islands** compile to `data-island="Name"` + `data-props='JSON'` attributes (in source format, write `<lx-island>` instead)
 - **Section IDs** must be unique, kebab-case: "hero", "social-proof", "faq"
-- **Section JS** is sandboxed — no fetch/XHR/eval/localStorage. Only DOM manipulation + IntersectionObserver
-- **Shared keyframes** already loaded: fadeUp, fadeIn, scaleIn, slideInLeft, slideInRight, marquee, float, shimmer, wordFade, pulseRing
-- **No @import, no external URLs in CSS**, no inline `<style>` or `<script>` tags in HTML
+- **Section JS** is sandboxed — no fetch/XHR/eval/localStorage. Only DOM manipulation + IntersectionObserver. Runs after immediate islands mount; `lx:hydrated` / `lx:islands-ready` events signal island readiness
+- **Shared keyframes** already loaded: fadeUp, fadeIn, scaleIn, slideInLeft, slideInRight, marquee, float, shimmer, wordFade, pulseRing. GSAP presets via `data-behavior="gsap-reveal|gsap-parallax|gsap-pin|gsap-marquee-scroll"`
+- **No @import, no external URLs in CSS**; external JS libs go in `scripts[]`, never section HTML
 
 ### Available CSS Variables (override in theme_css)
 | Variable | Default | Purpose |
@@ -2723,6 +2713,157 @@ These tools appeared in older skill versions but are no longer available:
 If `validate_vibe_page` fails → fix errors → re-validate.
 If `check_page_integrity` warns → assess if acceptable → proceed or fix.
 If visual check fails → `update_page_section` → re-screenshot.
+
+---
+
+# Source Format — HTML-Native Page Authoring (V2)
+
+> **This is the preferred way to author pages.** Write plain HTML with `<lx-island>` elements; the `compile_page_source` / `create_page_from_source` tools compile it to VibePage JSON deterministically. Never hand-write `data-island` / `data-props` attributes or escape HTML into JSON strings — the compiler does all escaping for you.
+
+## Why this format exists
+
+The old path (VibePage JSON with HTML in strings and JSON inside `data-props='...'` attributes) forced triple escaping and caused the top agent failure classes: entity-escaped markup rendering as literal text, apostrophes in copy breaking props, giant-blob page updates. In source format those failures are impossible by construction.
+
+## The format
+
+```html
+<!-- section: hero -->
+<section class="py-12 md:py-16 lg:py-20" style="background-color: var(--lx-bg-color)">
+  <h1 class="text-4xl md:text-5xl font-bold" style="font-family: var(--lx-font-heading)">
+    Don't miss the "Summer Drop"
+  </h1>
+
+  <lx-island name="CountdownTimer" hydrate="visible">
+    <script type="application/json">
+      { "endDate": "2026-09-01T00:00:00Z", "variant": "flip" }
+    </script>
+  </lx-island>
+</section>
+
+<style>
+  /* becomes section.css — scope selectors to this section */
+  .hero-glow { box-shadow: 0 0 40px var(--lx-accent-color); }
+</style>
+
+<script>
+  /* becomes section.js — sandboxed; `section` is bound to this section's element */
+  section.querySelectorAll('.hero-glow').forEach(el => el.classList.add('ready'));
+</script>
+
+<!-- section: faq -->
+<section class="py-12">
+  <lx-island name="FAQ">
+    <script type="application/json">
+      { "items": [{ "q": "Can't I return it?", "a": "Yes — 30 days, no questions asked." }] }
+    </script>
+  </lx-island>
+</section>
+```
+
+### Rules
+
+1. **Sections** are delimited by `<!-- section: kebab-case-id -->` comments. Ids must be unique.
+2. **Islands** are `<lx-island name="IslandName">` with props as a `<script type="application/json">` child. Write natural copy — apostrophes, quotes, em-dashes are all fine; no escaping needed.
+3. **`<lx-island>` attributes**: `name` (required), `hydrate` (`immediate|visible|idle|interaction`), `headless` (headless mode — see below), plus `class`/`id`/`style` which pass through to the compiled element.
+4. **Section CSS** goes in a top-level `<style>` block; **section JS** in a top-level `<script>` block (multiple blocks are concatenated). `application/json` / `ld+json` scripts stay in the HTML.
+5. **External libraries** (GSAP etc.) do NOT go in section HTML — pass them via the `scripts` param of the compile tools.
+6. **`head`, `theme_css`, `scripts`** are structured tool params, not part of the source. Generate `theme_css` with `compile_theme` (WCAG-checked palette from brand colors) instead of writing it by hand.
+
+### Tool workflow
+
+```
+get_brand_kit → compile_theme { accent, bg, fonts... } → theme_css
+draft source HTML (whole page)
+compile_page_source { source, head, theme_css, scripts }   ← dry-run: compiled page + issues
+fix any issues, then:
+create_page_from_source { source, head, theme_css, scripts, slug, publish }
+edits: update_section_from_source { page_id, source }      ← one section per call
+round-trip: get_page_source { page_id } → edit → update_section_from_source
+```
+
+`update_section_from_source` compiles ONE section (delimiter optional — pass `section_id` if absent) and upserts it. Prefer it over whole-page rewrites: smaller payloads, no blob races.
+
+## Headless islands (fully custom markup)
+
+For maximum design freedom, add `headless` and author the island's internals yourself; behavior attaches to `data-lx-*` hooks. Currently supported: **BuyBox** (plus the long-standing Navbar/Footer/SiteHeader hydration modes — see island-patterns.md).
+
+```html
+<lx-island name="BuyBox" headless>
+  <script type="application/json">
+    { "product": { "title": "Serum", "price": "$49.00", "variants": [
+      { "id": "v1", "title": "30ml", "price": "$49.00", "available": true },
+      { "id": "v2", "title": "50ml", "price": "$69.00", "available": true }
+    ] } }
+  </script>
+
+  <p class="text-3xl font-bold" data-lx-buybox="price">$49.00</p>
+  <div class="flex gap-2">
+    <button data-lx-buybox="variant-option" data-variant-id="v1" class="px-4 py-2 border rounded-full">30ml</button>
+    <button data-lx-buybox="variant-option" data-variant-id="v2" class="px-4 py-2 border rounded-full">50ml</button>
+  </div>
+  <div class="flex items-center gap-3">
+    <button data-lx-buybox="qty-dec">−</button>
+    <span data-lx-buybox="qty">1</span>
+    <button data-lx-buybox="qty-inc">+</button>
+  </div>
+  <button data-lx-buybox="add" class="w-full py-4 rounded-full text-white"
+          style="background: var(--lx-accent-color)">Add to Cart</button>
+  <p data-lx-buybox="error" class="text-red-600 text-sm">Couldn't add — try again.</p>
+</lx-island>
+```
+
+### BuyBox hooks
+
+| Hook | Required | Behavior |
+|---|---|---|
+| `add` | **yes** | add-to-cart trigger; gets `lx-adding` / `lx-added` classes |
+| `price` | recommended | text kept in sync with selected variant/plan |
+| `compare-price` | no | compare-at price; hidden when none |
+| `variant-option` | no | one per variant, needs `data-variant-id="v1"`; gets `lx-selected` / `lx-disabled` |
+| `qty` / `qty-inc` / `qty-dec` | no | quantity display (or `<input>`) + stepper |
+| `stock` | no | availability text; override via `data-in-stock-text` / `data-out-of-stock-text` |
+| `error` | no | revealed when add-to-cart fails |
+
+Style the state classes in section CSS: `.lx-selected { ... }`, `.lx-adding { opacity: .6 }`, `.lx-disabled { pointer-events: none; opacity: .4 }`.
+
+## Animations
+
+### Presets (no JS needed) — `data-behavior`
+
+```html
+<section data-behavior="gsap-reveal" data-config='{"targets":".card","y":40,"stagger":0.1}'>
+<div data-behavior="gsap-parallax" data-config='{"speed":0.3}'>
+<section data-behavior="gsap-pin" data-config='{"stepDuration":0.5}'>  <!-- children: [data-pin-step] -->
+<div data-behavior="gsap-marquee-scroll" data-config='{"distance":-200}'>
+```
+
+Presets lazy-load GSAP from CDN themselves and respect `prefers-reduced-motion`. Also available (CSS-driven, pre-existing): `scroll-reveal`, `accordion`, `horizontal-scroll`, `content-slider`, `sticky-reveal`.
+
+### Custom GSAP in section JS
+
+Load the library via the `scripts` param, then write timelines in the section `<script>`:
+
+```json
+"scripts": [
+  { "src": "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js", "position": "body-end" },
+  { "src": "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js", "position": "body-end" }
+]
+```
+
+The compiler warns (`missing_animation_lib`) if section JS references gsap without either a scripts entry or a `gsap-*` preset on the page. Section JS runs after immediate islands mount; for work that depends on a deferred island, listen for its `lx:hydrated` event (bubbles, `detail.island`) or the document-level `lx:islands-ready`.
+
+## What NOT to do
+
+```html
+<!-- ❌ hand-written island markers (old format — compiler rejects raw usage in source) -->
+<div data-island="FAQ" data-props='{"items":[...]}'></div>
+
+<!-- ❌ escaped HTML — never escape anything -->
+&lt;section&gt;...&lt;/section&gt;
+
+<!-- ❌ external scripts in section HTML — use the scripts param -->
+<script src="https://cdn.example.com/lib.js"></script>
+```
 
 ---
 
@@ -4313,6 +4454,79 @@ The publish validator enforces required tags when hydration mode detected:
 - Navbar/SiteHeader: `root` + `cart-trigger` + `cart-count` + `mobile-trigger` + `mobile-panel`
 - Footer: `root`
 - Cart tags skipped if `hideCart: true` in props
+
+---
+
+# Style Packs — Named `data-part` CSS Bundles
+
+> Pre-tested visual treatments for rendered-mode islands. Pick ONE pack per page and paste its island overrides into the relevant sections' `<style>` blocks. Packs only touch visual properties (radius, borders, shadows, typography case/tracking) via `[data-part]` selectors and `--lx-*` variables — never layout. For fully custom island markup use headless mode instead (source-format.md).
+
+## Choosing
+
+| Pack | Feel | Best for |
+|---|---|---|
+| `editorial` | serif confidence, hairline rules, generous air | premium skincare, fashion, coffee |
+| `soft-luxury` | pill shapes, soft shadows, muted warmth | beauty, wellness, jewelry |
+| `brutalist` | hard edges, thick borders, high contrast | streetwear, drops, gen-z brands |
+| `playful` | big radii, bouncy hovers, chunky buttons | kids, snacks, novelty, pets |
+| `minimal` | flat, monochrome, quiet CTAs | tech accessories, tools, minimal brands |
+
+## editorial
+
+```css
+[data-part="cta"] { border-radius: 0; text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.85rem; padding: 1.1rem 2.5rem; }
+[data-part="variant-btn"] { border-radius: 0; border-width: 1px; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.75rem; }
+[data-part="heading"] { font-family: var(--lx-font-heading); font-weight: 400; letter-spacing: -0.01em; }
+[data-part="item"] { border: none; border-bottom: 1px solid var(--lx-border-color); border-radius: 0; }
+[data-part="badge"] { border-radius: 0; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.65rem; }
+```
+
+## soft-luxury
+
+```css
+[data-part="cta"] { border-radius: 9999px; box-shadow: 0 8px 24px color-mix(in srgb, var(--lx-accent-color) 35%, transparent); padding: 1rem 2.75rem; }
+[data-part="variant-btn"] { border-radius: 9999px; border-color: var(--lx-border-color); }
+[data-part="item"] { border-radius: 1.25rem; border: 1px solid var(--lx-border-color); box-shadow: 0 2px 12px rgb(0 0 0 / 0.04); }
+[data-part="badge"] { border-radius: 9999px; }
+[data-part="trust-badges"] { opacity: 0.75; }
+```
+
+## brutalist
+
+```css
+[data-part="cta"] { border-radius: 0; border: 3px solid var(--lx-text-color); box-shadow: 4px 4px 0 var(--lx-text-color); text-transform: uppercase; font-weight: 800; }
+[data-part="cta"]:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--lx-text-color); }
+[data-part="variant-btn"] { border-radius: 0; border: 2px solid var(--lx-text-color); font-weight: 700; }
+[data-part="item"] { border: 2px solid var(--lx-text-color); border-radius: 0; box-shadow: 4px 4px 0 var(--lx-border-color); }
+[data-part="badge"] { border-radius: 0; border: 2px solid var(--lx-text-color); font-weight: 800; }
+```
+
+## playful
+
+```css
+[data-part="cta"] { border-radius: 1.25rem; font-weight: 800; padding: 1.1rem 2.5rem; transition: transform 150ms ease; }
+[data-part="cta"]:hover { transform: scale(1.04) rotate(-1deg); }
+[data-part="variant-btn"] { border-radius: 1rem; border-width: 2px; font-weight: 700; }
+[data-part="item"] { border-radius: 1.5rem; border: 2px solid var(--lx-border-color); }
+[data-part="badge"] { border-radius: 9999px; font-weight: 800; }
+```
+
+## minimal
+
+```css
+[data-part="cta"] { border-radius: 0.375rem; box-shadow: none; font-weight: 500; }
+[data-part="variant-btn"] { border-radius: 0.375rem; border-color: var(--lx-border-color); font-weight: 400; }
+[data-part="item"] { border: none; border-radius: 0.5rem; background: var(--lx-surface-alt); box-shadow: none; }
+[data-part="badge"] { border-radius: 0.25rem; font-weight: 500; }
+[data-part="trust-badges"] { filter: grayscale(1); opacity: 0.6; }
+```
+
+## Rules
+
+1. One pack per page — mixing packs is the #1 way to make a page look broken.
+2. Scope to a section if two islands need different treatments: `#hero [data-part="cta"] { ... }`.
+3. Packs compose with `compile_theme` output — they reference `--lx-*` variables, never hardcode colors.
+4. Check the island's `schema.json` `parts` array before targeting a part name (`get_island_schema`).
 
 ---
 

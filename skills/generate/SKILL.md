@@ -26,7 +26,7 @@ Generate a complete Shopify storefront page — auto-detects page type (landing,
 
 Generate high-quality Shopify storefront pages using the Lexsis AI MCP tools.
 
-> **Prerequisites**: Read `vibe://docs/generation-guide` and `vibe://skills/generation-protocol` first — they define the VibePage schema, CSS variable system, island integration, and visual verification step.
+> **Prerequisites**: Read `vibe://docs/generation-guide`, `vibe://skills/generation-protocol`, and `vibe://skills/source-format` first — they define the source authoring format, CSS variable system, island integration, and visual verification step.
 
 ## Generation Flow (Two-Phase)
 
@@ -54,39 +54,29 @@ Decision tree per section:
 
 Budget: 3-5 generated assets per page max. Existing assets = free.
 
-### Phase 4a — Raw HTML Generation (No Islands)
+### Phase 4a — Draft Source HTML
 
-Generate complete VibePage JSON with pure HTML + Tailwind CSS:
-- Place `data-placeholder="IslandName"` divs where islands will go
-- Focus entirely on visual design: layout, typography, color, spacing, imagery
-- Apply brand CSS variables in `theme_css`
-- Use Google Fonts URLs in `head.fonts`
-- Write real copy (never Lorem Ipsum)
+Author the page in **source format** (see `vibe://skills/source-format`) — plain HTML, never JSON-escaped:
+- Sections delimited by `<!-- section: id -->` comments
+- Islands as `<lx-island name="BuyBox"><script type="application/json">{...props}</script></lx-island>` — use `vibe://schema/island/{name}` for exact prop shapes
+- Section CSS in a `<style>` block, section JS in a `<script>` block per section
+- Generate `theme_css` with `compile_theme` (WCAG-checked, from brand kit colors)
+- Focus on visual design: layout, typography, color, spacing, imagery; animations via `data-behavior="gsap-*"` presets or shared keyframes
+- Write real copy naturally (apostrophes/quotes are fine — never escape anything; never Lorem Ipsum)
 - Use asset URLs from Phase 3 in `<img>` tags
 
-This renders instantly in any browser — iterate on design here.
-
-### Phase 4b — Island Mapping
-
-Replace placeholders with actual islands:
-```html
-<div data-island="BuyBox" data-props='{"product":{"title":"...","price":"$29.99","variants":[{"id":"v1","title":"Default","available":true}]}}'></div>
-```
-
-Use `vibe://schema/island/{name}` resource to get exact prop shapes for each island.
-
-### Phase 5 — Validate
+### Phase 4b — Compile & Fix
 
 ```
-validate_vibe_page(page_json)
+compile_page_source(source, head, theme_css, scripts)   → compiled page + issues
 ```
 
-Fix any errors. Common issues: duplicate section IDs, invalid island names, missing required props, inline `<style>`/`<script>` tags.
+Fix reported issues in the source and re-compile. Common issues: duplicate section IDs, invalid island names, malformed props JSON, missing headless hooks, external scripts in section HTML.
 
-### Phase 5 (cont.) — Publish + Visual Verify
+### Phase 5 — Publish + Visual Verify
 
 ```
-publish_vibe_page(slug, page, archetype, publish=false)  → preview_url
+create_page_from_source(source, head, theme_css, scripts, slug, archetype, publish=false)  → preview_url
 ```
 
 **Visual verification is REQUIRED before marking complete:**
@@ -105,7 +95,7 @@ publish_vibe_page(slug, page, archetype, publish=false)  → preview_url
 - [ ] Islands hydrated (BuyBox shows product data, not empty div)
 - [ ] CTA contrast ≥ 4.5:1
 
-If issues → `update_page_section` → re-screenshot.
+If issues → `update_section_from_source` (one section per call) → re-screenshot.
 When satisfied, return the draft preview. Call `publish_page(page_id)` only after the user explicitly approves a live publish.
 
 ## Page Type Templates
