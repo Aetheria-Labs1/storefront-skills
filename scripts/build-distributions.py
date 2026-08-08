@@ -48,6 +48,11 @@ RETIRED_TOOLS = [
     "preview_section_update",
 ]
 
+# Page-authoring skills must emit source-format <lx-island> elements. The
+# maintainer-only extract-island skill intentionally produces compiled layout
+# JSON for the renderer and is explicitly documented as such.
+COMPILED_MARKUP_SKILL_EXCEPTIONS = {"extract-island"}
+
 # References worth shipping to a custom GPT (knowledge budget is finite;
 # schemas and vertical deep-dives stay out — the GPT can't call tools to
 # follow up anyway, so operational docs matter more than raw data).
@@ -113,6 +118,14 @@ def validate() -> list[str]:
         for tool in RETIRED_TOOLS:
             if tool in body:
                 errors.append(f"{skill_dir.name}: references retired tool {tool}")
+        if (
+            skill_dir.name not in COMPILED_MARKUP_SKILL_EXCEPTIONS
+            and re.search(r"<[^>]+data-island=|data-props=['\"]", body)
+        ):
+            errors.append(
+                f"{skill_dir.name}: raw compiled island markup in an authoring skill; "
+                "use <lx-island> source format instead"
+            )
 
     # Phase scheme: nothing outside Phase 1-5 / 4a / 4b
     bad_phase = re.compile(r"Phase (-1|0|2A|2B|A\b|B\b)")
@@ -120,6 +133,17 @@ def validate() -> list[str]:
         for i, line in enumerate(md.read_text().split("\n"), 1):
             if bad_phase.search(line):
                 errors.append(f"{md.relative_to(ROOT)}:{i}: stale phase numbering: {line.strip()[:80]}")
+
+    # Reference docs may illustrate compiled renderer markup, but must label it
+    # so an agent does not copy it into source-authoring tools.
+    for reference in REFERENCES.rglob("*.md"):
+        text = reference.read_text()
+        if reference.name == "source-format.md":
+            continue
+        if re.search(r"<[^>]+data-island=|data-props=['\"]", text) and "Compiled runtime reference:" not in text:
+            errors.append(
+                f"{reference.relative_to(ROOT)}: compiled island markup is missing the source-format notice"
+            )
 
     # Symlinks resolve
     for link in [ROOT / ".agents/skills", ROOT / "plugins/lexsis-storefront-skills/skills"]:

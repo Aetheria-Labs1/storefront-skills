@@ -1,5 +1,7 @@
 # SEO Listicle / Comparison Page Generation
 
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then run `compile_page_source`.
+
 > References: `vibe://docs/generation-guide`, `vibe://skills/generation-protocol`
 > **Workflow:** See `generation-protocol.md` for Phases 1-5 execution (context gathering, HTML generation, validation, publishing). This doc covers page-type-specific patterns only.
 

@@ -1,5 +1,5 @@
 <!-- GENERATED from skills/ by scripts/build-distributions.py — DO NOT EDIT.
-     storefront-skills v5.1.2 · 13 skills · 49 island schemas -->
+     storefront-skills v5.1.3 · 13 skills · 49 island schemas -->
 
 # Lexsis Storefront Skills — Knowledge Base
 
@@ -77,7 +77,7 @@ Scroll through the page. For EACH distinct section:
 2. **Extract full HTML pattern** — reproducible structure using:
    - Tailwind classes for layout
    - `--lx-*` CSS vars for theming
-   - `data-island` for interactive elements (valid props from schema)
+   - `<lx-island>` for interactive elements (valid props from schema)
    - `{{PLACEHOLDER}}` for dynamic content
 
 3. **Islands used** — list which islands appear, with their variant/props
@@ -131,8 +131,12 @@ Print the following markdown inline (DO NOT save to file):
 \```html
 <section class="py-20 px-4 lg:px-8" style="background-color: var(--lx-bg-surface)">
   <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-    <!-- Full reproducible HTML with Tailwind + --lx-* vars + data-island markers -->
-    <div data-island="BuyBox" data-props='{"productId":"{{PRODUCT_ID}}","variant":"expanded","ctaText":"{{CTA_TEXT}}"}'></div>
+    <!-- Source-format HTML with Tailwind + --lx-* vars + islands -->
+    <lx-island name="BuyBox">
+      <script type="application/json">
+        { "productId": "{{PRODUCT_ID}}", "variant": "expanded", "ctaText": "{{CTA_TEXT}}" }
+      </script>
+    </lx-island>
   </div>
 </section>
 \```
@@ -324,7 +328,11 @@ This ensures: the asset is stored in the brand's library, available for reuse, a
 ### Technical Integration
 ```html
 <!-- Click-to-play video hero (use HeroMedia island) -->
-<div data-island="HeroMedia" data-props='{"media":{"type":"video","src":"VIDEO_URL","poster":"THUMBNAIL_URL","autoplay":false}}'></div>
+<lx-island name="HeroMedia">
+  <script type="application/json">
+    { "media": { "type": "video", "src": "VIDEO_URL", "poster": "THUMBNAIL_URL", "autoplay": false } }
+  </script>
+</lx-island>
 
 <!-- Inline video (no island needed for simple playback) -->
 <video class="w-full rounded-xl" poster="THUMBNAIL_URL" controls playsinline>
@@ -841,9 +849,14 @@ create_page_variation(page_id, {
 
 All variants use the same `--lx-*` CSS variables (brand stays consistent). Only content, imagery, and tone change.
 
-Islands remain identical across variants -- only the surrounding copy/imagery adapts:
+Islands remain identical across variants -- only the surrounding copy/imagery adapts.
+When a prop change is part of the experiment, edit source-format markup:
 ```html
-<div data-island="BuyBox" data-props='{"product":{"title":"...","price":"$29.99","variants":[...]}}'></div>
+<lx-island name="BuyBox">
+  <script type="application/json">
+    { "product": { "title": "...", "price": "$29.99", "variants": [] } }
+  </script>
+</lx-island>
 ```
 
 ### Step 6 — Validate All Variants
@@ -968,9 +981,14 @@ update_section_from_source({ page_id: variant_page_id, section_id, source })
 
 RULE: ONE change per test. Multiple changes make attribution impossible.
 
-All styling via `--lx-*` CSS variables. Islands unchanged unless the test specifically targets island props:
+All styling via `--lx-*` CSS variables. Islands remain unchanged unless the
+test specifically targets island props:
 ```html
-<div data-island="BuyBox" data-props='{"product":{"title":"...","price":"$29.99","variants":[...]}}'></div>
+<lx-island name="BuyBox">
+  <script type="application/json">
+    { "product": { "title": "...", "price": "$29.99", "variants": [] } }
+  </script>
+</lx-island>
 ```
 
 ### Step 5 — Validate Variant
@@ -1701,7 +1719,11 @@ Use `--lx-*` CSS variables in `theme_css` for all brand colors and fonts.
 
 Replace placeholders with hydrated islands:
 ```html
-<div data-island="BuyBox" data-props='{"product":{"title":"...","price":"$29.99","variants":[...]}}'></div>
+<lx-island name="BuyBox">
+  <script type="application/json">
+    { "product": { "title": "...", "price": "$29.99", "variants": [] } }
+  </script>
+</lx-island>
 ```
 
 Use `get_island_schema` for exact prop shapes.
@@ -1840,8 +1862,16 @@ Mark interactive placeholders: `<div data-placeholder="BuyBox" class="..."></div
 
 Replace placeholders with hydrated islands:
 ```html
-<div data-island="BuyBox" data-props='{"product":{"title":"...","price":"$29.99","variants":[...]}}'></div>
-<div data-island="FAQ" data-props='{"items":[{"question":"...","answer":"..."}]}'></div>
+<lx-island name="BuyBox">
+  <script type="application/json">
+    { "product": { "title": "...", "price": "$29.99", "variants": [] } }
+  </script>
+</lx-island>
+<lx-island name="FAQ">
+  <script type="application/json">
+    { "items": [{ "question": "...", "answer": "..." }] }
+  </script>
+</lx-island>
 ```
 
 ### Step 7 — Validate and Publish Draft
@@ -2210,6 +2240,8 @@ page-generation, design-assets, publishing, page-editing, analytics, generate-pd
 
 # Storefront Craft Guide — Start Here
 
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then run `compile_page_source`.
+
 Load this skill first on any storefront page generation task.
 
 ---
@@ -2375,6 +2407,10 @@ Use descriptive kebab-case: `hero`, `product-gallery`, `social-proof`, `ingredie
 # Generation Protocol — How Pages Are Built
 
 > This is the canonical reference for how AI agents generate storefront pages using the Lexsis AI MCP. All operational skills reference this protocol.
+
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets in
+> storage-format examples below are renderer output, not page source. New pages
+> use `<lx-island>` with a JSON script child as defined in `source-format.md`.
 
 ---
 
@@ -2914,6 +2950,8 @@ Source-format pages persisted via `create_page_from_source` still cost credits (
 ---
 
 # Conversion Psychology — Storefront Design Intelligence
+
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then run `compile_page_source`.
 
 > When to load: ALWAYS. Read before generating any ecommerce page.
 
@@ -3727,6 +3765,8 @@ Surround CTAs with empty space (min 2rem padding).
 
 # Island Patterns — Wrapper HTML & Combination Recipes
 
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then run `compile_page_source`.
+
 How to properly embed, wrap, and combine React islands in vibe-code HTML sections. Load when using commerce or engagement islands.
 
 ---
@@ -4379,6 +4419,8 @@ The publish validator enforces required tags when hydration mode detected:
 ---
 
 # Asset Pipeline — Multi-Source Visual Strategy
+
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then run `compile_page_source`.
 
 > **Inputs:** Approved page plan (from `/plan-page` workflow)
 > **Outputs:** Asset manifest (URLs + purposes + section mapping)

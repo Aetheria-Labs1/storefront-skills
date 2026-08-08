@@ -1,5 +1,7 @@
 # Competitor Remix (Rebuild from Reference URL)
 
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then run `compile_page_source`.
+
 Capture a competitor page, decompose its structure, and rebuild it using the user's own brand identity, copy, and products. NEVER copy content -- only structural inspiration.
 
 ## Prerequisites

@@ -69,7 +69,7 @@ Scroll through the page. For EACH distinct section:
 2. **Extract full HTML pattern** — reproducible structure using:
    - Tailwind classes for layout
    - `--lx-*` CSS vars for theming
-   - `data-island` for interactive elements (valid props from schema)
+   - `<lx-island>` for interactive elements (valid props from schema)
    - `{{PLACEHOLDER}}` for dynamic content
 
 3. **Islands used** — list which islands appear, with their variant/props
@@ -123,8 +123,12 @@ Print the following markdown inline (DO NOT save to file):
 \```html
 <section class="py-20 px-4 lg:px-8" style="background-color: var(--lx-bg-surface)">
   <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-    <!-- Full reproducible HTML with Tailwind + --lx-* vars + data-island markers -->
-    <div data-island="BuyBox" data-props='{"productId":"{{PRODUCT_ID}}","variant":"expanded","ctaText":"{{CTA_TEXT}}"}'></div>
+    <!-- Source-format HTML with Tailwind + --lx-* vars + islands -->
+    <lx-island name="BuyBox">
+      <script type="application/json">
+        { "productId": "{{PRODUCT_ID}}", "variant": "expanded", "ctaText": "{{CTA_TEXT}}" }
+      </script>
+    </lx-island>
   </div>
 </section>
 \```

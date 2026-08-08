@@ -1,5 +1,7 @@
 # Asset Pipeline — Multi-Source Visual Strategy
 
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then run `compile_page_source`.
+
 > **Inputs:** Approved page plan (from `/plan-page` workflow)
 > **Outputs:** Asset manifest (URLs + purposes + section mapping)
 > **When to load:** After page plan is approved, before HTML generation.

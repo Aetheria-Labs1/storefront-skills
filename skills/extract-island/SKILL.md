@@ -6,7 +6,12 @@ disable-model-invocation: true
 
 # Extract Storefront Island
 
-Extract a single component from a live webpage and produce a layout JSON compatible with the Lexsis vibe renderer.
+Extract a single component from a live webpage and produce a compiled layout
+JSON compatible with the Lexsis renderer.
+
+> This is a maintainer-only layout format. The `html` field contains compiled
+> runtime markup. Agents authoring a page must convert that markup to
+> `<lx-island>` source format before calling `compile_page_source`.
 
 ## When to Use
 
@@ -38,7 +43,8 @@ These rules are NON-NEGOTIABLE. Violating any produces broken output:
    - `var(--lx-text-color)`, `var(--lx-text-muted)`, `var(--lx-border-color)`
    - `var(--lx-radius)`, `var(--lx-shadow)`
 
-2. **`data-island` must reference a REAL island** from our 47-island catalog:
+2. **Compiled `data-island` markers must reference a REAL island** from our
+   47-island catalog:
    - Commerce: `BuyBox`, `QuickAdd`, `ProductCard`, `ProductCarousel`, `ProductHero`, `ProductGallery`, `CartDrawer`, `DrawerShell`, `CartLines`, `CartCheckoutButton`, `CartSummary`, `CartProgressBar`, `CartDiscountInput`, `CartCrossSell`, `ProceedToCart`, `QuantityBreaks`, `SubscriptionToggle`
    - Navigation: `Navbar`, `MobileMenu`, `Footer`, `SiteHeader`, `AnnouncementBar`
    - Engagement: `FAQ`, `ReviewCarousel`, `CountdownTimer`, `SocialProofPopup`, `Tabs`, `EmailCapture`, `BackToTop`, `WishlistButton`
@@ -46,7 +52,9 @@ These rules are NON-NEGOTIABLE. Violating any produces broken output:
    - Layout: `Modal`, `StickyBar`, `CompareTable`, `BundleBuilder`, `EditorialProductGrid`
    - Info: `DeliveryEstimate`, `InventoryIndicator`, `PaymentOptions`, `PDPInfoCards`, `SizeGuide`, `TrustBadgeBar`, `VariantSwatches`, `IngredientExplorer`, `OptionResolver`
 
-3. **`data-props` must match the island's schema** — read `reference/islands/{name}/schema.json` for valid props, types, and required fields. Never invent props that don't exist.
+3. **Compiled `data-props` must match the island's schema** — read
+   `reference/islands/{name}/schema.json` for valid props, types, and required
+   fields. Never invent props that don't exist.
 
 4. **`{{PLACEHOLDER}}` for content slots** — dynamic content uses double-brace placeholders:
    - `{{PRODUCT_ID}}`, `{{HEADLINE}}`, `{{CTA_TEXT}}`, `{{IMAGE_SRC}}`

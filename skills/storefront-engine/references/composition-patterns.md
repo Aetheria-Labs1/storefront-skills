@@ -2,6 +2,11 @@
 
 Concrete HTML patterns for building pages with composable primitives.
 
+> **Compiled runtime reference:** these snippets are stored renderer output
+> used by the layout library. For new page or section authoring, convert every
+> `data-island` marker to `<lx-island>` with a JSON script child, then run
+> `compile_page_source`. Do not copy raw `data-props` markup into source.
+
 ---
 
 ## Product Card (custom HTML + primitives)

@@ -1,5 +1,7 @@
 # CartCrossSell — Island Knowledge
 
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then run `compile_page_source`.
+
 Self-contained cross-sell/upsell inside the cart drawer. Reads config from `commerce_config.upsells`, evaluates triggers against cart contents, fetches recommended products from Shopify Storefront API, and self-hides when no triggers match.
 
 ## Props

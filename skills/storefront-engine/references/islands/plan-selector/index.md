@@ -1,5 +1,7 @@
 # PlanSelector — Island Directory
 
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then run `compile_page_source`.
+
 Subscribe-and-save plan cards — the dominant DTC PDP purchase pattern: large radio cards (Autoship vs One-Time) with per-card price, compare-at, per-unit cost, benefit checklist, and live re-pricing from a tier selector.
 
 ## Files

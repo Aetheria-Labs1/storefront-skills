@@ -144,7 +144,11 @@ This ensures: the asset is stored in the brand's library, available for reuse, a
 ### Technical Integration
 ```html
 <!-- Click-to-play video hero (use HeroMedia island) -->
-<div data-island="HeroMedia" data-props='{"media":{"type":"video","src":"VIDEO_URL","poster":"THUMBNAIL_URL","autoplay":false}}'></div>
+<lx-island name="HeroMedia">
+  <script type="application/json">
+    { "media": { "type": "video", "src": "VIDEO_URL", "poster": "THUMBNAIL_URL", "autoplay": false } }
+  </script>
+</lx-island>
 
 <!-- Inline video (no island needed for simple playback) -->
 <video class="w-full rounded-xl" poster="THUMBNAIL_URL" controls playsinline>

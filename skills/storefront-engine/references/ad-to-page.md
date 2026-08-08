@@ -1,5 +1,7 @@
 # Ad Creative to Landing Page
 
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then run `compile_page_source`.
+
 Generate a high-converting landing page from an ad creative with full scent continuity (headline, palette, CTA, tone match from click to page).
 
 ## Prerequisites

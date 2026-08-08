@@ -84,7 +84,11 @@ Use `--lx-*` CSS variables in `theme_css` for all brand colors and fonts.
 
 Replace placeholders with hydrated islands:
 ```html
-<div data-island="BuyBox" data-props='{"product":{"title":"...","price":"$29.99","variants":[...]}}'></div>
+<lx-island name="BuyBox">
+  <script type="application/json">
+    { "product": { "title": "...", "price": "$29.99", "variants": [] } }
+  </script>
+</lx-island>
 ```
 
 Use `get_island_schema` for exact prop shapes.
@@ -223,8 +227,16 @@ Mark interactive placeholders: `<div data-placeholder="BuyBox" class="..."></div
 
 Replace placeholders with hydrated islands:
 ```html
-<div data-island="BuyBox" data-props='{"product":{"title":"...","price":"$29.99","variants":[...]}}'></div>
-<div data-island="FAQ" data-props='{"items":[{"question":"...","answer":"..."}]}'></div>
+<lx-island name="BuyBox">
+  <script type="application/json">
+    { "product": { "title": "...", "price": "$29.99", "variants": [] } }
+  </script>
+</lx-island>
+<lx-island name="FAQ">
+  <script type="application/json">
+    { "items": [{ "question": "...", "answer": "..." }] }
+  </script>
+</lx-island>
 ```
 
 ### Step 7 — Validate and Publish Draft

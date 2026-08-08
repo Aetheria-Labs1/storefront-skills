@@ -85,7 +85,7 @@ Prefer library over generation. Collect all URLs before Phase 4.
 | Island | When to use |
 |--------|-------------|
 | `BuyBox` | Any page with add-to-cart (PDP, landing, bundle) |
-| `CartDrawer` / `DrawerShell` | Cart V2 drawer (set `use_cart_v2: true` in head) |
+| Cart V2 profile | Set `use_cart_v2: true` in head; configure the injected cart with `get_cart_profile`, `set_cart_profile`, and `edit_cart` |
 | `ReviewCarousel` | Social proof sections |
 | `FAQ` | Objection handling before final CTA |
 | `TrustBadgeBar` | After hero or near BuyBox |

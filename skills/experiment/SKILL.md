@@ -149,9 +149,14 @@ create_page_variation(page_id, {
 
 All variants use the same `--lx-*` CSS variables (brand stays consistent). Only content, imagery, and tone change.
 
-Islands remain identical across variants -- only the surrounding copy/imagery adapts:
+Islands remain identical across variants -- only the surrounding copy/imagery adapts.
+When a prop change is part of the experiment, edit source-format markup:
 ```html
-<div data-island="BuyBox" data-props='{"product":{"title":"...","price":"$29.99","variants":[...]}}'></div>
+<lx-island name="BuyBox">
+  <script type="application/json">
+    { "product": { "title": "...", "price": "$29.99", "variants": [] } }
+  </script>
+</lx-island>
 ```
 
 ### Step 6 — Validate All Variants
@@ -276,9 +281,14 @@ update_section_from_source({ page_id: variant_page_id, section_id, source })
 
 RULE: ONE change per test. Multiple changes make attribution impossible.
 
-All styling via `--lx-*` CSS variables. Islands unchanged unless the test specifically targets island props:
+All styling via `--lx-*` CSS variables. Islands remain unchanged unless the
+test specifically targets island props:
 ```html
-<div data-island="BuyBox" data-props='{"product":{"title":"...","price":"$29.99","variants":[...]}}'></div>
+<lx-island name="BuyBox">
+  <script type="application/json">
+    { "product": { "title": "...", "price": "$29.99", "variants": [] } }
+  </script>
+</lx-island>
 ```
 
 ### Step 5 — Validate Variant

@@ -2,6 +2,11 @@
 
 > When to load: Product vertical is food, beverages, snacks, meal kits, coffee, tea, specialty food.
 
+> **Compiled runtime reference:** examples later in this legacy reference may show
+> compiled `data-island` markup. New pages must use the source-format contract
+> in `source-format.md`: `<lx-island>` with a JSON script child, compiled by
+> `compile_page_source`.
+
 ## Philosophy
 
 Food pages sell with the SENSES. The visitor should almost taste/smell the product through the screen. Photography is 80% of the conversion. Every section should trigger appetite or curiosity.
@@ -53,7 +58,9 @@ Pages = **raw HTML + Tailwind CSS + CSS custom properties + React islands**.
 **React islands:**
 BuyBox, ProductGallery, BundleBuilder, SubscriptionToggle, ReviewCarousel, SocialProofPopup, TrustBadgeBar, FAQ, VideoPlayer, Tabs, ProductCarousel, CountdownTimer, EmailCapture, QuantityBreaks
 
-Islands are hydrated via: `<div data-island="Name" data-props='{"key":"value"}'></div>`
+Author islands as `<lx-island name="Name"><script
+type="application/json">{"key":"value"}</script></lx-island>`. The compiler
+creates the runtime `data-island` / `data-props` attributes.
 
 **Tailwind CSS:** All utilities available. Responsive design via breakpoints (`sm:`, `md:`, `lg:`, `xl:`).
 

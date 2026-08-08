@@ -2,6 +2,10 @@
 
 > This is the canonical reference for how AI agents generate storefront pages using the Lexsis AI MCP. All operational skills reference this protocol.
 
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets in
+> storage-format examples below are renderer output, not page source. New pages
+> use `<lx-island>` with a JSON script child as defined in `source-format.md`.
+
 ---
 
 ## MCP Workflow (Correct Order)

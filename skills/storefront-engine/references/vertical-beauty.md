@@ -1,5 +1,7 @@
 # Beauty & Skincare — Storefront Design Intelligence
 
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then run `compile_page_source`.
+
 > When to load: Product vertical is beauty, skincare, haircare, body care, fragrance, or cosmetics.
 
 ## Philosophy

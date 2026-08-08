@@ -1,5 +1,7 @@
 # Reference PDP Remix — Competitor Deconstruction Workflow
 
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then run `compile_page_source`.
+
 > When to load: User provides a competitor/reference URL and wants to rebuild the same PDP structure for their brand.
 
 ---

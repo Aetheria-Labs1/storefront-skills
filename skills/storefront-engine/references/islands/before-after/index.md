@@ -1,5 +1,7 @@
 # BeforeAfter — Island Directory
 
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then run `compile_page_source`.
+
 Transformation comparison island. Shows before/after states via slider, side-by-side, or toggle.
 
 ## Files
