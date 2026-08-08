@@ -1,5 +1,5 @@
 <!-- GENERATED from skills/ by scripts/build-distributions.py — DO NOT EDIT.
-     storefront-skills v5.1.0 · 13 skills · 49 island schemas -->
+     storefront-skills v6.0.0 · 13 skills · 49 island schemas -->
 
 # Lexsis Storefront Skills — Knowledge Base
 
@@ -543,278 +543,151 @@ If @Browser is not available or not enabled:
 
 # Skill: cart
 
-> Configure the Cart V2 drawer — add upsells, progress bars, conditional rules, announcement banners, and checkout customization
+> Inspect, assign, and edit Cart V2 profiles, including offers, shipping goals, subscriptions, responsive behavior, and scoped custom CSS.
 
-# Configure Cart V2
+# Configure Cart Profiles
 
-Configure the Cart V2 drawer — add upsells, progress bars, conditional rules, announcement banners, and checkout customization
+Use this workflow for Cart V2 configuration and page targeting.
+
+## Architecture
+
+- A generated page declares only `head.use_cart_v2: true`.
+- Never add `DrawerShell`, `CartLines`, or cart HTML to page sections.
+- The renderer injects the resolved published profile after page sections.
+- Resolution order is page assignment, campaign assignment, store default,
+  then legacy fallback.
+- Page titles and SEO metadata never select a cart.
+- Draft profile edits do not affect shoppers until the merchant publishes.
+- Assignment changes and profile publish/rollback operations automatically
+  refresh affected published Shopify pages after the database commit.
+
+## MCP Surface
+
+Use only these cart tools:
+
+1. `get_cart_profile`
+2. `set_cart_profile`
+3. `edit_cart`
+
+Profile creation, duplication, publishing, rollback, defaults, campaign
+targeting, history, and archival remain in the Lexsis app.
 
 ## Workflow
 
-# Cart V2 Composition — DrawerShell + Atomic Islands
+### 1. Inspect
 
-Compose a Cart V2 drawer using atomic islands inside a DrawerShell container. Use when store has `cart_v2` enabled.
+Call `get_cart_profile` before making changes.
 
----
+- Pass `page_id` to inspect the effective profile and resolution source.
+- Pass `cart_profile_id` to inspect an editable draft.
+- Pass `store_id` alone to list available profiles.
 
-## Overview
+Do not assume that the store default is the page's effective cart.
 
-Cart V2 is the DEFAULT cart (CartDrawer V1 is deprecated — never use it on new pages). It replaces the monolithic CartDrawer with composable islands that each handle one responsibility. The drawer HTML lives in store-level config (`cart_sections` array), shared across all pages. Islands read runtime data from the store's `commerce_config` at hydration time.
+### 2. Assign when requested
 
----
+Call `set_cart_profile` with `page_id` and a published `cart_profile_id`.
 
-## Required Structure
+Pass `cart_profile_id: null` to remove the page assignment. This restores
+campaign, default, or legacy fallback resolution.
 
-Cart V2 pages set `head.use_cart_v2: true` ONLY. No cart section appears in the page sections array.
+### 3. Edit the draft
 
-```jsonc
+Call `edit_cart` with a partial patch. The same tool handles:
+
+- `cart_mode`
+- `layout_schema`
+- `cart_rules`
+- `commerce_config`
+- `custom_css`
+
+Use `commerce_config` for free shipping, selling-plan presentation, offers,
+checkout behavior, currency, and `cart_style`. Nested objects merge with the
+existing draft. Arrays such as `offer_slots` replace the existing array.
+
+Example:
+
+```json
 {
-  "head": {
-    "title": "...",
-    "use_cart_v2": true
+  "cart_profile_id": "PROFILE_UUID",
+  "change_note": "Campaign cart treatment",
+  "patch": {
+    "commerce_config": {
+      "free_shipping_threshold": 7500,
+      "free_shipping_celebration": true,
+      "cart_style": {
+        "width": "440px",
+        "responsive": {
+          "mobile": "bottom-sheet"
+        },
+        "line_spacing": "comfortable"
+      }
+    },
+    "custom_css": "[data-part=\"checkout\"] { font-weight: 600; }"
   }
 }
 ```
 
-The renderer injects the cart HTML (from store config) after page sections at render time. Manage via `get_cart_config` and `update_cart_config` MCP tools.
+`edit_cart` never publishes. Tell the merchant to review and publish in the
+Lexsis app when the response reports unpublished changes.
 
-**Minimum required islands inside DrawerShell:**
-1. `CartLines` — line items
-2. `CartCheckoutButton` — checkout CTA
+## Offers
 
-Validation fails without both.
+Offer placements are:
 
----
+- `header`
+- `after_line`
+- `after_lines`
+- `before_checkout`
 
-## Island Catalog
+Use Shopify product GIDs. Manual offers require recommended product IDs.
+Shopify-powered offers use `RELATED` or `COMPLEMENTARY` recommendation intent.
 
-| Island | Purpose | Key Props |
-|---|---|---|
-| `DrawerShell` | Container / drawer chrome | `trigger` (event name, default `"cart:open"`) |
-| `CartLines` | Line items with qty controls | — |
-| `CartCheckoutButton` | Checkout CTA | `text?` |
-| `CartSummary` | Subtotal / taxes / total | — |
-| `CartProgressBar` | Free shipping / tiered progress | `threshold?`, `message?`, `completedMessage?`, `tiers?`, `currency?` |
-| `CartDiscountInput` | Promo code field | `placeholder?` |
-| `CartCrossSell` | Upsell recommendations | `heading?`, `max?`, `layout?`, `showQuickAdd?` |
+Do not fabricate products, prices, currencies, or selling plans. Subscription
+purchase options appear only for products with real Shopify selling plans.
 
-**DO NOT use** `CartAnnouncement`, `CartOrderNote`, or `CartCountdown` — these are unimplemented.
+## Trigger Communication
 
----
+All cart triggers use `cart:open`.
 
-## CartCrossSell Config
+1. Add-to-cart actions emit `cart:open` immediately.
+2. The hydrator bridges DOM `cart:open` events to the cart event bus.
+3. The injected `DrawerShell` listens for the event and opens.
+4. Child cart islands hydrate on first open.
+5. The cart confirms or rolls back the optimistic line.
 
-CartCrossSell is self-managing. It reads product recommendations from `commerce_config.upsells` at the store level. There is NO `source` prop.
+The header cart button uses the same event. Custom page code may dispatch:
 
-Props (all optional):
-- `heading` — section heading text (e.g. `"Complete Your Routine"`)
-- `max` — maximum products to show (default determined by config)
-- `layout` — `"horizontal"` | `"grid"` | `"stack"`
-- `showQuickAdd` — boolean, show inline add-to-cart
-
-Product IDs in `commerce_config.upsells` must be Shopify GIDs: `gid://shopify/Product/...`
-
-For config-driven defaults, use empty props:
-```html
-<div data-island="CartCrossSell" data-props='{}'></div>
+```js
+document.dispatchEvent(new CustomEvent("cart:open"))
 ```
 
-For display overrides:
-```html
-<div data-island="CartCrossSell" data-props='{"heading":"You May Also Like","max":3,"layout":"horizontal","showQuickAdd":true}'></div>
-```
+The trigger never needs the profile ID. Profile resolution happens before
+hydration.
 
----
+## Styling
 
-## CartProgressBar Config
+Page `theme_css` provides brand defaults. Cart profile design settings and
+`custom_css` provide cart-only overrides.
 
-CartProgressBar self-manages visibility. It falls back to `$cartConfig.free_shipping_threshold` when no `threshold` prop is passed.
+Custom CSS is sanitized, scoped to the profile cart root, and published with
+the profile snapshot. External imports, external URLs, script escapes, and
+unbalanced rules are rejected.
 
-Props (all optional):
-- `threshold` — target amount in cents (overrides store config)
-- `message` — template string, use `{remaining}` placeholder
-- `completedMessage` — shown when threshold met
-- `tiers` — array of `{ threshold, label }` for multi-tier progress
-- `currency` — currency code (falls back to store currency)
+## Verification
 
-Config-driven (reads threshold from store config):
-```html
-<div data-island="CartProgressBar" data-props='{}'></div>
-```
+After assignment or editing:
 
-Explicit threshold:
-```html
-<div data-island="CartProgressBar" data-props='{"threshold":7500,"message":"Add {remaining} for free shipping!","completedMessage":"Free shipping unlocked!"}'></div>
-```
+1. Call `get_cart_profile` with the page ID.
+2. Confirm `resolution_source` and profile identity.
+3. Preview add-to-cart and header cart triggers.
+4. Check desktop and mobile modes.
+5. Confirm offers use real products and subscriptions appear only when
+   selling plans exist.
+6. Confirm draft changes remain non-live until published.
 
-Multi-tier:
-```html
-<div data-island="CartProgressBar" data-props='{"tiers":[{"threshold":5000,"label":"Free shipping"},{"threshold":10000,"label":"10% off"},{"threshold":15000,"label":"Free gift"}]}'></div>
-```
-
----
-
-## Composition Rules
-
-1. DrawerShell must have `data-island-container` attribute — prevents children from hydrating on page load.
-2. DrawerShell `trigger` prop is an event name (default `"cart:open"`). It is NOT `triggerId`.
-3. Only pass display props (heading, layout, text). Config-driven behavior uses empty `data-props='{}'`.
-4. CartCrossSell and CartProgressBar self-manage visibility — no conditional rules needed for basic show/hide.
-5. Max 6-7 islands inside DrawerShell to avoid clutter and hydration overhead.
-6. One cart config per store — applies to ALL pages. Pages only set the `head.use_cart_v2: true` flag.
-7. Never mix CartDrawer (V1) and DrawerShell (V2) — validation error.
-
----
-
-## Example
-
-Complete DrawerShell HTML for a store config:
-
-```html
-<div data-island="DrawerShell" data-island-container data-props='{"trigger":"cart:open"}'>
-  <div class="p-4 border-b">
-    <div data-island="CartProgressBar" data-props='{"threshold":7500,"message":"Add {remaining} for free shipping!","completedMessage":"Free shipping unlocked!"}'></div>
-  </div>
-  <div class="flex-1 overflow-y-auto p-4">
-    <div data-island="CartLines" data-props='{}'></div>
-  </div>
-  <div class="p-4 border-t">
-    <div data-island="CartCrossSell" data-props='{"heading":"Complete Your Routine","max":2,"layout":"horizontal","showQuickAdd":true}'></div>
-  </div>
-  <div class="p-4 border-t">
-    <div data-island="CartDiscountInput" data-props='{"placeholder":"Promo code"}'></div>
-  </div>
-  <div class="p-4 border-t bg-gray-50">
-    <div data-island="CartSummary" data-props='{}'></div>
-    <div data-island="CartCheckoutButton" data-props='{"text":"Checkout"}'></div>
-  </div>
-</div>
-```
-
----
-
-## Anti-Patterns
-
-| Anti-Pattern | Why It Breaks |
-|---|---|
-| Using `triggerId` on DrawerShell | Prop is `trigger` (event name string), not `triggerId` |
-| Passing `source` to CartCrossSell | No `source` prop exists — reads from `commerce_config.upsells` |
-| Using CartAnnouncement / CartOrderNote / CartCountdown | Unimplemented islands — will not render |
-| Missing `data-island-container` on DrawerShell | Children hydrate immediately on page load (perf hit) |
-| Putting cart section in page sections array | Cart V2 lives in store config only; page sets `head.use_cart_v2: true` |
-| CartDrawer + DrawerShell on same page | Validation error — pick one |
-| No CartLines or CartCheckoutButton | Validation blocks publish |
-
-
-# Cart V2 Management — MCP Workflow
-
-How to read, modify, and validate store-level cart configuration using MCP tools.
-
----
-
-## Store Config Shape
-
-The actual API response from `get_cart_config`:
-
-```json
-{
-  "id": "uuid",
-  "store_id": "uuid",
-  "cart_mode": "drawer-right",
-  "cart_sections": [{"id": "cart-drawer", "html": "...", "css": "...", "js": "..."}],
-  "cart_rules": [...],
-  "commerce_config": {
-    "free_shipping_threshold": 7500,
-    "currency": "USD",
-    "upsells": [{"trigger_product_ids": ["gid://shopify/Product/123"], "recommend_product_ids": ["gid://shopify/Product/789"], "label": "Complete your routine"}],
-    "cart_style": {"mode": "drawer-right", "responsive": {"mobile": "bottom-sheet"}, "width": "420px", "animate": "spring"},
-    "checkout_mode": "standard"
-  }
-}
-```
-
----
-
-## Available Tools (ONLY these 3)
-
-### `get_cart_config`
-
-Read current config. **Always call first.**
-
-**Params:** `store_id` (UUID)
-
----
-
-### `update_cart_config`
-
-Partial update. Validates rules before persisting.
-
-**Params:**
-- `store_id` (UUID, required)
-- `cart_mode` (optional)
-- `cart_sections` (optional, array of `{id, html, css?, js?}`)
-- `cart_rules` (optional, array)
-- `commerce_config` (optional, object)
-
----
-
-### `validate_cart_rules`
-
-Dry-run validation. Does not persist.
-
-**Params:**
-- `store_id` (UUID)
-- `rules` (array)
-
-**Returns:** `{valid, errors[]}`
-
----
-
-## Reactive Workflow
-
-1. Call `get_cart_config` to read current state
-2. Modify the relevant field (`commerce_config` for thresholds/upsells, `cart_sections` for HTML, `cart_rules` for conditional logic)
-3. Call `update_cart_config` with only the changed fields
-4. Islands react automatically — CartProgressBar reads `free_shipping_threshold`, CartCrossSell reads `upsells`
-
----
-
-## Common Operations
-
-### Add upsell
-
-1. Read config
-2. Append to `commerce_config.upsells`:
-```json
-{"trigger_product_ids": ["gid://shopify/Product/123"], "recommend_product_ids": ["gid://shopify/Product/789"], "label": "Complete your routine"}
-```
-3. Call `update_cart_config` with updated `commerce_config`
-
-### Change threshold
-
-1. Read config
-2. Set `commerce_config.free_shipping_threshold` to new value (cents)
-3. Call `update_cart_config` with updated `commerce_config`
-
-### Add rule
-
-1. Read config
-2. Append to `cart_rules`
-3. Validate first via `validate_cart_rules`
-4. Call `update_cart_config` with updated `cart_rules`
-
-### Change mode
-
-Call `update_cart_config` with `cart_mode: "bottom-sheet"` (or other valid mode).
-
----
-
-## Important Notes
-
-- `cart_sections` is a JSONB array (not a string) — same structure as page sections
-- Product IDs in upsells must be Shopify GIDs (`gid://shopify/Product/XXX`)
-- Islands are self-managing: CartCrossSell shows/hides based on cart contents matching `trigger_product_ids`
-- No need to regenerate HTML when changing `commerce_config` — islands read it live
+Read `storefront-engine/references/cart-composition.md` and
+`storefront-engine/references/cart-v2-management.md` for the detailed contract.
 
 ---
 
@@ -3903,7 +3776,7 @@ How to properly embed, wrap, and combine React islands in vibe-code HTML section
 
 ### Cart — V2 is the default (CartDrawer V1 is DEPRECATED)
 
-Set `head.use_cart_v2: true` on every commerce page. The DrawerShell cart (CartLines + CartSummary + CartCheckoutButton) is injected automatically from store config at render time — **never author a cart section in the page** (publish validation rejects inline DrawerShell on V2 pages, and dual surfaces error). Configure the drawer's mode/contents via the `update_cart_config` tool. Full composition guide: load `cart-composition` skill.
+Set `head.use_cart_v2: true` on every commerce page. The renderer injects the resolved published cart profile separately, so **never author a cart section in the page**. Use `get_cart_profile`, `set_cart_profile`, and `edit_cart` for MCP cart work. Full composition guide: load the `cart-composition` reference.
 
 ```jsonc
 { "head": { "title": "...", "use_cart_v2": true } }   // that's the whole cart setup

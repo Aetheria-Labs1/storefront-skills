@@ -1,109 +1,102 @@
-# Cart V2 Management — MCP Workflow
+# Cart Profile MCP Management
 
-How to read, modify, and validate store-level cart configuration using MCP tools.
+The MCP exposes three cart operations. Keep lifecycle management in the app.
 
----
+## `get_cart_profile`
 
-## Store Config Shape
+Inspect the effective cart for a page or one editable profile.
 
-The actual API response from `get_cart_config`:
+Inputs:
+
+- `page_id`
+- `cart_profile_id`
+- `store_id` as an optional multi-store hint
+- `include_available_profiles`
+
+Pass `page_id` to get the published snapshot a shopper receives and its
+`resolution_source`. Pass `cart_profile_id` to inspect the draft.
+
+Always call this tool before assigning or editing.
+
+## `set_cart_profile`
+
+Assign a published profile to a page:
 
 ```json
 {
-  "id": "uuid",
-  "store_id": "uuid",
-  "cart_mode": "drawer-right",
-  "cart_sections": [{"id": "cart-drawer", "html": "...", "css": "...", "js": "..."}],
-  "cart_rules": [...],
-  "commerce_config": {
-    "free_shipping_threshold": 7500,
-    "currency": "USD",
-    "upsells": [{"trigger_product_ids": ["gid://shopify/Product/123"], "recommend_product_ids": ["gid://shopify/Product/789"], "label": "Complete your routine"}],
-    "cart_style": {"mode": "drawer-right", "responsive": {"mobile": "bottom-sheet"}, "width": "420px", "animate": "spring"},
-    "checkout_mode": "standard"
+  "page_id": "PAGE_UUID",
+  "cart_profile_id": "PROFILE_UUID"
+}
+```
+
+Remove the page assignment and restore fallback resolution:
+
+```json
+{
+  "page_id": "PAGE_UUID",
+  "cart_profile_id": null
+}
+```
+
+The page and profile must belong to the same store. Draft and archived profiles
+cannot be assigned.
+
+## `edit_cart`
+
+Apply a partial patch to a profile draft:
+
+```json
+{
+  "cart_profile_id": "PROFILE_UUID",
+  "change_note": "Increase shipping target and update offer",
+  "patch": {
+    "cart_mode": "drawer-right",
+    "commerce_config": {
+      "free_shipping_threshold": 7500,
+      "offer_slots": [
+        {
+          "id": "pairs-well",
+          "placement": "after_line",
+          "source": "shopify_recommendations",
+          "recommendation_intent": "COMPLEMENTARY",
+          "heading": "Pairs well with",
+          "trigger_product_ids": [],
+          "recommend_product_ids": [],
+          "max_items": 1,
+          "enabled": true
+        }
+      ]
+    },
+    "custom_css": "[data-part=\"checkout\"] { font-weight: 600; }"
   }
 }
 ```
 
----
+Supported patch fields:
 
-## Available Tools (ONLY these 3)
+- `cart_mode`
+- `layout_schema`
+- `cart_rules`
+- `commerce_config`
+- `custom_css`
 
-### `get_cart_config`
+Nested commerce objects merge. Arrays replace their previous value. Pass
+`custom_css: null` to remove profile CSS.
 
-Read current config. **Always call first.**
+The tool validates the complete merged configuration and never publishes.
 
-**Params:** `store_id` (UUID)
+## App-only operations
 
----
+Use the Lexsis app to:
 
-### `update_cart_config`
+- Create, duplicate, rename, and archive profiles
+- Publish and roll back versions
+- Set the store default
+- Manage campaign assignments
+- Review assignment history and analytics
 
-Partial update. Validates rules before persisting.
+## Verification
 
-**Params:**
-- `store_id` (UUID, required)
-- `cart_mode` (optional)
-- `cart_sections` (optional, array of `{id, html, css?, js?}`)
-- `cart_rules` (optional, array)
-- `commerce_config` (optional, object)
-
----
-
-### `validate_cart_rules`
-
-Dry-run validation. Does not persist.
-
-**Params:**
-- `store_id` (UUID)
-- `rules` (array)
-
-**Returns:** `{valid, errors[]}`
-
----
-
-## Reactive Workflow
-
-1. Call `get_cart_config` to read current state
-2. Modify the relevant field (`commerce_config` for thresholds/upsells, `cart_sections` for HTML, `cart_rules` for conditional logic)
-3. Call `update_cart_config` with only the changed fields
-4. Islands react automatically — CartProgressBar reads `free_shipping_threshold`, CartCrossSell reads `upsells`
-
----
-
-## Common Operations
-
-### Add upsell
-
-1. Read config
-2. Append to `commerce_config.upsells`:
-```json
-{"trigger_product_ids": ["gid://shopify/Product/123"], "recommend_product_ids": ["gid://shopify/Product/789"], "label": "Complete your routine"}
-```
-3. Call `update_cart_config` with updated `commerce_config`
-
-### Change threshold
-
-1. Read config
-2. Set `commerce_config.free_shipping_threshold` to new value (cents)
-3. Call `update_cart_config` with updated `commerce_config`
-
-### Add rule
-
-1. Read config
-2. Append to `cart_rules`
-3. Validate first via `validate_cart_rules`
-4. Call `update_cart_config` with updated `cart_rules`
-
-### Change mode
-
-Call `update_cart_config` with `cart_mode: "bottom-sheet"` (or other valid mode).
-
----
-
-## Important Notes
-
-- `cart_sections` is a JSONB array (not a string) — same structure as page sections
-- Product IDs in upsells must be Shopify GIDs (`gid://shopify/Product/XXX`)
-- Islands are self-managing: CartCrossSell shows/hides based on cart contents matching `trigger_product_ids`
-- No need to regenerate HTML when changing `commerce_config` — islands read it live
+After a mutation, resolve the page again with `get_cart_profile`. Confirm the
+profile ID, version, and resolution source before telling the merchant the
+targeting is correct.

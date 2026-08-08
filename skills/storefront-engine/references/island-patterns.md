@@ -47,7 +47,7 @@ How to properly embed, wrap, and combine React islands in vibe-code HTML section
 
 ### Cart — V2 is the default (CartDrawer V1 is DEPRECATED)
 
-Set `head.use_cart_v2: true` on every commerce page. The DrawerShell cart (CartLines + CartSummary + CartCheckoutButton) is injected automatically from store config at render time — **never author a cart section in the page** (publish validation rejects inline DrawerShell on V2 pages, and dual surfaces error). Configure the drawer's mode/contents via the `update_cart_config` tool. Full composition guide: load `cart-composition` skill.
+Set `head.use_cart_v2: true` on every commerce page. The renderer injects the resolved published cart profile separately, so **never author a cart section in the page**. Use `get_cart_profile`, `set_cart_profile`, and `edit_cart` for MCP cart work. Full composition guide: load the `cart-composition` reference.
 
 ```jsonc
 { "head": { "title": "...", "use_cart_v2": true } }   // that's the whole cart setup
