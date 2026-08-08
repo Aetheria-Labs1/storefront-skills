@@ -559,7 +559,7 @@ Compose a Cart V2 drawer using atomic islands inside a DrawerShell container. Us
 
 ## Overview
 
-Cart V2 replaces the monolithic CartDrawer with composable islands that each handle one responsibility. The drawer HTML lives in store-level config (`cart_sections` array), shared across all pages. Islands read runtime data from the store's `commerce_config` at hydration time.
+Cart V2 is the DEFAULT cart (CartDrawer V1 is deprecated — never use it on new pages). It replaces the monolithic CartDrawer with composable islands that each handle one responsibility. The drawer HTML lives in store-level config (`cart_sections` array), shared across all pages. Islands read runtime data from the store's `commerce_config` at hydration time.
 
 ---
 
@@ -2473,7 +2473,7 @@ Use descriptive kebab-case: `hero`, `product-gallery`, `social-proof`, `ingredie
 - `data-props` must be valid JSON in single-quoted attribute
 - Only use valid island names (26 total — call `get_island_catalog` to see them)
 - One `BuyBox` per page (multiple breaks cart state)
-- One `CartDrawer` per page
+- Cart: `head.use_cart_v2: true` on every commerce page (`CartDrawer` V1 deprecated — never author a cart section)
 - `StickyBar` needs `triggerOffset` — distance in px before it appears
 - `ReviewCarousel` can use custom reviews array OR fetch from Shopify via productId
 
@@ -3865,7 +3865,7 @@ How to properly embed, wrap, and combine React islands in vibe-code HTML section
 1. `data-island` attribute = exact island name (case-sensitive)
 2. `data-props` = valid JSON in **single-quoted** attribute value
 3. One `BuyBox` per page (multiple breaks cart state)
-4. One `CartDrawer` per page (place in first section or separate section)
+4. Cart: set `head.use_cart_v2: true` on every commerce page — never author a cart section (`CartDrawer` is deprecated V1)
 5. Islands hydrate client-side — surrounding HTML renders immediately (SSR)
 6. Never put islands inside other islands
 7. Always wrap in a containing section with proper spacing
@@ -3901,36 +3901,15 @@ How to properly embed, wrap, and combine React islands in vibe-code HTML section
 </section>
 ```
 
-### CartDrawer — Slide-out Cart
+### Cart — V2 is the default (CartDrawer V1 is DEPRECATED)
 
-Place once, typically in first section or a dedicated invisible section:
+Set `head.use_cart_v2: true` on every commerce page. The DrawerShell cart (CartLines + CartSummary + CartCheckoutButton) is injected automatically from store config at render time — **never author a cart section in the page** (publish validation rejects inline DrawerShell on V2 pages, and dual surfaces error). Configure the drawer's mode/contents via the `update_cart_config` tool. Full composition guide: load `cart-composition` skill.
 
-```html
-<section class="hidden">
-  <div data-island="CartDrawer" data-props='{"position":"right","freeShippingThreshold":99900}'></div>
-</section>
+```jsonc
+{ "head": { "title": "...", "use_cart_v2": true } }   // that's the whole cart setup
 ```
 
-Note: `freeShippingThreshold` is in cents (99900 = ₹999).
-
-### Cart V2 — DrawerShell + Atomic Islands
-
-For stores with `cart_v2` enabled, use DrawerShell instead of CartDrawer. Set `head.use_cart_v2 = true`. Full composition guide: load `cart-composition` skill.
-
-```html
-<section class="hidden">
-  <div data-island="DrawerShell" data-island-container data-props='{"mode":"drawer-right","responsive":{"mobile":"bottom-sheet"},"trigger":"cart:open"}'>
-    <div class="p-4 border-b"><div data-island="CartProgressBar" data-props='{"threshold":9900}'></div></div>
-    <div class="flex-1 overflow-y-auto p-4"><div data-island="CartLines" data-props='{"showQuantity":true,"showRemove":true}'></div></div>
-    <div class="p-4 border-t bg-gray-50">
-      <div data-island="CartSummary" data-props='{}'></div>
-      <div data-island="CartCheckoutButton" data-props='{"text":"Checkout"}'></div>
-    </div>
-  </div>
-</section>
-```
-
-Required: `CartLines` + `CartCheckoutButton` inside DrawerShell. Never mix with old `CartDrawer`.
+Legacy note: `CartDrawer` (V1) exists only on old pages that predate Cart V2. Don't add it to new pages; when editing a legacy page, prefer migrating it (remove CartDrawer, set the flag).
 
 ### StickyBar — Scroll-triggered Bottom CTA
 
@@ -4128,7 +4107,7 @@ Place once (invisible):
 3. Tabs (details/ingredients/usage)
 4. ReviewCarousel
 5. StickyBar (scroll-triggered)
-6. CartDrawer (hidden)
+6. head.use_cart_v2: true (cart injected — no section needed)
 ```
 
 ### Landing Page Core
@@ -4198,8 +4177,7 @@ ProductGallery (vertical, listenForVariant:true)
 ├── BundleBuilder (layout:"horizontal")
 ├── ProductCarousel ("You may also like")
 ├── StickyBar
-├── CartDrawer
-└── SocialProofPopup
+└── SocialProofPopup    # cart: head.use_cart_v2: true (injected)
 ```
 
 ### Fashion/Apparel PDP
@@ -4217,8 +4195,7 @@ ProductGallery (layout:"grid", listenForVariant:true)
 ├── BundleBuilder (title:"Complete the look", layout:"stacked")
 ├── ProductCarousel
 ├── StickyBar
-├── CartDrawer
-└── ExitIntent
+└── ExitIntent          # cart: head.use_cart_v2: true (injected)
 ```
 
 ### Supplements/Wellness PDP
@@ -4237,8 +4214,7 @@ ProductGallery (vertical)
 ├── CompareTable (vs competitors)
 ├── BundleBuilder (title:"Stack for results")
 ├── StickyBar
-├── CartDrawer
-└── CountdownTimer (style:"simple", inline with price)
+└── CountdownTimer      # cart: head.use_cart_v2: true (injected) (style:"simple", inline with price)
 ```
 
 ### Personalized Product PDP (Gifts/Jewelry)
@@ -4252,8 +4228,7 @@ ProductGallery (layout:"grid")
 ├── Tabs
 ├── ReviewCarousel
 ├── ProductCarousel ("Complete the gift set")
-├── StickyBar
-└── CartDrawer
+└── StickyBar            # cart: head.use_cart_v2: true (injected)
 ```
 
 ### Island Communication on PDP
@@ -4262,7 +4237,7 @@ Key event flows for PDP islands:
 - VariantSwatches → (variant:changed) → BuyBox, ProductGallery, InventoryIndicator, PaymentOptions
 - OptionResolver → (variant:changed) → all listeners above (for multi-axis products)
 - SubscriptionToggle → (subscription:changed) → BuyBox
-- BundleBuilder → (bundle:add) → CartDrawer
+- BundleBuilder → (bundle:add) → cart drawer (Cart V2, injected)
 - InventoryIndicator → (inventory:updated) → StickyBar, BuyBox
 
 Always set `listenForEvents:true` on listener islands when they co-exist with emitters.
@@ -4434,7 +4409,7 @@ Combines announcement + navbar. Uses BOTH `data-lx-header` and `data-lx-nav` tag
 | Tag | Islands | Behavior |
 |-----|---------|----------|
 | `data-lx-nav="root"` | Navbar, SiteHeader | Sticky/scroll attaches here |
-| `data-lx-nav="cart-trigger"` | Navbar, SiteHeader | Click → open CartDrawer or navigate |
+| `data-lx-nav="cart-trigger"` | Navbar, SiteHeader | Click → open cart drawer or navigate |
 | `data-lx-nav="cart-count"` | Navbar, SiteHeader | textContent auto-updated from $cartLines |
 | `data-lx-nav="mobile-trigger"` | Navbar, SiteHeader | Click toggles mobile-panel .lx-open class |
 | `data-lx-nav="mobile-panel"` | Navbar, SiteHeader | Toggle target for mobile menu |

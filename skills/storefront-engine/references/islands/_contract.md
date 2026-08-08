@@ -85,7 +85,7 @@ NEVER use `--lx-accent-color` as a section background (except CTA banner section
 ## Composition Rules
 
 - Max 1 `BuyBox` per page
-- Max 1 `DrawerShell` / `CartDrawer` per page (in hidden section)
+- Cart: `head.use_cart_v2: true` (drawer injected from store config; `CartDrawer` V1 deprecated, never author cart sections)
 - Max 1 `Navbar` / `SiteHeader` per page (first section)
 - Max 1 `Footer` per page (last section)
 - `TrustBadgeBar`: place within 1 scroll (200px) of primary CTA

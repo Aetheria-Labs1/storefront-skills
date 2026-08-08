@@ -17,7 +17,7 @@ Compose a Cart V2 drawer using atomic islands inside a DrawerShell container. Us
 
 ## Overview
 
-Cart V2 replaces the monolithic CartDrawer with composable islands that each handle one responsibility. The drawer HTML lives in store-level config (`cart_sections` array), shared across all pages. Islands read runtime data from the store's `commerce_config` at hydration time.
+Cart V2 is the DEFAULT cart (CartDrawer V1 is deprecated — never use it on new pages). It replaces the monolithic CartDrawer with composable islands that each handle one responsibility. The drawer HTML lives in store-level config (`cart_sections` array), shared across all pages. Islands read runtime data from the store's `commerce_config` at hydration time.
 
 ---
 

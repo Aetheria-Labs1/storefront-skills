@@ -134,7 +134,7 @@ Use descriptive kebab-case: `hero`, `product-gallery`, `social-proof`, `ingredie
 - `data-props` must be valid JSON in single-quoted attribute
 - Only use valid island names (26 total — call `get_island_catalog` to see them)
 - One `BuyBox` per page (multiple breaks cart state)
-- One `CartDrawer` per page
+- Cart: `head.use_cart_v2: true` on every commerce page (`CartDrawer` V1 deprecated — never author a cart section)
 - `StickyBar` needs `triggerOffset` — distance in px before it appears
 - `ReviewCarousel` can use custom reviews array OR fetch from Shopify via productId
 

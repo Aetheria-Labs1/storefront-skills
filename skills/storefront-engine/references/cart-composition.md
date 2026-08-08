@@ -1,6 +1,6 @@
 # Cart V2 Composition — DrawerShell + Atomic Islands
 
-Compose a Cart V2 drawer using atomic islands inside a DrawerShell container. Use when store has `cart_v2` enabled.
+Compose a Cart V2 drawer using atomic islands inside a DrawerShell container. **Cart V2 is the DEFAULT cart — set `head.use_cart_v2: true` on every commerce page.** CartDrawer (V1) is **deprecated**: never use it on new pages; it remains only for existing legacy pages that already contain it.
 
 ---
 
