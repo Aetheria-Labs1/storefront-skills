@@ -1,7 +1,7 @@
 {
   "name": "lexsis-storefront-skills",
   "description": "AI-powered Shopify storefront builder. 2 agents + 10 commands + 47 island schemas. pipeline: plan \u2192 assets \u2192 generate \u2192 optimize.",
-  "version": "6.0.0",
+  "version": "5.1.1",
   "author": {
     "name": "Aetheria Labs",
     "email": "hello@trylexsis.com"
