@@ -67,15 +67,16 @@ If you receive a `CRO_BLUEPRINT` JSON (from cro-analyzer), use it as your plan:
 `search_design_library` → `generate_asset` → `edit_asset` → `view_asset`
 Prefer library over generation. Collect all URLs before Phase 4.
 
-### Phase 4 — HTML Generation (Two-Phase)
-- **2A**: Raw HTML + Tailwind, `data-placeholder` divs for islands, `--lx-*` CSS vars
-- **2B**: Replace placeholders with `data-island` markers (use `get_island_schema` for prop shapes)
+### Phase 4 — Source-Format HTML
+- Write sections delimited by `<!-- section: id -->`
+- Add islands as `<lx-island name="...">` with a JSON script child
+- Use `get_island_schema` for exact prop shapes
 
 ### Phase 5 — Validation
-`validate_vibe_page` — fix errors, re-validate (max 2 loops)
+`compile_page_source({ source, head, theme_css, scripts })` — fix errors, re-compile (max 2 loops)
 
 ### Phase 5 (cont.) — Draft Publish + Verify
-`publish_vibe_page` → preview URL. Never publish live unless user explicitly requests it.
+`create_page_from_source({ source, head, theme_css, scripts, slug, publish: false })` → preview URL. Never publish live unless user explicitly requests it.
 
 ---
 
@@ -105,10 +106,10 @@ Use `get_island_schema({island_name})` for full prop shapes.
 - **Always** `get_credits_balance` before `generate_asset`
 - Prefer `search_design_library` over `generate_asset` (free vs credits)
 - Use `medium` quality for `generate_asset` unless user requests high
-- One `validate_vibe_page` call usually sufficient (don't loop more than 2x)
+- One `compile_page_source` call usually sufficient (don't loop more than 2x)
 
 ---
 
 ## Visual Verification
 
-After `publish_vibe_page`, verify via Playwright if available (navigate → screenshot desktop + mobile → check hero, CTA above fold, no broken images, brand colors match) or provide preview URL with checklist to user. See `generation-protocol.md` for full verification protocol.
+After `create_page_from_source`, verify via Playwright if available (navigate → screenshot desktop + mobile → check hero, CTA above fold, no broken images, brand colors match) or provide preview URL with checklist to user. See `generation-protocol.md` for full verification protocol.

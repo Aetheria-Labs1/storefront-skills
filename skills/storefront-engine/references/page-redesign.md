@@ -57,7 +57,7 @@ Key rule: NEVER redesign sections that are converting well. Analytics data overr
 
 For each section to change:
 ```
-update_page_section(page_id, section_id, { html, css, settings })
+update_section_from_source({ page_id, section_id, source })
 ```
 
 For reordering (if scroll-depth data suggests better flow):
@@ -70,7 +70,7 @@ All updated sections must use `--lx-*` CSS variables from current brand kit. No 
 ### Step 5 — Validate
 
 ```
-validate_vibe_page(page_id)
+check_page_integrity({ page_id, archetype })
 ```
 
 Ensure no broken islands, valid HTML structure, responsive layout intact.
@@ -83,13 +83,13 @@ diff_page_versions(page_id, { from: previous_version, to: current_version })
 
 Present structural diff to user for approval before publishing.
 
-### Step 7 — Publish Draft and Visual Verification
+### Step 7 — Load Preview and Verify Visually
 
 ```
-publish_page(page_id, { draft: true })
+get_page(page_id)
 ```
 
-Returns `preview_url`.
+Use the returned `preview_url`.
 
 **Claude Code (Playwright MCP):**
 ```
@@ -110,7 +110,7 @@ Checklist:
 - [ ] Section spacing consistent
 - [ ] No horizontal scroll on mobile
 
-If issues found: `update_page_section` to fix, then re-verify.
+If issues found: `update_section_from_source` to fix, then re-verify.
 
 ### Step 8 — Go Live (User Confirms)
 
@@ -140,4 +140,4 @@ If redesign later hurts metrics: `rollback_page_version(page_id, version_id)` is
 - Mobile responsiveness maintained or improved
 - All existing islands remain functional
 - Version history intact (rollback available)
-- Page passes `validate_vibe_page` with zero errors
+- Page passes `check_page_integrity` with zero errors

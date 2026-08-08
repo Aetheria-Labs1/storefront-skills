@@ -60,9 +60,9 @@ Pages are **raw HTML + Tailwind CSS + CSS custom properties + React islands**. N
 1. get_storefront_skills({ brief, page_type }) → system prompt, island catalog, schema
 2. [Optional] search_design_library() → find existing brand assets
 3. [Optional] generate_asset(prompt, style, purpose) → get image URLs
-4. Agent generates VibePage JSON (HTML+Tailwind per section)
-5. validate_vibe_page({ page }) → structural + security check
-6. publish_vibe_page({ slug, page, publish: false }) → persist as draft, returns preview URL
+4. Agent authors source-format HTML with `<lx-island>` components
+5. compile_page_source({ source, head, theme_css, scripts }) → compile + validation
+6. create_page_from_source({ source, head, theme_css, scripts, slug, publish: false }) → persist as draft, returns preview URL
 7. publish_page({ page_id }) → go live (ONLY after the user explicitly approves)
 ```
 

@@ -79,20 +79,13 @@ vibe://schema/island/{IslandName}
 - For islands: use `data-island="Name" data-props='JSON'` pattern
 - For plain HTML: use Tailwind classes + inline style with CSS variables
 
-### 6. Preview the section update (dry-run)
+### 6. Insert section into page
 
 ```
-preview_section_update({ page_id, section_id: null, html, css, position })
+update_section_from_source({ page_id, source, position })
 ```
 
-- Dry-run to verify it won't break page layout
-- Check for conflicts with existing sections
-
-### 7. Insert section into page
-
-```
-update_page_section({ page_id, section_id: null, html, css, position })
-```
+The tool compiles the section and runs a full-page preflight before saving.
 
 - `null` section_id = "add new" (not update existing)
 - Position formats: `"before:{section_id}"`, `"after:{section_id}"`, or numeric index

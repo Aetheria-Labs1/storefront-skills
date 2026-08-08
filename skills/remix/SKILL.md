@@ -92,8 +92,8 @@ Use `get_island_schema` for exact prop shapes.
 ### Step 5 — Validate and Publish Draft
 
 ```
-validate_vibe_page(page_data)
-publish_vibe_page(page_data, { publish: false })
+compile_page_source({ source, head, theme_css, scripts })
+create_page_from_source({ source, head, theme_css, scripts, slug, publish: false })
 ```
 
 Always publish as draft first. Returns `preview_url`.
@@ -110,7 +110,7 @@ Checklist:
 - [ ] Islands hydrated (BuyBox shows product data)
 - [ ] Social proof section present
 
-If issues found: `update_page_section` to fix, then re-verify.
+If issues found: `update_section_from_source` to fix, then re-verify.
 
 ## Decision Points
 
@@ -130,7 +130,7 @@ If issues found: `update_page_section` to fix, then re-verify.
 - Mobile-first layout (most ad traffic is mobile)
 - No navigation links that leak traffic from conversion
 - Ad urgency signals carried through (countdown, limited stock, etc.)
-- Page passes `validate_vibe_page` with zero errors
+- Page passes `compile_page_source` with zero errors
 
 
 # Competitor Remix (Rebuild from Reference URL)
@@ -230,8 +230,8 @@ Replace placeholders with hydrated islands:
 ### Step 7 — Validate and Publish Draft
 
 ```
-validate_vibe_page(page_data)
-publish_vibe_page(page_data, { publish: false })
+compile_page_source({ source, head, theme_css, scripts })
+create_page_from_source({ source, head, theme_css, scripts, slug, publish: false })
 ```
 
 Returns `preview_url`.
@@ -249,7 +249,7 @@ Checklist:
 - [ ] Islands hydrated with user's own product data
 - [ ] Original copy serves user's value proposition
 
-If issues found: `update_page_section` to fix, then re-verify.
+If issues found: `update_section_from_source` to fix, then re-verify.
 
 ## Decision Points
 
@@ -268,4 +268,4 @@ If issues found: `update_page_section` to fix, then re-verify.
 - All product references from user's own catalog
 - Copy is original, serving user's value proposition
 - Mobile layout independent (do not assume competitor's responsive approach)
-- Page passes `validate_vibe_page` with zero errors
+- Page passes `compile_page_source` with zero errors

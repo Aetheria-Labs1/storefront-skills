@@ -76,14 +76,14 @@ For each section needing custom imagery:
   ├─ search_design_library({ query: "..." })
   └─ generate_asset({ ... })  ← costs credits
      ↓
-Assemble VibePage JSON:
-  - theme_css with brand variables
-  - sections array matching reference structure
-  - data-island markers for interactive components
+Assemble source-format HTML:
+  - sections delimited by `<!-- section: id -->`
+  - `<lx-island>` elements for interactive components
+  - `theme_css` passed as a structured tool argument
      ↓
-validate_vibe_page            ← FREE
+compile_page_source            ← FREE
      ↓
-publish_vibe_page({ draft: true })  ← costs credits (preview first)
+create_page_from_source({ source, head, theme_css, scripts, slug, publish: false })  ← costs credits (preview first)
 ```
 
 ---
@@ -160,6 +160,6 @@ Checklist against reference:
 
 Before starting a remix build:
 - Call `get_credits_balance` to check available credits
-- `generate_asset` and `publish_vibe_page` cost credits
-- `validate_vibe_page` and all read tools are FREE
+- `generate_asset` and `create_page_from_source` cost credits
+- `compile_page_source` and all read tools are FREE
 - If balance is 0: inform user, suggest using existing library assets only, or upgrading plan

@@ -158,7 +158,7 @@ Islands remain identical across variants -- only the surrounding copy/imagery ad
 
 For each variant:
 ```
-validate_vibe_page(variant_page_id)
+check_page_integrity({ page_id: variant_page_id, archetype })
 ```
 
 Ensure all render correctly, islands work, mobile intact.
@@ -208,7 +208,7 @@ Traffic routes to matching persona variant based on UTM/audience signals.
 - CTA language aligns with persona motivation
 - Social proof relevant to persona (industry-matched, use-case-matched)
 - All variants share same `--lx-*` brand identity
-- Each variant passes `validate_vibe_page` independently
+- Each variant passes `check_page_integrity` independently
 - Tone consistent within each variant (headline tone = body copy tone)
 - Structural integrity maintained (no broken sections or islands)
 
@@ -271,7 +271,7 @@ duplicate_page(page_id)
 
 Creates exact copy. Then apply the SINGLE focused change:
 ```
-update_page_section(variant_page_id, section_id, { html, css, settings })
+update_section_from_source({ page_id: variant_page_id, section_id, source })
 ```
 
 RULE: ONE change per test. Multiple changes make attribution impossible.
@@ -284,7 +284,7 @@ All styling via `--lx-*` CSS variables. Islands unchanged unless the test specif
 ### Step 5 — Validate Variant
 
 ```
-validate_vibe_page(variant_page_id)
+check_page_integrity({ page_id: variant_page_id, archetype })
 ```
 
 Ensure variant renders correctly, all islands work, mobile intact.
@@ -359,7 +359,7 @@ If no winner after 2000+ visitors per variant: the change has no meaningful impa
 - Hypothesis documented BEFORE variant creation
 - Minimum 1000 visitors per variant before evaluating
 - Statistical significance required (mSPRT p<0.05) before declaring winner
-- Both variants pass `validate_vibe_page`
+- Both variants pass `check_page_integrity`
 - Control remains untouched for test duration
 - Secondary metrics monitored alongside primary
 - Learning documented regardless of outcome (losses teach as much as wins)

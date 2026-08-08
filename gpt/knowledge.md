@@ -1,5 +1,5 @@
 <!-- GENERATED from skills/ by scripts/build-distributions.py — DO NOT EDIT.
-     storefront-skills v5.1.1 · 13 skills · 49 island schemas -->
+     storefront-skills v5.1.2 · 13 skills · 49 island schemas -->
 
 # Lexsis Storefront Skills — Knowledge Base
 
@@ -850,7 +850,7 @@ Islands remain identical across variants -- only the surrounding copy/imagery ad
 
 For each variant:
 ```
-validate_vibe_page(variant_page_id)
+check_page_integrity({ page_id: variant_page_id, archetype })
 ```
 
 Ensure all render correctly, islands work, mobile intact.
@@ -900,7 +900,7 @@ Traffic routes to matching persona variant based on UTM/audience signals.
 - CTA language aligns with persona motivation
 - Social proof relevant to persona (industry-matched, use-case-matched)
 - All variants share same `--lx-*` brand identity
-- Each variant passes `validate_vibe_page` independently
+- Each variant passes `check_page_integrity` independently
 - Tone consistent within each variant (headline tone = body copy tone)
 - Structural integrity maintained (no broken sections or islands)
 
@@ -963,7 +963,7 @@ duplicate_page(page_id)
 
 Creates exact copy. Then apply the SINGLE focused change:
 ```
-update_page_section(variant_page_id, section_id, { html, css, settings })
+update_section_from_source({ page_id: variant_page_id, section_id, source })
 ```
 
 RULE: ONE change per test. Multiple changes make attribution impossible.
@@ -976,7 +976,7 @@ All styling via `--lx-*` CSS variables. Islands unchanged unless the test specif
 ### Step 5 — Validate Variant
 
 ```
-validate_vibe_page(variant_page_id)
+check_page_integrity({ page_id: variant_page_id, archetype })
 ```
 
 Ensure variant renders correctly, all islands work, mobile intact.
@@ -1051,7 +1051,7 @@ If no winner after 2000+ visitors per variant: the change has no meaningful impa
 - Hypothesis documented BEFORE variant creation
 - Minimum 1000 visitors per variant before evaluating
 - Statistical significance required (mSPRT p<0.05) before declaring winner
-- Both variants pass `validate_vibe_page`
+- Both variants pass `check_page_integrity`
 - Control remains untouched for test duration
 - Secondary metrics monitored alongside primary
 - Learning documented regardless of outcome (losses teach as much as wins)
@@ -1215,27 +1215,27 @@ Edit existing pages using section-level operations.
 
 ## Edit Flow
 
-1. `list_pages` — find target page
-2. `get_page` — read current page structure + HTML
-3. Make changes (one of the operations below)
-4. `validate_vibe_page` — verify changes are valid
-5. Page auto-versions on each mutation
+1. `find_page` — locate the target page
+2. `get_page_source` and `inspect_page_sections` — read current source and structure
+3. Make section-level source changes
+4. `update_section_from_source` — compiles and preflights before saving
+5. `check_page_integrity` — verify the completed page
 
 ## Operations
 
 ### Update/Replace a Section
 
 ```
-update_page_section(page_id, section_id, { html, css, settings })
+update_section_from_source({ page_id, section_id, source })
 ```
-- Can replace HTML entirely or patch specific parts
+- Replaces the compiled section from one source-format section
 - Auto-bumps page version
 - Use for: changing copy, swapping images, restyling
 
 ### Add a New Section
 
 ```
-update_page_section(page_id, null, { html, css, settings, position })
+update_section_from_source({ page_id, source, position })
 ```
 - Position: "before:{section_id}" or "after:{section_id}" or index number
 - Must include full section HTML
@@ -1260,7 +1260,7 @@ move_page_section(page_id, section_id, new_position)
 
 - Always `get_page` first to understand current structure
 - Reference section IDs from the page data (don't guess)
-- After editing, run `validate_vibe_page` before telling user it's done
+- After all edits, run `check_page_integrity` before telling the user it is done
 - For multi-section changes, batch them (each call bumps version)
 - Preserve existing CSS variables and island configurations
 - Don't break mobile responsiveness when editing desktop layout
@@ -1325,7 +1325,7 @@ Key rule: NEVER redesign sections that are converting well. Analytics data overr
 
 For each section to change:
 ```
-update_page_section(page_id, section_id, { html, css, settings })
+update_section_from_source({ page_id, section_id, source })
 ```
 
 For reordering (if scroll-depth data suggests better flow):
@@ -1338,7 +1338,7 @@ All updated sections must use `--lx-*` CSS variables from current brand kit. No 
 ### Step 5 — Validate
 
 ```
-validate_vibe_page(page_id)
+check_page_integrity({ page_id, archetype })
 ```
 
 Ensure no broken islands, valid HTML structure, responsive layout intact.
@@ -1351,13 +1351,13 @@ diff_page_versions(page_id, { from: previous_version, to: current_version })
 
 Present structural diff to user for approval before publishing.
 
-### Step 7 — Publish Draft and Visual Verification
+### Step 7 — Load Preview and Verify Visually
 
 ```
-publish_page(page_id, { draft: true })
+get_page(page_id)
 ```
 
-Returns `preview_url`.
+Use the returned `preview_url`.
 
 Use Codex Browser to open `preview_url`, capture desktop and mobile screenshots, and inspect the rendered result. If Browser is unavailable, provide the preview URL and state that visual verification remains manual.
 
@@ -1370,7 +1370,7 @@ Checklist:
 - [ ] Section spacing consistent
 - [ ] No horizontal scroll on mobile
 
-If issues found: `update_page_section` to fix, then re-verify.
+If issues found: `update_section_from_source` to fix, then re-verify.
 
 ### Step 8 — Go Live (User Confirms)
 
@@ -1400,7 +1400,7 @@ If redesign later hurts metrics: `rollback_page_version(page_id, version_id)` is
 - Mobile responsiveness maintained or improved
 - All existing islands remain functional
 - Version history intact (rollback available)
-- Page passes `validate_vibe_page` with zero errors
+- Page passes `check_page_integrity` with zero errors
 
 ---
 
@@ -1548,7 +1548,7 @@ QA a storefront page, validate structure and rendering, create a draft preview, 
 
 ## Context
 
-- **qa-recipe**: 1. **Validate structure** — call `validate_vibe_page` on the generated JSON
+- **qa-recipe**: compile source, create a draft, run integrity checks, then verify in a browser
 
 ## Workflow
 
@@ -1558,23 +1558,23 @@ Manage page publishing, previews, and lifecycle.
 
 ## Publish Flow
 
-1. `validate_vibe_page` — always validate before publishing
-2. `publish_vibe_page` — create a draft preview first
-   - `draft: true` → preview URL only (not live on store)
-3. Confirm the user explicitly wants a live publish before any `draft: false` or `publish_page` call.
+1. `compile_page_source` — compile and validate the generated source
+2. `create_page_from_source` — create a draft preview first
+   - `publish: false` → preview URL only (not live on store)
+3. Confirm the user explicitly wants a live publish before `publish_page`.
 
 ## Operations
 
 ### Draft Preview (New Page)
 ```
-validate_vibe_page(page_data)
-publish_vibe_page(page_data, { draft: true })
+compile_page_source({ source, head, theme_css, scripts })
+create_page_from_source({ source, head, theme_css, scripts, slug, publish: false })
 ```
 Returns: page_id and preview_url
 
 ### Preview (Draft)
 ```
-publish_vibe_page(page_data, { draft: true })
+create_page_from_source({ source, head, theme_css, scripts, slug, publish: false })
 ```
 Returns: preview_url (not visible to store visitors)
 
@@ -1709,8 +1709,8 @@ Use `get_island_schema` for exact prop shapes.
 ### Step 5 — Validate and Publish Draft
 
 ```
-validate_vibe_page(page_data)
-publish_vibe_page(page_data, { publish: false })
+compile_page_source({ source, head, theme_css, scripts })
+create_page_from_source({ source, head, theme_css, scripts, slug, publish: false })
 ```
 
 Always publish as draft first. Returns `preview_url`.
@@ -1727,7 +1727,7 @@ Checklist:
 - [ ] Islands hydrated (BuyBox shows product data)
 - [ ] Social proof section present
 
-If issues found: `update_page_section` to fix, then re-verify.
+If issues found: `update_section_from_source` to fix, then re-verify.
 
 ## Decision Points
 
@@ -1747,7 +1747,7 @@ If issues found: `update_page_section` to fix, then re-verify.
 - Mobile-first layout (most ad traffic is mobile)
 - No navigation links that leak traffic from conversion
 - Ad urgency signals carried through (countdown, limited stock, etc.)
-- Page passes `validate_vibe_page` with zero errors
+- Page passes `compile_page_source` with zero errors
 
 
 # Competitor Remix (Rebuild from Reference URL)
@@ -1847,8 +1847,8 @@ Replace placeholders with hydrated islands:
 ### Step 7 — Validate and Publish Draft
 
 ```
-validate_vibe_page(page_data)
-publish_vibe_page(page_data, { publish: false })
+compile_page_source({ source, head, theme_css, scripts })
+create_page_from_source({ source, head, theme_css, scripts, slug, publish: false })
 ```
 
 Returns `preview_url`.
@@ -1866,7 +1866,7 @@ Checklist:
 - [ ] Islands hydrated with user's own product data
 - [ ] Original copy serves user's value proposition
 
-If issues found: `update_page_section` to fix, then re-verify.
+If issues found: `update_section_from_source` to fix, then re-verify.
 
 ## Decision Points
 
@@ -1885,7 +1885,7 @@ If issues found: `update_page_section` to fix, then re-verify.
 - All product references from user's own catalog
 - Copy is original, serving user's value proposition
 - Mobile layout independent (do not assume competitor's responsive approach)
-- Page passes `validate_vibe_page` with zero errors
+- Page passes `compile_page_source` with zero errors
 
 ---
 
@@ -2135,8 +2135,6 @@ compile_page_source({ source, head, theme_css, scripts })  → compiled page + i
 create_page_from_source({ source, head, theme_css, scripts, slug, publish: false })  → draft + preview URL
 ```
 
-(Legacy JSON path — `validate_vibe_page` / `publish_vibe_page` — still works for pages authored as VibePage JSON; edit those with `update_page_section` or migrate via `update_section_from_source`.)
-
 Report the preview URL. Call `publish_page` ONLY after the user explicitly says to go live.
 
 ---
@@ -2160,14 +2158,14 @@ Phase 3-5: Standard Flow, with extracted tokens as the theme_css base
 
 ```
 1. find_page({ query })                                   → locate page
-2. get_page_content({ page_id })                          → read sections + head
-3. preview_section_update({ page_id, section_id, html })  → dry-run (repeat per section)
-4. update_page_section({ page_id, section_id, html })     → commit (bumps version)
+2. get_page_source({ page_id })                           → read round-trip source
+3. inspect_page_sections({ page_id })                     → inspect current sections
+4. update_section_from_source({ page_id, source })        → compile, preflight, commit
 5. check_page_integrity({ page_id, archetype })           → structural QA
 6. [Optional] diff_page_versions / rollback_page_version
 ```
 
-**Key rules:** always preview before update; run integrity after all edits; rollback creates a forward version, preserving history.
+**Key rules:** source updates preflight before writing; run integrity after all edits; rollback creates a forward version, preserving history.
 
 ---
 
@@ -2272,9 +2270,9 @@ Pages are **raw HTML + Tailwind CSS + CSS custom properties + React islands**. N
 1. get_storefront_skills({ brief, page_type }) → system prompt, island catalog, schema
 2. [Optional] search_design_library() → find existing brand assets
 3. [Optional] generate_asset(prompt, style, purpose) → get image URLs
-4. Agent generates VibePage JSON (HTML+Tailwind per section)
-5. validate_vibe_page({ page }) → structural + security check
-6. publish_vibe_page({ slug, page, publish: false }) → persist as draft, returns preview URL
+4. Agent authors source-format HTML with `<lx-island>` components
+5. compile_page_source({ source, head, theme_css, scripts }) → compile + validation
+6. create_page_from_source({ source, head, theme_css, scripts, slug, publish: false }) → persist as draft, returns preview URL
 7. publish_page({ page_id }) → go live (ONLY after the user explicitly approves)
 ```
 
@@ -2399,7 +2397,7 @@ Steps 1-4 are ALWAYS run first. They establish context. Steps 5+ vary by skill.
 
 > **Brand kit ↔ design.md precedence**: when the two disagree, **exact tokens (colors, fonts, radius, spacing values) come from the brand kit**; **style philosophy, component guidance, and explicit don'ts come from design.md**. Conflict on a token → use the kit's value, applied within design.md's don'ts. Don't stall trying to reconcile them.
 
-> **Authoring format**: write pages in the HTML-native **source format** (`source-format.md`) — plain HTML sections delimited by `<!-- section: id -->`, islands as `<lx-island name>` with a JSON `<script>` child. The compiler produces VibePage JSON and does all escaping. The legacy JSON tools (`validate_vibe_page`, `publish_vibe_page`, `update_page_section`) still work for editing pages that were authored as JSON.
+> **Authoring format**: write pages in the HTML-native **source format** (`source-format.md`) — plain HTML sections delimited by `<!-- section: id -->`, islands as `<lx-island name>` with a JSON `<script>` child. The compiler produces VibePage JSON and does all escaping.
 
 ---
 
@@ -2432,7 +2430,7 @@ Run `compile_page_source { source, head, theme_css, scripts }`:
 
 ## VibePage JSON Structure (storage format — compiler output)
 
-> You normally don't write this by hand anymore — the source-format compiler produces it. It remains the storage/render format and what the legacy JSON tools accept.
+> You do not write this by hand. The source-format compiler produces it as the storage and rendering format.
 
 ```json
 {
@@ -2477,7 +2475,7 @@ Run `compile_page_source { source, head, theme_css, scripts }`:
 
 ## Visual Verification (Critical Step)
 
-After `publish_vibe_page` returns a `preview_url`, ALWAYS verify visually.
+After `create_page_from_source` returns a `preview_url`, ALWAYS verify visually.
 
 ### For Claude Code (Playwright MCP)
 
@@ -2500,7 +2498,7 @@ Then:
 1. browser_navigate → preview_url
 2. browser_take_screenshot({fullPage: true}) → full page capture
 3. Review: layout, spacing, mobile responsiveness, broken images
-4. If issues found → update_page_section to fix → re-verify
+4. If issues found → `update_section_from_source({ page_id, source })` → re-verify
 ```
 
 ### For Codex (Built-in Browser)
@@ -2581,13 +2579,13 @@ These tools appeared in older skill versions but are no longer available:
 
 ## Quality Gates (Before Publishing)
 
-1. **validate_vibe_page** — structural validation (required)
+1. **compile_page_source** — compile and validate source before creating a page
 2. **check_page_integrity** — archetype-specific rules (recommended)
 3. **Visual verification** — browser screenshot (required for final delivery)
 
-If `validate_vibe_page` fails → fix errors → re-validate.
+If `compile_page_source` fails → fix source errors → re-compile.
 If `check_page_integrity` warns → assess if acceptable → proceed or fix.
-If visual check fails → `update_page_section` → re-screenshot.
+If visual check fails → `update_section_from_source` → re-screenshot.
 
 ---
 
@@ -2816,17 +2814,17 @@ Phase 4-4: Same as Standard Flow
 
 ```
 1. find_page({ query })                              → locate page by handle/title/UUID
-2. get_page_content({ page_id })                     → read current sections + head
-3. Identify which sections to modify
-4. preview_section_update({ page_id, section_id, html })  → dry-run validation (repeat per section)
-5. update_page_section({ page_id, section_id, html })     → commit change (bumps version)
+2. get_page_source({ page_id })                      → read round-trip source when available
+3. inspect_page_sections({ page_id })                → inspect current compiled sections
+4. Identify which sections to modify
+5. update_section_from_source({ page_id, source })   → compile, preflight, commit
 6. check_page_integrity({ page_id, archetype })           → structural QA pass
 7. [Optional] diff_page_versions({ page_id, version_a, version_b })  → review all changes
 8. [If broken] rollback_page_version({ page_id, target_version })    → revert to prior version
 ```
 
 **Key rules:**
-- Always `preview_section_update` before `update_page_section` — catches validation errors without bumping version
+- `update_section_from_source` compiles and runs the full-page preflight before it writes
 - Run `check_page_integrity` after all edits complete — catches archetype violations (e.g. PDP without BuyBox)
 - Use `diff_page_versions` to verify your changes look correct before publishing
 - Use `rollback_page_version` if integrity check fails — creates a new forward version, preserves history
@@ -2898,11 +2896,11 @@ Always call `get_credits_balance` before expensive operations. If balance is 0, 
 |------|------|-------|
 | `generate_asset` | credits | AI image generation |
 | `edit_asset` | credits | AI image editing/compositing |
-| `publish_vibe_page` | credits | Page generation (only on publish, not drafts) |
+| `create_page_from_source` | credits | Page generation (only on publish, not drafts) |
 | `create_page_variation` | credits | A/B variant creation (requires Pro plan) |
 | `create_ab_test` | credits | Experiment setup (requires Pro plan) |
-| `update_page_section` | credits | Section regeneration |
-| `validate_vibe_page` | FREE | Always validate before publishing |
+| `update_section_from_source` | credits | Section regeneration |
+| `compile_page_source` | FREE | Always validate before publishing |
 | `check_page_integrity` | FREE | Structure/accessibility check |
 | All read/list/get tools | FREE | No cost for browsing data |
 
@@ -2911,7 +2909,7 @@ Always call `get_credits_balance` before expensive operations. If balance is 0, 
 get_credits_balance → check cost → warn if insufficient → proceed or abort
 ```
 
-Hand-authored VibePage JSON persisted via `publish_vibe_page` still costs credits (it's the publish action, not the AI generation, that bills). Draft previews (`draft: true`) also consume credits.
+Source-format pages persisted via `create_page_from_source` still cost credits (the write action, not the compiler, bills). Draft previews (`publish: false`) also consume credits.
 
 ---
 
@@ -4578,8 +4576,8 @@ The generation workflow uses these URLs directly in `<img src="">` and island pr
 
 ## Pre-flight Checklist
 
-1. **Validate structure** — call `validate_vibe_page` on the generated JSON
-2. **Save as draft** — call `publish_vibe_page` with `publish: false`
+1. **Compile and validate source** — call `compile_page_source` with `source`, `head`, `theme_css`, and `scripts`
+2. **Save as draft** — call `create_page_from_source` with `publish: false`
 3. **Check integrity** — call `check_page_integrity` with the page's archetype
 
 ## Browser QA (if available)
@@ -4619,23 +4617,23 @@ Manage page publishing, previews, and lifecycle.
 
 ## Publish Flow
 
-1. `validate_vibe_page` — always validate before publishing
-2. `publish_vibe_page` — persist to DB + storage
-   - `draft: true` → preview URL only (not live on store)
-   - `draft: false` → live on Shopify store
+1. `compile_page_source` — compile and validate the generated source
+2. `create_page_from_source` — persist the initial draft
+   - `publish: false` → preview URL only (not live on store)
+3. `publish_page` — go live only after explicit approval
 
 ## Operations
 
-### Publish (New Page)
+### Create Draft (New Page)
 ```
-validate_vibe_page(page_data)
-publish_vibe_page(page_data, { draft: false })
+compile_page_source({ source, head, theme_css, scripts })
+create_page_from_source({ source, head, theme_css, scripts, slug, publish: false })
 ```
 Returns: page_id, page_url, preview_url
 
 ### Preview (Draft)
 ```
-publish_vibe_page(page_data, { draft: true })
+create_page_from_source({ source, head, theme_css, scripts, slug, publish: false })
 ```
 Returns: preview_url (not visible to store visitors)
 
@@ -4738,27 +4736,27 @@ Edit existing pages using section-level operations.
 
 ## Edit Flow
 
-1. `list_pages` — find target page
-2. `get_page` — read current page structure + HTML
-3. Make changes (one of the operations below)
-4. `validate_vibe_page` — verify changes are valid
-5. Page auto-versions on each mutation
+1. `find_page` — locate the target page
+2. `get_page_source` and `inspect_page_sections` — read source and structure
+3. Edit exactly one source-format section
+4. `update_section_from_source` — compile, preflight, and save
+5. `check_page_integrity` — verify the completed page
 
 ## Operations
 
 ### Update/Replace a Section
 
 ```
-update_page_section(page_id, section_id, { html, css, settings })
+update_section_from_source({ page_id, section_id, source })
 ```
-- Can replace HTML entirely or patch specific parts
+- Replaces the compiled section from source-format HTML
 - Auto-bumps page version
 - Use for: changing copy, swapping images, restyling
 
 ### Add a New Section
 
 ```
-update_page_section(page_id, null, { html, css, settings, position })
+update_section_from_source({ page_id, source, position })
 ```
 - Position: "before:{section_id}" or "after:{section_id}" or index number
 - Must include full section HTML
@@ -4783,7 +4781,7 @@ move_page_section(page_id, section_id, new_position)
 
 - Always `get_page` first to understand current structure
 - Reference section IDs from the page data (don't guess)
-- After editing, run `validate_vibe_page` before telling user it's done
+- After editing, run `check_page_integrity` before telling the user it is done
 - For multi-section changes, batch them (each call bumps version)
 - Preserve existing CSS variables and island configurations
 - Don't break mobile responsiveness when editing desktop layout

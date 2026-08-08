@@ -72,17 +72,17 @@ Phase 4-4: Same as Standard Flow
 
 ```
 1. find_page({ query })                              → locate page by handle/title/UUID
-2. get_page_content({ page_id })                     → read current sections + head
-3. Identify which sections to modify
-4. preview_section_update({ page_id, section_id, html })  → dry-run validation (repeat per section)
-5. update_page_section({ page_id, section_id, html })     → commit change (bumps version)
+2. get_page_source({ page_id })                      → read round-trip source when available
+3. inspect_page_sections({ page_id })                → inspect current compiled sections
+4. Identify which sections to modify
+5. update_section_from_source({ page_id, source })   → compile, preflight, commit
 6. check_page_integrity({ page_id, archetype })           → structural QA pass
 7. [Optional] diff_page_versions({ page_id, version_a, version_b })  → review all changes
 8. [If broken] rollback_page_version({ page_id, target_version })    → revert to prior version
 ```
 
 **Key rules:**
-- Always `preview_section_update` before `update_page_section` — catches validation errors without bumping version
+- `update_section_from_source` compiles and runs the full-page preflight before it writes
 - Run `check_page_integrity` after all edits complete — catches archetype violations (e.g. PDP without BuyBox)
 - Use `diff_page_versions` to verify your changes look correct before publishing
 - Use `rollback_page_version` if integrity check fails — creates a new forward version, preserves history
@@ -154,11 +154,11 @@ Always call `get_credits_balance` before expensive operations. If balance is 0, 
 |------|------|-------|
 | `generate_asset` | credits | AI image generation |
 | `edit_asset` | credits | AI image editing/compositing |
-| `publish_vibe_page` | credits | Page generation (only on publish, not drafts) |
+| `create_page_from_source` | credits | Page generation (only on publish, not drafts) |
 | `create_page_variation` | credits | A/B variant creation (requires Pro plan) |
 | `create_ab_test` | credits | Experiment setup (requires Pro plan) |
-| `update_page_section` | credits | Section regeneration |
-| `validate_vibe_page` | FREE | Always validate before publishing |
+| `update_section_from_source` | credits | Section regeneration |
+| `compile_page_source` | FREE | Always validate before publishing |
 | `check_page_integrity` | FREE | Structure/accessibility check |
 | All read/list/get tools | FREE | No cost for browsing data |
 
@@ -167,4 +167,4 @@ Always call `get_credits_balance` before expensive operations. If balance is 0, 
 get_credits_balance → check cost → warn if insufficient → proceed or abort
 ```
 
-Hand-authored VibePage JSON persisted via `publish_vibe_page` still costs credits (it's the publish action, not the AI generation, that bills). Draft previews (`draft: true`) also consume credits.
+Source-format pages persisted via `create_page_from_source` still cost credits (the write action, not the compiler, bills). Draft previews (`publish: false`) also consume credits.

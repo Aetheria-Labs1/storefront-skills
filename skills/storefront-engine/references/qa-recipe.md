@@ -2,8 +2,8 @@
 
 ## Pre-flight Checklist
 
-1. **Validate structure** — call `validate_vibe_page` on the generated JSON
-2. **Save as draft** — call `publish_vibe_page` with `publish: false`
+1. **Compile and validate source** — call `compile_page_source` with `source`, `head`, `theme_css`, and `scripts`
+2. **Save as draft** — call `create_page_from_source` with `publish: false`
 3. **Check integrity** — call `check_page_integrity` with the page's archetype
 
 ## Browser QA (if available)

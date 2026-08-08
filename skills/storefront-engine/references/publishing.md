@@ -4,23 +4,23 @@ Manage page publishing, previews, and lifecycle.
 
 ## Publish Flow
 
-1. `validate_vibe_page` — always validate before publishing
-2. `publish_vibe_page` — persist to DB + storage
-   - `draft: true` → preview URL only (not live on store)
-   - `draft: false` → live on Shopify store
+1. `compile_page_source` — compile and validate the generated source
+2. `create_page_from_source` — persist the initial draft
+   - `publish: false` → preview URL only (not live on store)
+3. `publish_page` — go live only after explicit approval
 
 ## Operations
 
-### Publish (New Page)
+### Create Draft (New Page)
 ```
-validate_vibe_page(page_data)
-publish_vibe_page(page_data, { draft: false })
+compile_page_source({ source, head, theme_css, scripts })
+create_page_from_source({ source, head, theme_css, scripts, slug, publish: false })
 ```
 Returns: page_id, page_url, preview_url
 
 ### Preview (Draft)
 ```
-publish_vibe_page(page_data, { draft: true })
+create_page_from_source({ source, head, theme_css, scripts, slug, publish: false })
 ```
 Returns: preview_url (not visible to store visitors)
 

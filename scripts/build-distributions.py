@@ -42,6 +42,10 @@ RETIRED_TOOLS = [
     "get_cart_config",
     "update_cart_config",
     "validate_cart_rules",
+    "validate_vibe_page",
+    "publish_vibe_page",
+    "update_page_section",
+    "preview_section_update",
 ]
 
 # References worth shipping to a custom GPT (knowledge budget is finite;

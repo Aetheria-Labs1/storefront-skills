@@ -173,8 +173,6 @@ compile_page_source({ source, head, theme_css, scripts })  → compiled page + i
 create_page_from_source({ source, head, theme_css, scripts, slug, publish: false })  → draft + preview URL
 ```
 
-(Legacy JSON path — `validate_vibe_page` / `publish_vibe_page` — still works for pages authored as VibePage JSON; edit those with `update_page_section` or migrate via `update_section_from_source`.)
-
 Report the preview URL. Call `publish_page` ONLY after the user explicitly says to go live.
 
 ---
@@ -198,14 +196,14 @@ Phase 3-5: Standard Flow, with extracted tokens as the theme_css base
 
 ```
 1. find_page({ query })                                   → locate page
-2. get_page_content({ page_id })                          → read sections + head
-3. preview_section_update({ page_id, section_id, html })  → dry-run (repeat per section)
-4. update_page_section({ page_id, section_id, html })     → commit (bumps version)
+2. get_page_source({ page_id })                           → read round-trip source
+3. inspect_page_sections({ page_id })                     → inspect current sections
+4. update_section_from_source({ page_id, source })        → compile, preflight, commit
 5. check_page_integrity({ page_id, archetype })           → structural QA
 6. [Optional] diff_page_versions / rollback_page_version
 ```
 
-**Key rules:** always preview before update; run integrity after all edits; rollback creates a forward version, preserving history.
+**Key rules:** source updates preflight before writing; run integrity after all edits; rollback creates a forward version, preserving history.
 
 ---
 

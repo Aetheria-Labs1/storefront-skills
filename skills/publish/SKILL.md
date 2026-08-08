@@ -9,7 +9,7 @@ QA a storefront page, validate structure and rendering, create a draft preview, 
 
 ## Context
 
-- **qa-recipe**: 1. **Validate structure** — call `validate_vibe_page` on the generated JSON
+- **qa-recipe**: compile source, create a draft, run integrity checks, then verify in a browser
 
 ## Workflow
 
@@ -19,23 +19,23 @@ Manage page publishing, previews, and lifecycle.
 
 ## Publish Flow
 
-1. `validate_vibe_page` — always validate before publishing
-2. `publish_vibe_page` — create a draft preview first
-   - `draft: true` → preview URL only (not live on store)
-3. Confirm the user explicitly wants a live publish before any `draft: false` or `publish_page` call.
+1. `compile_page_source` — compile and validate the generated source
+2. `create_page_from_source` — create a draft preview first
+   - `publish: false` → preview URL only (not live on store)
+3. Confirm the user explicitly wants a live publish before `publish_page`.
 
 ## Operations
 
 ### Draft Preview (New Page)
 ```
-validate_vibe_page(page_data)
-publish_vibe_page(page_data, { draft: true })
+compile_page_source({ source, head, theme_css, scripts })
+create_page_from_source({ source, head, theme_css, scripts, slug, publish: false })
 ```
 Returns: page_id and preview_url
 
 ### Preview (Draft)
 ```
-publish_vibe_page(page_data, { draft: true })
+create_page_from_source({ source, head, theme_css, scripts, slug, publish: false })
 ```
 Returns: preview_url (not visible to store visitors)
 

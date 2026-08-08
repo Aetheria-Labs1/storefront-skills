@@ -4,27 +4,27 @@ Edit existing pages using section-level operations.
 
 ## Edit Flow
 
-1. `list_pages` — find target page
-2. `get_page` — read current page structure + HTML
-3. Make changes (one of the operations below)
-4. `validate_vibe_page` — verify changes are valid
-5. Page auto-versions on each mutation
+1. `find_page` — locate the target page
+2. `get_page_source` and `inspect_page_sections` — read source and structure
+3. Edit exactly one source-format section
+4. `update_section_from_source` — compile, preflight, and save
+5. `check_page_integrity` — verify the completed page
 
 ## Operations
 
 ### Update/Replace a Section
 
 ```
-update_page_section(page_id, section_id, { html, css, settings })
+update_section_from_source({ page_id, section_id, source })
 ```
-- Can replace HTML entirely or patch specific parts
+- Replaces the compiled section from source-format HTML
 - Auto-bumps page version
 - Use for: changing copy, swapping images, restyling
 
 ### Add a New Section
 
 ```
-update_page_section(page_id, null, { html, css, settings, position })
+update_section_from_source({ page_id, source, position })
 ```
 - Position: "before:{section_id}" or "after:{section_id}" or index number
 - Must include full section HTML
@@ -49,7 +49,7 @@ move_page_section(page_id, section_id, new_position)
 
 - Always `get_page` first to understand current structure
 - Reference section IDs from the page data (don't guess)
-- After editing, run `validate_vibe_page` before telling user it's done
+- After editing, run `check_page_integrity` before telling the user it is done
 - For multi-section changes, batch them (each call bumps version)
 - Preserve existing CSS variables and island configurations
 - Don't break mobile responsiveness when editing desktop layout

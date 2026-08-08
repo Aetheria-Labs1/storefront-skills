@@ -23,7 +23,7 @@ Steps 1-4 are ALWAYS run first. They establish context. Steps 5+ vary by skill.
 
 > **Brand kit ↔ design.md precedence**: when the two disagree, **exact tokens (colors, fonts, radius, spacing values) come from the brand kit**; **style philosophy, component guidance, and explicit don'ts come from design.md**. Conflict on a token → use the kit's value, applied within design.md's don'ts. Don't stall trying to reconcile them.
 
-> **Authoring format**: write pages in the HTML-native **source format** (`source-format.md`) — plain HTML sections delimited by `<!-- section: id -->`, islands as `<lx-island name>` with a JSON `<script>` child. The compiler produces VibePage JSON and does all escaping. The legacy JSON tools (`validate_vibe_page`, `publish_vibe_page`, `update_page_section`) still work for editing pages that were authored as JSON.
+> **Authoring format**: write pages in the HTML-native **source format** (`source-format.md`) — plain HTML sections delimited by `<!-- section: id -->`, islands as `<lx-island name>` with a JSON `<script>` child. The compiler produces VibePage JSON and does all escaping.
 
 ---
 
@@ -56,7 +56,7 @@ Run `compile_page_source { source, head, theme_css, scripts }`:
 
 ## VibePage JSON Structure (storage format — compiler output)
 
-> You normally don't write this by hand anymore — the source-format compiler produces it. It remains the storage/render format and what the legacy JSON tools accept.
+> You do not write this by hand. The source-format compiler produces it as the storage and rendering format.
 
 ```json
 {
@@ -101,7 +101,7 @@ Run `compile_page_source { source, head, theme_css, scripts }`:
 
 ## Visual Verification (Critical Step)
 
-After `publish_vibe_page` returns a `preview_url`, ALWAYS verify visually.
+After `create_page_from_source` returns a `preview_url`, ALWAYS verify visually.
 
 ### For Claude Code (Playwright MCP)
 
@@ -124,7 +124,7 @@ Then:
 1. browser_navigate → preview_url
 2. browser_take_screenshot({fullPage: true}) → full page capture
 3. Review: layout, spacing, mobile responsiveness, broken images
-4. If issues found → update_page_section to fix → re-verify
+4. If issues found → `update_section_from_source({ page_id, source })` → re-verify
 ```
 
 ### For Codex (Built-in Browser)
@@ -205,10 +205,10 @@ These tools appeared in older skill versions but are no longer available:
 
 ## Quality Gates (Before Publishing)
 
-1. **validate_vibe_page** — structural validation (required)
+1. **compile_page_source** — compile and validate source before creating a page
 2. **check_page_integrity** — archetype-specific rules (recommended)
 3. **Visual verification** — browser screenshot (required for final delivery)
 
-If `validate_vibe_page` fails → fix errors → re-validate.
+If `compile_page_source` fails → fix source errors → re-compile.
 If `check_page_integrity` warns → assess if acceptable → proceed or fix.
-If visual check fails → `update_page_section` → re-screenshot.
+If visual check fails → `update_section_from_source` → re-screenshot.
