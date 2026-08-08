@@ -10,7 +10,7 @@ Before planning custom sections, search the template library for pre-built secti
 
 ```
 search_section_templates({ query: "<describe what you need>", section: "<type>", industry: "<vertical>", mood: "<mood>", page_type: "<page_type>" })
-get_section_template({ ids: ["<chosen id from results>"] })
+get_section_template({ ids: ["<chosen id from results>"], format: "authoring_source" })
 ```
 
 For a whole page instead of one section at a time, search curated page-kits first — coherent multi-section groupings (hero + buy-box + reviews + faq, etc.) that already share one palette/vertical:

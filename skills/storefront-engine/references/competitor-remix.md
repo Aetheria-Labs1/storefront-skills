@@ -54,7 +54,7 @@ For each competitor section:
 
 ```
 search_section_templates({ query: "<competitor section description>", section: "<type>", industry: "<vertical>" })
-get_section_template({ ids: ["<chosen id from results>"] })
+get_section_template({ ids: ["<chosen id from results>"], format: "authoring_source" })
 search_design_library({ query: "<relevant product/category>" })
 list_products({ limit: 10 })
 ```

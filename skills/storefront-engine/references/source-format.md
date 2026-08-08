@@ -65,6 +65,23 @@ round-trip: get_page_source { page_id } → edit → update_section_from_source
 
 `update_section_from_source` compiles ONE section (delimiter optional — pass `section_id` if absent) and upserts it. Prefer it over whole-page rewrites: smaller payloads, no blob races.
 
+## Starting From a Template
+
+Search the section library before writing a section from scratch. When you pick
+a template, request editable source:
+
+```text
+get_section_template({ ids: ["template-id"], format: "authoring_source" })
+```
+
+The response keeps the template's `html`, `css`, and `js`, but its HTML uses
+`<lx-island>` source syntax. Tailor it, include its CSS/JS in the source, then
+run `compile_page_source`.
+
+The default `compiled_reference` format is renderer output containing
+`data-island` / `data-props`. It is useful for inspection but must never be
+given to source-authoring tools.
+
 ## Headless islands (fully custom markup)
 
 For maximum design freedom, add `headless` and author the island's internals yourself; behavior attaches to `data-lx-*` hooks. Currently supported: **BuyBox** (plus the long-standing Navbar/Footer/SiteHeader hydration modes — see island-patterns.md).

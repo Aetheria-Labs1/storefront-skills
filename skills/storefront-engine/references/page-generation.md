@@ -12,13 +12,17 @@ Always search `search_section_templates` before generating sections from scratch
 
 ```
 search_section_templates({ query: "hero with video background for fashion", section: "hero", industry: "fashion", mood: "editorial" })
-get_section_template({ ids: ["<chosen id from results>"] })
+get_section_template({ ids: ["<chosen id from results>"], format: "authoring_source" })
 ```
 
-- If a matching template is found (score > 0.7): USE IT. Swap placeholder content for brand-specific copy/images.
+- If a matching template is found (score > 0.7): USE IT. The returned source
+  is ready to tailor with brand-specific copy/images, then pass to
+  `compile_page_source`.
 - If no match: generate from scratch in Phase 4.
 
 Templates are conversion-proven, pixel-perfect, and faster than custom generation.
+Use `compiled_reference` only to inspect renderer output; never paste its
+`data-island` / `data-props` markup into source-authoring tools.
 
 For a full page, check `search_page_kits` before assembling sections one at a time — it returns curated multi-section groupings that already share one palette/vertical:
 

@@ -29,6 +29,11 @@ Steps 1-4 are ALWAYS run first. They establish context. Steps 5+ vary by skill.
 
 > **Authoring format**: write pages in the HTML-native **source format** (`source-format.md`) — plain HTML sections delimited by `<!-- section: id -->`, islands as `<lx-island name>` with a JSON `<script>` child. The compiler produces VibePage JSON and does all escaping.
 
+> **Templates**: search before drafting. Retrieve templates you intend to edit
+> with `get_section_template({ ids, format: "authoring_source" })`. The default
+> `compiled_reference` is renderer output and cannot be passed directly to
+> source-authoring tools.
+
 ---
 
 ## Two-Phase Generation (Fast Iteration Pattern)
@@ -201,7 +206,7 @@ These tools appeared in older skill versions but are no longer available:
 | `get_theme_json` | `get_brand_kit` (includes theme data) |
 | `provision_store` | Handle via onboarding flow, not page generation |
 | `extract_brand_design` / `capture_design_source` / `list_design_sources` | No replacement — no MCP tool for reference-URL design extraction currently exists |
-| `search_section_templates` returning `html`/`css`/`js` inline | Search is metadata-only now; call `get_section_template({ ids })` for markup |
+| `search_section_templates` returning `html`/`css`/`js` inline | Search is metadata-only now; call `get_section_template({ ids, format: "authoring_source" })` for editable source |
 
 `get_island_catalog` and `get_island_schema` remain active tools — use them for island discovery and schema lookups, alongside the `vibe://catalog/islands` resource.
 
