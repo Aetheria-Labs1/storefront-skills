@@ -1,5 +1,5 @@
 <!-- GENERATED from skills/ by scripts/build-distributions.py — DO NOT EDIT.
-     storefront-skills v5.0.0 · 13 skills · 49 island schemas -->
+     storefront-skills v5.1.0 · 13 skills · 49 island schemas -->
 
 # Lexsis Storefront Skills — Knowledge Base
 
