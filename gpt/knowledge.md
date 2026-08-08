@@ -2524,6 +2524,8 @@ Use descriptive kebab-case: `hero`, `product-gallery`, `social-proof`, `ingredie
 
 Steps 1-4 are ALWAYS run first. They establish context. Steps 5+ vary by skill.
 
+> **Brand kit ↔ design.md precedence**: when the two disagree, **exact tokens (colors, fonts, radius, spacing values) come from the brand kit**; **style philosophy, component guidance, and explicit don'ts come from design.md**. Conflict on a token → use the kit's value, applied within design.md's don'ts. Don't stall trying to reconcile them.
+
 > **Authoring format**: write pages in the HTML-native **source format** (`source-format.md`) — plain HTML sections delimited by `<!-- section: id -->`, islands as `<lx-island name>` with a JSON `<script>` child. The compiler produces VibePage JSON and does all escaping. The legacy JSON tools (`validate_vibe_page`, `publish_vibe_page`, `update_page_section`) still work for editing pages that were authored as JSON.
 
 ---
