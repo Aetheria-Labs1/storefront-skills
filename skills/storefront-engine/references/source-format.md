@@ -71,14 +71,14 @@ Search the section library before writing a section from scratch. When you pick
 a template, request editable source:
 
 ```text
-get_section_template({ ids: ["template-id"], format: "authoring_source" })
+get_section_template({ ids: ["template-id"] })
 ```
 
-The response keeps the template's `html`, `css`, and `js`, but its HTML uses
-`<lx-island>` source syntax. Tailor it, include its CSS/JS in the source, then
-run `compile_page_source`.
+The response's `source` is one complete source-format section: a delimiter,
+`<lx-island>` markup, and the template CSS/JS. Tailor it, then run
+`compile_page_source`.
 
-The default `compiled_reference` format is renderer output containing
+`format: "compiled_reference"` is renderer output containing
 `data-island` / `data-props`. It is useful for inspection but must never be
 given to source-authoring tools.
 

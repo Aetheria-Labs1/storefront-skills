@@ -17,14 +17,14 @@ Before building any section from scratch, search the template library. Search re
 
 ```
 search_section_templates({ query: "video testimonial carousel with stars", section: "social-proof", mood: "warm" })
-get_section_template({ ids: ["<chosen id from results>"], format: "authoring_source" })
+get_section_template({ ids: ["<chosen id from results>"] })
 ```
 
-If a match is found → use the template's returned source HTML/CSS/JS, swap
+If a match is found → use the template's returned `source`, swap
 placeholder content with brand-specific copy/images, then compile it. Only
 generate custom HTML when no template matches.
 
-`compiled_reference` is renderer-only output. Use it for inspection, never as
+`format: "compiled_reference"` is renderer-only output. Use it for inspection, never as
 input to `compile_page_source` or `update_section_from_source`.
 
 For a whole page instead of one section, check `search_page_kits` first — it returns curated groupings of existing templates (hero + buy-box + reviews + faq, etc.) that already share one palette/vertical, avoiding the mismatched-brand-imagery problem of hand-picking sections one at a time.

@@ -2436,8 +2436,8 @@ Steps 1-4 are ALWAYS run first. They establish context. Steps 5+ vary by skill.
 > **Authoring format**: write pages in the HTML-native **source format** (`source-format.md`) — plain HTML sections delimited by `<!-- section: id -->`, islands as `<lx-island name>` with a JSON `<script>` child. The compiler produces VibePage JSON and does all escaping.
 
 > **Templates**: search before drafting. Retrieve templates you intend to edit
-> with `get_section_template({ ids, format: "authoring_source" })`. The default
-> `compiled_reference` is renderer output and cannot be passed directly to
+> with `get_section_template({ ids })`. Each returned `source` is ready for
+> editing and compiling. `format: "compiled_reference"` is renderer output and cannot be passed directly to
 > source-authoring tools.
 
 ---
@@ -2612,7 +2612,7 @@ These tools appeared in older skill versions but are no longer available:
 | `get_theme_json` | `get_brand_kit` (includes theme data) |
 | `provision_store` | Handle via onboarding flow, not page generation |
 | `extract_brand_design` / `capture_design_source` / `list_design_sources` | No replacement — no MCP tool for reference-URL design extraction currently exists |
-| `search_section_templates` returning `html`/`css`/`js` inline | Search is metadata-only now; call `get_section_template({ ids, format: "authoring_source" })` for editable source |
+| `search_section_templates` returning `html`/`css`/`js` inline | Search is metadata-only now; call `get_section_template({ ids })` for compile-ready source |
 
 `get_island_catalog` and `get_island_schema` remain active tools — use them for island discovery and schema lookups, alongside the `vibe://catalog/islands` resource.
 
@@ -2703,14 +2703,14 @@ Search the section library before writing a section from scratch. When you pick
 a template, request editable source:
 
 ```text
-get_section_template({ ids: ["template-id"], format: "authoring_source" })
+get_section_template({ ids: ["template-id"] })
 ```
 
-The response keeps the template's `html`, `css`, and `js`, but its HTML uses
-`<lx-island>` source syntax. Tailor it, include its CSS/JS in the source, then
-run `compile_page_source`.
+The response's `source` is one complete source-format section: a delimiter,
+`<lx-island>` markup, and the template CSS/JS. Tailor it, then run
+`compile_page_source`.
 
-The default `compiled_reference` format is renderer output containing
+`format: "compiled_reference"` is renderer output containing
 `data-island` / `data-props`. It is useful for inspection but must never be
 given to source-authoring tools.
 
@@ -4753,16 +4753,17 @@ Always search `search_section_templates` before generating sections from scratch
 
 ```
 search_section_templates({ query: "hero with video background for fashion", section: "hero", industry: "fashion", mood: "editorial" })
-get_section_template({ ids: ["<chosen id from results>"], format: "authoring_source" })
+get_section_template({ ids: ["<chosen id from results>"] })
 ```
 
-- If a matching template is found (score > 0.7): USE IT. The returned source
-  is ready to tailor with brand-specific copy/images, then pass to
+- If a matching template is found (score > 0.7): USE IT. Its returned `source`
+  contains the section markup, CSS, and JS ready to tailor with brand-specific
+  copy/images, then pass to
   `compile_page_source`.
 - If no match: generate from scratch in Phase 4.
 
 Templates are conversion-proven, pixel-perfect, and faster than custom generation.
-Use `compiled_reference` only to inspect renderer output; never paste its
+Use `format: "compiled_reference"` only to inspect renderer output; never paste its
 `data-island` / `data-props` markup into source-authoring tools.
 
 For a full page, check `search_page_kits` before assembling sections one at a time — it returns curated multi-section groupings that already share one palette/vertical:
