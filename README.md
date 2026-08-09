@@ -10,6 +10,30 @@ npx skills add Aetheria-Labs1/storefront-skills
 
 [skills.sh](https://skills.sh) symlinks the canonical `skills/` into whichever agents you use. Or install per-platform:
 
+## Install the Lexsis MCP
+
+This installer adds the full Lexsis storefront skill pack for the selected
+clients, configures the credential-free remote MCP, and opens OAuth on first
+use:
+
+```bash
+curl -fsSL https://mcp.trylexsis.com/install.sh -o /tmp/lexsis-mcp-install.sh
+sh /tmp/lexsis-mcp-install.sh
+```
+
+Choose one or more supported clients interactively, or pass a target directly:
+
+```bash
+sh /tmp/lexsis-mcp-install.sh codex
+sh /tmp/lexsis-mcp-install.sh claude-project
+sh /tmp/lexsis-mcp-install.sh cursor-global
+sh /tmp/lexsis-mcp-install.sh --dry-run auto
+```
+
+The installer never stores an API key. Restart the client and complete the
+Lexsis OAuth prompt when it first connects. Use `--skip-skills` for an
+MCP-only setup.
+
 ## Install (Claude Code)
 
 ```bash
