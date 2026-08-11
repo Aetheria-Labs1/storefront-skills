@@ -1,11 +1,11 @@
 ---
 name: cart
-description: Inspect, assign, and edit Cart V2 profiles, including offers, shipping goals, subscriptions, responsive behavior, and scoped custom CSS.
+description: Inspect, assign, and edit cart profiles, including offers, shipping goals, subscriptions, responsive behavior, and scoped custom CSS.
 ---
 
 # Configure Cart Profiles
 
-Use this workflow for Cart V2 configuration and page targeting.
+Use this workflow for cart profile configuration and page targeting.
 
 ## Architecture
 
@@ -145,4 +145,10 @@ After assignment or editing:
 6. Confirm draft changes remain non-live until published.
 
 Read `storefront-engine/references/cart-composition.md` and
-`storefront-engine/references/cart-v2-management.md` for the detailed contract.
+the cart profile management reference for the detailed contract.
+
+## Optional Follow-Up
+
+This skill is complete when the cart profile is reviewed in the Lexsis app. If
+the user separately requests page integration, `generate` can use the confirmed
+profile requirements.

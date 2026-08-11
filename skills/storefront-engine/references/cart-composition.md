@@ -1,6 +1,6 @@
 # Cart Profile Composition
 
-Cart V2 is a renderer-managed surface backed by a published cart profile.
+A cart profile is a renderer-managed surface backed by a published profile.
 
 ## Page contract
 
@@ -83,7 +83,7 @@ page sections or page metadata.
 
 | Anti-pattern | Correct behavior |
 |---|---|
-| Inline `DrawerShell` on a Cart V2 page | Set `use_cart_v2` and configure a profile |
+| Inline `DrawerShell` on a cart-profile page | Set `use_cart_v2` and configure a profile |
 | Cart selected through title or SEO metadata | Use a page assignment |
 | Agent publishes a draft automatically | Merchant reviews and publishes in the app |
 | Fabricated products or selling plans | Use real store catalog data |

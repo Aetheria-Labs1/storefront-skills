@@ -125,16 +125,16 @@ Output this structured block:
 }
 ```
 
-Then proceed to page generation using this analysis as context.
+Return `PAGE_ANALYSIS_INPUT`. Do not generate source HTML or page assets here.
 
 ---
 
 ## Fallback (No @Browser Available)
 
 If @Browser is not available or not enabled:
-1. Use `extract_brand_design({ url })` from Lexsis AI MCP for server-side screenshot + token extraction
-2. Note limitations: no DOM access, no mobile viewport test, no interaction detection
-3. Suggest: "Enable the Browser plugin in Codex settings for deeper page analysis (DOM inspection, mobile testing, interaction detection)."
+1. Ask for screenshots or use any user-supplied visual reference.
+2. Note the limitation: no DOM access, mobile viewport test, or interaction detection.
+3. Hand the available evidence to `analyze-page` or `remix`.
 
 ---
 
@@ -161,3 +161,9 @@ If @Browser is not available or not enabled:
 - Multiple competing CTAs per viewport
 - Generic stock photography
 - CTA below mobile fold without sticky alternative
+
+## Optional Follow-Up
+
+This skill can end after returning `PAGE_ANALYSIS_INPUT`. That evidence can
+later inform `analyze-page`, `remix`, or `optimize` if the user requests one
+of those outcomes.

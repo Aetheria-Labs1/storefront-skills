@@ -206,3 +206,9 @@ If redesign later hurts metrics: `rollback_page_version(page_id, version_id)` is
 - All existing islands remain functional
 - Version history intact (rollback available)
 - Page passes `check_page_integrity` with zero errors
+
+## Optional Follow-Up
+
+This skill can end with a validated page update. `publish` is available for an
+explicit release request, while `experiment` can use a testable hypothesis
+when the user wants a controlled comparison.

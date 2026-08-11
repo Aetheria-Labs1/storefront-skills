@@ -1,5 +1,5 @@
 <!-- GENERATED from skills/ by scripts/build-distributions.py — DO NOT EDIT.
-     storefront-skills v5.1.3 · 13 skills · 49 island schemas -->
+     storefront-skills v5.2.0 · 14 skills · 49 island schemas -->
 
 # Lexsis Storefront Skills — Knowledge Base
 
@@ -9,178 +9,48 @@
 
 # Skill: analyze-page
 
-> Analyze a reference webpage into a reproducible Lexsis design brief. Use for competitor or inspiration URLs; not for an existing-page CRO audit.
+> Analyze a reference webpage into a brand-safe structural brief. Use for competitor or inspiration URLs before visual-page; do not generate page source or production assets here.
 
 # Analyze Storefront Page
 
-Deeply analyze a full webpage and produce a comprehensive design reference document — section by section, with reproducible HTML patterns, island mappings, and design tokens.
-
-## When to Use
-
-- User shares a URL and wants to "make something like this"
-- Analyzing a competitor's page structure before generation
-- Extracting design system tokens from an existing site
-- Understanding a page's conversion strategy and section rhythm
-- Creating a design brief for `$generate` to follow
-
-## Auto-Trigger
-
-This skill also activates when the user shares a URL with intent phrases:
-- "use this as reference"
-- "make something like this"
-- "analyze this page"
-- "recreate this layout"
-- "I like this design"
-- "similar to this"
+Own structural analysis of a reference page. Do not write replacement HTML,
+generate assets, create a page, or publish. `visual-page` owns the new-page
+workflow after this brief is ready.
 
 ## Workflow
 
-### Step 1: Full-page capture
-```
-browser_navigate → {url}
-browser_take_screenshot (full page)
-browser_snapshot (full accessibility tree)
-```
+1. Capture the URL with `browser-analyze` when Browser is available.
+2. Classify the page: PDP, landing, homepage, collection, editorial, or other.
+3. Extract:
+   - global design tokens and visual rhythm
+   - section order, proportions, and responsive behavior
+   - CTA, trust, urgency, and social-proof placement
+   - interaction patterns and candidate Lexsis islands
+4. Separate reusable structure from protected source material.
+5. Output `VISUAL_PAGE_INPUT`:
 
-### Step 2: Classify page type
-Determine which category:
-- **PDP** — product detail (gallery, BuyBox, reviews, related products)
-- **Landing** — campaign/post-click (single CTA, no nav, urgency, social proof)
-- **Collection** — product grid with filters, category navigation
-- **Homepage** — multi-CTA, navigation, hero, collections grid, brand story
-- **Editorial** — long-form content, shoppable moments, magazine layout
-- **Other** — blog, about, custom
-
-### Step 3: Extract global design tokens
-From computed styles and visual inspection:
-- **Colors**: primary, accent, background, surface, text, muted, border
-- **Typography**: heading font, body font, sizes, weights
-- **Spacing**: section padding, content gaps, element margins
-- **Shape**: border radius, shadow style
-- **Motion**: animation patterns (fade, slide, parallax)
-
-### Step 4: Section-by-section analysis
-Scroll through the page. For EACH distinct section:
-
-1. **Identify type** — map to nearest `lx_*` section type:
-   - `lx_hero`, `lx_hero_split`, `lx_hero_video`
-   - `lx_promo_top_bar`, `lx_ticker`
-   - `lx_value_props`, `lx_features`, `lx_features_grid`
-   - `lx_benefits`, `lx_how_it_works`, `lx_steps`
-   - `lx_testimonials`, `lx_reviews`, `lx_social_proof`
-   - `lx_press`, `lx_logos`
-   - `lx_faq`, `lx_pricing`, `lx_bundles`, `lx_comparison`
-   - `lx_cta`, `lx_cta_band`, `lx_sticky_cta`, `lx_urgency`
-   - `lx_gallery`, `lx_video`, `lx_stats`, `lx_guarantee`
-   - `lx_content`, `lx_layout`
-
-2. **Extract full HTML pattern** — reproducible structure using:
-   - Tailwind classes for layout
-   - `--lx-*` CSS vars for theming
-   - `<lx-island>` for interactive elements (valid props from schema)
-   - `{{PLACEHOLDER}}` for dynamic content
-
-3. **Islands used** — list which islands appear, with their variant/props
-
-4. **Responsive behavior** — how it adapts (stacks, hides, reflows)
-
-5. **Animation/interaction** — scroll triggers, hover effects, transitions
-
-### Step 5: Conversion strategy analysis
-Identify:
-- CTA frequency and placement pattern
-- Social proof positioning relative to purchase decision
-- Urgency/scarcity tactics used
-- Trust signal locations
-- Information hierarchy (what's above fold vs below)
-- Mobile-specific conversion elements (sticky bars, etc.)
-
-## Output Format
-
-Print the following markdown inline (DO NOT save to file):
-
-```markdown
-# Page Reference: {page_title}
-
-## Classification
-- **Type**: {PDP | Landing | Collection | Homepage | Editorial}
-- **URL**: {url}
-- **Platform**: {Shopify | Custom | WordPress | Webflow | ...}
-- **Sections**: {count}
-
-## Design System (global tokens)
-| Token | Value |
-|-------|-------|
-| Primary | {hex} |
-| Accent | {hex} |
-| Background | {hex} |
-| Surface | {hex} |
-| Text | {hex} |
-| Text muted | {hex} |
-| Border | {hex} |
-| Heading font | {font-family} |
-| Body font | {font-family} |
-| Section spacing | {px} desktop / {px} mobile |
-| Border radius | {px} |
-| Shadow | {css value} |
-
-## Section 1: {descriptive name}
-**Maps to**: `lx_{type}`
-**Islands**: [{IslandName}(variant), ...]
-
-\```html
-<section class="py-20 px-4 lg:px-8" style="background-color: var(--lx-bg-surface)">
-  <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-    <!-- Source-format HTML with Tailwind + --lx-* vars + islands -->
-    <lx-island name="BuyBox">
-      <script type="application/json">
-        { "productId": "{{PRODUCT_ID}}", "variant": "expanded", "ctaText": "{{CTA_TEXT}}" }
-      </script>
-    </lx-island>
-  </div>
-</section>
-\```
-
-**Responsive**: Stacks vertically below lg, image full-width on mobile
-**Animation**: Fade-in on scroll (IntersectionObserver, 200ms delay)
-
----
-
-## Section 2: {name}
-...repeat for ALL sections...
-
----
-
-## Conversion Strategy
-- **CTA pattern**: {description — frequency, placement, style}
-- **Social proof**: {where placed, what type}
-- **Urgency**: {countdown, stock indicators, limited offers}
-- **Trust signals**: {guarantees, badges, certifications}
-- **Mobile optimization**: {sticky bars, simplified layout, thumb-friendly CTAs}
-
-## Replication Notes
-Key patterns to preserve when generating a similar page:
-- {section rhythm / ordering pattern}
-- {whitespace and breathing room strategy}
-- {visual weight distribution}
-- {progressive disclosure of information}
+```text
+Source URL: [...]
+Page type: [...]
+Design direction: [...]
+Section map: [...]
+Responsive behavior: [...]
+Conversion patterns: [...]
+Candidate islands: [...]
+Do not carry forward: [copy, logos, product imagery, claims, testimonials]
 ```
 
-## Tips for Best Results
+## Safety
 
-- Take multiple screenshots if page is very long (scroll + capture)
-- Use `browser_evaluate` to extract computed CSS values for accurate tokens
-- Check viewport at both desktop (1440px) and mobile (390px) widths
-- For Shopify stores, note which islands map to native Shopify features vs custom
+- Use the source only for hierarchy, composition, and interaction patterns.
+- Do not copy text, logos, images, product claims, pricing, reviews, or brand
+  marks.
+- Do not write source-format HTML in this skill.
 
-## Island Reference
+## Optional Follow-Up
 
-When mapping interactive elements, consult `reference/islands/{name}/schema.json` for:
-- Valid prop names and types
-- Required vs optional props
-- Available variants
-- Anti-patterns to avoid
-- Composition rules (which islands pair together)
+This skill can end after producing `VISUAL_PAGE_INPUT`. When the user wants a
+new brand-owned page from that brief, `visual-page` can use it as input.
 
 ---
 
@@ -188,7 +58,7 @@ When mapping interactive elements, consult `reference/islands/{name}/schema.json
 
 > Source and prepare visual assets for a storefront page — search the brand library first, then generate, import, or pull from external MCPs (video, stock, research imagery). Also answers to its old name, asset-pipeline. Run after /plan-page; produces the asset manifest generation consumes.
 
-> **Inputs:** Approved page plan (from `/plan-page` workflow)
+> **Inputs:** Approved page plan, optionally with a `visual-page` layout brief
 > **Outputs:** Asset manifest (URLs + purposes + section mapping)
 > **When to load:** After page plan is approved, before HTML generation.
 
@@ -209,7 +79,7 @@ Need an image or video for a section?
 │
 ├─ What type of asset?
 │  ├─ Static image (background, lifestyle, texture, composite)
-│  │  └─ generate_asset or edit_asset (built-in, costs credits)
+│  │  └─ generate_asset (built-in, costs credits; add reference_images to composite or edit)
 │  │
 │  ├─ Video (hero, demo, UGC-style)
 │  │  └─ External MCP: HiggsField / Runway / Kling
@@ -233,12 +103,15 @@ Need an image or video for a section?
 | Tool | What it does | Cost |
 |------|-------------|------|
 | `search_design_library` | Search existing brand assets | Free |
-| `generate_asset` | AI image generation (photography, illustration, 3d, editorial, abstract, texture) | Credits |
-| `edit_asset` | Composite, inpaint, or style-transfer existing images | Credits |
+| `generate_asset` | AI image generation, compositing, inpainting, or style transfer; add `reference_images` for source-based work | Credits |
 | `view_asset` | Visually verify a generated/edited asset before using | Free |
 | `import_asset` | Bring an external URL (or base64) into the design library for reuse. Call with **no arguments** to open an upload picker so the user can supply their own file — use that when they want to add their own logo/photo and you have no URL for it | Free |
 
 **Always `search_design_library` first.** Existing assets are free and already brand-consistent.
+
+When a `visual-page` layout concept is supplied, use it only for composition,
+crop, and visual-rhythm guidance. It is not a production asset. Source final
+media through the library, Shopify product data, generation, or import.
 
 See `design-enrichment.md` for detailed prompt patterns, style selection guide, compositing recipes, and HTML placement patterns.
 
@@ -382,6 +255,12 @@ The generation workflow uses these URLs directly in `<img src="">` and island pr
 5. CSS gradients/solid colors for sections that don't need imagery
 6. Reuse: one hero image can serve as dimmed background for 2-3 sections
 
+## Optional Follow-Up
+
+This skill can end after returning `ASSET_MANIFEST`. `generate` can consume the
+manifest with an approved page plan and optional visual layout brief when the
+user asks for a draft.
+
 ---
 
 # Skill: browser-analyze
@@ -510,16 +389,16 @@ Output this structured block:
 }
 ```
 
-Then proceed to page generation using this analysis as context.
+Return `PAGE_ANALYSIS_INPUT`. Do not generate source HTML or page assets here.
 
 ---
 
 ## Fallback (No @Browser Available)
 
 If @Browser is not available or not enabled:
-1. Use `extract_brand_design({ url })` from Lexsis AI MCP for server-side screenshot + token extraction
-2. Note limitations: no DOM access, no mobile viewport test, no interaction detection
-3. Suggest: "Enable the Browser plugin in Codex settings for deeper page analysis (DOM inspection, mobile testing, interaction detection)."
+1. Ask for screenshots or use any user-supplied visual reference.
+2. Note the limitation: no DOM access, mobile viewport test, or interaction detection.
+3. Hand the available evidence to `analyze-page` or `remix`.
 
 ---
 
@@ -547,15 +426,21 @@ If @Browser is not available or not enabled:
 - Generic stock photography
 - CTA below mobile fold without sticky alternative
 
+## Optional Follow-Up
+
+This skill can end after returning `PAGE_ANALYSIS_INPUT`. That evidence can
+later inform `analyze-page`, `remix`, or `optimize` if the user requests one
+of those outcomes.
+
 ---
 
 # Skill: cart
 
-> Inspect, assign, and edit Cart V2 profiles, including offers, shipping goals, subscriptions, responsive behavior, and scoped custom CSS.
+> Inspect, assign, and edit cart profiles, including offers, shipping goals, subscriptions, responsive behavior, and scoped custom CSS.
 
 # Configure Cart Profiles
 
-Use this workflow for Cart V2 configuration and page targeting.
+Use this workflow for cart profile configuration and page targeting.
 
 ## Architecture
 
@@ -695,7 +580,13 @@ After assignment or editing:
 6. Confirm draft changes remain non-live until published.
 
 Read `storefront-engine/references/cart-composition.md` and
-`storefront-engine/references/cart-v2-management.md` for the detailed contract.
+the cart profile management reference for the detailed contract.
+
+## Optional Follow-Up
+
+This skill is complete when the cart profile is reviewed in the Lexsis app. If
+the user separately requests page integration, `generate` can use the confirmed
+profile requirements.
 
 ---
 
@@ -1075,6 +966,11 @@ If no winner after 2000+ visitors per variant: the change has no meaningful impa
 - Learning documented regardless of outcome (losses teach as much as wins)
 - Wait for mSPRT -- never call early based on gut feeling
 
+## Optional Follow-Up
+
+This skill can end with a documented winner or learning. `optimize` can use
+that evidence for a later page improvement when the user requests one.
+
 ---
 
 # Skill: generate
@@ -1099,6 +995,11 @@ Generate a complete Shopify storefront page — auto-detects page type (landing,
 > Assess what the user has told you, ask clarifying questions if < 4 signals are present, generate a section plan, and get user approval.
 > Do NOT proceed to Phase 2 until a page plan is confirmed by the user.
 > Exception: If user explicitly says "skip planning" or "just build it".
+
+When invoked by `visual-page`, use its approved plan, final asset manifest, and
+layout brief as the binding inputs. Recreate the approved composition with
+source-format HTML and valid islands; never embed the visual layout reference as
+page media.
 
 # Storefront Page Generation
 
@@ -1127,7 +1028,7 @@ All 7 calls can run in parallel. Wait for all before proceeding.
 Decision tree per section:
 1. `search_design_library` — check existing assets FIRST (always)
 2. `generate_asset` — only if library has nothing suitable
-3. `edit_asset` — composite/modify if needed
+3. `generate_asset` with `reference_images` — composite or modify if needed
 4. `view_asset` — verify result before using in page
 
 Budget: 3-5 generated assets per page max. Existing assets = free.
@@ -1201,14 +1102,17 @@ Hero Banner → Filter/Sort → Product Grid → Promo Card → Social Proof →
 - Hero headline ≤ 8 words, visible without scrolling
 - Use shared keyframes (fadeUp, fadeIn, scaleIn) — don't define new @keyframes unless truly unique
 
-## Ad-to-Page Flow
+## Scope Boundary
 
-When converting an ad creative to a landing page:
-1. `get_ad_creatives` — get creative metadata
-2. `analyze_ad_creative` — extract headline, claims, colors, tone, CTA
-3. `match_persona_to_ad` — identify target audience
-4. Continue with Phases 1-5 using extracted context
-5. Ensure "scent continuity" — ad headline ≈ page hero headline
+Do not analyze ads, screenshots, competitor URLs, or reference pages here.
+`browser-analyze`, `analyze-page`, and `remix` create the safe source brief;
+`visual-page` owns the resulting layout concept and approval.
+
+## Optional Follow-Up
+
+This skill can end after source compilation, draft creation, and visual QA
+produce `DRAFT_READY`. `publish` is available only when the user explicitly
+asks to make that draft live.
 
 ---
 
@@ -1420,6 +1324,12 @@ If redesign later hurts metrics: `rollback_page_version(page_id, version_id)` is
 - Version history intact (rollback available)
 - Page passes `check_page_integrity` with zero errors
 
+## Optional Follow-Up
+
+This skill can end with a validated page update. `publish` is available for an
+explicit release request, while `experiment` can use a testable hypothesis
+when the user wants a controlled comparison.
+
 ---
 
 # Skill: plan-page
@@ -1516,6 +1426,13 @@ For each section:
 
 ## Step 4 — Present Plan for Approval
 
+### Embedded Use by `visual-page`
+
+When `visual-page` calls this workflow, produce the same plan as
+`PLAN_DRAFT` and do not ask for approval yet. `visual-page` creates a visual
+layout reference with `generate_asset` and presents it plus the plan as one
+approval decision.
+
 Show the plan to the user in this format:
 
 ```
@@ -1539,13 +1456,14 @@ CTA Strategy: [where + how many]
 Proceed with this plan? (Or tell me what to change)
 ```
 
-Wait for user confirmation. If user suggests changes, update plan and re-present.
+When run directly, wait for user confirmation. If user suggests changes, update
+the plan and re-present.
 
 ## Step 5 — Next Steps
 
 Once approved, the user can:
 - Run `$generate` — carry the plan forward as the binding blueprint
-- Or hand off the plan to any generation flow
+- Or use the plan with any generation flow
 
 The plan becomes BINDING for generation:
 - Phase 2 context gathering targets the plan's requirements
@@ -1553,6 +1471,12 @@ The plan becomes BINDING for generation:
 - Phase 4 HTML generation follows the plan's section sequence EXACTLY
 - Section purposes from the plan guide the copywriting
 - Animation choices from the plan guide the JS/CSS
+
+## Optional Follow-Up
+
+This skill can end with an approved plan. `visual-page` can use it for a
+visual-first concept, or `asset-prep` and `generate` can use it when the user
+wants to continue directly to a draft.
 
 ---
 
@@ -1576,25 +1500,18 @@ Manage page publishing, previews, and lifecycle.
 
 ## Publish Flow
 
-1. `compile_page_source` — compile and validate the generated source
-2. `create_page_from_source` — create a draft preview first
-   - `publish: false` → preview URL only (not live on store)
-3. Confirm the user explicitly wants a live publish before `publish_page`.
+1. Require a `DRAFT_READY` page from `generate` or a validated update from
+   `optimize`.
+2. Confirm the preview has passed desktop and mobile QA.
+3. Confirm the user explicitly wants a live release before `publish_page`.
 
 ## Operations
 
-### Draft Preview (New Page)
-```
-compile_page_source({ source, head, theme_css, scripts })
-create_page_from_source({ source, head, theme_css, scripts, slug, publish: false })
-```
-Returns: page_id and preview_url
+### Ready Draft Requirement
 
-### Preview (Draft)
-```
-create_page_from_source({ source, head, theme_css, scripts, slug, publish: false })
-```
-Returns: preview_url (not visible to store visitors)
+`generate` creates and validates draft previews. Do not recreate source or
+compile it here. Require the page ID, preview URL, and completed visual QA
+before release.
 
 ### Publish Live (Explicit Approval Required)
 ```
@@ -1632,290 +1549,63 @@ After publishing, the page is served via:
 - pages.lexsis.app (standalone via edge worker)
 - Custom domain (if tracking domain configured)
 
+## Optional Follow-Up
+
+This skill ends after release. Later, `experiment` can test a focused variant
+or `optimize` can address performance evidence when the user requests it.
+
 ---
 
 # Skill: remix
 
-> Rebuild a competitor page or ad creative adapted to your brand — extracts structure and conversion patterns, regenerates with your products and design tokens
+> Convert a competitor page, inspiration site, or ad creative into a brand-safe visual reference brief. Use when a user wants to adapt a reference; hand the brief to visual-page instead of building the page here.
 
-# Remix Storefront Page
+# Remix Reference Into a Brief
 
-Rebuild a competitor page or ad creative adapted to your brand — extracts structure and conversion patterns, regenerates with your products and design tokens
+Own reference interpretation only. Do not generate page source, production
+assets, drafts, or live pages. `visual-page` owns the new-page workflow.
 
-## Context
+## Inputs
 
-- **storefront-craft**: Load this skill first on any storefront page generation task.
-- **visual-craft**: Techniques for making vibe-code pages look premium. Load when polishing visual quality.
-
-## Workflow
-
-# Ad Creative to Landing Page
-
-Generate a high-converting landing page from an ad creative with full scent continuity (headline, palette, CTA, tone match from click to page).
-
-## Prerequisites
-
-- At least one ad creative synced (Meta/Google/TikTok)
-- Store connected and brand kit configured
+- competitor or inspiration URL
+- screenshot or ad creative
+- user's product, page goal, and brand direction
 
 ## Workflow
 
-### Step 1 — Context Gathering
+1. Capture the source with `browser-analyze` when a URL is available.
+2. For ads, call `analyze_ad_creative` and `match_persona_to_ad`.
+3. Extract only reusable design signals:
+   - page type and section order
+   - hierarchy, grids, proportions, whitespace, and motion
+   - CTA and trust-signal placement
+   - responsive behavior
+   - candidate Lexsis islands
+4. Exclude competitor copy, product claims, logos, imagery, testimonials,
+   pricing, and proprietary marks.
+5. Output `VISUAL_PAGE_INPUT`:
 
-```
-get_workspace_details()          → workspace ID, plan tier
-get_connected_stores()           → store domain, Shopify data
-get_brand_kit()                  → logo, fonts, colors, voice, radius
-```
-
-These three calls ALWAYS run first. No exceptions.
-
-### Step 2 — Identify and Analyze the Ad
-
-```
-get_ad_creatives({ store_id, status: "active" })
-```
-
-Present available creatives (thumbnail + headline + spend). User picks one, or use highest-spend active creative.
-
-```
-analyze_ad_creative({ creative_id })
-```
-
-Extracts: headline, subheadline, claims, color_palette, tone, cta_text, target_audience, urgency_signals, imagery_style.
-
-### Step 3 — Match Persona and Source Assets
-
-```
-match_persona_to_ad({ creative_id })
+```text
+Source type: [URL | screenshot | ad]
+Page type: [landing | PDP | homepage | collection | editorial]
+Audience and conversion goal: [...]
+Safe composition cues: [...]
+Section map: [...]
+Mobile behavior: [...]
+Candidate islands: [...]
+Avoid: [competitor-specific content and patterns]
 ```
 
-Maps to persona: demographics, pain points, motivations, objections, buying stage. Determines page tone.
+## Non-Negotiable Safety
 
-```
-search_design_library({ query: "<product/topic from ad>" })
-```
+- Recreate structure and visual intent, never protected content.
+- Use the user's own brand kit, products, claims, assets, and copy.
+- Do not hotlink or import competitor images into production media.
 
-Find product shots and lifestyle images matching the ad aesthetic. Use `generate_asset` if library insufficient.
+## Optional Follow-Up
 
-### Step 4 — Two-Phase Page Generation
-
-**Phase 4a — Raw HTML + Tailwind (no islands)**
-
-Generate full page as HTML + Tailwind. Scent continuity rules:
-- Hero headline = ad headline (semantic match, max 2-word variation)
-- `--lx-accent-color` set to ad's dominant color
-- CTA text matches or escalates the ad CTA
-- First fold answers the same promise the ad made
-- Zero navigation links (single CTA focus)
-
-Structure: Hero > Problem/Agitation > Solution > Social Proof > Features > CTA repeat > FAQ
-
-Mark interactive placeholders: `<div data-placeholder="BuyBox" class="..."></div>`
-
-Use `--lx-*` CSS variables in `theme_css` for all brand colors and fonts.
-
-**Phase 4b — Island Mapping**
-
-Replace placeholders with hydrated islands:
-```html
-<lx-island name="BuyBox">
-  <script type="application/json">
-    { "product": { "title": "...", "price": "$29.99", "variants": [] } }
-  </script>
-</lx-island>
-```
-
-Use `get_island_schema` for exact prop shapes.
-
-### Step 5 — Validate and Publish Draft
-
-```
-compile_page_source({ source, head, theme_css, scripts })
-create_page_from_source({ source, head, theme_css, scripts, slug, publish: false })
-```
-
-Always publish as draft first. Returns `preview_url`.
-
-### Step 6 — Visual Verification
-
-Use Codex Browser to open `preview_url`, capture desktop and mobile screenshots, and inspect the rendered result. If Browser is unavailable, provide the preview URL and state that visual verification remains manual.
-
-Checklist:
-- [ ] Hero headline matches ad headline (scent continuity)
-- [ ] Brand colors applied via `--lx-*` variables (not defaults)
-- [ ] Single CTA focus (no nav leakage)
-- [ ] Mobile layout not broken (stack, readable text)
-- [ ] Islands hydrated (BuyBox shows product data)
-- [ ] Social proof section present
-
-If issues found: `update_section_from_source` to fix, then re-verify.
-
-## Decision Points
-
-| Question | Decision |
-|----------|----------|
-| Which ad? | Ask user, or highest-spend active creative |
-| Which product? | Extract from ad analysis (primary product) |
-| Draft or live? | Always draft first -- user confirms |
-| Long or short? | Video ad = longer storytelling; static = concise |
-| Include pricing? | Only if ad mentions price/discount explicitly |
-
-## Quality Gates
-
-- Hero headline >=80% semantic similarity to ad headline
-- Color palette matches ad dominant colors (set via `--lx-accent-color`)
-- Single primary CTA throughout (no competing actions)
-- Mobile-first layout (most ad traffic is mobile)
-- No navigation links that leak traffic from conversion
-- Ad urgency signals carried through (countdown, limited stock, etc.)
-- Page passes `compile_page_source` with zero errors
-
-
-# Competitor Remix (Rebuild from Reference URL)
-
-Capture a competitor page, decompose its structure, and rebuild it using the user's own brand identity, copy, and products. NEVER copy content -- only structural inspiration.
-
-## Prerequisites
-
-- User provides a reference URL
-- Store connected and brand kit configured
-- User's own product/content available to replace competitor's
-
-## Workflow
-
-### Step 1 — Context Gathering
-
-```
-get_workspace_details()          → workspace ID, plan tier
-get_connected_stores()           → store domain, Shopify data
-get_brand_kit()                  → logo, fonts, colors, voice, radius
-```
-
-These three calls ALWAYS run first. No exceptions.
-
-### Step 2 — Capture Reference Design
-
-```
-capture_design_source({ url })
-```
-
-Screenshots the page and extracts structural layout data.
-
-The agent should analyze the screenshot to extract the competitor's design DNA: color palette, typography, spacing rhythm, border radius, shadow depth, image treatment style, overall aesthetic (minimal, bold, editorial, etc.).
-
-### Step 3 — Decompose into Section Map
-
-Analyze captured page into numbered section breakdown:
-```
-1. Full-bleed hero — product centered, headline overlay, gradient wash
-2. Trust badge row — 4 icons with micro-labels, centered
-3. Split feature section — image left, text right, 50/50
-4. Testimonial carousel — 3 cards, star ratings, photos
-5. Product grid — 3 columns, hover zoom
-6. FAQ accordion — 6 items, expandable
-7. Final CTA — full-width, contrasting background
-```
-
-For each: note layout pattern, content type, approximate proportions, interactive elements.
-
-### Step 4 — Map to Lexsis Capabilities
-
-For each competitor section:
-- Island available? Use `get_island_schema(island_name)` for prop shapes
-- Static HTML+Tailwind section? (most common)
-- Requires custom interactivity? Flag for JS sandbox
-
-### Step 5 — Source User's Own Assets
-
-```
-search_design_library({ query: "<relevant product/category>" })
-list_products({ limit: 10 })
-```
-
-Replace ALL competitor imagery with user's own assets. Generate new if needed:
-```
-generate_asset({ prompt: "...", style_reference: "brand_kit" })
-```
-
-CRITICAL: NEVER reference, hotlink, or reuse competitor images/copy/logos.
-
-### Step 6 — Two-Phase Generation
-
-**Phase 4a — Raw HTML + Tailwind (no islands)**
-
-For each section from the decomposition:
-- **Structure**: Keep competitor's layout pattern (grid, split, stacked)
-- **Brand**: Replace ALL colors/fonts/spacing with user's `--lx-*` variables
-- **Content**: Write original copy serving user's value proposition
-- **Images**: User's own assets exclusively
-- **CTAs**: Aligned with user's conversion goals
-
-Set all brand tokens in `theme_css`:
-```css
-:root { --lx-accent-color: #...; --lx-font-heading: '...', serif; }
-```
-
-Mark interactive placeholders: `<div data-placeholder="BuyBox" class="..."></div>`
-
-**Phase 4b — Island Mapping**
-
-Replace placeholders with hydrated islands:
-```html
-<lx-island name="BuyBox">
-  <script type="application/json">
-    { "product": { "title": "...", "price": "$29.99", "variants": [] } }
-  </script>
-</lx-island>
-<lx-island name="FAQ">
-  <script type="application/json">
-    { "items": [{ "question": "...", "answer": "..." }] }
-  </script>
-</lx-island>
-```
-
-### Step 7 — Validate and Publish Draft
-
-```
-compile_page_source({ source, head, theme_css, scripts })
-create_page_from_source({ source, head, theme_css, scripts, slug, publish: false })
-```
-
-Returns `preview_url`.
-
-### Step 8 — Visual Verification
-
-Use Codex Browser to open `preview_url`, capture desktop and mobile screenshots, and compare the rendered result with the reference structure. If Browser is unavailable, provide the preview URL and state that visual verification remains manual.
-
-Checklist:
-- [ ] ZERO competitor content carried over (no copy, images, logos)
-- [ ] All colors from user's `--lx-*` variables (not competitor palette)
-- [ ] Structural similarity recognizable but not pixel-perfect
-- [ ] User's brand fonts loading (not system fallback)
-- [ ] Mobile layout works independently
-- [ ] Islands hydrated with user's own product data
-- [ ] Original copy serves user's value proposition
-
-If issues found: `update_section_from_source` to fix, then re-verify.
-
-## Decision Points
-
-| Question | Decision |
-|----------|----------|
-| Keep exact structure or adapt? | Adapt: remove irrelevant sections, add where user has more to say |
-| Which sections to skip? | Competitor-specific (their awards, team), navigation that does not fit |
-| How close to follow? | Structural only -- proportions, flow, section types |
-| Interactive elements? | Map to available islands; static equivalent if no island exists |
-
-## Quality Gates
-
-- ZERO competitor content (copy, images, logos, brand marks)
-- Page uses exclusively user's `--lx-*` CSS variables
-- All images are user's own or freshly generated
-- All product references from user's own catalog
-- Copy is original, serving user's value proposition
-- Mobile layout independent (do not assume competitor's responsive approach)
-- Page passes `compile_page_source` with zero errors
+This skill can end after returning `VISUAL_PAGE_INPUT`. `visual-page` can use
+that brief when the user wants a visual layout reference and brand-owned draft.
 
 ---
 
@@ -1939,7 +1629,7 @@ Search documentation, skill knowledge, island patterns, and industry guidance vi
 ## Workflow
 
 1. Call `search_docs` with the user's query (or your own lookup query)
-2. If results reference a skill by name, read it via `vibe://skills/{skillName}` resource for full content
+2. If results include a resource URI, read that exact URI for full content.
 3. If results reference an island, read `vibe://catalog/islands/{name}` for schema + props + variants
 4. Synthesize relevant findings — don't dump raw results, extract what's actionable
 
@@ -1962,11 +1652,10 @@ Use `category` to focus results:
 - `getting-started` — setup, auth, quickstart
 - `resources` — MCP resources reference
 
-### Deep-read a skill
-Read resource URI: `vibe://skills/{skillName}`
-Returns full markdown content of the skill file.
-
-Available skills: craft-guide, conversion-psychology, generation-protocol, workflow-orchestration, island-patterns, visual-craft, premium-patterns, animation-system, design-enrichment, qa-recipe, vertical-beauty, vertical-fashion, vertical-food, vertical-home, vertical-luxury, vertical-supplements, cart-composition, cart-v2-management
+### Deep-read a result
+Use only a resource URI returned by `search_docs`. Do not invent a resource
+name or rely on a hard-coded catalog: the search result is the authoritative
+availability check.
 
 ### Deep-read an island
 Read resource URI: `vibe://catalog/islands/{islandName}`
@@ -1977,9 +1666,9 @@ Returns schema with all props, variants, and usage hints.
 | User asks | Search call | Follow-up |
 |-----------|------------|-----------|
 | "How does BuyBox work?" | `search_docs({ query: "BuyBox", category: "islands" })` | Read `vibe://catalog/islands/BuyBox` |
-| "Beauty landing page patterns" | `search_docs({ query: "beauty landing page", category: "verticals" })` | Read `vibe://skills/vertical-beauty` |
+| "Beauty landing page patterns" | `search_docs({ query: "beauty landing page", category: "verticals" })` | Read the returned resource URI |
 | "Countdown urgency techniques" | `search_docs({ query: "countdown urgency scarcity" })` | — |
-| "Publishing workflow" | `search_docs({ query: "publish page workflow", category: "recipes" })` | Read `vibe://skills/publishing` |
+| "Publishing workflow" | `search_docs({ query: "publish page workflow", category: "recipes" })` | Read the returned resource URI |
 | "What islands handle reviews?" | `search_docs({ query: "reviews testimonials", category: "islands" })` | Read `vibe://catalog/islands/ReviewCarousel` |
 
 ## Tips
@@ -1989,248 +1678,155 @@ Returns schema with all props, variants, and usage hints.
 - If search returns nothing, try broader terms or drop the category filter
 - Skill resources contain full implementation guides — always read them when referenced
 
+## Optional Follow-Up
+
+This skill can end after returning the concise answer. Its findings can inform
+any workflow the user explicitly chooses, including `visual-page`, `plan-page`,
+`asset-prep`, `generate`, `optimize`, `experiment`, `cart`, or `publish`.
+
 ---
 
 # Skill: storefront-engine
 
-> Orchestrator for Lexsis AI storefront page generation. Routes broad or multi-step requests to the right workflow (generate, optimize, remix, experiment, cart, publish), sequences MCP tools, and loads reference knowledge on demand. Prefer a focused workflow skill when one clearly matches.
+> Route a storefront request to the one Lexsis workflow that owns it. Use for broad or ambiguous requests spanning visual page creation, reference analysis, assets, generation, optimization, experiments, cart configuration, or publishing.
 
-# Storefront Engine — Workflow Orchestration
+# Storefront Engine
 
-The routing and orchestration layer for Lexsis AI storefront operations. Use it for broad requests that span several workflows or when no focused skill is a clear match.
+This is the router. It does not build pages, generate assets, edit pages, or
+publish. Select one owning skill and pass it only the context it needs.
 
-## How This Works
+Read `references/workflow-handoffs.md` for optional workflow connections.
 
-1. **Focused skills** handle generate, optimize, remix, experiments, Cart V2, publishing, CRO analysis, and page building. Select one when its scope matches.
-2. **Reference files** in `references/` contain deep knowledge — load ONLY what the selected workflow needs, never all at once.
-3. **Island schemas** in `references/islands/{name}/schema.json` — full prop types, parts, examples, anti-patterns.
-4. For URL analysis, use a browser tool when available (see `browser-analyze`); otherwise use Lexsis server-side design extraction.
+## Routing
 
-All page work follows one contiguous sequence: **Phase 1 Plan → Phase 2 Context → Phase 3 Assets → Phase 4 Build → Phase 5 Ship.**
+| User intent | Owning skill |
+|---|---|
+| New page from a brief, product, ad, screenshot, URL, or mixed input | `visual-page` |
+| Text-only section and conversion plan, without visual concept generation | `plan-page` |
+| Analyze a reference URL into a safe structural brief | `analyze-page` |
+| Capture a URL with Browser before analysis | `browser-analyze` |
+| Prepare final page assets | `asset-prep` |
+| Build an approved plan and asset manifest into a draft | `generate` |
+| Improve an existing page using performance evidence | `optimize` |
+| Create or monitor a controlled experiment | `experiment` |
+| Configure cart profiles | `cart` |
+| QA a ready draft and release it live | `publish` |
+| Search a schema, workflow, or troubleshooting answer | `search-docs` |
+| Extract a reusable island layout for maintainers | `extract-island` |
 
----
+## Routing Rules
 
-## Phase 1: Page Planning (MANDATORY)
+1. Use `visual-page` for every new page request unless the user explicitly
+   asks for planning only.
+2. Send a reference URL through `browser-analyze` or `analyze-page` before
+   `visual-page`; do not make `visual-page` rediscover the same evidence.
+3. Do not call `generate` until the plan is approved and `asset-prep` returns
+   the final asset manifest.
+4. Do not call `publish` until a draft has passed visual QA and the user
+   explicitly asks to go live.
+5. Do not use `remix` to build a page. It produces a brand-safe reference
+   brief for `visual-page`.
 
-> Do NOT skip this phase. Do NOT proceed to Flow Selection until a plan is approved.
-> Skip ONLY if: user is editing an existing page, a CRO_BLUEPRINT is already provided, or user explicitly says "skip planning" / "just build it".
+## Completion
 
-### Step 1 — Assess What's Known
-
-Score the user's input:
-
-| Signal | Check |
-|--------|-------|
-| Page type (landing, PDP, homepage, collection, editorial, listicle, bundle) | stated? |
-| Target audience / persona | described? |
-| Products or collection to feature | named? |
-| Traffic source (Meta, Google, TikTok, email, organic) | mentioned? |
-| Conversion goal (purchase, signup, browse) | clear? |
-| Reference URL or ad creative | provided? |
-| Tone/style preference | specified? |
-
-- **4+ signals present** → proceed to Step 3 (auto-plan)
-- **< 4 signals** → proceed to Step 2 (ask questions)
-
-### Step 2 — Adaptive Discovery
-
-Ask ONLY questions whose answers are missing. Never ask more than 4 at once.
-
-**Tier 1 (always ask if missing):**
-1. "What type of page?" (landing / PDP / homepage / collection / editorial)
-2. "Who is this for?" (audience: demographics + pain point)
-3. "What should visitors do?" (single conversion goal)
-
-**Tier 2 (ask if Tier 1 reveals complexity):**
-4. "Where does traffic come from?" (impacts visual density + social proof weight)
-5. "Any sections you specifically want?" (hero style, FAQ, comparison table, etc.)
-6. "Should this feel bold/energetic or minimal/premium?" (visual approach)
-7. "Any animations or scroll effects?" (parallax, reveal-on-scroll, sticky elements)
-
-**Follow-up triggers:**
-- Multiple products mentioned → "Which is the hero product? Are others cross-sells or equals?"
-- Health/beauty vertical → "Do you have clinical data or certifications to feature?"
-- Ad creative provided → "Should the page match the ad's exact style, or just the message?"
-
-### Step 3 — Generate Page Plan
-
-Produce a structured plan covering:
-
-**A. Section Sequence** (ordered list) — for each section: section ID + type, purpose, key content, island requirement, animation.
-
-**B. Visual Rhythm** — spacing pattern, color temperature flow, typography hierarchy.
-
-**C. Inter-Section Communication** — narrative thread, CTA placement strategy, social proof distribution, scroll incentives.
-
-**D. Technical Requirements** — islands needed (exact list), custom animations, asset requirements.
-
-### Step 4 — Present Plan for Approval
-
-```
-📋 Page Plan: [Page Type] for [Audience]
-
-Goal: [Conversion goal]
-Sections: [N] | Islands: [list] | Style: [visual approach]
-
-Section Layout:
-1. [hero-split] — Hook headline + product image + primary CTA
-   Animation: fade-up on load
-2. [trust-bar] — Star rating + press logos + "X customers served"
-   Animation: none (instant credibility)
-...
-
-Visual Flow: [spacing + color temperature description]
-CTA Strategy: [where + how many]
-
-Proceed with this plan? (Or tell me what to change)
-```
-
-Wait for user confirmation. If the user suggests changes, update the plan and re-present.
-
-### Step 5 — Hand Off
-
-Once approved, the plan is the binding blueprint: Phase 2 context gathering targets its requirements, Phase 3 assets follow its imagery needs, Phase 4 HTML follows its section sequence EXACTLY.
+This router is complete after selecting a workflow. The selected skill can run
+independently; do not require a chain merely because a related workflow exists.
 
 ---
 
-## Flow Selection
+# Skill: visual-page
 
-```
-What did the user provide?
-│
-├─ Ad creative (image URLs / screenshot)
-│  → AD-TO-PAGE FLOW (analyze creative → extract style → generate matched page)
-│
-├─ Reference URL (competitor / inspiration)
-│  → DESIGN-FIRST FLOW (browser screenshots URL → extract tokens → use as theme → generate)
-│
-├─ Brand brief only (name, industry, tone)
-│  → STANDARD FLOW (Phases 1-5)
-│
-├─ Existing page (wants edits)
-│  → EDIT FLOW (read page → modify sections → validate → write)
-│
-├─ Product focus (PDP, collection)
-│  → PRODUCT FLOW (list_products first → build around real product data)
-│
-└─ Multiple inputs (ad + products + brand)
-   → STANDARD FLOW with enriched context
-```
+> Turn a storefront brief, product, ad, screenshot, reference URL, or mixed input into an approved visual layout brief and a draft Shopify page. Use when a user wants a new page designed visually before it is built.
 
----
+# Visual Page Builder
 
-## Standard Flow
+Use this workflow for new page generation when the user wants a visual layout
+before source HTML is written. It orchestrates `plan-page`, `asset-prep`, and
+`generate`; do not duplicate their detailed rules.
 
-### Phase 2: Context Gathering ✅ ALL PARALLEL
+Read `storefront-engine/references/visual-layout-workflow.md` before starting.
 
-Fire simultaneously — no dependencies:
+## Inputs
 
-```
-┌─ get_storefront_skills({ brief, page_type })    → system prompt + island catalog + schema
-├─ get_design_md()                                 → brand voice/guidelines
-├─ list_products(limit: 10)                        → product catalog (names, images, prices)
-├─ search_design_library({ query: "hero" })        → existing brand assets
-├─ get_navigation()                                → nav links (check `status` — if not_synced/empty, ask the user)
-└─ get_connected_stores()                          → store_id (for publish later)
-```
+Accept any combination of:
 
-### Phase 3: Asset Preparation ✅ PARALLEL PER SECTION
+- a plain-language brief, target audience, traffic source, or conversion goal
+- a product or collection
+- a brand direction or existing design assets
+- an ad creative, screenshot, or reference URL
 
-Full multi-source strategy (library → generate → import → external MCPs): see the `asset-prep` skill or `references/asset-prep.md`.
+Route inputs before creating a layout:
 
-Decision tree per image:
-1. `search_design_library` first — if the brand has relevant assets, USE THEM
-2. No match → `generate_asset` (write your own descriptive prompt)
-3. Product-on-background → `edit_asset` with product image + background
-4. Transparent overlay → `generate_asset` with `transparent: true`
-5. User has their own file → `import_asset` with no arguments (opens an upload picker)
+| Input | First action |
+|---|---|
+| Reference URL or screenshot | Load `browser-analyze` or `analyze-page` |
+| Ad creative | `analyze_ad_creative`, then `match_persona_to_ad` |
+| Product or collection | `list_products` and use real Shopify imagery |
+| Brief only | Run the embedded `plan-page` assessment |
+| Existing page edit | Use the edit flow, not this skill |
 
-Collect all image URLs before Phase 4.
+Never reuse competitor copy, logos, product images, or brand marks. Reference
+inputs are for composition, hierarchy, and interaction patterns only.
 
-### Phase 4: Build (Agent writes source-format HTML)
+## Phase 1: Draft Plan and Layout
 
-1. Generate `theme_css` with `compile_theme` (brand tokens → WCAG-checked CSS vars)
-2. Write each section as plain HTML (Tailwind classes + CSS vars), delimited by `<!-- section: id -->`
-3. Place `<lx-island name="X">` elements (props as a JSON `<script>` child) where interactive commerce is needed — see `references/source-format.md`
-4. Embed asset URLs directly in `<img src="...">` and `background-image`
-5. Add a section `<style>` block only for custom keyframes/animations (or use `data-behavior="gsap-*"` presets)
-6. Add a section `<script>` block only for custom scroll/DOM work
+1. Gather the minimum missing requirements with the `plan-page` assessment.
+2. Gather brand context: `get_brand_kit`, `get_design_md`, `list_products`,
+   `get_navigation`, and `search_design_library`.
+3. Create an internal `PLAN_DRAFT`: section order, conversion goal, visual
+   rhythm, asset needs, and required islands.
+4. Call `get_credits_balance` and `list_image_capabilities`.
+5. Generate a layout reference with `generate_asset`.
+6. Call `view_asset` to inspect it. Translate the concept into a layout brief:
+   desktop composition, mobile stacking, section proportions, CTA positions,
+   image placement, and island mapping.
+7. Present the layout concept and the plan together. Wait for approval before
+   producing final assets or page source.
 
-Sub-steps (see `references/generation-protocol.md`): **4a — draft source HTML** (structure, copy, islands in place), then **4b — compile & fix** (`compile_page_source` reports issues; fix and re-compile).
+Use only `generate_asset` for layout-reference creation. Do not assume a
+provider or model in this workflow. Call `list_image_capabilities` only when
+the brief requires a specific quality, cost, reference-image, size, or output
+format decision.
 
-### Phase 5: Validate + Ship ❌ SEQUENTIAL
+The concept prompt must say it is a storefront composition study, not a final
+page. Use generic placeholder copy where text treatment matters. The concept
+is not a production page image and must not be embedded in the final page.
 
-```
-compile_page_source({ source, head, theme_css, scripts })  → compiled page + issues; fix and re-compile
-create_page_from_source({ source, head, theme_css, scripts, slug, publish: false })  → draft + preview URL
-```
+## Approval Format
 
-Report the preview URL. Call `publish_page` ONLY after the user explicitly says to go live.
+Present one decision point:
 
----
+```text
+Visual Page Plan: [page type]
 
-## Ad-to-Page Flow
+Goal: [conversion goal]
+Layout: [concept asset URL]
+Sections: [ordered section list]
+Visual rhythm: [composition, palette, spacing]
+Commerce: [islands]
+Production assets needed: [list]
 
-```
-Phase 2: analyze_ad_creative({ image_urls }) + get_storefront_skills + list_products
-Phase 3: use ad creative images directly; generate_asset / edit_asset for the rest
-Phase 4-5: Standard Flow
+Proceed to prepare final assets and create a draft preview?
 ```
 
-## Design-First Flow (Reference URL)
+## Phase 2: Build the Draft
 
-```
-Phase 2: browser screenshots URL → extracted palette/fonts/spacing + get_storefront_skills + list_products
-Phase 3-5: Standard Flow, with extracted tokens as the theme_css base
-```
+After approval:
 
-## Edit Flow (Safe Iteration)
+1. Hand the approved plan and layout brief to `asset-prep`.
+2. Hand the final asset manifest, plan, and layout brief to `generate`.
+3. `generate` compiles source-format HTML and creates a draft preview only.
+4. Inspect desktop and mobile screenshots against the approved layout.
+5. Fix material composition, overflow, asset, or island failures before
+   returning the preview.
 
-```
-1. find_page({ query })                                   → locate page
-2. get_page_source({ page_id })                           → read round-trip source
-3. inspect_page_sections({ page_id })                     → inspect current sections
-4. update_section_from_source({ page_id, source })        → compile, preflight, commit
-5. check_page_integrity({ page_id, archetype })           → structural QA
-6. [Optional] diff_page_versions / rollback_page_version
-```
+Never call `publish_page` unless the user separately approves a live publish.
 
-**Key rules:** source updates preflight before writing; run integrity after all edits; rollback creates a forward version, preserving history.
+## Optional Follow-Up
 
----
-
-## Reference Files
-
-Load with `Read references/{name}.md` when you need specific knowledge. Do NOT load all at once.
-
-### Knowledge (domain expertise)
-- **generation-protocol.md** — Page generation rules, constraints, quality gates, Phase 4a/4b detail
-- **cro-research.md** — Conversion rate optimization research and data (2026)
-- **storefront-craft.md** — Load FIRST on any page generation task. Core craft principles.
-- **workflow-orchestration.md** — Tool sequences, parallelization, flow selection
-- **conversion-psychology.md** — AIDA framework → section order mapping
-- **visual-craft.md** — Premium visual techniques. Load when polishing quality.
-- **island-patterns.md** — How to embed, wrap, and combine React islands
-- **premium-patterns.md** — Copy-and-adapt HTML+Tailwind patterns for high-converting sections
-- **animation-system.md** — CSS-only + IntersectionObserver animations. No framer-motion.
-- **design-enrichment.md** — generate_asset, edit_asset, view_asset prompt patterns
-- **asset-prep.md** — Multi-source asset strategy (library, generation, import, external MCPs)
-- **qa-recipe.md** — Validation, integrity checks, screenshot QA workflow
-- **reference-pdp-remix.md** — PDP reference site patterns and adaptation
-
-### Verticals
-vertical-beauty, vertical-supplements, vertical-fashion, vertical-food, vertical-home, vertical-luxury
-
-### Traffic Sources
-traffic-source-meta, traffic-source-google, traffic-source-tiktok
-
-### Island Reference
-- **islands/_contract.md** — Rules ALL island wrappers must follow
-- **islands/{name}/schema.json** — Full props, variants, examples, anti-patterns (one per island)
-- **islands/{name}/layouts/*.json** — Pre-built renderer-compatible section templates
-
-### Operational (workflow procedures)
-page-generation, design-assets, publishing, page-editing, analytics, generate-pdp, generate-landing-page, generate-homepage, generate-collection, generate-listicle, generate-bundle-page, generate-editorial, ad-to-page, page-redesign, competitor-remix, personalization-variant, ab-test-variant, section-library, cart-composition, cart-v2-management
+After approval, this workflow may use `asset-prep` and `generate` to create a
+draft. It may also end after returning the approved plan and layout brief when
+the user wants to continue later.
 
 ---
 
@@ -2397,7 +1993,7 @@ Use descriptive kebab-case: `hero`, `product-gallery`, `social-proof`, `ingredie
 1. **Always check `search_design_library` first** — brand's uploaded assets are free and on-brand
 2. **Use `list_products` for product images** — never generate fake product shots
 3. **`generate_asset` for custom imagery** — hero backgrounds, lifestyle contexts, textures
-4. **`edit_asset` for composites** — product-on-background, texture overlays
+4. **`generate_asset` with `reference_images` for composites** — product-on-background, texture overlays
 5. **Place URLs directly in HTML** — `<img src="${url}" />` or inline `style="background-image: url(...)"`
 6. **Load `design-enrichment` skill** for full asset generation pipeline details
 7. **For video, reference imagery, or external AI tools** → see `asset-pipeline.md` for multi-source strategy
@@ -2847,7 +2443,7 @@ Phase 2: Context
 Phase 3: Assets
 ├─ Use ad creative images directly where appropriate
 ├─ generate_asset for additional sections (testimonial bg, trust section bg)
-└─ edit_asset to adapt ad images (crop, extend, composite)
+└─ generate_asset with reference_images to adapt ad images (crop, extend, composite)
 
 Phase 4-4: Same as Standard Flow
 ```
@@ -2908,7 +2504,7 @@ Phase 4-4: Same as Standard Flow
 |---|---|
 | All Phase 2 context calls | Phase 3 needs Phase 2 results (brand_colors for asset gen) |
 | Multiple generate_asset calls | validate must complete before write |
-| Asset gen for different sections | edit_asset needs source image URLs first |
+| Asset generation for different sections | Reference-based generation needs source image URLs first |
 
 ---
 
@@ -2952,8 +2548,7 @@ Always call `get_credits_balance` before expensive operations. If balance is 0, 
 
 | Tool | Cost | Notes |
 |------|------|-------|
-| `generate_asset` | credits | AI image generation |
-| `edit_asset` | credits | AI image editing/compositing |
+| `generate_asset` | credits | AI image generation, editing, and compositing |
 | `create_page_from_source` | credits | Page generation (only on publish, not drafts) |
 | `create_page_variation` | credits | A/B variant creation (requires Pro plan) |
 | `create_ab_test` | credits | Experiment setup (requires Pro plan) |
@@ -3842,7 +3437,7 @@ Set `head.use_cart_v2: true` on every commerce page. The renderer injects the re
 { "head": { "title": "...", "use_cart_v2": true } }   // that's the whole cart setup
 ```
 
-Legacy note: `CartDrawer` (V1) exists only on old pages that predate Cart V2. Don't add it to new pages; when editing a legacy page, prefer migrating it (remove CartDrawer, set the flag).
+Legacy note: `CartDrawer` (V1) exists only on old pages that predate cart profiles. Don't add it to new pages; when editing a legacy page, prefer migrating it (remove CartDrawer, set the flag).
 
 ### StickyBar — Scroll-triggered Bottom CTA
 
@@ -4170,7 +3765,7 @@ Key event flows for PDP islands:
 - VariantSwatches → (variant:changed) → BuyBox, ProductGallery, InventoryIndicator, PaymentOptions
 - OptionResolver → (variant:changed) → all listeners above (for multi-axis products)
 - SubscriptionToggle → (subscription:changed) → BuyBox
-- BundleBuilder → (bundle:add) → cart drawer (Cart V2, injected)
+- BundleBuilder → (bundle:add) → cart drawer (injected cart profile)
 - InventoryIndicator → (inventory:updated) → StickyBar, BuyBox
 
 Always set `listenForEvents:true` on listener islands when they co-exist with emitters.
@@ -4465,7 +4060,7 @@ Need an image or video for a section?
 │
 ├─ What type of asset?
 │  ├─ Static image (background, lifestyle, texture, composite)
-│  │  └─ generate_asset or edit_asset (built-in, costs credits)
+│  │  └─ generate_asset (built-in, costs credits; add reference_images to composite or edit)
 │  │
 │  ├─ Video (hero, demo, UGC-style)
 │  │  └─ External MCP: HiggsField / Runway / Kling
@@ -4489,8 +4084,7 @@ Need an image or video for a section?
 | Tool | What it does | Cost |
 |------|-------------|------|
 | `search_design_library` | Search existing brand assets | Free |
-| `generate_asset` | AI image generation (photography, illustration, 3d, editorial, abstract, texture) | Credits |
-| `edit_asset` | Composite, inpaint, or style-transfer existing images | Credits |
+| `generate_asset` | AI image generation, compositing, inpainting, or style transfer; add `reference_images` for source-based work | Credits |
 | `view_asset` | Visually verify a generated/edited asset before using | Free |
 | `import_asset` | Bring an external URL (or base64) into the design library for reuse. Call with **no arguments** to open an upload picker so the user can supply their own file — use that when they want to add their own logo/photo and you have no URL for it | Free |
 
@@ -4854,3 +4448,117 @@ move_page_section(page_id, section_id, new_position)
 - For multi-section changes, batch them (each call bumps version)
 - Preserve existing CSS variables and island configurations
 - Don't break mobile responsiveness when editing desktop layout
+
+---
+
+# Visual Layout Workflow
+
+Use this reference with the `visual-page` skill. It converts mixed page inputs
+into a visual concept, an approved page plan, and a valid source-format draft.
+
+## Layout Concept Contract
+
+The concept is an internal visual brief. It communicates:
+
+- section order and relative heights
+- hero composition and focal point
+- grid, split, and card proportions
+- image placement and treatment
+- color temperature and whitespace rhythm
+- CTA hierarchy and likely island placement
+- desktop composition and mobile stacking intent
+
+It does not provide final copy, production imagery, product facts, or valid
+island props. Use brand data, Shopify product data, and the island schemas for
+those.
+
+## Generate the Layout Reference
+
+Call `generate_asset` to create the visual reference. The workflow is
+provider-neutral: do not hardcode a provider or model here.
+
+Call `list_image_capabilities` only when the request needs a deliberate
+quality, cost, reference-image, size, output-format, or transparency choice.
+Record the returned asset ID in the working brief, but do not use the layout
+reference as final page media.
+
+## Prompt Template
+
+```text
+Create a desktop ecommerce [PAGE TYPE] composition study for [AUDIENCE].
+
+Goal: [CONVERSION GOAL].
+Brand direction: [BRAND TONE, PALETTE, TYPOGRAPHY].
+Section order: [SECTION PLAN].
+Use [PRODUCT / EXISTING ASSET] only as visual reference.
+Show clear hierarchy, whitespace, CTA placement, image zones, card/grid
+proportions, and mobile-friendly stacking intent.
+This is a layout concept, not a final website. Use generic placeholder copy;
+do not reproduce competitor branding, logos, copy, or imagery.
+```
+
+Use `16:9`, `2K`, and PNG by default. Use reference images only when they are
+tenant-owned assets, user-supplied assets, or safe visual references.
+
+## Concept to Source Mapping
+
+After `view_asset`, write a concise layout brief before running `asset-prep`:
+
+| Concept signal | Source-format implementation |
+|---|---|
+| Full-bleed hero | Semantic `<section>` with responsive image and overlay |
+| Split hero | Grid that stacks below `lg` |
+| Product purchase area | `BuyBox` with real product data |
+| Repeated cards | CSS grid with stable media aspect ratios |
+| Reviews / FAQs / tabs | Valid matching island with schema-derived props |
+| Pinned conversion action | `StickyBar` only when the page type and product support it |
+
+Do not copy pixels literally. Preserve visual intent while obeying the brand
+kit, accessibility rules, content hierarchy, source format, and island
+contracts.
+
+## Approval and QA
+
+Show the concept and plan in one approval response. After approval, compare the
+draft preview at desktop and 375px mobile widths:
+
+- hero headline and CTA are visible above the fold
+- layouts stack without horizontal overflow
+- real product data and final assets replaced placeholders
+- no concept image is embedded in the page
+- islands hydrate and page compilation has zero errors
+- composition still matches the approved visual rhythm
+
+---
+
+# Optional Workflow Connections
+
+Each skill owns one outcome and can run independently. The connections below
+describe reusable outputs, not mandatory sequencing.
+
+| Skill | Owns | Output | May inform |
+|---|---|---|---|
+| `storefront-engine` | Routing only | Selected workflow | One owner from this table |
+| `browser-analyze` | Browser capture and raw evidence | `PAGE_ANALYSIS_INPUT` | `analyze-page`, `remix`, or `optimize` |
+| `analyze-page` | Reference page structural analysis | `VISUAL_PAGE_INPUT` | `visual-page` |
+| `remix` | Brand-safe reference/ad adaptation brief | `VISUAL_PAGE_INPUT` | `visual-page` |
+| `plan-page` | Standalone approved content and section plan | `PAGE_PLAN` | `asset-prep` or `visual-page` |
+| `visual-page` | New-page visual layout concept and single approval | approved plan + layout brief | `asset-prep` |
+| `asset-prep` | Final production asset sourcing | `ASSET_MANIFEST` | `generate` |
+| `generate` | Source-format page, compile, draft preview, visual QA | `DRAFT_READY` | `publish` |
+| `publish` | Live release or lifecycle action | live status | `experiment` or `optimize` |
+| `optimize` | Existing-page, performance-led improvements | validated page update | `publish` or `experiment` |
+| `experiment` | Controlled variants and result evaluation | winner or learning | `optimize` |
+| `cart` | Cart profile configuration | reviewed cart profile | `generate` only if page integration changes |
+| `search-docs` | Documentation lookup | answer and selected workflow | matching owner |
+| `extract-island` | Maintainer reusable island layout | contribution-ready layout | maintainer review |
+
+## Connection Rules
+
+1. Pass compact named artifacts, not a second copy of upstream instructions.
+2. Preserve tenant-scoped asset and product identifiers.
+3. A layout concept is composition guidance only, never final page media.
+4. A `DRAFT_READY` page is not live. Only `publish` can release it after
+   explicit user approval.
+5. Stop after the requested outcome. Follow a connection only when the user
+   asks for the downstream outcome.

@@ -22,6 +22,11 @@ Generate a complete Shopify storefront page — auto-detects page type (landing,
 > Do NOT proceed to Phase 2 until a page plan is confirmed by the user.
 > Exception: If user explicitly says "skip planning" or "just build it".
 
+When invoked by `visual-page`, use its approved plan, final asset manifest, and
+layout brief as the binding inputs. Recreate the approved composition with
+source-format HTML and valid islands; never embed the visual layout reference as
+page media.
+
 # Storefront Page Generation
 
 Generate high-quality Shopify storefront pages using the Lexsis AI MCP tools.
@@ -49,7 +54,7 @@ All 7 calls can run in parallel. Wait for all before proceeding.
 Decision tree per section:
 1. `search_design_library` — check existing assets FIRST (always)
 2. `generate_asset` — only if library has nothing suitable
-3. `edit_asset` — composite/modify if needed
+3. `generate_asset` with `reference_images` — composite or modify if needed
 4. `view_asset` — verify result before using in page
 
 Budget: 3-5 generated assets per page max. Existing assets = free.
@@ -123,11 +128,14 @@ Hero Banner → Filter/Sort → Product Grid → Promo Card → Social Proof →
 - Hero headline ≤ 8 words, visible without scrolling
 - Use shared keyframes (fadeUp, fadeIn, scaleIn) — don't define new @keyframes unless truly unique
 
-## Ad-to-Page Flow
+## Scope Boundary
 
-When converting an ad creative to a landing page:
-1. `get_ad_creatives` — get creative metadata
-2. `analyze_ad_creative` — extract headline, claims, colors, tone, CTA
-3. `match_persona_to_ad` — identify target audience
-4. Continue with Phases 1-5 using extracted context
-5. Ensure "scent continuity" — ad headline ≈ page hero headline
+Do not analyze ads, screenshots, competitor URLs, or reference pages here.
+`browser-analyze`, `analyze-page`, and `remix` create the safe source brief;
+`visual-page` owns the resulting layout concept and approval.
+
+## Optional Follow-Up
+
+This skill can end after source compilation, draft creation, and visual QA
+produce `DRAFT_READY`. `publish` is available only when the user explicitly
+asks to make that draft live.

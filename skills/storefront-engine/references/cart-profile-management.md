@@ -1,6 +1,7 @@
 # Cart Profile MCP Management
 
-The MCP exposes three cart operations. Keep lifecycle management in the app.
+The Storefront MCP exposes three cart-profile operations. Keep lifecycle
+management in the app.
 
 ## `get_cart_profile`
 

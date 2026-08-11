@@ -93,6 +93,13 @@ For each section:
 
 ## Step 4 — Present Plan for Approval
 
+### Embedded Use by `visual-page`
+
+When `visual-page` calls this workflow, produce the same plan as
+`PLAN_DRAFT` and do not ask for approval yet. `visual-page` creates a visual
+layout reference with `generate_asset` and presents it plus the plan as one
+approval decision.
+
 Show the plan to the user in this format:
 
 ```
@@ -116,13 +123,14 @@ CTA Strategy: [where + how many]
 Proceed with this plan? (Or tell me what to change)
 ```
 
-Wait for user confirmation. If user suggests changes, update plan and re-present.
+When run directly, wait for user confirmation. If user suggests changes, update
+the plan and re-present.
 
 ## Step 5 — Next Steps
 
 Once approved, the user can:
 - Run `$generate` — carry the plan forward as the binding blueprint
-- Or hand off the plan to any generation flow
+- Or use the plan with any generation flow
 
 The plan becomes BINDING for generation:
 - Phase 2 context gathering targets the plan's requirements
@@ -130,3 +138,9 @@ The plan becomes BINDING for generation:
 - Phase 4 HTML generation follows the plan's section sequence EXACTLY
 - Section purposes from the plan guide the copywriting
 - Animation choices from the plan guide the JS/CSS
+
+## Optional Follow-Up
+
+This skill can end with an approved plan. `visual-page` can use it for a
+visual-first concept, or `asset-prep` and `generate` can use it when the user
+wants to continue directly to a draft.

@@ -1,7 +1,7 @@
 {
   "name": "lexsis-storefront-skills",
-  "version": "5.1.2",
-  "description": "AI-powered Shopify storefront builder \u2014 13 skills for planning, asset prep, generation, CRO, experimentation, and publishing.",
+  "version": "5.2.0",
+  "description": "AI-powered Shopify storefront builder \u2014 14 independently runnable skills for visual planning, asset prep, generation, CRO, experimentation, and publishing.",
   "author": {
     "name": "Aetheria Labs",
     "email": "hello@trylexsis.com"
@@ -30,9 +30,9 @@
     ],
     "websiteURL": "https://trylexsis.com",
     "defaultPrompt": [
-      "Generate a conversion-focused Shopify landing page.",
+      "Create a visual storefront layout and draft page for my product.",
       "Audit this storefront URL for CRO opportunities.",
-      "Configure a Cart V2 drawer with relevant upsells."
+      "Configure a cart profile with relevant upsells."
     ]
   }
 }

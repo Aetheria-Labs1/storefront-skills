@@ -1,6 +1,6 @@
 # Cart System — Island Directory
 
-Composed cart drawer using DrawerShell + CartLines + CartCheckoutButton + CartProgressBar + CartSummary + CartCrossSell (Cart V2).
+Composed cart drawer using DrawerShell + CartLines + CartCheckoutButton + CartProgressBar + CartSummary + CartCrossSell (cart profile).
 
 ## Files
 
@@ -20,7 +20,7 @@ Composed cart drawer using DrawerShell + CartLines + CartCheckoutButton + CartPr
 
 ## Config-Driven Architecture
 
-Cart V2 islands subscribe to store-level `commerce_config` (exposed as `$cartConfig` at runtime):
+Cart profile islands subscribe to store-level `commerce_config` (exposed as `$cartConfig` at runtime):
 - **CartProgressBar** reads `free_shipping_threshold` and `currency` from config — pass empty props or override with explicit values
 - **CartCrossSell** reads `upsells[]` from config — self-manages visibility based on cart contents matching `trigger_product_ids`
 - **DrawerShell** reads `cart_style.mode` and `cart_style.responsive` from config
@@ -30,7 +30,7 @@ Islands self-manage visibility. No rules needed for basic show/hide of CartProgr
 ## Composition
 
 - Max 1 DrawerShell per page
-- Cart V2 pages set `head.use_cart_v2: true` — no cart section in page sections array
+- Cart-profile pages set `head.use_cart_v2: true` — no cart section in page sections array
 - CartProgressBar sits at top (shows free shipping threshold)
 - CartCrossSell sits after CartLines (shows upsell recommendations)
 - CartLines fills the scrollable middle area

@@ -55,7 +55,7 @@ Set `head.use_cart_v2: true` on every commerce page. The renderer injects the re
 { "head": { "title": "...", "use_cart_v2": true } }   // that's the whole cart setup
 ```
 
-Legacy note: `CartDrawer` (V1) exists only on old pages that predate Cart V2. Don't add it to new pages; when editing a legacy page, prefer migrating it (remove CartDrawer, set the flag).
+Legacy note: `CartDrawer` (V1) exists only on old pages that predate cart profiles. Don't add it to new pages; when editing a legacy page, prefer migrating it (remove CartDrawer, set the flag).
 
 ### StickyBar — Scroll-triggered Bottom CTA
 
@@ -383,7 +383,7 @@ Key event flows for PDP islands:
 - VariantSwatches → (variant:changed) → BuyBox, ProductGallery, InventoryIndicator, PaymentOptions
 - OptionResolver → (variant:changed) → all listeners above (for multi-axis products)
 - SubscriptionToggle → (subscription:changed) → BuyBox
-- BundleBuilder → (bundle:add) → cart drawer (Cart V2, injected)
+- BundleBuilder → (bundle:add) → cart drawer (injected cart profile)
 - InventoryIndicator → (inventory:updated) → StickyBar, BuyBox
 
 Always set `listenForEvents:true` on listener islands when they co-exist with emitters.

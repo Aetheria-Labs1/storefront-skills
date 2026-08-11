@@ -23,7 +23,7 @@ Need an image or video for a section?
 │
 ├─ What type of asset?
 │  ├─ Static image (background, lifestyle, texture, composite)
-│  │  └─ generate_asset or edit_asset (built-in, costs credits)
+│  │  └─ generate_asset (built-in, costs credits; add reference_images to composite or edit)
 │  │
 │  ├─ Video (hero, demo, UGC-style)
 │  │  └─ External MCP: HiggsField / Runway / Kling
@@ -47,8 +47,7 @@ Need an image or video for a section?
 | Tool | What it does | Cost |
 |------|-------------|------|
 | `search_design_library` | Search existing brand assets | Free |
-| `generate_asset` | AI image generation (photography, illustration, 3d, editorial, abstract, texture) | Credits |
-| `edit_asset` | Composite, inpaint, or style-transfer existing images | Credits |
+| `generate_asset` | AI image generation, compositing, inpainting, or style transfer; add `reference_images` for source-based work | Credits |
 | `view_asset` | Visually verify a generated/edited asset before using | Free |
 | `import_asset` | Bring an external URL (or base64) into the design library for reuse. Call with **no arguments** to open an upload picker so the user can supply their own file — use that when they want to add their own logo/photo and you have no URL for it | Free |
 

@@ -47,7 +47,7 @@ Phase 2: Context
 Phase 3: Assets
 ├─ Use ad creative images directly where appropriate
 ├─ generate_asset for additional sections (testimonial bg, trust section bg)
-└─ edit_asset to adapt ad images (crop, extend, composite)
+└─ generate_asset with reference_images to adapt ad images (crop, extend, composite)
 
 Phase 4-4: Same as Standard Flow
 ```
@@ -108,7 +108,7 @@ Phase 4-4: Same as Standard Flow
 |---|---|
 | All Phase 2 context calls | Phase 3 needs Phase 2 results (brand_colors for asset gen) |
 | Multiple generate_asset calls | validate must complete before write |
-| Asset gen for different sections | edit_asset needs source image URLs first |
+| Asset generation for different sections | Reference-based generation needs source image URLs first |
 
 ---
 
@@ -152,8 +152,7 @@ Always call `get_credits_balance` before expensive operations. If balance is 0, 
 
 | Tool | Cost | Notes |
 |------|------|-------|
-| `generate_asset` | credits | AI image generation |
-| `edit_asset` | credits | AI image editing/compositing |
+| `generate_asset` | credits | AI image generation, editing, and compositing |
 | `create_page_from_source` | credits | Page generation (only on publish, not drafts) |
 | `create_page_variation` | credits | A/B variant creation (requires Pro plan) |
 | `create_ab_test` | credits | Experiment setup (requires Pro plan) |

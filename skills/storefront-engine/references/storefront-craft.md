@@ -157,7 +157,7 @@ Use descriptive kebab-case: `hero`, `product-gallery`, `social-proof`, `ingredie
 1. **Always check `search_design_library` first** — brand's uploaded assets are free and on-brand
 2. **Use `list_products` for product images** — never generate fake product shots
 3. **`generate_asset` for custom imagery** — hero backgrounds, lifestyle contexts, textures
-4. **`edit_asset` for composites** — product-on-background, texture overlays
+4. **`generate_asset` with `reference_images` for composites** — product-on-background, texture overlays
 5. **Place URLs directly in HTML** — `<img src="${url}" />` or inline `style="background-image: url(...)"`
 6. **Load `design-enrichment` skill** for full asset generation pipeline details
 7. **For video, reference imagery, or external AI tools** → see `asset-pipeline.md` for multi-source strategy

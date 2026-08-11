@@ -68,9 +68,9 @@ Both files are **generated** from the canonical skills by `scripts/build-distrib
 
 ## What's Included
 
-- **13 skills** — one directory per workflow under `skills/`, spec-compliant SKILL.md each
+- **14 independently runnable skills** — one directory per workflow under `skills/`, spec-compliant SKILL.md each
 - **2 agents** (cro-analyzer, page-builder) for Claude Code
-- **50 reference docs** (CRO patterns, verticals, traffic sources, workflows) under `skills/storefront-engine/references/`
+- **54 reference docs** (CRO patterns, verticals, traffic sources, workflows) under `skills/storefront-engine/references/`
 - **49 island schemas** with layouts under `references/islands/`
 - Vertical expertise: beauty, supplements, fashion, food, luxury, home
 - Traffic-source patterns: Meta, Google, TikTok
@@ -87,7 +87,7 @@ Invoke as `/name` (Claude Code) or `$name` (Codex); most also trigger automatica
 | `optimize` | CRO-optimize an existing page — CTAs, trust signals, mobile UX |
 | `remix` | Rebuild a competitor page or ad creative adapted to your brand |
 | `experiment` | A/B tests, personalization variants, results monitoring |
-| `cart` | Cart V2 drawer — upsells, progress bars, conditional rules |
+| `cart` | Cart profiles — upsells, progress bars, conditional rules |
 | `publish` | QA, draft preview, and go-live (only after explicit approval) |
 | `analyze-page` | Turn a reference URL into a reproducible design + CRO brief |
 | `browser-analyze` | Deep URL analysis via a browser tool when available |

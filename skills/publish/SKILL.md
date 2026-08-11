@@ -19,25 +19,18 @@ Manage page publishing, previews, and lifecycle.
 
 ## Publish Flow
 
-1. `compile_page_source` — compile and validate the generated source
-2. `create_page_from_source` — create a draft preview first
-   - `publish: false` → preview URL only (not live on store)
-3. Confirm the user explicitly wants a live publish before `publish_page`.
+1. Require a `DRAFT_READY` page from `generate` or a validated update from
+   `optimize`.
+2. Confirm the preview has passed desktop and mobile QA.
+3. Confirm the user explicitly wants a live release before `publish_page`.
 
 ## Operations
 
-### Draft Preview (New Page)
-```
-compile_page_source({ source, head, theme_css, scripts })
-create_page_from_source({ source, head, theme_css, scripts, slug, publish: false })
-```
-Returns: page_id and preview_url
+### Ready Draft Requirement
 
-### Preview (Draft)
-```
-create_page_from_source({ source, head, theme_css, scripts, slug, publish: false })
-```
-Returns: preview_url (not visible to store visitors)
+`generate` creates and validates draft previews. Do not recreate source or
+compile it here. Require the page ID, preview URL, and completed visual QA
+before release.
 
 ### Publish Live (Explicit Approval Required)
 ```
@@ -74,3 +67,8 @@ After publishing, the page is served via:
 - Shopify store (native page)
 - pages.lexsis.app (standalone via edge worker)
 - Custom domain (if tracking domain configured)
+
+## Optional Follow-Up
+
+This skill ends after release. Later, `experiment` can test a focused variant
+or `optimize` can address performance evidence when the user requests it.

@@ -121,3 +121,9 @@ skills/storefront-engine/references/islands/{island-name}/layouts/{variant-slug}
 ```
 
 The filename becomes the layout identifier used by generation skills.
+
+## Optional Follow-Up
+
+Submit the layout for maintainer review and schema validation. After it is
+accepted into the reference catalog, `visual-page` and `generate` may select
+it; do not use this maintainer-only compiled output as page source.

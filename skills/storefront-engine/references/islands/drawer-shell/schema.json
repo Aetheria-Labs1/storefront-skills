@@ -1,7 +1,7 @@
 {
   "name": "DrawerShell",
   "category": "commerce",
-  "usage_hint": "Multi-mode container island that lazily hydrates child islands on open. Used as the Cart V2 shell or any deferred-content drawer/modal/sheet.",
+  "usage_hint": "Multi-mode container island that lazily hydrates child islands on open. Used as the cart profile shell or any deferred-content drawer/modal/sheet.",
   "when_to_use": "Wrap CartLines, CartSummary, CartCheckoutButton, CartProgressBar, CartDiscountInput inside DrawerShell for lazy-loaded cart UI. Also usable for any deferred sidebar, bottom sheet, or modal pattern.",
   "when_not_to_use": "Do not use for always-visible content. Not a replacement for inline sections. If content must be visible on page load, use regular islands.",
   "defaultHydrate": "immediate",

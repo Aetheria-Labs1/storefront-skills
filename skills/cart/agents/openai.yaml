@@ -1,7 +1,7 @@
 interface:
-  display_name: "Configure Cart V2"
-  short_description: "Configure Cart V2 islands, rules, and upsells."
-  default_prompt: "Configure a Cart V2 drawer for my storefront."
+  display_name: "Configure Cart Profiles"
+  short_description: "Configure cart profiles, rules, and upsells."
+  default_prompt: "Configure a cart profile for my storefront."
 dependencies:
   tools:
     - type: "mcp"

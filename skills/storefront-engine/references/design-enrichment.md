@@ -1,6 +1,6 @@
 # Design Enrichment — AI Image Generation & Compositing
 
-How to use `generate_asset`, `edit_asset`, and `view_asset` tools to create custom images for page sections. Load when a page needs custom imagery beyond what's in the design library.
+How to use `generate_asset` and `view_asset` tools to create custom images for page sections. Load when a page needs custom imagery beyond what's in the design library.
 
 ---
 
@@ -15,7 +15,7 @@ Need an image for a section?
 │
 ├─ Product shot needed?
 │  ├─ list_products() has product images → USE EXISTING
-│  └─ Need product-on-background composite → edit_asset()
+│  └─ Need product-on-background composite → generate_asset({ reference_images: [...] })
 │
 └─ Custom background/texture/lifestyle → generate_asset()
 ```
@@ -78,7 +78,7 @@ view_asset(asset_id) → base64 image you can see directly
 | Hero full-width | `hero_bg` | `landscape` | Wide, dramatic |
 | Hero split (image half) | `product_lifestyle` | `portrait` or `square` | Product in context |
 | Section background | `section_bg` | `landscape` | Subtle, not distracting |
-| Product on background | `product_composite` | `square` | Use edit_asset |
+| Product on background | `product_composite` | `square` | Use `generate_asset` with `reference_images` |
 | Card/feature image | `card_bg` | `square` | Small, tight crop |
 | Texture/pattern | `texture_fill` | `square` | Tileable, subtle |
 | Floating decoration | `decorative_element` | `square` | Transparent PNG |
@@ -86,7 +86,7 @@ view_asset(asset_id) → base64 image you can see directly
 
 ---
 
-## Compositing with edit_asset
+## Compositing with generate_asset
 
 ### Product on Lifestyle Background
 
@@ -101,9 +101,11 @@ generate_asset({
 → bg_url
 
 // Then: composite product onto it
-edit_asset({
-  source_images: [product_image_url, bg_url],
+generate_asset({
+  reference_images: [product_image_url, bg_url],
   prompt: "Place the product bottle centered on the marble surface, natural shadows, studio lighting",
+  style: "photography",
+  purpose: "product_composite",
   aspect: "square",
   quality: "high"
 })

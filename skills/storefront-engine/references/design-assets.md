@@ -24,11 +24,13 @@ generate_asset({
 })
 ```
 
-### 3. Edit/Composite
+### 3. Composite With References
 ```
-edit_asset({
-  source_ids: ["asset_123", "asset_456"],
+generate_asset({
+  reference_images: ["https://cdn.example.com/asset_123.png", "https://cdn.example.com/asset_456.png"],
   prompt: "Place product bottle on the lifestyle background, natural lighting match",
+  style: "photography",
+  purpose: "product_composite",
   mode: "composite"            // composite | inpaint | style_transfer
 })
 ```

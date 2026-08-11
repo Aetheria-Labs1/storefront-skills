@@ -4,7 +4,7 @@ description: Source and prepare visual assets for a storefront page — search t
 ---
 
 
-> **Inputs:** Approved page plan (from `/plan-page` workflow)
+> **Inputs:** Approved page plan, optionally with a `visual-page` layout brief
 > **Outputs:** Asset manifest (URLs + purposes + section mapping)
 > **When to load:** After page plan is approved, before HTML generation.
 
@@ -25,7 +25,7 @@ Need an image or video for a section?
 │
 ├─ What type of asset?
 │  ├─ Static image (background, lifestyle, texture, composite)
-│  │  └─ generate_asset or edit_asset (built-in, costs credits)
+│  │  └─ generate_asset (built-in, costs credits; add reference_images to composite or edit)
 │  │
 │  ├─ Video (hero, demo, UGC-style)
 │  │  └─ External MCP: HiggsField / Runway / Kling
@@ -49,12 +49,15 @@ Need an image or video for a section?
 | Tool | What it does | Cost |
 |------|-------------|------|
 | `search_design_library` | Search existing brand assets | Free |
-| `generate_asset` | AI image generation (photography, illustration, 3d, editorial, abstract, texture) | Credits |
-| `edit_asset` | Composite, inpaint, or style-transfer existing images | Credits |
+| `generate_asset` | AI image generation, compositing, inpainting, or style transfer; add `reference_images` for source-based work | Credits |
 | `view_asset` | Visually verify a generated/edited asset before using | Free |
 | `import_asset` | Bring an external URL (or base64) into the design library for reuse. Call with **no arguments** to open an upload picker so the user can supply their own file — use that when they want to add their own logo/photo and you have no URL for it | Free |
 
 **Always `search_design_library` first.** Existing assets are free and already brand-consistent.
+
+When a `visual-page` layout concept is supplied, use it only for composition,
+crop, and visual-rhythm guidance. It is not a production asset. Source final
+media through the library, Shopify product data, generation, or import.
 
 See `design-enrichment.md` for detailed prompt patterns, style selection guide, compositing recipes, and HTML placement patterns.
 
@@ -197,3 +200,9 @@ The generation workflow uses these URLs directly in `<img src="">` and island pr
 4. External MCP assets → `import_asset` to avoid re-fetching
 5. CSS gradients/solid colors for sections that don't need imagery
 6. Reuse: one hero image can serve as dimmed background for 2-3 sections
+
+## Optional Follow-Up
+
+This skill can end after returning `ASSET_MANIFEST`. `generate` can consume the
+manifest with an approved page plan and optional visual layout brief when the
+user asks for a draft.

@@ -374,3 +374,8 @@ If no winner after 2000+ visitors per variant: the change has no meaningful impa
 - Secondary metrics monitored alongside primary
 - Learning documented regardless of outcome (losses teach as much as wins)
 - Wait for mSPRT -- never call early based on gut feeling
+
+## Optional Follow-Up
+
+This skill can end with a documented winner or learning. `optimize` can use
+that evidence for a later page improvement when the user requests one.

@@ -46,7 +46,12 @@ RETIRED_TOOLS = [
     "publish_vibe_page",
     "update_page_section",
     "preview_section_update",
+    "edit_asset",
 ]
+
+REFERENCE_PATH_RE = re.compile(
+    r"(?:storefront-engine/)?references/([A-Za-z0-9_./-]+\.md)"
+)
 
 # Page-authoring skills must emit source-format <lx-island> elements. The
 # maintainer-only extract-island skill intentionally produces compiled layout
@@ -69,6 +74,8 @@ GPT_REFERENCE_ALLOWLIST = [
     "publishing",
     "page-generation",
     "page-editing",
+    "visual-layout-workflow",
+    "workflow-handoffs",
 ]
 
 
@@ -118,6 +125,13 @@ def validate() -> list[str]:
         for tool in RETIRED_TOOLS:
             if tool in body:
                 errors.append(f"{skill_dir.name}: references retired tool {tool}")
+        for reference in REFERENCE_PATH_RE.findall(body):
+            reference_path = REFERENCES / reference
+            if not reference_path.is_file():
+                errors.append(
+                    f"{skill_dir.name}: references missing canonical document "
+                    f"storefront-engine/references/{reference}"
+                )
         if (
             skill_dir.name not in COMPILED_MARKUP_SKILL_EXCEPTIONS
             and re.search(r"<[^>]+data-island=|data-props=['\"]", body)

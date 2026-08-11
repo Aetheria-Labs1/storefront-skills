@@ -19,7 +19,7 @@ Search documentation, skill knowledge, island patterns, and industry guidance vi
 ## Workflow
 
 1. Call `search_docs` with the user's query (or your own lookup query)
-2. If results reference a skill by name, read it via `vibe://skills/{skillName}` resource for full content
+2. If results include a resource URI, read that exact URI for full content.
 3. If results reference an island, read `vibe://catalog/islands/{name}` for schema + props + variants
 4. Synthesize relevant findings — don't dump raw results, extract what's actionable
 
@@ -42,11 +42,10 @@ Use `category` to focus results:
 - `getting-started` — setup, auth, quickstart
 - `resources` — MCP resources reference
 
-### Deep-read a skill
-Read resource URI: `vibe://skills/{skillName}`
-Returns full markdown content of the skill file.
-
-Available skills: craft-guide, conversion-psychology, generation-protocol, workflow-orchestration, island-patterns, visual-craft, premium-patterns, animation-system, design-enrichment, qa-recipe, vertical-beauty, vertical-fashion, vertical-food, vertical-home, vertical-luxury, vertical-supplements, cart-composition, cart-v2-management
+### Deep-read a result
+Use only a resource URI returned by `search_docs`. Do not invent a resource
+name or rely on a hard-coded catalog: the search result is the authoritative
+availability check.
 
 ### Deep-read an island
 Read resource URI: `vibe://catalog/islands/{islandName}`
@@ -57,9 +56,9 @@ Returns schema with all props, variants, and usage hints.
 | User asks | Search call | Follow-up |
 |-----------|------------|-----------|
 | "How does BuyBox work?" | `search_docs({ query: "BuyBox", category: "islands" })` | Read `vibe://catalog/islands/BuyBox` |
-| "Beauty landing page patterns" | `search_docs({ query: "beauty landing page", category: "verticals" })` | Read `vibe://skills/vertical-beauty` |
+| "Beauty landing page patterns" | `search_docs({ query: "beauty landing page", category: "verticals" })` | Read the returned resource URI |
 | "Countdown urgency techniques" | `search_docs({ query: "countdown urgency scarcity" })` | — |
-| "Publishing workflow" | `search_docs({ query: "publish page workflow", category: "recipes" })` | Read `vibe://skills/publishing` |
+| "Publishing workflow" | `search_docs({ query: "publish page workflow", category: "recipes" })` | Read the returned resource URI |
 | "What islands handle reviews?" | `search_docs({ query: "reviews testimonials", category: "islands" })` | Read `vibe://catalog/islands/ReviewCarousel` |
 
 ## Tips
@@ -68,3 +67,9 @@ Returns schema with all props, variants, and usage hints.
 - Combine category filter with query for best results
 - If search returns nothing, try broader terms or drop the category filter
 - Skill resources contain full implementation guides — always read them when referenced
+
+## Optional Follow-Up
+
+This skill can end after returning the concise answer. Its findings can inform
+any workflow the user explicitly chooses, including `visual-page`, `plan-page`,
+`asset-prep`, `generate`, `optimize`, `experiment`, `cart`, or `publish`.
