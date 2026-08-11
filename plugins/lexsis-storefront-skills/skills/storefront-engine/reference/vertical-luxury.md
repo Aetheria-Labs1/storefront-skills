@@ -1,1 +1,0 @@
-../../../../../reference/vertical-luxury.md

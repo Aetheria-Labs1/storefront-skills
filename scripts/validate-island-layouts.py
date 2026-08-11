@@ -6,7 +6,8 @@ React. When the dropped prop is *required*, the island throws during hydration
 and is swallowed by the hydrator's try/catch — the page still returns 200 with a
 dead mount. This check makes that failure loud at CI time instead.
 
-Ground truth is reference/islands/{island}/schema.json, generated from the
+Ground truth is skills/storefront-engine/references/islands/{island}/schema.json,
+generated from the
 TypeScript `interface Props` by packages/storefront-components/scripts/
 generate-schemas.ts (see scripts/sync-island-schemas.py).
 
@@ -21,7 +22,7 @@ import re
 import sys
 from pathlib import Path
 
-ISLANDS_DIR = Path("reference/islands")
+ISLANDS_DIR = Path("skills/storefront-engine/references/islands")
 
 # Islands whose `productId` is expanded into real props at hydration time by
 # services/storefront-renderer/app/lib/islands/product-resolver.client.ts.

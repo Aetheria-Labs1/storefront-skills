@@ -1,1 +1,0 @@
-../../../../../reference/vertical-supplements.md

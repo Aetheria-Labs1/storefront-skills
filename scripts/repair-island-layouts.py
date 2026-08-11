@@ -8,7 +8,7 @@ it is also usable if hand-authored layouts drift again.
 
 Every rule was derived from the island's real `interface Props` in
 packages/storefront-components/src/islands/, cross-checked against the generated
-reference/islands/*/schema.json. Rules are one of:
+skills/storefront-engine/references/islands/*/schema.json. Rules are one of:
 
   RENAME   prop was authored under a name the island never had
   DROP     prop does not exist and has no equivalent — remove it
@@ -25,7 +25,7 @@ import re
 import sys
 from pathlib import Path
 
-ISLANDS_DIR = Path("reference/islands")
+ISLANDS_DIR = Path("skills/storefront-engine/references/islands")
 
 # ---------------------------------------------------------------------------
 # Per-island prop rewrites.

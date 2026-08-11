@@ -1,1 +1,0 @@
-../../../../../reference/blob-shapes.md

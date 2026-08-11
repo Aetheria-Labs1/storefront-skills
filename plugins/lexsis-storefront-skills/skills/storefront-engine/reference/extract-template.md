@@ -1,1 +1,0 @@
-../../../../../reference/extract-template.md

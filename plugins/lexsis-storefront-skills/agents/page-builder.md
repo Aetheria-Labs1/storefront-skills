@@ -60,22 +60,23 @@ If you receive a `CRO_BLUEPRINT` JSON (from cro-analyzer), use it as your plan:
 
 ## Standard Flow (5 Phases)
 
-### Phase 0 — Context Gathering (ALL PARALLEL)
+### Phase 2 — Context Gathering (ALL PARALLEL)
 `get_workspace_details`, `get_connected_stores`, `get_brand_kit`, `get_design_md`, `list_products`, `get_navigation`, `search_design_library`, `get_credits_balance`
 
-### Phase 1 — Asset Preparation
+### Phase 3 — Asset Preparation
 `search_design_library` → `generate_asset` → `edit_asset` → `view_asset`
-Prefer library over generation. Collect all URLs before Phase 2.
+Prefer library over generation. Collect all URLs before Phase 4.
 
-### Phase 2 — HTML Generation (Two-Phase)
-- **2A**: Raw HTML + Tailwind, `data-placeholder` divs for islands, `--lx-*` CSS vars
-- **2B**: Replace placeholders with `data-island` markers (use `get_island_schema` for prop shapes)
+### Phase 4 — Source-Format HTML
+- Write sections delimited by `<!-- section: id -->`
+- Add islands as `<lx-island name="...">` with a JSON script child
+- Use `get_island_schema` for exact prop shapes
 
-### Phase 3 — Validation
-`validate_vibe_page` — fix errors, re-validate (max 2 loops)
+### Phase 5 — Validation
+`compile_page_source({ source, head, theme_css, scripts })` — fix errors, re-compile (max 2 loops)
 
-### Phase 4 — Draft Publish + Verify
-`publish_vibe_page` → preview URL. Never publish live unless user explicitly requests it.
+### Phase 5 (cont.) — Draft Publish + Verify
+`create_page_from_source({ source, head, theme_css, scripts, slug, publish: false })` → preview URL. Never publish live unless user explicitly requests it.
 
 ---
 
@@ -84,7 +85,7 @@ Prefer library over generation. Collect all URLs before Phase 2.
 | Island | When to use |
 |--------|-------------|
 | `BuyBox` | Any page with add-to-cart (PDP, landing, bundle) |
-| `CartDrawer` / `DrawerShell` | Cart V2 drawer (set `use_cart_v2: true` in head) |
+| Cart V2 profile | Set `use_cart_v2: true` in head; configure the injected cart with `get_cart_profile`, `set_cart_profile`, and `edit_cart` |
 | `ReviewCarousel` | Social proof sections |
 | `FAQ` | Objection handling before final CTA |
 | `TrustBadgeBar` | After hero or near BuyBox |
@@ -105,10 +106,10 @@ Use `get_island_schema({island_name})` for full prop shapes.
 - **Always** `get_credits_balance` before `generate_asset`
 - Prefer `search_design_library` over `generate_asset` (free vs credits)
 - Use `medium` quality for `generate_asset` unless user requests high
-- One `validate_vibe_page` call usually sufficient (don't loop more than 2x)
+- One `compile_page_source` call usually sufficient (don't loop more than 2x)
 
 ---
 
 ## Visual Verification
 
-After `publish_vibe_page`, verify via Playwright if available (navigate → screenshot desktop + mobile → check hero, CTA above fold, no broken images, brand colors match) or provide preview URL with checklist to user. See `generation-protocol.md` for full verification protocol.
+After `create_page_from_source`, verify via Playwright if available (navigate → screenshot desktop + mobile → check hero, CTA above fold, no broken images, brand colors match) or provide preview URL with checklist to user. See `generation-protocol.md` for full verification protocol.

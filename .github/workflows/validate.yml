@@ -25,17 +25,10 @@ jobs:
           if [ "$failed" -eq 1 ]; then exit 1; fi
           echo "All JSON files valid"
 
-      - name: Validate plugin.json files
-        run: python3 scripts/validate-plugins.py
-
-      - name: Validate Codex plugin
-        run: python3 scripts/validate-codex-plugin.py
-
-      - name: Validate skill frontmatter
-        run: python3 scripts/validate-frontmatter.py
+      # Spec frontmatter, phase-scheme consistency, retired-tool sweep,
+      # symlink integrity, and generated-distribution drift — one gate.
+      - name: Validate skills + check generated distributions
+        run: python3 scripts/build-distributions.py --check
 
       - name: Validate island layout props
         run: python3 scripts/validate-island-layouts.py
-
-      - name: Check cross-platform sync
-        run: python3 scripts/check-sync.py
