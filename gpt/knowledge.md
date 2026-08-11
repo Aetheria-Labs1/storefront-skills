@@ -1630,7 +1630,7 @@ Search documentation, skill knowledge, island patterns, and industry guidance vi
 
 1. Call `search_docs` with the user's query (or your own lookup query)
 2. If results include a resource URI, read that exact URI for full content.
-3. If results reference an island, read `vibe://catalog/islands/{name}` for schema + props + variants
+3. If results reference an island, read `vibe://catalog/islands/{name}` for selection guidance. Once selected, read `vibe://schema/island/{name}` for exact props and source-format markup.
 4. Synthesize relevant findings — don't dump raw results, extract what's actionable
 
 ## Tool Usage
@@ -1659,7 +1659,9 @@ availability check.
 
 ### Deep-read an island
 Read resource URI: `vibe://catalog/islands/{islandName}`
-Returns schema with all props, variants, and usage hints.
+Returns selection guidance, variants, behavior, and styling surface. Then read
+`vibe://schema/island/{islandName}` for the exact prop contract and
+`<lx-island>` source example.
 
 ## Examples
 

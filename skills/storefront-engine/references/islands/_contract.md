@@ -117,28 +117,33 @@ Islands expose internal elements through `data-part` attributes for CSS targetin
 Every island renders internal elements with `data-part="name"` attributes. You target them in the section's wrapping HTML using CSS attribute selectors:
 
 ```html
-<section class="py-16">
+<!-- section: product-details -->
+<section class="product-details py-16">
   <style>
     /* Target the CTA button inside BuyBox */
-    [data-part="cta"] {
+    .product-details [data-part="cta"] {
       border-radius: 9999px;
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
 
     /* Target variant buttons */
-    [data-part="variant-btn"] {
+    .product-details [data-part="variant-btn"] {
       border-radius: var(--lx-radius);
       border-color: var(--lx-border-color);
     }
 
     /* Target the trust badges row */
-    [data-part="trust-badges"] {
+    .product-details [data-part="trust-badges"] {
       justify-content: flex-start;
     }
   </style>
 
-  <div data-island="BuyBox" data-props='{"productId":"{{PRODUCT_ID}}"}'></div>
+  <lx-island name="BuyBox">
+    <script type="application/json">
+      { "productId": "{{PRODUCT_ID}}" }
+    </script>
+  </lx-island>
 </section>
 ```
 
@@ -190,5 +195,5 @@ Every island renders internal elements with `data-part="name"` attributes. You t
 ### Finding available parts
 
 1. Check `reference/islands/{name}/schema.json` → `"parts"` array
-2. Or use `get_island_schema` MCP tool → returns parts list
+2. Or read `vibe://schema/island/{name}` / use `get_island_schema` → returns parts list and source-format markup
 3. Each part name describes the element's role, not its HTML tag
