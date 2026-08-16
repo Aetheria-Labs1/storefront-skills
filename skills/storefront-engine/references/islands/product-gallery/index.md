@@ -1,6 +1,7 @@
 # ProductGallery — Island Directory
 
-Product image display with zoom, thumbnails, and swipe.
+Mixed image/video PDP gallery with thumbnail viewers, editorial grids, collages,
+masonry, stacked media, mobile swipe, and an accessible lightbox.
 
 ## Files
 
@@ -15,8 +16,10 @@ Product image display with zoom, thumbnails, and swipe.
 
 ## Quick Reference
 
-- **Variants**: grid, horizontal, vertical
-- **Required prop**: `productId` (Shopify GID)
+- **Layouts**: horizontal, vertical, grid, collageLeft, collageRight, twoColumn, masonry, stacked
+- **Canonical media prop**: `media: MediaItem[]`
+- **Mobile modes**: swipe, stacked
+- **Lightbox**: defaults on for grid-family layouts
 - **Schema**: `vibe://schema/island/ProductGallery`
 - **Layouts**: `vibe://islands/product-gallery/layouts/{name}`
 - **Contract**: follows `_contract.md` rules
@@ -25,5 +28,7 @@ Product image display with zoom, thumbnails, and swipe.
 
 - Always occupies wider column in split layouts (1.2fr+)
 - On mobile: stacks ABOVE BuyBox (images first)
-- Pair with: BuyBox (always), ImageZoom (optional for detail)
-- Transparent product images: add `backgroundColor` prop or `--lx-surface-alt`
+- Pair with: BuyBox and VariantSwatches
+- Use `collageLeft` for a large lead image with two stacked supporting views
+- Use `mobileLayout:"stacked"` only when the PDP can absorb the added page height
+- Customize tiles with `--lx-product-gallery-*` variables and stable `data-part` hooks
