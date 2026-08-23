@@ -1,4 +1,5 @@
 {
+  "contract_version": 2,
   "name": "BeforeAfter",
   "category": "content",
   "usage_hint": "Before/after image comparison slider with draggable divider. Supports horizontal and vertical orientation.",
@@ -13,22 +14,8 @@
   ],
   "anti_patterns": [
     "Using images with different aspect ratios (causes misalignment)",
-    "Setting initialPosition to extreme (0 or 100) \u2014 users don't realize it's interactive",
+    "Setting initialPosition to extreme (0 or 100) — users don't realize it's interactive",
     "Using low-resolution images (pixelation ruins credibility of before/after claim)"
-  ],
-  "examples": [
-    {
-      "label": "Horizontal skincare before/after",
-      "html": "<div data-island=\"BeforeAfter\" data-props='{\"before\":{\"src\":\"/images/before.jpg\",\"label\":\"Before\"},\"after\":{\"src\":\"/images/after.jpg\",\"label\":\"After\"},\"orientation\":\"horizontal\",\"initialPosition\":50}'></div>"
-    },
-    {
-      "label": "Vertical photo edit comparison",
-      "html": "<div data-island=\"BeforeAfter\" data-props='{\"before\":{\"src\":\"/images/original.jpg\",\"label\":\"Original\"},\"after\":{\"src\":\"/images/edited.jpg\",\"label\":\"Enhanced\"},\"orientation\":\"vertical\",\"initialPosition\":50}'></div>"
-    },
-    {
-      "label": "Home improvement without labels",
-      "html": "<div data-island=\"BeforeAfter\" data-props='{\"before\":{\"src\":\"/images/old-room.jpg\"},\"after\":{\"src\":\"/images/renovated.jpg\"},\"orientation\":\"horizontal\",\"initialPosition\":60}'></div>"
-    }
   ],
   "props": {
     "before": {
@@ -73,5 +60,34 @@
     "root",
     "slider"
   ],
-  "example": "<div data-island=\"BeforeAfter\" data-props='{\"before\":{\"src\":\"example-src\"},\"after\":{\"src\":\"example-src\"}}'></div>"
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"BeforeAfter\">\n  <script type=\"application/json\">\n{\n  \"before\": {\n    \"src\": \"example-src\"\n  },\n  \"after\": {\n    \"src\": \"example-src\"\n  }\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Horizontal skincare before/after",
+        "source": "<lx-island name=\"BeforeAfter\">\n  <script type=\"application/json\">{\"before\":{\"src\":\"/images/before.jpg\",\"label\":\"Before\"},\"after\":{\"src\":\"/images/after.jpg\",\"label\":\"After\"},\"orientation\":\"horizontal\",\"initialPosition\":50}</script>\n</lx-island>"
+      },
+      {
+        "label": "Vertical photo edit comparison",
+        "source": "<lx-island name=\"BeforeAfter\">\n  <script type=\"application/json\">{\"before\":{\"src\":\"/images/original.jpg\",\"label\":\"Original\"},\"after\":{\"src\":\"/images/edited.jpg\",\"label\":\"Enhanced\"},\"orientation\":\"vertical\",\"initialPosition\":50}</script>\n</lx-island>"
+      },
+      {
+        "label": "Home improvement without labels",
+        "source": "<lx-island name=\"BeforeAfter\">\n  <script type=\"application/json\">{\"before\":{\"src\":\"/images/old-room.jpg\"},\"after\":{\"src\":\"/images/renovated.jpg\"},\"orientation\":\"horizontal\",\"initialPosition\":60}</script>\n</lx-island>"
+      }
+    ]
+  }
 }

@@ -1,4 +1,5 @@
 {
+  "contract_version": 2,
   "name": "StickyBar",
   "category": "commerce",
   "usage_hint": "Sticky bottom bar that appears after scrolling past the main BuyBox. Shows product thumbnail, price, and quick add-to-cart CTA.",
@@ -15,20 +16,6 @@
     "Omitting showAfter or misconfiguring it: bar may appear too early or not at all",
     "Missing CartDrawer: users get no cart feedback after clicking the sticky bar CTA",
     "Using on collection pages: wrong pattern; use QuickAdd in product grids instead"
-  ],
-  "examples": [
-    {
-      "label": "Default sticky bar (appears after BuyBox)",
-      "html": "<div data-island=\"StickyBar\" data-props='{\"product\":{\"title\":\"Wireless Headphones\",\"price\":\"$99.00\",\"compareAtPrice\":\"$129.00\",\"image\":\"https://via.placeholder.com/40\",\"variantId\":\"v1\"},\"cta\":\"Add to Cart\"}'></div>"
-    },
-    {
-      "label": "Sticky bar with custom trigger selector",
-      "html": "<div data-island=\"StickyBar\" data-props='{\"product\":{\"title\":\"Watch\",\"price\":\"$249.00\",\"variantId\":\"v1\"},\"cta\":\"Buy Now\",\"showAfter\":\"#product-details\"}'></div>"
-    },
-    {
-      "label": "Sticky bar without animations",
-      "html": "<div data-island=\"StickyBar\" data-props='{\"product\":{\"title\":\"Sneakers\",\"price\":\"$120.00\",\"image\":\"https://via.placeholder.com/40\",\"variantId\":\"v1\"},\"animate\":false}'></div>"
-    }
   ],
   "props": {
     "product": {
@@ -71,5 +58,38 @@
     "product-title",
     "root"
   ],
-  "example": "<div data-island=\"StickyBar\" data-props='{\"product\":{\"title\":\"example-title\",\"price\":\"example-price\",\"variantId\":\"example-variantId\"}}'></div>"
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"StickyBar\">\n  <script type=\"application/json\">\n{\n  \"product\": {\n    \"title\": \"example-title\",\n    \"price\": \"example-price\",\n    \"variantId\": \"example-variantId\"\n  }\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Default sticky bar (appears after BuyBox)",
+        "source": "<lx-island name=\"StickyBar\">\n  <script type=\"application/json\">{\"product\":{\"title\":\"Wireless Headphones\",\"price\":\"$99.00\",\"compareAtPrice\":\"$129.00\",\"image\":\"https://via.placeholder.com/40\",\"variantId\":\"v1\"},\"cta\":\"Add to Cart\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Sticky bar with custom trigger selector",
+        "source": "<lx-island name=\"StickyBar\">\n  <script type=\"application/json\">{\"product\":{\"title\":\"Watch\",\"price\":\"$249.00\",\"variantId\":\"v1\"},\"cta\":\"Buy Now\",\"showAfter\":\"#product-details\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Sticky bar revealed after 800px of scroll",
+        "source": "<lx-island name=\"StickyBar\">\n  <script type=\"application/json\">{\"product\":{\"title\":\"Watch\",\"price\":\"$249.00\",\"variantId\":\"v1\"},\"cta\":\"Buy Now\",\"showAfter\":800}</script>\n</lx-island>"
+      },
+      {
+        "label": "Sticky bar without animations",
+        "source": "<lx-island name=\"StickyBar\">\n  <script type=\"application/json\">{\"product\":{\"title\":\"Sneakers\",\"price\":\"$120.00\",\"image\":\"https://via.placeholder.com/40\",\"variantId\":\"v1\"},\"animate\":false}</script>\n</lx-island>"
+      }
+    ]
+  }
 }

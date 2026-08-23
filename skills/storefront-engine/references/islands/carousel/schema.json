@@ -1,0 +1,135 @@
+{
+  "contract_version": 2,
+  "name": "Carousel",
+  "category": "unknown",
+  "deprecated": true,
+  "replacement": "CSS scroll-snap or a specialized commerce/media island",
+  "deprecation_reason": "Generic Swiper behavior is not Shopify-scoped and creates a broad CDN-backed contract that is difficult to customize safely.",
+  "usage_hint": "Generic Swiper.js-powered carousel for hero sliders, product cards, testimonials, or any HTML-based slide content. Loads Swiper from CDN on hydration.",
+  "when_to_use": "Use when you need a full-featured carousel with autoplay, navigation, pagination, progress bar, and multiple transition effects. Slides accept raw HTML so any content can be placed inside.",
+  "when_not_to_use": "For simple image-only cycling (use MediaCarousel). For product card horizontal scrolling (use ProductCarousel or data-behavior=\"horizontal-scroll\"). For review-specific carousels (use ReviewCarousel).",
+  "defaultHydrate": "visible",
+  "combine_with": [
+    "HeroMedia",
+    "ProductCarousel",
+    "ReviewCarousel",
+    "CountdownTimer"
+  ],
+  "anti_patterns": [
+    "Using with a single slide (no carousel needed)",
+    "Setting autoplayDelay below 2000ms (disorienting for users)",
+    "Using effect=\"fade\" with slidesPerView > 1 (fade only works with single slide view)",
+    "Nesting a Carousel inside another Carousel (gesture conflicts)",
+    "Passing extremely large HTML strings per slide (causes layout shift; keep slide content lean)"
+  ],
+  "props": {
+    "slides": {
+      "type": "array",
+      "required": true,
+      "shape": {
+        "html": "string"
+      }
+    },
+    "variant": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "hero",
+        "cards",
+        "testimonial",
+        "minimal"
+      ]
+    },
+    "autoplay": {
+      "type": "boolean",
+      "required": false
+    },
+    "autoplayDelay": {
+      "type": "number",
+      "required": false
+    },
+    "loop": {
+      "type": "boolean",
+      "required": false
+    },
+    "speed": {
+      "type": "number",
+      "required": false
+    },
+    "navigation": {
+      "type": "boolean",
+      "required": false
+    },
+    "pagination": {
+      "type": "boolean",
+      "required": false
+    },
+    "progressBar": {
+      "type": "boolean",
+      "required": false
+    },
+    "effect": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "slide",
+        "fade",
+        "creative"
+      ]
+    },
+    "slidesPerView": {
+      "type": "number",
+      "required": false
+    },
+    "spaceBetween": {
+      "type": "number",
+      "required": false
+    },
+    "minHeight": {
+      "type": "string",
+      "required": false
+    },
+    "borderRadius": {
+      "type": "string",
+      "required": false
+    }
+  },
+  "variants": [
+    "hero",
+    "cards",
+    "testimonial",
+    "minimal"
+  ],
+  "css_vars": [
+    "--lx-carousel-arrow-bg",
+    "--lx-carousel-arrow-color",
+    "--lx-carousel-min-height",
+    "--lx-carousel-progress-fill",
+    "--lx-carousel-progress-track",
+    "--lx-carousel-radius"
+  ],
+  "parts": [
+    "nav-next",
+    "nav-prev",
+    "progress",
+    "progress-bar",
+    "root"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"Carousel\">\n  <script type=\"application/json\">\n{\n  \"slides\": [\n    {\n      \"html\": \"example-html\"\n    }\n  ]\n}\n  </script>\n</lx-island>",
+    "examples": []
+  }
+}

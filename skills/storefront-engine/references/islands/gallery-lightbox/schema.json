@@ -1,90 +1,74 @@
 {
+  "contract_version": 2,
   "name": "GalleryLightbox",
-  "category": "content",
-  "usage_hint": "Fullscreen lightbox overlay triggered via lx:lightbox:open DOM event. Scroll-snap image viewer with thumbnail sidebar. Mount once per page — all galleries share one instance.",
-  "when_to_use": "For gallery grids, lookbook sections, UGC collections, or any section where clicking an image should show fullscreen. Pairs with any grid layout via CustomEvent dispatch — no direct prop wiring needed.",
-  "when_not_to_use": "For inline hover-zoom (use ImageZoom). For product variant galleries with swatch selection (use ProductGallery). For single hero images. For video content (use VideoPlayer).",
+  "category": "unknown",
+  "usage_hint": "Fullscreen lightbox overlay triggered via DOM events. Renders a scrollable image viewer with thumbnail sidebar. Any element on the page can open it by dispatching `lx:lightbox:open`.",
+  "when_to_use": "For gallery sections, lookbook grids, product detail pages, or any section with images that benefit from a fullscreen viewing experience. Mount once per page — all galleries share the same instance.",
+  "when_not_to_use": "For inline image zoom (use ImageZoom). For product variant galleries with swatch selection (use ProductGallery). For single hero images that don't need expanded view.",
   "defaultHydrate": "idle",
   "combine_with": [
-    "ProductGallery",
-    "lx_lookbook_grid",
-    "lx_gallery",
-    "ImageZoom"
+    "ProductGallery (trigger on thumbnail click)",
+    "lx_lookbook_grid (trigger on tile click)",
+    "lx_gallery (trigger on image click)",
+    "ImageZoom (different use case — inline magnification)"
   ],
   "anti_patterns": [
-    "Mounting multiple GalleryLightbox instances on one page (one is enough — it's event-driven)",
+    "Mounting multiple GalleryLightbox instances on one page (one is enough — it's event-driven and page-level)",
     "Dispatching lx:lightbox:open with an empty images array (renders empty overlay)",
-    "Using low-resolution thumbnails as main images (lightbox reveals pixelation)",
+    "Using low-resolution thumbnails as main images (lightbox reveals lack of detail)",
     "Not providing alt text in the images array (accessibility failure)"
-  ],
-  "examples": [
-    {
-      "label": "Page-level lightbox (no props needed)",
-      "html": "<div data-island=\"GalleryLightbox\" data-props='{}'></div>"
-    },
-    {
-      "label": "Dark backdrop variant",
-      "html": "<div data-island=\"GalleryLightbox\" data-props='{\"backdrop\":\"rgba(0,0,0,0.95)\"}'></div>"
-    },
-    {
-      "label": "Trigger from inline script",
-      "html": "<script>document.querySelectorAll('.gallery-img').forEach((el, i) => { el.addEventListener('click', () => { const imgs = Array.from(document.querySelectorAll('.gallery-img img')).map(img => ({src: img.src, alt: img.alt})); document.dispatchEvent(new CustomEvent('lx:lightbox:open', {detail: {images: imgs, startIndex: i}})); }); });</script>"
-    }
   ],
   "props": {
     "backdrop": {
       "type": "string",
-      "required": false,
-      "default": "rgba(255,255,255,0.97)"
+      "required": false
     },
     "showSidebar": {
       "type": "boolean",
       "required": false,
-      "default": true
-    }
-  },
-  "events": {
-    "lx:lightbox:open": {
-      "direction": "inbound",
-      "detail": {
-        "images": "Array<{src: string, alt?: string}>",
-        "startIndex": "number (default 0)"
-      },
-      "description": "Opens the lightbox with the given images, scrolled to startIndex"
-    },
-    "lx:lightbox:close": {
-      "direction": "outbound",
-      "detail": null,
-      "description": "Fired when the lightbox is closed (ESC, X button, or backdrop click)"
+      "default": "true"
     }
   },
   "variants": null,
   "css_vars": [
-    {
-      "name": "--lx-lightbox-bg",
-      "default": "rgba(255,255,255,0.97)",
-      "description": "Backdrop overlay color"
-    },
-    {
-      "name": "--lx-lightbox-thumb-size",
-      "default": "80px",
-      "description": "Sidebar thumbnail column width"
-    },
-    {
-      "name": "--lx-lightbox-active-border",
-      "default": "#111",
-      "description": "Border color on active thumbnail"
-    }
+    "--lx-lightbox-active-border",
+    "--lx-lightbox-bg",
+    "--lx-lightbox-thumb-size"
   ],
   "parts": [
-    "gallery-lightbox",
-    "sidebar",
-    "thumbnail",
-    "main",
-    "image-container",
-    "image",
     "close",
-    "counter"
+    "counter",
+    "gallery-lightbox",
+    "image",
+    "image-container",
+    "main",
+    "sidebar",
+    "thumbnail"
   ],
-  "example": "<div data-island=\"GalleryLightbox\" data-props='{}'></div>"
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"GalleryLightbox\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Page-level lightbox (no props needed, listens for events)",
+        "source": "<lx-island name=\"GalleryLightbox\">\n  <script type=\"application/json\">{}</script>\n</lx-island>"
+      },
+      {
+        "label": "Lightbox with dark backdrop",
+        "source": "<lx-island name=\"GalleryLightbox\">\n  <script type=\"application/json\">{\"backdrop\":\"rgba(0,0,0,0.95)\"}</script>\n</lx-island>"
+      }
+    ]
+  }
 }

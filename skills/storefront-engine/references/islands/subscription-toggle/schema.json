@@ -1,4 +1,5 @@
 {
+  "contract_version": 2,
   "name": "SubscriptionToggle",
   "category": "commerce",
   "usage_hint": "Subscribe-and-save toggle that switches between one-time purchase and subscription pricing. Emits subscription:changed events to BuyBox.",
@@ -11,23 +12,9 @@
     "ProductPrice (all listen for subscription:changed events)"
   ],
   "anti_patterns": [
-    "Not providing valid Shopify selling plan IDs \u2014 checkout will fail",
+    "Not providing valid Shopify selling plan IDs — checkout will fail",
     "Listing benefits that don't match actual subscription terms (misleading)",
-    "Using alongside QuantityBreaks (they conflict \u2014 choose one pricing model)"
-  ],
-  "examples": [
-    {
-      "label": "Monthly subscription with benefits",
-      "html": "<div data-island=\"SubscriptionToggle\" data-props='{\"oneTimePrice\":\"$29.99\",\"plans\":[{\"id\":\"gid://shopify/SellingPlan/123\",\"frequency\":\"Every month\",\"discount\":\"10%\",\"price\":\"$26.99\"}],\"benefits\":[\"Never run out\",\"Cancel anytime\",\"Free shipping\"],\"defaultMode\":\"subscribe\",\"label\":\"Purchase Options\"}'></div>"
-    },
-    {
-      "label": "Multiple frequency options",
-      "html": "<div data-island=\"SubscriptionToggle\" data-props='{\"oneTimePrice\":\"$49.99\",\"plans\":[{\"id\":\"gid://shopify/SellingPlan/456\",\"frequency\":\"Every 2 weeks\",\"discount\":\"5%\",\"price\":\"$47.49\"},{\"id\":\"gid://shopify/SellingPlan/457\",\"frequency\":\"Every month\",\"discount\":\"10%\",\"price\":\"$44.99\"},{\"id\":\"gid://shopify/SellingPlan/458\",\"frequency\":\"Every 3 months\",\"discount\":\"15%\",\"price\":\"$42.49\"}],\"benefits\":[\"Priority support\",\"Exclusive discounts\"],\"defaultMode\":\"one-time\"}'></div>"
-    },
-    {
-      "label": "Simple subscribe-and-save",
-      "html": "<div data-island=\"SubscriptionToggle\" data-props='{\"oneTimePrice\":\"$19.99\",\"plans\":[{\"id\":\"gid://shopify/SellingPlan/789\",\"frequency\":\"Monthly delivery\",\"discount\":\"15%\",\"price\":\"$16.99\"}]}'></div>"
-    }
+    "Using alongside QuantityBreaks (they conflict — choose one pricing model)"
   ],
   "props": {
     "oneTimePrice": {
@@ -76,5 +63,34 @@
     "option-subscribe",
     "root"
   ],
-  "example": "<div data-island=\"SubscriptionToggle\" data-props='{\"oneTimePrice\":\"example-oneTimePrice\",\"plans\":[{\"id\":\"example-id\",\"frequency\":\"example-frequency\",\"discount\":\"example-discount\",\"price\":\"example-price\"}]}'></div>"
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"SubscriptionToggle\">\n  <script type=\"application/json\">\n{\n  \"oneTimePrice\": \"example-oneTimePrice\",\n  \"plans\": [\n    {\n      \"id\": \"example-id\",\n      \"frequency\": \"example-frequency\",\n      \"discount\": \"example-discount\",\n      \"price\": \"example-price\"\n    }\n  ]\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Monthly subscription with benefits",
+        "source": "<lx-island name=\"SubscriptionToggle\">\n  <script type=\"application/json\">{\"oneTimePrice\":\"$29.99\",\"plans\":[{\"id\":\"gid://shopify/SellingPlan/123\",\"frequency\":\"Every month\",\"discount\":\"10%\",\"price\":\"$26.99\"}],\"benefits\":[\"Never run out\",\"Cancel anytime\",\"Free shipping\"],\"defaultMode\":\"subscribe\",\"label\":\"Purchase Options\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Multiple frequency options",
+        "source": "<lx-island name=\"SubscriptionToggle\">\n  <script type=\"application/json\">{\"oneTimePrice\":\"$49.99\",\"plans\":[{\"id\":\"gid://shopify/SellingPlan/456\",\"frequency\":\"Every 2 weeks\",\"discount\":\"5%\",\"price\":\"$47.49\"},{\"id\":\"gid://shopify/SellingPlan/457\",\"frequency\":\"Every month\",\"discount\":\"10%\",\"price\":\"$44.99\"},{\"id\":\"gid://shopify/SellingPlan/458\",\"frequency\":\"Every 3 months\",\"discount\":\"15%\",\"price\":\"$42.49\"}],\"benefits\":[\"Priority support\",\"Exclusive discounts\"],\"defaultMode\":\"one-time\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Simple subscribe-and-save",
+        "source": "<lx-island name=\"SubscriptionToggle\">\n  <script type=\"application/json\">{\"oneTimePrice\":\"$19.99\",\"plans\":[{\"id\":\"gid://shopify/SellingPlan/789\",\"frequency\":\"Monthly delivery\",\"discount\":\"15%\",\"price\":\"$16.99\"}]}</script>\n</lx-island>"
+      }
+    ]
+  }
 }

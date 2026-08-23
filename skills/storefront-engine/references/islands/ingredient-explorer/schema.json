@@ -1,4 +1,5 @@
 {
+  "contract_version": 2,
   "name": "IngredientExplorer",
   "category": "engagement",
   "usage_hint": "Expandable ingredient list with descriptions, benefits, and optional icons/images. Three layouts: grid (cards), list (accordions), editorial (image + copy).",
@@ -11,23 +12,9 @@
     "ProductImage"
   ],
   "anti_patterns": [
-    "Using editorial layout for >6 ingredients (too long \u2014 use grid/list for many items)",
+    "Using editorial layout for >6 ingredients (too long — use grid/list for many items)",
     "Not providing descriptions (ingredient names alone don't educate customers)",
     "Listing inactive/filler ingredients prominently (focus on hero active ingredients)"
-  ],
-  "examples": [
-    {
-      "label": "Grid layout skincare ingredients",
-      "html": "<div data-island=\"IngredientExplorer\" data-props='{\"ingredients\":[{\"name\":\"Hyaluronic Acid\",\"description\":\"Deeply hydrates and plumps skin by retaining moisture\",\"benefit\":\"Reduces fine lines\",\"icon\":\"\ud83d\udca7\",\"percentage\":\"2%\"},{\"name\":\"Vitamin C\",\"description\":\"Brightens skin tone and protects against free radicals\",\"benefit\":\"Even skin tone\",\"icon\":\"\ud83c\udf4a\",\"percentage\":\"10%\"}],\"layout\":\"grid\",\"columns\":2,\"size\":\"md\"}'></div>"
-    },
-    {
-      "label": "List accordion for supplements",
-      "html": "<div data-island=\"IngredientExplorer\" data-props='{\"ingredients\":[{\"name\":\"Magnesium\",\"description\":\"Supports muscle and nerve function, bone health\",\"benefit\":\"Promotes relaxation\",\"percentage\":\"400mg\"},{\"name\":\"Vitamin D3\",\"description\":\"Essential for calcium absorption and immune function\",\"benefit\":\"Stronger bones\",\"percentage\":\"2000 IU\"}],\"layout\":\"list\",\"size\":\"sm\"}'></div>"
-    },
-    {
-      "label": "Editorial layout with images",
-      "html": "<div data-island=\"IngredientExplorer\" data-props='{\"ingredients\":[{\"name\":\"Organic Almond Oil\",\"description\":\"Cold-pressed from raw almonds, rich in vitamin E and fatty acids. Nourishes dry skin and improves elasticity.\",\"benefit\":\"Softens and smooths\",\"image\":\"/almond.jpg\",\"percentage\":\"30%\"},{\"name\":\"Shea Butter\",\"description\":\"Extracted from shea tree nuts in West Africa. Natural anti-inflammatory with vitamins A and E.\",\"benefit\":\"Deep moisturization\",\"image\":\"/shea.jpg\",\"percentage\":\"25%\"}],\"layout\":\"editorial\",\"columns\":2,\"size\":\"lg\"}'></div>"
-    }
   ],
   "props": {
     "ingredients": {
@@ -86,5 +73,34 @@
     "item-name",
     "root"
   ],
-  "example": "<div data-island=\"IngredientExplorer\" data-props='{\"ingredients\":[{\"name\":\"example-name\",\"description\":\"example-description\"}]}'></div>"
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"IngredientExplorer\">\n  <script type=\"application/json\">\n{\n  \"ingredients\": [\n    {\n      \"name\": \"example-name\",\n      \"description\": \"example-description\"\n    }\n  ]\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Grid layout skincare ingredients",
+        "source": "<lx-island name=\"IngredientExplorer\">\n  <script type=\"application/json\">{\"ingredients\":[{\"name\":\"Hyaluronic Acid\",\"description\":\"Deeply hydrates and plumps skin by retaining moisture\",\"benefit\":\"Reduces fine lines\",\"icon\":\"💧\",\"percentage\":\"2%\"},{\"name\":\"Vitamin C\",\"description\":\"Brightens skin tone and protects against free radicals\",\"benefit\":\"Even skin tone\",\"icon\":\"🍊\",\"percentage\":\"10%\"}],\"layout\":\"grid\",\"columns\":2,\"size\":\"md\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "List accordion for supplements",
+        "source": "<lx-island name=\"IngredientExplorer\">\n  <script type=\"application/json\">{\"ingredients\":[{\"name\":\"Magnesium\",\"description\":\"Supports muscle and nerve function, bone health\",\"benefit\":\"Promotes relaxation\",\"percentage\":\"400mg\"},{\"name\":\"Vitamin D3\",\"description\":\"Essential for calcium absorption and immune function\",\"benefit\":\"Stronger bones\",\"percentage\":\"2000 IU\"}],\"layout\":\"list\",\"size\":\"sm\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Editorial layout with images",
+        "source": "<lx-island name=\"IngredientExplorer\">\n  <script type=\"application/json\">{\"ingredients\":[{\"name\":\"Organic Almond Oil\",\"description\":\"Cold-pressed from raw almonds, rich in vitamin E and fatty acids. Nourishes dry skin and improves elasticity.\",\"benefit\":\"Softens and smooths\",\"image\":\"/almond.jpg\",\"percentage\":\"30%\"},{\"name\":\"Shea Butter\",\"description\":\"Extracted from shea tree nuts in West Africa. Natural anti-inflammatory with vitamins A and E.\",\"benefit\":\"Deep moisturization\",\"image\":\"/shea.jpg\",\"percentage\":\"25%\"}],\"layout\":\"editorial\",\"columns\":2,\"size\":\"lg\"}</script>\n</lx-island>"
+      }
+    ]
+  }
 }

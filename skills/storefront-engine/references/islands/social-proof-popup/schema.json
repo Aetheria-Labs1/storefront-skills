@@ -1,4 +1,5 @@
 {
+  "contract_version": 2,
   "name": "SocialProofPopup",
   "category": "social_proof",
   "usage_hint": "Floating notification popup showing recent purchases (\"X from Y just bought Z\") that cycles through events, creating urgency and social proof. Supports static events array or live fetch from our social proof API.",
@@ -17,24 +18,6 @@
     "Setting delay or interval too low (<3000ms delay, <6000ms interval; users can't read)",
     "Using both events[] and socialProofEndpoint (events[] takes priority; pick one mode)",
     "Using on pages with other competing popups (email capture, exit intent; pick one)"
-  ],
-  "examples": [
-    {
-      "label": "Fetch mode \u2014 live purchases from API (bottom-left)",
-      "html": "<div data-island=\"SocialProofPopup\" data-props='{\"socialProofEndpoint\":\"/api/v1/storefront/public/social-proof/abc12345\",\"delayMs\":3000,\"durationMs\":4000,\"interval\":8000,\"position\":\"bottom-left\"}'></div>"
-    },
-    {
-      "label": "Static events (bottom-right, 6s interval)",
-      "html": "<div data-island=\"SocialProofPopup\" data-props='{\"events\":[{\"name\":\"Sarah M.\",\"product\":\"Organic Cotton Tee\",\"location\":\"New York\",\"time\":\"2 minutes ago\",\"image\":\"/products/tee.jpg\"},{\"name\":\"Mike R.\",\"product\":\"Denim Jacket\",\"location\":\"Los Angeles\",\"time\":\"5 minutes ago\",\"image\":\"/products/jacket.jpg\"}],\"delayMs\":3000,\"interval\":6000,\"durationMs\":4000,\"position\":\"bottom-right\"}'></div>"
-    },
-    {
-      "label": "Top-banner variant (slides down from top)",
-      "html": "<div data-island=\"SocialProofPopup\" data-props='{\"socialProofEndpoint\":\"/api/v1/storefront/public/social-proof/abc12345\",\"position\":\"top-banner\",\"delayMs\":5000,\"durationMs\":3000,\"interval\":10000}'></div>"
-    },
-    {
-      "label": "Static with no images (minimal)",
-      "html": "<div data-island=\"SocialProofPopup\" data-props='{\"events\":[{\"name\":\"Customer in CA\",\"product\":\"Ceramic Mug\",\"time\":\"just now\"},{\"name\":\"Customer in NY\",\"product\":\"Water Bottle\",\"time\":\"5 min ago\"}],\"showProductImage\":false,\"delayMs\":4000,\"durationMs\":4500,\"interval\":9000,\"position\":\"bottom-left\"}'></div>"
-    }
   ],
   "props": {
     "events": {
@@ -120,5 +103,38 @@
     "root",
     "time"
   ],
-  "example": "<div data-island=\"SocialProofPopup\" data-props='{}'></div>"
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"SocialProofPopup\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Fetch mode — live purchases from API (bottom-left)",
+        "source": "<lx-island name=\"SocialProofPopup\">\n  <script type=\"application/json\">{\"socialProofEndpoint\":\"/api/v1/storefront/public/social-proof/abc12345\",\"delayMs\":3000,\"durationMs\":4000,\"interval\":8000,\"position\":\"bottom-left\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Static events (bottom-right, 6s interval)",
+        "source": "<lx-island name=\"SocialProofPopup\">\n  <script type=\"application/json\">{\"events\":[{\"name\":\"Sarah M.\",\"product\":\"Organic Cotton Tee\",\"location\":\"New York\",\"time\":\"2 minutes ago\",\"image\":\"/products/tee.jpg\"},{\"name\":\"Mike R.\",\"product\":\"Denim Jacket\",\"location\":\"Los Angeles\",\"time\":\"5 minutes ago\",\"image\":\"/products/jacket.jpg\"}],\"delayMs\":3000,\"interval\":6000,\"durationMs\":4000,\"position\":\"bottom-right\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Top-banner variant (slides down from top)",
+        "source": "<lx-island name=\"SocialProofPopup\">\n  <script type=\"application/json\">{\"socialProofEndpoint\":\"/api/v1/storefront/public/social-proof/abc12345\",\"position\":\"top-banner\",\"delayMs\":5000,\"durationMs\":3000,\"interval\":10000}</script>\n</lx-island>"
+      },
+      {
+        "label": "Static with no images (minimal)",
+        "source": "<lx-island name=\"SocialProofPopup\">\n  <script type=\"application/json\">{\"events\":[{\"name\":\"Customer in CA\",\"product\":\"Ceramic Mug\",\"time\":\"just now\"},{\"name\":\"Customer in NY\",\"product\":\"Water Bottle\",\"time\":\"5 min ago\"}],\"showProductImage\":false,\"delayMs\":4000,\"durationMs\":4500,\"interval\":9000,\"position\":\"bottom-left\"}</script>\n</lx-island>"
+      }
+    ]
+  }
 }

@@ -1,4 +1,5 @@
 {
+  "contract_version": 2,
   "name": "DeliveryEstimate",
   "category": "commerce",
   "usage_hint": "Shipping estimate with countdown to cutoff time. Shows delivery date and \"order within X hours\" urgency message.",
@@ -14,21 +15,7 @@
   "anti_patterns": [
     "Setting estimatedDays without considering weekends/holidays (inaccurate dates)",
     "Using cutoffHour in timezone that doesn't match customer location (shows wrong countdown)",
-    "Showing countdown after cutoff passes (it returns null \u2014 no message, looks broken)"
-  ],
-  "examples": [
-    {
-      "label": "Inline delivery estimate",
-      "html": "<div data-island=\"DeliveryEstimate\" data-props='{\"estimatedDays\":4,\"cutoffHour\":14,\"showCountdown\":true,\"variant\":\"inline\"}'></div>"
-    },
-    {
-      "label": "Card with free shipping threshold",
-      "html": "<div data-island=\"DeliveryEstimate\" data-props='{\"estimatedDays\":3,\"cutoffHour\":16,\"showCountdown\":true,\"freeShippingThreshold\":5000,\"variant\":\"card\"}'></div>"
-    },
-    {
-      "label": "Banner promo style",
-      "html": "<div data-island=\"DeliveryEstimate\" data-props='{\"estimatedDays\":2,\"cutoffHour\":12,\"showCountdown\":true,\"variant\":\"banner\"}'></div>"
-    }
+    "Showing countdown after cutoff passes (it returns null — no message, looks broken)"
   ],
   "props": {
     "estimatedDays": {
@@ -76,5 +63,34 @@
     "root",
     "text"
   ],
-  "example": "<div data-island=\"DeliveryEstimate\" data-props='{}'></div>"
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"DeliveryEstimate\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Inline delivery estimate",
+        "source": "<lx-island name=\"DeliveryEstimate\">\n  <script type=\"application/json\">{\"estimatedDays\":4,\"cutoffHour\":14,\"showCountdown\":true,\"variant\":\"inline\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Card with free shipping threshold",
+        "source": "<lx-island name=\"DeliveryEstimate\">\n  <script type=\"application/json\">{\"estimatedDays\":3,\"cutoffHour\":16,\"showCountdown\":true,\"freeShippingThreshold\":5000,\"variant\":\"card\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Banner promo style",
+        "source": "<lx-island name=\"DeliveryEstimate\">\n  <script type=\"application/json\">{\"estimatedDays\":2,\"cutoffHour\":12,\"showCountdown\":true,\"variant\":\"banner\"}</script>\n</lx-island>"
+      }
+    ]
+  }
 }

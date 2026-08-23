@@ -1,6 +1,10 @@
 {
+  "contract_version": 2,
   "name": "FAQ",
   "category": "content",
+  "deprecated": true,
+  "replacement": "native <details>/<summary> markup",
+  "deprecation_reason": "Generic accordion behavior does not require an island and can be authored with accessible native HTML.",
   "usage_hint": "Accordion-style FAQ section where clicking a question reveals/hides the answer, typically placed near bottom of PDP or after product info sections.",
   "when_to_use": "When you have 3-10 common questions about a product, service, or policy that users need quick access to without cluttering the page. Works well for shipping policies, product care, sizing info, return policies, or technical specs.",
   "when_not_to_use": "For 1-2 questions (just display them directly without accordion). Don't use for critical pre-purchase info that should always be visible (put that in PDPInfoCards or BuyBox). Avoid for deeply nested content or multi-step instructions (use a dedicated guide page). Skip if you need search or filtering (use a full knowledge base).",
@@ -17,24 +21,6 @@
     "Using as a substitute for clear product descriptions (FAQ should supplement, not replace core info)",
     "Generic questions that apply to all products mixed with product-specific ones (separate site-wide FAQ from PDP-specific)",
     "Opening all items by default (defeats accordion purpose; let users expand what they need)"
-  ],
-  "examples": [
-    {
-      "label": "PDP-specific FAQ (5 common questions, default variant)",
-      "html": "<div data-island=\"FAQ\" data-props='{\"items\":[{\"question\":\"What materials is this made from?\",\"answer\":\"This product is crafted from 100% organic cotton with reinforced stitching at stress points. It's GOTS certified and safe for sensitive skin.\"},{\"question\":\"How do I care for this product?\",\"answer\":\"Machine wash cold on gentle cycle. Tumble dry low or hang dry. Do not bleach. Iron on low heat if needed.\"},{\"question\":\"What is your return policy?\",\"answer\":\"We offer free 30-day returns on all unworn, unwashed items in original packaging. Simply initiate a return from your order page.\"},{\"question\":\"How long does shipping take?\",\"answer\":\"Standard shipping takes 3-5 business days. Express shipping (1-2 days) is available at checkout for an additional fee.\"},{\"question\":\"Is this true to size?\",\"answer\":\"Yes, this item runs true to size. If you're between sizes, we recommend sizing up for a more relaxed fit. Check our size guide for measurements.\"}],\"variant\":\"default\"}'></div>"
-    },
-    {
-      "label": "Compact FAQ for tight spaces (footer or sidebar, smaller text)",
-      "html": "<div data-island=\"FAQ\" data-props='{\"items\":[{\"question\":\"Do you ship internationally?\",\"answer\":\"Yes, we ship to over 50 countries. Rates and delivery times vary by location.\"},{\"question\":\"What payment methods do you accept?\",\"answer\":\"We accept all major credit cards, PayPal, Apple Pay, and Google Pay.\"},{\"question\":\"Can I track my order?\",\"answer\":\"Yes! You'll receive a tracking link via email once your order ships.\"}],\"variant\":\"compact\"}'></div>"
-    },
-    {
-      "label": "Service/policy FAQ (8 questions, default variant)",
-      "html": "<div data-island=\"FAQ\" data-props='{\"items\":[{\"question\":\"How do I create an account?\",\"answer\":\"Click 'Sign Up' in the header, enter your email and create a password. You'll receive a confirmation email to activate your account.\"},{\"question\":\"Can I modify my order after placing it?\",\"answer\":\"Orders can be modified within 1 hour of placement. Contact support@example.com with your order number and requested changes.\"},{\"question\":\"What if I receive a damaged item?\",\"answer\":\"We're sorry! Contact us within 48 hours with photos of the damage, and we'll send a replacement or issue a full refund immediately.\"},{\"question\":\"Do you offer gift wrapping?\",\"answer\":\"Yes, gift wrapping is available for $5 per item. Select the gift wrap option at checkout and include a custom message.\"},{\"question\":\"How secure is my payment information?\",\"answer\":\"We use 256-bit SSL encryption and never store your full credit card details. All payments are processed through certified secure gateways.\"},{\"question\":\"Can I use multiple discount codes?\",\"answer\":\"Only one discount code can be applied per order, but some codes stack with ongoing sales. The system will automatically apply the best discount.\"},{\"question\":\"What is your privacy policy?\",\"answer\":\"We never sell your data. Your information is only used to fulfill orders and send promotional emails you've opted into. View our full privacy policy here.\"},{\"question\":\"How do I cancel my subscription?\",\"answer\":\"Log into your account, go to Subscriptions, and click 'Cancel' next to the subscription you want to end. You can reactivate anytime.\"}],\"variant\":\"default\"}'></div>"
-    },
-    {
-      "label": "Technical specs FAQ (compact, product-specific)",
-      "html": "<div data-island=\"FAQ\" data-props='{\"items\":[{\"question\":\"What are the dimensions?\",\"answer\":\"24\\\" W x 18\\\" H x 6\\\" D when closed. Expands to 24\\\" W x 18\\\" H x 12\\\" D when fully open.\"},{\"question\":\"What is the weight capacity?\",\"answer\":\"Maximum load: 50 lbs evenly distributed. Not recommended for heavy equipment.\"},{\"question\":\"Is assembly required?\",\"answer\":\"Minimal assembly: attach legs with included screws (10 minutes). Tools and instructions included.\"},{\"question\":\"What is the warranty coverage?\",\"answer\":\"2-year manufacturer warranty covers defects in materials and workmanship. Does not cover normal wear or misuse.\"}],\"variant\":\"compact\"}'></div>"
-    }
   ],
   "props": {
     "items": {
@@ -69,5 +55,38 @@
     "question",
     "root"
   ],
-  "example": "<div data-island=\"FAQ\" data-props='{\"items\":[{\"question\":\"example-question\",\"answer\":\"example-answer\"}]}'></div>"
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"FAQ\">\n  <script type=\"application/json\">\n{\n  \"items\": [\n    {\n      \"question\": \"example-question\",\n      \"answer\": \"example-answer\"\n    }\n  ]\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "PDP-specific FAQ (5 common questions, default variant)",
+        "source": "<lx-island name=\"FAQ\">\n  <script type=\"application/json\">{\"items\":[{\"question\":\"What materials is this made from?\",\"answer\":\"This product is crafted from 100% organic cotton with reinforced stitching at stress points. It's GOTS certified and safe for sensitive skin.\"},{\"question\":\"How do I care for this product?\",\"answer\":\"Machine wash cold on gentle cycle. Tumble dry low or hang dry. Do not bleach. Iron on low heat if needed.\"},{\"question\":\"What is your return policy?\",\"answer\":\"We offer free 30-day returns on all unworn, unwashed items in original packaging. Simply initiate a return from your order page.\"},{\"question\":\"How long does shipping take?\",\"answer\":\"Standard shipping takes 3-5 business days. Express shipping (1-2 days) is available at checkout for an additional fee.\"},{\"question\":\"Is this true to size?\",\"answer\":\"Yes, this item runs true to size. If you're between sizes, we recommend sizing up for a more relaxed fit. Check our size guide for measurements.\"}],\"variant\":\"default\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Compact FAQ for tight spaces (footer or sidebar, smaller text)",
+        "source": "<lx-island name=\"FAQ\">\n  <script type=\"application/json\">{\"items\":[{\"question\":\"Do you ship internationally?\",\"answer\":\"Yes, we ship to over 50 countries. Rates and delivery times vary by location.\"},{\"question\":\"What payment methods do you accept?\",\"answer\":\"We accept all major credit cards, PayPal, Apple Pay, and Google Pay.\"},{\"question\":\"Can I track my order?\",\"answer\":\"Yes! You'll receive a tracking link via email once your order ships.\"}],\"variant\":\"compact\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Service/policy FAQ (8 questions, default variant)",
+        "source": "<lx-island name=\"FAQ\">\n  <script type=\"application/json\">{\"items\":[{\"question\":\"How do I create an account?\",\"answer\":\"Click 'Sign Up' in the header, enter your email and create a password. You'll receive a confirmation email to activate your account.\"},{\"question\":\"Can I modify my order after placing it?\",\"answer\":\"Orders can be modified within 1 hour of placement. Contact support@example.com with your order number and requested changes.\"},{\"question\":\"What if I receive a damaged item?\",\"answer\":\"We're sorry! Contact us within 48 hours with photos of the damage, and we'll send a replacement or issue a full refund immediately.\"},{\"question\":\"Do you offer gift wrapping?\",\"answer\":\"Yes, gift wrapping is available for $5 per item. Select the gift wrap option at checkout and include a custom message.\"},{\"question\":\"How secure is my payment information?\",\"answer\":\"We use 256-bit SSL encryption and never store your full credit card details. All payments are processed through certified secure gateways.\"},{\"question\":\"Can I use multiple discount codes?\",\"answer\":\"Only one discount code can be applied per order, but some codes stack with ongoing sales. The system will automatically apply the best discount.\"},{\"question\":\"What is your privacy policy?\",\"answer\":\"We never sell your data. Your information is only used to fulfill orders and send promotional emails you've opted into. View our full privacy policy here.\"},{\"question\":\"How do I cancel my subscription?\",\"answer\":\"Log into your account, go to Subscriptions, and click 'Cancel' next to the subscription you want to end. You can reactivate anytime.\"}],\"variant\":\"default\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Technical specs FAQ (compact, product-specific)",
+        "source": "<lx-island name=\"FAQ\">\n  <script type=\"application/json\">{\"items\":[{\"question\":\"What are the dimensions?\",\"answer\":\"24\\\" W x 18\\\" H x 6\\\" D when closed. Expands to 24\\\" W x 18\\\" H x 12\\\" D when fully open.\"},{\"question\":\"What is the weight capacity?\",\"answer\":\"Maximum load: 50 lbs evenly distributed. Not recommended for heavy equipment.\"},{\"question\":\"Is assembly required?\",\"answer\":\"Minimal assembly: attach legs with included screws (10 minutes). Tools and instructions included.\"},{\"question\":\"What is the warranty coverage?\",\"answer\":\"2-year manufacturer warranty covers defects in materials and workmanship. Does not cover normal wear or misuse.\"}],\"variant\":\"compact\"}</script>\n</lx-island>"
+      }
+    ]
+  }
 }

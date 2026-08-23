@@ -1,7 +1,11 @@
 {
+  "contract_version": 2,
   "name": "Marquee",
   "category": "unknown",
-  "usage_hint": "Infinite scrolling ticker/marquee for logos, text badges, trust signals, or announcements. Pure CSS animation \u2014 no JS dependencies.",
+  "deprecated": true,
+  "replacement": "CSS animation with static HTML",
+  "deprecation_reason": "This component has no Shopify integration and its behavior is expressible with HTML and CSS.",
+  "usage_hint": "Infinite scrolling ticker/marquee for logos, text badges, trust signals, or announcements. Pure CSS animation — no JS dependencies.",
   "when_to_use": "For press logo bars, scrolling trust badges, \"As seen in\" rows, announcement tickers, or decorative text loops (e.g. \"IN THE SPOTLIGHT\" repeating).",
   "when_not_to_use": "For static logo rows (use plain flexbox HTML). For interactive carousels where users swipe/click (use Carousel island). For single announcement messages (use AnnouncementBar).",
   "defaultHydrate": "visible",
@@ -11,24 +15,10 @@
     "StatCards (adjacent trust signals)"
   ],
   "anti_patterns": [
-    "Too many items with long text (visual clutter \u2014 keep items short)",
-    "speed < 10 with few items (jerky/too fast \u2014 use speed 20-40 for smooth feel)",
+    "Too many items with long text (visual clutter — keep items short)",
+    "speed < 10 with few items (jerky/too fast — use speed 20-40 for smooth feel)",
     "Using for critical CTA content users must read (they can't pause reliably on mobile)",
     "Mixing logos and text items without consistent height (misaligned row)"
-  ],
-  "examples": [
-    {
-      "label": "Press logos (grayscale)",
-      "html": "<div data-island=\"Marquee\" data-props='{\"variant\":\"logos\",\"items\":[{\"imageSrc\":\"https://placehold.co/120x30\",\"imageAlt\":\"Forbes\"},{\"imageSrc\":\"https://placehold.co/120x30\",\"imageAlt\":\"TechCrunch\"},{\"imageSrc\":\"https://placehold.co/120x30\",\"imageAlt\":\"Wired\"}],\"grayscale\":true,\"speed\":30,\"logoHeight\":\"24px\"}'></div>"
-    },
-    {
-      "label": "Text ticker",
-      "html": "<div data-island=\"Marquee\" data-props='{\"variant\":\"text\",\"items\":[{\"text\":\"FREE SHIPPING\"},{\"text\":\"30-DAY RETURNS\"},{\"text\":\"LIFETIME WARRANTY\"}],\"separator\":\"\u2605\",\"speed\":25,\"textColor\":\"#1a1a1a\",\"fontSize\":\"13px\"}'></div>"
-    },
-    {
-      "label": "Scrolling headline",
-      "html": "<div data-island=\"Marquee\" data-props='{\"variant\":\"text\",\"items\":[{\"text\":\"IN THE SPOTLIGHT\"}],\"speed\":20,\"fontSize\":\"48px\",\"fontWeight\":\"800\",\"gap\":\"4rem\",\"textColor\":\"rgba(255,255,255,0.8)\"}'></div>"
-    }
   ],
   "props": {
     "variant": {
@@ -126,5 +116,34 @@
   "parts": [
     "root"
   ],
-  "example": "<div data-island=\"Marquee\" data-props='{\"items\":[{}]}'></div>"
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"Marquee\">\n  <script type=\"application/json\">\n{\n  \"items\": [\n    {}\n  ]\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Press logos (grayscale)",
+        "source": "<lx-island name=\"Marquee\">\n  <script type=\"application/json\">{\"variant\":\"logos\",\"items\":[{\"imageSrc\":\"https://placehold.co/120x30\",\"imageAlt\":\"Forbes\"},{\"imageSrc\":\"https://placehold.co/120x30\",\"imageAlt\":\"TechCrunch\"},{\"imageSrc\":\"https://placehold.co/120x30\",\"imageAlt\":\"Wired\"}],\"grayscale\":true,\"speed\":30,\"logoHeight\":\"24px\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Text ticker",
+        "source": "<lx-island name=\"Marquee\">\n  <script type=\"application/json\">{\"variant\":\"text\",\"items\":[{\"text\":\"FREE SHIPPING\"},{\"text\":\"30-DAY RETURNS\"},{\"text\":\"LIFETIME WARRANTY\"}],\"separator\":\"★\",\"speed\":25,\"textColor\":\"#1a1a1a\",\"fontSize\":\"13px\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Scrolling headline",
+        "source": "<lx-island name=\"Marquee\">\n  <script type=\"application/json\">{\"variant\":\"text\",\"items\":[{\"text\":\"IN THE SPOTLIGHT\"}],\"speed\":20,\"fontSize\":\"48px\",\"fontWeight\":\"800\",\"gap\":\"4rem\",\"textColor\":\"rgba(255,255,255,0.8)\"}</script>\n</lx-island>"
+      }
+    ]
+  }
 }

@@ -1,9 +1,10 @@
 {
+  "contract_version": 2,
   "name": "CountdownTimer",
   "category": "content",
   "usage_hint": "Live countdown timer for sales, launches, or deadlines. Updates every second. Three styles: simple (boxes + separators), flip (animated), circular (progress rings).",
   "when_to_use": "For flash sales, product launches, limited offers, event countdowns. Shows days/hours/minutes/seconds. Auto-hides when expired and shows expiredMessage. Supports custom CSS variables for styling.",
-  "when_not_to_use": "For static \"Sale ends soon\" text use plain HTML. When deadline isn't firm (countdown creates urgency, broken promises hurt trust). For long durations (>30 days \u2014 use date instead).",
+  "when_not_to_use": "For static \"Sale ends soon\" text use plain HTML. When deadline isn't firm (countdown creates urgency, broken promises hurt trust). For long durations (>30 days — use date instead).",
   "defaultHydrate": "immediate",
   "combine_with": [
     "Hero sections",
@@ -12,27 +13,9 @@
     "BuyBox"
   ],
   "anti_patterns": [
-    "Setting endDate in the past (shows \"Time's up!\" immediately \u2014 test with future dates)",
-    "Using countdown for evergreen \"fake urgency\" (resets on page load \u2014 customers notice and distrust)",
+    "Setting endDate in the past (shows \"Time's up!\" immediately — test with future dates)",
+    "Using countdown for evergreen \"fake urgency\" (resets on page load — customers notice and distrust)",
     "Placing multiple CountdownTimer instances for same deadline (redundant + confusing)"
-  ],
-  "examples": [
-    {
-      "label": "Simple style flash sale",
-      "html": "<div data-island=\"CountdownTimer\" data-props='{\"endDate\":\"2026-12-31T23:59:59Z\",\"labels\":{\"days\":\"Days\",\"hours\":\"Hours\",\"minutes\":\"Min\",\"seconds\":\"Sec\"},\"expiredMessage\":\"Sale ended\",\"style\":\"simple\"}'></div>"
-    },
-    {
-      "label": "Circular progress style",
-      "html": "<div data-island=\"CountdownTimer\" data-props='{\"endDate\":\"2026-07-15T18:00:00Z\",\"labels\":{\"days\":\"D\",\"hours\":\"H\",\"minutes\":\"M\",\"seconds\":\"S\"},\"style\":\"circular\"}'></div>"
-    },
-    {
-      "label": "Flip style with custom message",
-      "html": "<div data-island=\"CountdownTimer\" data-props='{\"endDate\":\"2026-08-01T00:00:00Z\",\"expiredMessage\":\"Product launched! Shop now\",\"style\":\"flip\"}'></div>"
-    },
-    {
-      "label": "Headless countdown (style with section CSS)",
-      "html": "<div data-island=\"CountdownTimer\" data-props='{\"endDate\":\"2026-12-31T23:59:59Z\",\"style\":\"headless\"}'></div>"
-    }
   ],
   "props": {
     "endDate": {
@@ -115,5 +98,38 @@
     "separator",
     "unit"
   ],
-  "example": "<div data-island=\"CountdownTimer\" data-props='{\"endDate\":\"example-endDate\"}'></div>"
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"CountdownTimer\">\n  <script type=\"application/json\">\n{\n  \"endDate\": \"example-endDate\"\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Simple style flash sale",
+        "source": "<lx-island name=\"CountdownTimer\">\n  <script type=\"application/json\">{\"endDate\":\"2026-12-31T23:59:59Z\",\"labels\":{\"days\":\"Days\",\"hours\":\"Hours\",\"minutes\":\"Min\",\"seconds\":\"Sec\"},\"expiredMessage\":\"Sale ended\",\"style\":\"simple\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Circular progress style",
+        "source": "<lx-island name=\"CountdownTimer\">\n  <script type=\"application/json\">{\"endDate\":\"2026-07-15T18:00:00Z\",\"labels\":{\"days\":\"D\",\"hours\":\"H\",\"minutes\":\"M\",\"seconds\":\"S\"},\"style\":\"circular\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Flip style with custom message",
+        "source": "<lx-island name=\"CountdownTimer\">\n  <script type=\"application/json\">{\"endDate\":\"2026-08-01T00:00:00Z\",\"expiredMessage\":\"Product launched! Shop now\",\"style\":\"flip\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Headless countdown (style with section CSS)",
+        "source": "<lx-island name=\"CountdownTimer\">\n  <script type=\"application/json\">{\"endDate\":\"2026-12-31T23:59:59Z\",\"style\":\"headless\"}</script>\n</lx-island>"
+      }
+    ]
+  }
 }

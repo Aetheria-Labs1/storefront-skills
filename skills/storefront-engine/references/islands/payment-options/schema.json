@@ -1,4 +1,5 @@
 {
+  "contract_version": 2,
   "name": "PaymentOptions",
   "category": "commerce",
   "usage_hint": "Buy-now-pay-later badge showing installment pricing for Klarna, Afterpay, Shop Pay, Affirm, Zip. Auto-calculates per-installment amount.",
@@ -13,22 +14,8 @@
   ],
   "anti_patterns": [
     "Listing providers that aren't actually enabled at checkout (misleading, causes cart abandonment)",
-    "Using inline variant with >3 providers (too crowded \u2014 use expandable)",
+    "Using inline variant with >3 providers (too crowded — use expandable)",
     "Setting installments to anything other than 4 (most BNPL = 4 equal payments)"
-  ],
-  "examples": [
-    {
-      "label": "Inline payment options",
-      "html": "<div data-island=\"PaymentOptions\" data-props='{\"price\":9999,\"currency\":\"USD\",\"providers\":[\"klarna\",\"afterpay\",\"shop_pay\"],\"installments\":4,\"variant\":\"inline\"}'></div>"
-    },
-    {
-      "label": "Expandable with auto-update from variant changes",
-      "html": "<div data-island=\"PaymentOptions\" data-props='{\"price\":14999,\"providers\":[\"klarna\",\"afterpay\",\"affirm\",\"zip\"],\"installments\":4,\"variant\":\"expandable\",\"listenForEvents\":true}'></div>"
-    },
-    {
-      "label": "Icons only footer badge",
-      "html": "<div data-island=\"PaymentOptions\" data-props='{\"price\":0,\"providers\":[\"shop_pay\",\"klarna\",\"afterpay\"],\"variant\":\"icons_only\"}'></div>"
-    }
   ],
   "props": {
     "price": {
@@ -64,6 +51,16 @@
       "type": "boolean",
       "required": false,
       "default": "false"
+    },
+    "hideWhenCartEmpty": {
+      "type": "boolean",
+      "required": false,
+      "default": "false"
+    },
+    "padded": {
+      "type": "boolean",
+      "required": false,
+      "default": "false"
     }
   },
   "variants": [
@@ -77,8 +74,39 @@
   "parts": [
     "button",
     "icons-row",
+    "provider-fallback",
+    "provider-logo",
     "root",
     "text"
   ],
-  "example": "<div data-island=\"PaymentOptions\" data-props='{\"price\":0}'></div>"
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"PaymentOptions\">\n  <script type=\"application/json\">\n{\n  \"price\": 0\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Inline payment options",
+        "source": "<lx-island name=\"PaymentOptions\">\n  <script type=\"application/json\">{\"price\":9999,\"currency\":\"USD\",\"providers\":[\"klarna\",\"afterpay\",\"shop_pay\"],\"installments\":4,\"variant\":\"inline\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Expandable with auto-update from variant changes",
+        "source": "<lx-island name=\"PaymentOptions\">\n  <script type=\"application/json\">{\"price\":14999,\"providers\":[\"klarna\",\"afterpay\",\"affirm\",\"zip\"],\"installments\":4,\"variant\":\"expandable\",\"listenForEvents\":true}</script>\n</lx-island>"
+      },
+      {
+        "label": "Icons only footer badge",
+        "source": "<lx-island name=\"PaymentOptions\">\n  <script type=\"application/json\">{\"price\":0,\"providers\":[\"shop_pay\",\"klarna\",\"afterpay\"],\"variant\":\"icons_only\"}</script>\n</lx-island>"
+      }
+    ]
+  }
 }

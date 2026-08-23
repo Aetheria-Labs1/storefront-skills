@@ -1,4 +1,5 @@
 {
+  "contract_version": 2,
   "name": "QuickAdd",
   "category": "commerce",
   "usage_hint": "Lightweight add-to-cart button for collection pages. Shows single-variant instant add or multi-variant dropdown selector. Used inside ProductCarousel or standalone in grids.",
@@ -14,28 +15,6 @@
     "Omitting CartDrawer: users get no cart confirmation feedback",
     "Using for products with many variants (5+): dropdown becomes unwieldy; navigate to PDP instead",
     "Setting animate:false globally: removes dropdown scale-in and success checkmark animations"
-  ],
-  "examples": [
-    {
-      "label": "Single-variant quick add",
-      "html": "<div data-island=\"QuickAdd\" data-props='{\"product\":{\"title\":\"T-Shirt\",\"variants\":[{\"id\":\"v1\",\"title\":\"Medium\",\"price\":\"$29.00\",\"available\":true}]}}'></div>"
-    },
-    {
-      "label": "Multi-variant quick add with dropdown",
-      "html": "<div data-island=\"QuickAdd\" data-props='{\"product\":{\"title\":\"Sneakers\",\"variants\":[{\"id\":\"v1\",\"title\":\"Size 8\",\"price\":\"$120.00\",\"available\":true},{\"id\":\"v2\",\"title\":\"Size 9\",\"price\":\"$120.00\",\"available\":true},{\"id\":\"v3\",\"title\":\"Size 10\",\"price\":\"$120.00\",\"available\":false}],\"image\":\"https://via.placeholder.com/64\"}}'></div>"
-    },
-    {
-      "label": "Quick add without animations",
-      "html": "<div data-island=\"QuickAdd\" data-props='{\"product\":{\"title\":\"Hat\",\"variants\":[{\"id\":\"v1\",\"title\":\"One Size\",\"price\":\"$19.00\",\"available\":true}]},\"animate\":false}'></div>"
-    },
-    {
-      "label": "Icon mode quick add",
-      "html": "<div data-island=\"QuickAdd\" data-props='{\"product\":{\"title\":\"T-Shirt\",\"variants\":[{\"id\":\"v1\",\"title\":\"Medium\",\"price\":\"$29.00\",\"available\":true}]},\"render\":\"icon\",\"iconSize\":40}'></div>"
-    },
-    {
-      "label": "Minimal plus button",
-      "html": "<div data-island=\"QuickAdd\" data-props='{\"product\":{\"title\":\"T-Shirt\",\"variants\":[{\"id\":\"v1\",\"title\":\"Medium\",\"price\":\"$29.00\",\"available\":true}]},\"render\":\"minimal\",\"iconSize\":32}'></div>"
-    }
   ],
   "props": {
     "product": {
@@ -86,5 +65,42 @@
     "root",
     "variant-btn"
   ],
-  "example": "<div data-island=\"QuickAdd\" data-props='{\"product\":{\"title\":\"example-title\",\"variants\":[]}}'></div>"
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"QuickAdd\">\n  <script type=\"application/json\">\n{\n  \"product\": {\n    \"title\": \"example-title\",\n    \"variants\": []\n  }\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Single-variant quick add",
+        "source": "<lx-island name=\"QuickAdd\">\n  <script type=\"application/json\">{\"product\":{\"title\":\"T-Shirt\",\"variants\":[{\"id\":\"v1\",\"title\":\"Medium\",\"price\":\"$29.00\",\"available\":true}]}}</script>\n</lx-island>"
+      },
+      {
+        "label": "Multi-variant quick add with dropdown",
+        "source": "<lx-island name=\"QuickAdd\">\n  <script type=\"application/json\">{\"product\":{\"title\":\"Sneakers\",\"variants\":[{\"id\":\"v1\",\"title\":\"Size 8\",\"price\":\"$120.00\",\"available\":true},{\"id\":\"v2\",\"title\":\"Size 9\",\"price\":\"$120.00\",\"available\":true},{\"id\":\"v3\",\"title\":\"Size 10\",\"price\":\"$120.00\",\"available\":false}],\"image\":\"https://via.placeholder.com/64\"}}</script>\n</lx-island>"
+      },
+      {
+        "label": "Quick add without animations",
+        "source": "<lx-island name=\"QuickAdd\">\n  <script type=\"application/json\">{\"product\":{\"title\":\"Hat\",\"variants\":[{\"id\":\"v1\",\"title\":\"One Size\",\"price\":\"$19.00\",\"available\":true}]},\"animate\":false}</script>\n</lx-island>"
+      },
+      {
+        "label": "Icon mode quick add",
+        "source": "<lx-island name=\"QuickAdd\">\n  <script type=\"application/json\">{\"product\":{\"title\":\"T-Shirt\",\"variants\":[{\"id\":\"v1\",\"title\":\"Medium\",\"price\":\"$29.00\",\"available\":true}]},\"render\":\"icon\",\"iconSize\":40}</script>\n</lx-island>"
+      },
+      {
+        "label": "Minimal plus button",
+        "source": "<lx-island name=\"QuickAdd\">\n  <script type=\"application/json\">{\"product\":{\"title\":\"T-Shirt\",\"variants\":[{\"id\":\"v1\",\"title\":\"Medium\",\"price\":\"$29.00\",\"available\":true}]},\"render\":\"minimal\",\"iconSize\":32}</script>\n</lx-island>"
+      }
+    ]
+  }
 }

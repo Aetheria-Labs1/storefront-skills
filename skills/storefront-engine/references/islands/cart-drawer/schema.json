@@ -1,36 +1,21 @@
 {
+  "contract_version": 2,
   "name": "CartDrawer",
   "category": "commerce",
-  "usage_hint": "Slide-in cart drawer that displays added items, quantities, and subtotal with checkout link. Opens automatically on cart:open events. Must be present on all commerce pages.",
-  "when_to_use": "Include on EVERY page where any cart-capable island exists (BuyBox, StickyBar, QuickAdd, ProductCarousel). Provides cart confirmation, line item management (update qty, remove), and checkout navigation.",
-  "when_not_to_use": "Never omit CartDrawer if you have add-to-cart functionality. Skipping it leaves users with no cart feedback or access to their cart.",
+  "deprecated": true,
+  "replacement": "Cart V2 via head.use_cart_v2",
+  "deprecation_reason": "CartDrawer is retained only for legacy pages; new pages must use the Cart V2 profile.",
+  "usage_hint": "DEPRECATED (Cart V1). Use Cart V2 instead: set head.use_cart_v2: true and the renderer injects the resolved cart profile automatically. CartDrawer remains only for legacy pages that already use it.",
+  "when_to_use": "NEVER on new pages — set head.use_cart_v2: true instead. Only keep CartDrawer when editing an existing legacy page that already contains it and the store has not enabled Cart V2.",
+  "when_not_to_use": "Any new page. Any page with head.use_cart_v2: true (conflict — publish validation rejects it). Any store with cart_v2 enabled.",
   "defaultHydrate": "idle",
   "combine_with": [
-    "BuyBox",
-    "StickyBar",
-    "QuickAdd",
-    "ProductCarousel",
-    "BundleBuilder (all cart-capable islands require CartDrawer for feedback)"
+    "Legacy pages only. For new pages: head.use_cart_v2 plus a published cart profile."
   ],
   "anti_patterns": [
-    "Missing CartDrawer: users can add items but never see cart confirmation or access the cart",
-    "Multiple CartDrawer instances: creates state conflicts; only mount CartDrawer once per page",
-    "Setting animate:false globally: removes slide-in/exit animations, jarring UX",
-    "Hardcoding checkoutUrl without merchant context: use checkoutUrl from cart manager or default /checkout"
-  ],
-  "examples": [
-    {
-      "label": "Default cart drawer (always include this)",
-      "html": "<div data-island=\"CartDrawer\" data-props='{\"items\":[],\"currency\":\"USD\",\"checkoutUrl\":\"/checkout\",\"showClearCart\":true}'></div>"
-    },
-    {
-      "label": "Pre-populated cart for testing",
-      "html": "<div data-island=\"CartDrawer\" data-props='{\"items\":[{\"id\":\"line1\",\"title\":\"T-Shirt\",\"variant\":\"Medium\",\"price\":\"$29.00\",\"quantity\":2,\"image\":\"https://via.placeholder.com/64\"}],\"currency\":\"USD\"}'></div>"
-    },
-    {
-      "label": "Cart drawer without clear cart button",
-      "html": "<div data-island=\"CartDrawer\" data-props='{\"items\":[],\"showClearCart\":false}'></div>"
-    }
+    "Using CartDrawer on a new page: deprecated — Cart V2 (use_cart_v2: true) is the default cart",
+    "Adding CartDrawer to a use_cart_v2 page: dual cart surfaces, publish validation fails",
+    "Multiple CartDrawer instances: creates state conflicts"
   ],
   "props": {
     "items": {
@@ -74,6 +59,7 @@
   ],
   "parts": [
     "backdrop",
+    "checkout",
     "close-btn",
     "content",
     "drawer",
@@ -81,5 +67,26 @@
     "header",
     "title"
   ],
-  "example": "<div data-island=\"CartDrawer\" data-props='{\"items\":[{\"id\":\"example-id\",\"title\":\"example-title\",\"variant\":\"example-variant\",\"price\":\"example-price\",\"quantity\":0}]}'></div>"
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"CartDrawer\">\n  <script type=\"application/json\">\n{\n  \"items\": [\n    {\n      \"id\": \"example-id\",\n      \"title\": \"example-title\",\n      \"variant\": \"example-variant\",\n      \"price\": \"example-price\",\n      \"quantity\": 0\n    }\n  ]\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "DEPRECATED — do not use on new pages. Cart V2 equivalent shown for migration reference",
+        "source": "<lx-island name=\"CartDrawer\">\n  <script type=\"application/json\">{\"items\":[],\"currency\":\"USD\",\"checkoutUrl\":\"/checkout\"}</script>\n</lx-island>"
+      }
+    ]
+  }
 }

@@ -1,4 +1,5 @@
 {
+  "contract_version": 2,
   "name": "MobileMenu",
   "category": "navigation",
   "usage_hint": "Full-screen mobile navigation overlay with expandable sections and social links.",
@@ -10,23 +11,9 @@
     "Footer"
   ],
   "anti_patterns": [
-    "Mounting MobileMenu without controlling isOpen state from parent \u2014 it defaults to open, so you must unmount when closed",
-    "Using MobileMenu alongside Navbar's built-in mobile panel (data-lx-nav=\"mobile-panel\") \u2014 they conflict",
-    "Passing deeply nested link structures (>2 levels) \u2014 mobile menu only supports parent + children, not grandchildren"
-  ],
-  "examples": [
-    {
-      "label": "Basic mobile menu with social links",
-      "html": "<div data-island=\"MobileMenu\" data-props='{\"links\":[{\"label\":\"Shop\",\"url\":\"/shop\",\"children\":[{\"label\":\"New\",\"url\":\"/new\"},{\"label\":\"Sale\",\"url\":\"/sale\"}]},{\"label\":\"About\",\"url\":\"/about\"}],\"socials\":[{\"platform\":\"instagram\",\"url\":\"https://instagram.com/store\"},{\"platform\":\"twitter\",\"url\":\"https://twitter.com/store\"}],\"logo\":{\"src\":\"/logo.svg\",\"alt\":\"Store\"}}'></div>"
-    },
-    {
-      "label": "Mobile menu with flat navigation",
-      "html": "<div data-island=\"MobileMenu\" data-props='{\"links\":[{\"label\":\"Home\",\"url\":\"/\"},{\"label\":\"Products\",\"url\":\"/products\"},{\"label\":\"Contact\",\"url\":\"/contact\"}]}'></div>"
-    },
-    {
-      "label": "Mobile menu with nested categories",
-      "html": "<div data-island=\"MobileMenu\" data-props='{\"links\":[{\"label\":\"Clothing\",\"url\":\"#\",\"children\":[{\"label\":\"Tops\",\"url\":\"/tops\"},{\"label\":\"Bottoms\",\"url\":\"/bottoms\"},{\"label\":\"Dresses\",\"url\":\"/dresses\"}]},{\"label\":\"Accessories\",\"url\":\"#\",\"children\":[{\"label\":\"Bags\",\"url\":\"/bags\"},{\"label\":\"Jewelry\",\"url\":\"/jewelry\"}]}],\"logo\":{\"src\":\"/logo.svg\"}}'></div>"
-    }
+    "Mounting MobileMenu without controlling isOpen state from parent — it defaults to open, so you must unmount when closed",
+    "Using MobileMenu alongside Navbar's built-in mobile panel (data-lx-nav=\"mobile-panel\") — they conflict",
+    "Passing deeply nested link structures (>2 levels) — mobile menu only supports parent + children, not grandchildren"
   ],
   "props": {
     "links": {
@@ -35,7 +22,7 @@
       "shape": {
         "label": "string",
         "url": "string",
-        "children": "?array<{label: string, url: string, children: ?array<{}>}>"
+        "children": "?array<{label: string, url: string, children: ?array<{label: object, url: object, children: ?object}>}>"
       }
     },
     "socials": {
@@ -66,5 +53,34 @@
     "link",
     "root"
   ],
-  "example": "<div data-island=\"MobileMenu\" data-props='{\"links\":[{\"label\":\"example-label\",\"url\":\"example-url\"}]}'></div>"
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"MobileMenu\">\n  <script type=\"application/json\">\n{\n  \"links\": [\n    {\n      \"label\": \"example-label\",\n      \"url\": \"example-url\"\n    }\n  ]\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Basic mobile menu with social links",
+        "source": "<lx-island name=\"MobileMenu\">\n  <script type=\"application/json\">{\"links\":[{\"label\":\"Shop\",\"url\":\"/shop\",\"children\":[{\"label\":\"New\",\"url\":\"/new\"},{\"label\":\"Sale\",\"url\":\"/sale\"}]},{\"label\":\"About\",\"url\":\"/about\"}],\"socials\":[{\"platform\":\"instagram\",\"url\":\"https://instagram.com/store\"},{\"platform\":\"twitter\",\"url\":\"https://twitter.com/store\"}],\"logo\":{\"src\":\"/logo.svg\",\"alt\":\"Store\"}}</script>\n</lx-island>"
+      },
+      {
+        "label": "Mobile menu with flat navigation",
+        "source": "<lx-island name=\"MobileMenu\">\n  <script type=\"application/json\">{\"links\":[{\"label\":\"Home\",\"url\":\"/\"},{\"label\":\"Products\",\"url\":\"/products\"},{\"label\":\"Contact\",\"url\":\"/contact\"}]}</script>\n</lx-island>"
+      },
+      {
+        "label": "Mobile menu with nested categories",
+        "source": "<lx-island name=\"MobileMenu\">\n  <script type=\"application/json\">{\"links\":[{\"label\":\"Clothing\",\"url\":\"#\",\"children\":[{\"label\":\"Tops\",\"url\":\"/tops\"},{\"label\":\"Bottoms\",\"url\":\"/bottoms\"},{\"label\":\"Dresses\",\"url\":\"/dresses\"}]},{\"label\":\"Accessories\",\"url\":\"#\",\"children\":[{\"label\":\"Bags\",\"url\":\"/bags\"},{\"label\":\"Jewelry\",\"url\":\"/jewelry\"}]}],\"logo\":{\"src\":\"/logo.svg\"}}</script>\n</lx-island>"
+      }
+    ]
+  }
 }

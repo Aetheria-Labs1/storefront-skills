@@ -1,4 +1,5 @@
 {
+  "contract_version": 2,
   "name": "AnnouncementBar",
   "category": "navigation",
   "usage_hint": "Rotating announcement banner with auto-dismiss and session persistence. Sits above navigation or standalone.",
@@ -11,23 +12,9 @@
     "Footer"
   ],
   "anti_patterns": [
-    "Setting speed too fast (<3000ms) \u2014 users can't read messages",
+    "Setting speed too fast (<3000ms) — users can't read messages",
     "Using dismissible without sticky (dismissal resets on navigation when not sticky)",
     "Putting multiple AnnouncementBar instances on one page (confusing + redundant)"
-  ],
-  "examples": [
-    {
-      "label": "Single sticky announcement",
-      "html": "<div data-island=\"AnnouncementBar\" data-props='{\"messages\":[\"Free shipping on orders over $50\"],\"sticky\":true,\"dismissible\":true,\"backgroundColor\":\"#5055aa\",\"textColor\":\"#fff\"}'></div>"
-    },
-    {
-      "label": "Rotating sale announcements",
-      "html": "<div data-island=\"AnnouncementBar\" data-props='{\"messages\":[\"50% off sitewide\",\"Ends tonight at midnight\",\"Use code SAVE50\"],\"speed\":4000,\"backgroundColor\":\"#000\",\"textColor\":\"#fff\",\"dismissible\":false}'></div>"
-    },
-    {
-      "label": "Linked announcement",
-      "html": "<div data-island=\"AnnouncementBar\" data-props='{\"messages\":[\"New collection just dropped \u2013 Shop now\"],\"link\":\"/collections/new\",\"backgroundColor\":\"#e11d48\",\"textColor\":\"#fff\",\"dismissible\":true}'></div>"
-    }
   ],
   "props": {
     "messages": {
@@ -73,5 +60,34 @@
     "root",
     "text"
   ],
-  "example": "<div data-island=\"AnnouncementBar\" data-props='{\"messages\":[]}'></div>"
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"AnnouncementBar\">\n  <script type=\"application/json\">\n{\n  \"messages\": []\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Single sticky announcement",
+        "source": "<lx-island name=\"AnnouncementBar\">\n  <script type=\"application/json\">{\"messages\":[\"Free shipping on orders over $50\"],\"sticky\":true,\"dismissible\":true,\"backgroundColor\":\"#5055aa\",\"textColor\":\"#fff\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Rotating sale announcements",
+        "source": "<lx-island name=\"AnnouncementBar\">\n  <script type=\"application/json\">{\"messages\":[\"50% off sitewide\",\"Ends tonight at midnight\",\"Use code SAVE50\"],\"speed\":4000,\"backgroundColor\":\"#000\",\"textColor\":\"#fff\",\"dismissible\":false}</script>\n</lx-island>"
+      },
+      {
+        "label": "Linked announcement",
+        "source": "<lx-island name=\"AnnouncementBar\">\n  <script type=\"application/json\">{\"messages\":[\"New collection just dropped – Shop now\"],\"link\":\"/collections/new\",\"backgroundColor\":\"#e11d48\",\"textColor\":\"#fff\",\"dismissible\":true}</script>\n</lx-island>"
+      }
+    ]
+  }
 }

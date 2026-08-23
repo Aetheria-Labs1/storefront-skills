@@ -1,4 +1,5 @@
 {
+  "contract_version": 2,
   "name": "Navbar",
   "category": "navigation",
   "usage_hint": "Site-wide top navigation bar with logo, links, cart, and mobile menu.",
@@ -12,27 +13,9 @@
     "BackToTop"
   ],
   "anti_patterns": [
-    "Using both SiteHeader and Navbar on the same page \u2014 SiteHeader already includes Navbar functionality",
-    "Placing Navbar inside a section wrapper \u2014 it should be a direct page child for sticky positioning to work",
+    "Using both SiteHeader and Navbar on the same page — SiteHeader already includes Navbar functionality",
+    "Placing Navbar inside a section wrapper — it should be a direct page child for sticky positioning to work",
     "Hard-coding cart count instead of omitting it (the island subscribes to real cart state automatically)"
-  ],
-  "examples": [
-    {
-      "label": "Hydration mode with custom HTML",
-      "html": "<div data-island=\"Navbar\" data-props='{\"sticky\":true,\"cartMode\":\"drawer\"}'><nav data-lx-nav=\"root\"><a href=\"/\"><img src=\"/logo.svg\" alt=\"Logo\"/></a><button data-lx-nav=\"cart-trigger\"><svg>...</svg><span data-lx-nav=\"cart-count\"></span></button><button data-lx-nav=\"mobile-trigger\">Menu</button><div data-lx-nav=\"mobile-panel\">...</div></nav></div>"
-    },
-    {
-      "label": "Legacy mode with transparent sticky nav",
-      "html": "<div data-island=\"Navbar\" data-props='{\"logo\":{\"src\":\"/logo.svg\",\"alt\":\"Store\"},\"links\":[{\"label\":\"Shop\",\"url\":\"/collections\"},{\"label\":\"About\",\"url\":\"/pages/about\"}],\"transparent\":true,\"sticky\":true,\"style\":{\"accentColor\":\"#5055aa\"}}'></div>"
-    },
-    {
-      "label": "Legacy mode with custom text logo and custom cart icon",
-      "html": "<div data-island=\"Navbar\" data-props='{\"logo\":{\"html\":\"<span style=\\\"font-size:1.5rem;font-weight:800;letter-spacing:-0.03em\\\">ACME</span>\"},\"links\":[{\"label\":\"Shop\",\"url\":\"/collections\"}],\"cart\":{\"svg\":\"<svg width=\\\"20\\\" height=\\\"20\\\" viewBox=\\\"0 0 24 24\\\" fill=\\\"none\\\" stroke=\\\"currentColor\\\" stroke-width=\\\"2\\\"><circle cx=\\\"9\\\" cy=\\\"21\\\" r=\\\"1\\\"/><circle cx=\\\"20\\\" cy=\\\"21\\\" r=\\\"1\\\"/><path d=\\\"M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6\\\"/></svg>\"}}'></div>"
-    },
-    {
-      "label": "Legacy mode with dropdown menu and CTA",
-      "html": "<div data-island=\"Navbar\" data-props='{\"logo\":{\"src\":\"/logo.svg\"},\"links\":[{\"label\":\"Products\",\"url\":\"#\",\"children\":[{\"label\":\"New\",\"url\":\"/new\"},{\"label\":\"Sale\",\"url\":\"/sale\"}]},{\"label\":\"Contact\",\"url\":\"/contact\"}],\"cta\":{\"label\":\"Sign Up\",\"url\":\"/signup\"}}'></div>"
-    }
   ],
   "props": {
     "sticky": {
@@ -79,7 +62,7 @@
       "shape": {
         "label": "string",
         "url": "string",
-        "children": "?array<{label: string, url: string, children: ?array<{}>}>"
+        "children": "?array<{label: string, url: string, children: ?array<{label: object, url: object, children: ?object}>}>"
       }
     },
     "cartCount": {
@@ -145,5 +128,34 @@
     "mobile-trigger",
     "root"
   ],
-  "example": "<div data-island=\"Navbar\" data-props='{\"logo\":{},\"links\":[{\"label\":\"example-label\",\"url\":\"example-url\"}]}'></div>"
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"Navbar\">\n  <script type=\"application/json\">\n{\n  \"logo\": {},\n  \"links\": [\n    {\n      \"label\": \"example-label\",\n      \"url\": \"example-url\"\n    }\n  ]\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Hydration mode with custom HTML",
+        "source": "<lx-island name=\"Navbar\">\n  <script type=\"application/json\">{\"sticky\":true,\"cartMode\":\"drawer\"}</script>\n  <nav data-lx-nav=\"root\"><a href=\"/\"><img src=\"/logo.svg\" alt=\"Logo\"/></a><button data-lx-nav=\"cart-trigger\"><svg>...</svg><span data-lx-nav=\"cart-count\"></span></button><button data-lx-nav=\"mobile-trigger\">Menu</button><div data-lx-nav=\"mobile-panel\">...</div></nav>\n</lx-island>"
+      },
+      {
+        "label": "Legacy mode with transparent sticky nav",
+        "source": "<lx-island name=\"Navbar\">\n  <script type=\"application/json\">{\"logo\":{\"src\":\"/logo.svg\",\"alt\":\"Store\"},\"links\":[{\"label\":\"Shop\",\"url\":\"/collections\"},{\"label\":\"About\",\"url\":\"/pages/about\"}],\"transparent\":true,\"sticky\":true,\"style\":{\"accentColor\":\"#5055aa\"}}</script>\n</lx-island>"
+      },
+      {
+        "label": "Legacy mode with dropdown menu and CTA",
+        "source": "<lx-island name=\"Navbar\">\n  <script type=\"application/json\">{\"logo\":{\"src\":\"/logo.svg\"},\"links\":[{\"label\":\"Products\",\"url\":\"#\",\"children\":[{\"label\":\"New\",\"url\":\"/new\"},{\"label\":\"Sale\",\"url\":\"/sale\"}]},{\"label\":\"Contact\",\"url\":\"/contact\"}],\"cta\":{\"label\":\"Sign Up\",\"url\":\"/signup\"}}</script>\n</lx-island>"
+      }
+    ]
+  }
 }

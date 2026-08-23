@@ -1,6 +1,10 @@
 {
+  "contract_version": 2,
   "name": "BackToTop",
   "category": "navigation",
+  "deprecated": true,
+  "replacement": "native anchor link with CSS scroll-behavior",
+  "deprecation_reason": "A page-local back-to-top control does not need an island or Shopify integration.",
   "usage_hint": "Floating scroll-to-top button that appears after scrolling past threshold. Fixed bottom-right position.",
   "when_to_use": "On long pages (>2 screens) where users need quick return to top. Auto-shows/hides based on scroll position. Respects reduced-motion preferences.",
   "when_not_to_use": "On short pages (less than 1000px tall). When footer already has \"Back to top\" link. On mobile-first designs where scroll is fast.",
@@ -11,23 +15,9 @@
     "long content pages"
   ],
   "anti_patterns": [
-    "Setting threshold too low (<400px) \u2014 button appears before user needs it",
+    "Setting threshold too low (<400px) — button appears before user needs it",
     "Using on pages with sticky sidebars that occupy bottom-right (z-index conflicts)",
-    "Multiple BackToTop instances \u2014 only one is needed per page"
-  ],
-  "examples": [
-    {
-      "label": "Standard back-to-top button",
-      "html": "<div data-island=\"BackToTop\" data-props='{\"threshold\":600,\"smooth\":true}'></div>"
-    },
-    {
-      "label": "Custom label for accessibility",
-      "html": "<div data-island=\"BackToTop\" data-props='{\"threshold\":800,\"smooth\":true,\"label\":\"Scroll to top of page\"}'></div>"
-    },
-    {
-      "label": "Instant scroll without animation",
-      "html": "<div data-island=\"BackToTop\" data-props='{\"threshold\":500,\"smooth\":false}'></div>"
-    }
+    "Multiple BackToTop instances — only one is needed per page"
   ],
   "props": {
     "threshold": {
@@ -53,5 +43,34 @@
     "button",
     "icon"
   ],
-  "example": "<div data-island=\"BackToTop\" data-props='{}'></div>"
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"BackToTop\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Standard back-to-top button",
+        "source": "<lx-island name=\"BackToTop\">\n  <script type=\"application/json\">{\"threshold\":600,\"smooth\":true}</script>\n</lx-island>"
+      },
+      {
+        "label": "Custom label for accessibility",
+        "source": "<lx-island name=\"BackToTop\">\n  <script type=\"application/json\">{\"threshold\":800,\"smooth\":true,\"label\":\"Scroll to top of page\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Instant scroll without animation",
+        "source": "<lx-island name=\"BackToTop\">\n  <script type=\"application/json\">{\"threshold\":500,\"smooth\":false}</script>\n</lx-island>"
+      }
+    ]
+  }
 }

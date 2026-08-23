@@ -1,4 +1,5 @@
 {
+  "contract_version": 2,
   "name": "BuyBox",
   "category": "commerce",
   "usage_hint": "Full-featured product purchase interface with variant selection, quantity picker, and add-to-cart functionality. Primary CTA for PDP layouts.",
@@ -16,32 +17,6 @@
     "Variant=\"compact\" with multiple variants: loses variant selector, breaking multi-variant products",
     "Setting animate:false then relying on success feedback: removes visual confirmation animations"
   ],
-  "examples": [
-    {
-      "label": "Default PDP BuyBox with variants",
-      "html": "<div data-island=\"BuyBox\" data-props='{\"product\":{\"title\":\"Wireless Headphones\",\"price\":\"$99.00\",\"compareAtPrice\":\"$129.00\",\"variants\":[{\"id\":\"v1\",\"title\":\"Black\",\"price\":\"$99.00\",\"available\":true},{\"id\":\"v2\",\"title\":\"White\",\"price\":\"$99.00\",\"available\":true}]},\"ctaText\":\"Add to Cart\",\"showVariantSelector\":true,\"variant\":\"default\"}'></div>"
-    },
-    {
-      "label": "Compact BuyBox (single variant, no qty picker)",
-      "html": "<div data-island=\"BuyBox\" data-props='{\"product\":{\"title\":\"T-Shirt\",\"price\":\"$29.00\",\"variants\":[{\"id\":\"v1\",\"title\":\"Medium\",\"price\":\"$29.00\",\"available\":true}]},\"variant\":\"compact\"}'></div>"
-    },
-    {
-      "label": "Expanded with trust badges",
-      "html": "<div data-island=\"BuyBox\" data-props='{\"product\":{\"title\":\"Premium Watch\",\"price\":\"$299.00\",\"variants\":[{\"id\":\"v1\",\"title\":\"Silver\",\"price\":\"$299.00\",\"available\":true}]},\"variant\":\"expanded\",\"ctaText\":\"Buy Now\"}'></div>"
-    },
-    {
-      "label": "No price (custom price layout above)",
-      "html": "<div data-island=\"BuyBox\" data-props='{\"product\":{\"title\":\"Sneakers\",\"price\":\"$120.00\",\"variants\":[{\"id\":\"v1\",\"title\":\"Red\",\"price\":\"$120.00\",\"available\":true}]},\"showPrice\":false}'></div>"
-    },
-    {
-      "label": "Expanded without trust badges",
-      "html": "<div data-island=\"BuyBox\" data-props='{\"product\":{\"title\":\"Serum\",\"price\":\"$49.00\",\"variants\":[{\"id\":\"v1\",\"title\":\"30ml\",\"price\":\"$49.00\",\"available\":true}]},\"variant\":\"expanded\",\"showTrustBadges\":false}'></div>"
-    },
-    {
-      "label": "With VariantSwatches (event-driven, no internal selector)",
-      "html": "<div data-island=\"BuyBox\" data-props='{\"product\":{\"title\":\"Sneakers\",\"price\":\"$120.00\",\"variants\":[{\"id\":\"v1\",\"title\":\"Red\",\"price\":\"$120.00\",\"available\":true}]},\"listenForEvents\":true,\"showVariantSelector\":false}'></div>"
-    }
-  ],
   "props": {
     "product": {
       "type": "object",
@@ -55,28 +30,23 @@
     },
     "ctaText": {
       "type": "string",
-      "required": false,
-      "default": "Add to Cart"
+      "required": false
     },
     "listenForEvents": {
       "type": "boolean",
-      "required": false,
-      "default": "false"
+      "required": false
     },
     "showVariantSelector": {
       "type": "boolean",
-      "required": false,
-      "default": "true"
+      "required": false
     },
     "showPrice": {
       "type": "boolean",
-      "required": false,
-      "default": "true"
+      "required": false
     },
     "showTrustBadges": {
       "type": "boolean",
-      "required": false,
-      "default": "true"
+      "required": false
     },
     "variant": {
       "type": "enum",
@@ -85,13 +55,11 @@
         "default",
         "compact",
         "expanded"
-      ],
-      "default": "default"
+      ]
     },
     "animate": {
       "type": "boolean",
-      "required": false,
-      "default": "true"
+      "required": false
     },
     "buttonStyle": {
       "type": "object",
@@ -101,6 +69,10 @@
         "padding": "?string",
         "fontSize": "?string"
       }
+    },
+    "__originalHtml": {
+      "type": "string",
+      "required": false
     }
   },
   "variants": [
@@ -121,5 +93,61 @@
     "variant-btn",
     "variants"
   ],
-  "example": "<div data-island=\"BuyBox\" data-props='{\"product\":{\"title\":\"example-title\",\"price\":\"example-price\",\"variants\":[]}}'></div>"
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": true,
+      "hooks": [
+        "add",
+        "price",
+        "compare-price",
+        "variant-option",
+        "qty",
+        "qty-inc",
+        "qty-dec",
+        "stock",
+        "error"
+      ]
+    },
+    "example": "<lx-island name=\"BuyBox\">\n  <script type=\"application/json\">\n{\n  \"product\": {\n    \"title\": \"example-title\",\n    \"price\": \"example-price\",\n    \"variants\": []\n  }\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Default PDP BuyBox with variants",
+        "source": "<lx-island name=\"BuyBox\">\n  <script type=\"application/json\">{\"product\":{\"title\":\"Wireless Headphones\",\"price\":\"$99.00\",\"compareAtPrice\":\"$129.00\",\"variants\":[{\"id\":\"v1\",\"title\":\"Black\",\"price\":\"$99.00\",\"available\":true},{\"id\":\"v2\",\"title\":\"White\",\"price\":\"$99.00\",\"available\":true}]},\"ctaText\":\"Add to Cart\",\"showVariantSelector\":true,\"variant\":\"default\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Compact BuyBox (single variant, no qty picker)",
+        "source": "<lx-island name=\"BuyBox\">\n  <script type=\"application/json\">{\"product\":{\"title\":\"T-Shirt\",\"price\":\"$29.00\",\"variants\":[{\"id\":\"v1\",\"title\":\"Medium\",\"price\":\"$29.00\",\"available\":true}]},\"variant\":\"compact\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Expanded with trust badges",
+        "source": "<lx-island name=\"BuyBox\">\n  <script type=\"application/json\">{\"product\":{\"title\":\"Premium Watch\",\"price\":\"$299.00\",\"variants\":[{\"id\":\"v1\",\"title\":\"Silver\",\"price\":\"$299.00\",\"available\":true}]},\"variant\":\"expanded\",\"ctaText\":\"Buy Now\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "No price (custom price layout above)",
+        "source": "<lx-island name=\"BuyBox\">\n  <script type=\"application/json\">{\"product\":{\"title\":\"Sneakers\",\"price\":\"$120.00\",\"variants\":[{\"id\":\"v1\",\"title\":\"Red\",\"price\":\"$120.00\",\"available\":true}]},\"showPrice\":false}</script>\n</lx-island>"
+      },
+      {
+        "label": "Expanded without trust badges",
+        "source": "<lx-island name=\"BuyBox\">\n  <script type=\"application/json\">{\"product\":{\"title\":\"Serum\",\"price\":\"$49.00\",\"variants\":[{\"id\":\"v1\",\"title\":\"30ml\",\"price\":\"$49.00\",\"available\":true}]},\"variant\":\"expanded\",\"showTrustBadges\":false}</script>\n</lx-island>"
+      },
+      {
+        "label": "With VariantSwatches (event-driven, no internal selector)",
+        "source": "<lx-island name=\"BuyBox\">\n  <script type=\"application/json\">{\"product\":{\"title\":\"Sneakers\",\"price\":\"$120.00\",\"variants\":[{\"id\":\"v1\",\"title\":\"Red\",\"price\":\"$120.00\",\"available\":true}]},\"listenForEvents\":true,\"showVariantSelector\":false}</script>\n</lx-island>"
+      },
+      {
+        "label": "HEADLESS — fully custom markup, behavior via data-lx-buybox hooks (add is required; variant-option needs data-variant-id; state classes lx-selected/lx-disabled/lx-adding/lx-added)",
+        "source": "<lx-island name=\"BuyBox\" headless>\n  <script type=\"application/json\">{\"product\":{\"title\":\"Serum\",\"price\":\"$49.00\",\"variants\":[{\"id\":\"v1\",\"title\":\"30ml\",\"price\":\"$49.00\",\"available\":true},{\"id\":\"v2\",\"title\":\"50ml\",\"price\":\"$69.00\",\"available\":true}]}}</script>\n  <p class=\"text-3xl font-bold\" data-lx-buybox=\"price\">$49.00</p><div class=\"flex gap-2\"><button data-lx-buybox=\"variant-option\" data-variant-id=\"v1\" class=\"px-4 py-2 border rounded-full\">30ml</button><button data-lx-buybox=\"variant-option\" data-variant-id=\"v2\" class=\"px-4 py-2 border rounded-full\">50ml</button></div><div class=\"flex items-center gap-3\"><button data-lx-buybox=\"qty-dec\">−</button><span data-lx-buybox=\"qty\">1</span><button data-lx-buybox=\"qty-inc\">+</button></div><button data-lx-buybox=\"add\" class=\"w-full py-4 rounded-full text-white\" style=\"background: var(--lx-accent-color)\">Add to Cart</button><p data-lx-buybox=\"error\" class=\"text-red-600 text-sm\">Couldn't add — try again.</p>\n</lx-island>"
+      }
+    ]
+  }
 }

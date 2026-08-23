@@ -1,4 +1,5 @@
 {
+  "contract_version": 2,
   "name": "CartSummary",
   "category": "commerce",
   "usage_hint": "Displays cart subtotal, optional tax/shipping/discount lines. Subscribes to shared cart state.",
@@ -11,7 +12,6 @@
     "CartCheckoutButton"
   ],
   "anti_patterns": [],
-  "examples": [],
   "props": {
     "showTax": {
       "type": "boolean",
@@ -30,13 +30,14 @@
     },
     "currency": {
       "type": "string",
-      "required": false,
-      "default": "USD"
+      "required": false
     }
   },
   "variants": null,
   "css_vars": [
-    "--lx-text-color"
+    "--lx-border-color",
+    "--lx-text-color",
+    "--lx-text-muted"
   ],
   "parts": [
     "line",
@@ -47,5 +48,21 @@
     "subtotal-label",
     "subtotal-value"
   ],
-  "example": "<div data-island=\"CartSummary\" data-props='{}'></div>"
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"CartSummary\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
+    "examples": []
+  }
 }

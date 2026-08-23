@@ -1,4 +1,5 @@
 {
+  "contract_version": 2,
   "name": "CartProgressBar",
   "category": "commerce",
   "usage_hint": "Shows progress toward free shipping or tiered rewards. Subscribes to shared cart state.",
@@ -11,7 +12,6 @@
     "CartSummary"
   ],
   "anti_patterns": [],
-  "examples": [],
   "props": {
     "threshold": {
       "type": "number",
@@ -38,6 +38,10 @@
     "currency": {
       "type": "string",
       "required": false
+    },
+    "celebrationEnabled": {
+      "type": "boolean",
+      "required": false
     }
   },
   "variants": null,
@@ -50,5 +54,21 @@
     "root",
     "track"
   ],
-  "example": "<div data-island=\"CartProgressBar\" data-props='{}'></div>"
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"CartProgressBar\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
+    "examples": []
+  }
 }

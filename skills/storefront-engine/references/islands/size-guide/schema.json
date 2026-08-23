@@ -1,4 +1,5 @@
 {
+  "contract_version": 2,
   "name": "SizeGuide",
   "category": "engagement",
   "usage_hint": "Modal size chart with metric/imperial toggle. Trigger button opens overlay table with size measurements.",
@@ -12,22 +13,8 @@
   ],
   "anti_patterns": [
     "Providing incomplete size data (missing sizes or measurements breaks trust)",
-    "Using generic size chart for products with different fits (oversized vs slim \u2014 needs separate charts)",
+    "Using generic size chart for products with different fits (oversized vs slim — needs separate charts)",
     "Not including measurement tip (customers don't know how to measure themselves)"
-  ],
-  "examples": [
-    {
-      "label": "Apparel size guide with unit toggle",
-      "html": "<div data-island=\"SizeGuide\" data-props='{\"title\":\"Size Guide\",\"headers\":[\"Size\",\"Chest\",\"Waist\",\"Length\"],\"rows\":[{\"size\":\"Small\",\"chest\":\"34-36\\\"\",\"waist\":\"28-30\\\"\",\"length\":\"28\\\"\"},{\"size\":\"Medium\",\"chest\":\"38-40\\\"\",\"waist\":\"32-34\\\"\",\"length\":\"29\\\"\"},{\"size\":\"Large\",\"chest\":\"42-44\\\"\",\"waist\":\"36-38\\\"\",\"length\":\"30\\\"\"}],\"units\":{\"metric\":\"cm\",\"imperial\":\"inches\"},\"tip\":\"Measure around the fullest part of your chest\"}'></div>"
-    },
-    {
-      "label": "Footwear size chart",
-      "html": "<div data-island=\"SizeGuide\" data-props='{\"title\":\"Shoe Size Chart\",\"headers\":[\"US Size\",\"UK Size\",\"EU Size\",\"Foot Length\"],\"rows\":[{\"size\":\"8\",\"uk size\":\"7\",\"eu size\":\"41\",\"foot length\":\"26cm\"},{\"size\":\"9\",\"uk size\":\"8\",\"eu size\":\"42\",\"foot length\":\"27cm\"}],\"tip\":\"Measure from heel to longest toe\"}'></div>"
-    },
-    {
-      "label": "Simple size guide without units",
-      "html": "<div data-island=\"SizeGuide\" data-props='{\"title\":\"Fit Guide\",\"headers\":[\"Size\",\"Fits Height\",\"Fits Weight\"],\"rows\":[{\"size\":\"S\",\"fits height\":\"5'4\\\"-5'7\\\"\",\"fits weight\":\"120-140 lbs\"},{\"size\":\"M\",\"fits height\":\"5'7\\\"-5'10\\\"\",\"fits weight\":\"140-165 lbs\"}]}'></div>"
-    }
   ],
   "props": {
     "title": {
@@ -73,5 +60,34 @@
     "table",
     "trigger"
   ],
-  "example": "<div data-island=\"SizeGuide\" data-props='{\"headers\":[],\"rows\":[{\"size\":\"example-size\"}]}'></div>"
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"SizeGuide\">\n  <script type=\"application/json\">\n{\n  \"headers\": [],\n  \"rows\": [\n    {\n      \"size\": \"example-size\"\n    }\n  ]\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Apparel size guide with unit toggle",
+        "source": "<lx-island name=\"SizeGuide\">\n  <script type=\"application/json\">{\"title\":\"Size Guide\",\"headers\":[\"Size\",\"Chest\",\"Waist\",\"Length\"],\"rows\":[{\"size\":\"Small\",\"chest\":\"34-36\\\"\",\"waist\":\"28-30\\\"\",\"length\":\"28\\\"\"},{\"size\":\"Medium\",\"chest\":\"38-40\\\"\",\"waist\":\"32-34\\\"\",\"length\":\"29\\\"\"},{\"size\":\"Large\",\"chest\":\"42-44\\\"\",\"waist\":\"36-38\\\"\",\"length\":\"30\\\"\"}],\"units\":{\"metric\":\"cm\",\"imperial\":\"inches\"},\"tip\":\"Measure around the fullest part of your chest\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Footwear size chart",
+        "source": "<lx-island name=\"SizeGuide\">\n  <script type=\"application/json\">{\"title\":\"Shoe Size Chart\",\"headers\":[\"US Size\",\"UK Size\",\"EU Size\",\"Foot Length\"],\"rows\":[{\"size\":\"8\",\"uk size\":\"7\",\"eu size\":\"41\",\"foot length\":\"26cm\"},{\"size\":\"9\",\"uk size\":\"8\",\"eu size\":\"42\",\"foot length\":\"27cm\"}],\"tip\":\"Measure from heel to longest toe\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Simple size guide without units",
+        "source": "<lx-island name=\"SizeGuide\">\n  <script type=\"application/json\">{\"title\":\"Fit Guide\",\"headers\":[\"Size\",\"Fits Height\",\"Fits Weight\"],\"rows\":[{\"size\":\"S\",\"fits height\":\"5'4\\\"-5'7\\\"\",\"fits weight\":\"120-140 lbs\"},{\"size\":\"M\",\"fits height\":\"5'7\\\"-5'10\\\"\",\"fits weight\":\"140-165 lbs\"}]}</script>\n</lx-island>"
+      }
+    ]
+  }
 }

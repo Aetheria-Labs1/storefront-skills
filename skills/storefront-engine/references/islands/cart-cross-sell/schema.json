@@ -1,8 +1,9 @@
 {
+  "contract_version": 2,
   "name": "CartCrossSell",
   "category": "unknown",
   "usage_hint": "Self-contained cross-sell/upsell inside the cart drawer. Reads config from $cartConfig.upsells, evaluates triggers against $cartLines, fetches recommended products, and self-hides when no triggers match. No external rules needed.",
-  "when_to_use": "Inside DrawerShell to show product recommendations based on cart contents. Config comes from commerce_config.upsells \u2014 the island is fully reactive to cart state changes.",
+  "when_to_use": "Inside DrawerShell to show product recommendations based on cart contents. Config comes from commerce_config.upsells — the island is fully reactive to cart state changes.",
   "when_not_to_use": "Outside cart context. For static product grids use ProductCarousel.",
   "defaultHydrate": "immediate",
   "combine_with": [
@@ -13,19 +14,9 @@
     "CartProgressBar"
   ],
   "anti_patterns": [
-    "Passing product data via data-props (use commerce_config.upsells instead \u2014 the island reads from $cartConfig)",
+    "Passing product data via data-props (use commerce_config.upsells instead — the island reads from $cartConfig)",
     "Using hidden class + rules for visibility (the island self-manages show/hide)",
     "Placing outside DrawerShell (needs cart state subscription)"
-  ],
-  "examples": [
-    {
-      "label": "Default \u2014 reads upsells from store config, no props needed",
-      "html": "<div data-island=\"CartCrossSell\" data-props='{}'></div>"
-    },
-    {
-      "label": "With static override (backward compat)",
-      "html": "<div data-island=\"CartCrossSell\" data-props='{\"heading\":\"Complete your routine\",\"layout\":\"horizontal\"}'></div>"
-    }
   ],
   "props": {
     "heading": {
@@ -51,6 +42,30 @@
       "type": "boolean",
       "required": false,
       "default": "true"
+    },
+    "placement": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "header",
+        "after_line",
+        "after_lines",
+        "before_checkout"
+      ],
+      "default": "after_lines"
+    },
+    "slotId": {
+      "type": "string",
+      "required": false
+    },
+    "lineId": {
+      "type": "string",
+      "required": false
+    },
+    "embedded": {
+      "type": "boolean",
+      "required": false,
+      "default": "false"
     }
   },
   "variants": [
@@ -61,6 +76,7 @@
   "css_vars": [
     "--lx-accent-color",
     "--lx-border-color",
+    "--lx-surface-alt",
     "--lx-text-color"
   ],
   "parts": [
@@ -73,5 +89,30 @@
     "item-title",
     "root"
   ],
-  "example": "<div data-island=\"CartCrossSell\" data-props='{}'></div>"
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"CartCrossSell\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Default — reads upsells from store config, no props needed",
+        "source": "<lx-island name=\"CartCrossSell\">\n  <script type=\"application/json\">{}</script>\n</lx-island>"
+      },
+      {
+        "label": "With static override (backward compat)",
+        "source": "<lx-island name=\"CartCrossSell\">\n  <script type=\"application/json\">{\"heading\":\"Complete your routine\",\"layout\":\"horizontal\"}</script>\n</lx-island>"
+      }
+    ]
+  }
 }

@@ -1,4 +1,5 @@
 {
+  "contract_version": 2,
   "name": "ReviewList",
   "category": "unknown",
   "usage_hint": "Full interactive review list with sort, filter, pagination, demographics sidebar, media thumbnails, and helpful votes. Stamped.io-style layout for DTC landing pages.",
@@ -16,20 +17,6 @@
     "Setting pageSize > 20 (too many DOM nodes; keep 5-10 for initial load)",
     "Passing reviews without id field when helpfulEndpoint is set (votes need review identity)",
     "Using variant=\"stamped\" without demographics data (sidebar renders empty; use \"minimal\" instead)"
-  ],
-  "examples": [
-    {
-      "label": "Stamped.io layout with demographics sidebar and helpful votes",
-      "html": "<div data-island=\"ReviewList\" data-props='{\"reviews\":[{\"id\":\"1\",\"author\":\"Gina S.\",\"rating\":5,\"title\":\"Life changing!\",\"body\":\"Thesis has been a part of my life throughout my doctoral program.\",\"featured\":true,\"demographics\":[{\"label\":\"Age Range\",\"value\":\"55+\"},{\"label\":\"Gender\",\"value\":\"Female\"}],\"improvements\":[\"Focus\",\"Memory\",\"Mood\"],\"helpful_count\":165,\"unhelpful_count\":28}],\"variant\":\"stamped\",\"showDemographics\":true,\"showHelpful\":true,\"averageRating\":4.6,\"totalReviews\":3243}'></div>"
-    },
-    {
-      "label": "Minimal variant - compact text reviews",
-      "html": "<div data-island=\"ReviewList\" data-props='{\"reviews\":[{\"author\":\"Sarah M.\",\"rating\":5,\"body\":\"Absolutely love this product!\",\"verified\":true},{\"author\":\"Mike R.\",\"rating\":4,\"body\":\"Great value for money.\",\"verified\":true}],\"variant\":\"minimal\",\"showSort\":true,\"pageSize\":5}'></div>"
-    },
-    {
-      "label": "Fetch mode with API endpoint",
-      "html": "<div data-island=\"ReviewList\" data-props='{\"reviewsEndpoint\":\"/api/v1/storefront/public/reviews/store123\",\"sort\":\"featured\",\"pageSize\":5,\"variant\":\"stamped\",\"showDemographics\":true,\"showHelpful\":true,\"showFilters\":true,\"showSort\":true,\"averageRating\":4.6,\"totalReviews\":3243}'></div>"
-    }
   ],
   "props": {
     "reviews": {
@@ -61,7 +48,8 @@
       "required": false,
       "values": [
         "minimal",
-        "stamped"
+        "stamped",
+        "summaryAside"
       ],
       "default": "stamped"
     },
@@ -128,24 +116,110 @@
   },
   "variants": [
     "minimal",
-    "stamped"
+    "stamped",
+    "summaryAside"
   ],
   "css_vars": [
+    "--lx-accent-color",
+    "--lx-bg-surface",
     "--lx-review-accent",
     "--lx-review-border",
     "--lx-review-border-color",
     "--lx-review-card-bg",
     "--lx-review-muted",
-    "--lx-review-text"
+    "--lx-review-text",
+    "--lx-shoppable-button-radius",
+    "--lx-shoppable-control-bg",
+    "--lx-shoppable-control-border",
+    "--lx-shoppable-control-color",
+    "--lx-shoppable-control-hover",
+    "--lx-shoppable-control-size",
+    "--lx-shoppable-progress-bg",
+    "--lx-shoppable-progress-color",
+    "--lx-shoppable-progress-height",
+    "--lx-shoppable-radius",
+    "--lx-shoppable-video-bg",
+    "--lx-shoppable-video-error-bg",
+    "--lx-text-color",
+    "--lx-video-bg",
+    "--lx-video-button-bg",
+    "--lx-video-button-color",
+    "--lx-video-button-padding-x",
+    "--lx-video-button-radius",
+    "--lx-video-control-bg",
+    "--lx-video-control-border",
+    "--lx-video-control-color",
+    "--lx-video-control-gap",
+    "--lx-video-control-hover",
+    "--lx-video-control-inset",
+    "--lx-video-control-radius",
+    "--lx-video-control-size",
+    "--lx-video-control-transition",
+    "--lx-video-error-bg",
+    "--lx-video-error-color",
+    "--lx-video-error-padding",
+    "--lx-video-focus-color",
+    "--lx-video-object-fit",
+    "--lx-video-preview-fit",
+    "--lx-video-preview-opacity",
+    "--lx-video-progress-bg",
+    "--lx-video-progress-color",
+    "--lx-video-progress-height",
+    "--lx-video-radius"
   ],
   "parts": [
+    "adaptive-video",
+    "adaptive-video-controls",
+    "adaptive-video-element",
+    "adaptive-video-error",
+    "adaptive-video-error-content",
+    "adaptive-video-error-message",
+    "adaptive-video-mute",
+    "adaptive-video-play",
+    "adaptive-video-preview",
+    "adaptive-video-preview-media",
+    "adaptive-video-progress",
+    "adaptive-video-progress-fill",
+    "adaptive-video-retry",
+    "feed",
     "filters",
     "header",
     "load-more",
     "review-list",
     "root",
     "sort",
+    "summary",
+    "summary-layout",
     "toolbar"
   ],
-  "example": "<div data-island=\"ReviewList\" data-props='{}'></div>"
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"ReviewList\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Stamped.io layout with demographics sidebar and helpful votes",
+        "source": "<lx-island name=\"ReviewList\">\n  <script type=\"application/json\">{\"reviews\":[{\"id\":\"1\",\"author\":\"Gina S.\",\"rating\":5,\"title\":\"Life changing!\",\"body\":\"Thesis has been a part of my life throughout my doctoral program.\",\"featured\":true,\"demographics\":[{\"label\":\"Age Range\",\"value\":\"55+\"},{\"label\":\"Gender\",\"value\":\"Female\"}],\"improvements\":[\"Focus\",\"Memory\",\"Mood\"],\"helpful_count\":165,\"unhelpful_count\":28}],\"variant\":\"stamped\",\"showDemographics\":true,\"showHelpful\":true,\"averageRating\":4.6,\"totalReviews\":3243}</script>\n</lx-island>"
+      },
+      {
+        "label": "Minimal variant - compact text reviews",
+        "source": "<lx-island name=\"ReviewList\">\n  <script type=\"application/json\">{\"reviews\":[{\"author\":\"Sarah M.\",\"rating\":5,\"body\":\"Absolutely love this product!\",\"verified\":true},{\"author\":\"Mike R.\",\"rating\":4,\"body\":\"Great value for money.\",\"verified\":true}],\"variant\":\"minimal\",\"showSort\":true,\"pageSize\":5}</script>\n</lx-island>"
+      },
+      {
+        "label": "Fetch mode with API endpoint",
+        "source": "<lx-island name=\"ReviewList\">\n  <script type=\"application/json\">{\"reviewsEndpoint\":\"/api/v1/storefront/public/reviews/store123\",\"sort\":\"featured\",\"pageSize\":5,\"variant\":\"stamped\",\"showDemographics\":true,\"showHelpful\":true,\"showFilters\":true,\"showSort\":true,\"averageRating\":4.6,\"totalReviews\":3243}</script>\n</lx-island>"
+      }
+    ]
+  }
 }

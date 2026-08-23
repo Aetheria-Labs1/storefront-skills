@@ -1,8 +1,9 @@
 {
+  "contract_version": 2,
   "name": "OptionResolver",
   "category": "commerce",
   "usage_hint": "Invisible resolver that listens for option:changed events and emits variant:changed with matched variant data (price, image, availability).",
-  "when_to_use": "On product pages with multiple options (size, color, etc.). Place alongside VariantSelector islands. This island has no UI \u2014 it's pure logic that coordinates option selections into a resolved variant.",
+  "when_to_use": "On product pages with multiple options (size, color, etc.). Place alongside VariantSelector islands. This island has no UI — it's pure logic that coordinates option selections into a resolved variant.",
   "when_not_to_use": "For single-variant products (no options). When BuyBox already handles variant resolution internally. Don't use multiple OptionResolvers on one page.",
   "defaultHydrate": "immediate",
   "combine_with": [
@@ -13,23 +14,9 @@
     "InventoryIndicator (all listen for variant:changed)"
   ],
   "anti_patterns": [
-    "Providing incomplete variant data (missing selectedOptions) \u2014 resolver can't match",
+    "Providing incomplete variant data (missing selectedOptions) — resolver can't match",
     "Using without VariantSelector islands to emit option:changed (nothing will trigger it)",
-    "Expecting OptionResolver to validate inventory \u2014 it only matches, use InventoryIndicator for stock checks"
-  ],
-  "examples": [
-    {
-      "label": "Basic size + color resolver",
-      "html": "<div data-island=\"OptionResolver\" data-props='{\"variants\":[{\"id\":\"v1\",\"selectedOptions\":[{\"name\":\"Size\",\"value\":\"Small\"},{\"name\":\"Color\",\"value\":\"Red\"}],\"price\":\"$29.99\",\"available\":true,\"image\":\"/red-small.jpg\"},{\"id\":\"v2\",\"selectedOptions\":[{\"name\":\"Size\",\"value\":\"Medium\"},{\"name\":\"Color\",\"value\":\"Blue\"}],\"price\":\"$29.99\",\"available\":false}],\"options\":[{\"name\":\"Size\",\"position\":1},{\"name\":\"Color\",\"position\":2}]}'></div>"
-    },
-    {
-      "label": "With default selections",
-      "html": "<div data-island=\"OptionResolver\" data-props='{\"variants\":[{\"id\":\"v10\",\"selectedOptions\":[{\"name\":\"Size\",\"value\":\"Large\"}],\"price\":\"$49.99\",\"available\":true}],\"options\":[{\"name\":\"Size\",\"position\":1}],\"defaultSelections\":{\"Size\":\"Large\"}}'></div>"
-    },
-    {
-      "label": "Complex multi-option product",
-      "html": "<div data-island=\"OptionResolver\" data-props='{\"variants\":[{\"id\":\"v20\",\"selectedOptions\":[{\"name\":\"Material\",\"value\":\"Cotton\"},{\"name\":\"Size\",\"value\":\"M\"},{\"name\":\"Color\",\"value\":\"Navy\"}],\"price\":\"$39.99\",\"compareAtPrice\":\"$59.99\",\"available\":true,\"images\":[{\"url\":\"/navy-m.jpg\"}]}],\"options\":[{\"name\":\"Material\",\"position\":1},{\"name\":\"Size\",\"position\":2},{\"name\":\"Color\",\"position\":3}]}'></div>"
-    }
+    "Expecting OptionResolver to validate inventory — it only matches, use InventoryIndicator for stock checks"
   ],
   "props": {
     "variants": {
@@ -62,5 +49,34 @@
   "variants": null,
   "css_vars": [],
   "parts": [],
-  "example": "<div data-island=\"OptionResolver\" data-props='{\"variants\":[{\"id\":\"example-id\",\"selectedOptions\":\"example-selectedOptions\",\"price\":\"example-price\",\"available\":true}],\"options\":[{\"name\":\"example-name\",\"position\":0}]}'></div>"
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"OptionResolver\">\n  <script type=\"application/json\">\n{\n  \"variants\": [\n    {\n      \"id\": \"example-id\",\n      \"selectedOptions\": \"example-selectedOptions\",\n      \"price\": \"example-price\",\n      \"available\": true\n    }\n  ],\n  \"options\": [\n    {\n      \"name\": \"example-name\",\n      \"position\": 0\n    }\n  ]\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Basic size + color resolver",
+        "source": "<lx-island name=\"OptionResolver\">\n  <script type=\"application/json\">{\"variants\":[{\"id\":\"v1\",\"selectedOptions\":[{\"name\":\"Size\",\"value\":\"Small\"},{\"name\":\"Color\",\"value\":\"Red\"}],\"price\":\"$29.99\",\"available\":true,\"image\":\"/red-small.jpg\"},{\"id\":\"v2\",\"selectedOptions\":[{\"name\":\"Size\",\"value\":\"Medium\"},{\"name\":\"Color\",\"value\":\"Blue\"}],\"price\":\"$29.99\",\"available\":false}],\"options\":[{\"name\":\"Size\",\"position\":1},{\"name\":\"Color\",\"position\":2}]}</script>\n</lx-island>"
+      },
+      {
+        "label": "With default selections",
+        "source": "<lx-island name=\"OptionResolver\">\n  <script type=\"application/json\">{\"variants\":[{\"id\":\"v10\",\"selectedOptions\":[{\"name\":\"Size\",\"value\":\"Large\"}],\"price\":\"$49.99\",\"available\":true}],\"options\":[{\"name\":\"Size\",\"position\":1}],\"defaultSelections\":{\"Size\":\"Large\"}}</script>\n</lx-island>"
+      },
+      {
+        "label": "Complex multi-option product",
+        "source": "<lx-island name=\"OptionResolver\">\n  <script type=\"application/json\">{\"variants\":[{\"id\":\"v20\",\"selectedOptions\":[{\"name\":\"Material\",\"value\":\"Cotton\"},{\"name\":\"Size\",\"value\":\"M\"},{\"name\":\"Color\",\"value\":\"Navy\"}],\"price\":\"$39.99\",\"compareAtPrice\":\"$59.99\",\"available\":true,\"images\":[{\"url\":\"/navy-m.jpg\"}]}],\"options\":[{\"name\":\"Material\",\"position\":1},{\"name\":\"Size\",\"position\":2},{\"name\":\"Color\",\"position\":3}]}</script>\n</lx-island>"
+      }
+    ]
+  }
 }

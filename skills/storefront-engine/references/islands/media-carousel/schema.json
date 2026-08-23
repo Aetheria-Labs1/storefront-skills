@@ -1,50 +1,32 @@
 {
+  "contract_version": 2,
   "name": "MediaCarousel",
   "category": "unknown",
-  "usage_hint": "Standalone media carousel for image/video cycling inside custom HTML cards or hero sections. Supports fade/slide/zoom/kenBurns transitions, autoplay, arrows, dots, and touch swipe.",
-  "when_to_use": "Use inside custom HTML product cards, hero banners, or anywhere you need image cycling as a composable primitive. Fully CSS-customizable via --lx-carousel-* properties.",
-  "when_not_to_use": "Not for full product galleries with thumbnails (use ProductGallery). Not for horizontal product scrolling (use data-behavior=\"horizontal-scroll\" or ProductCarousel).",
+  "usage_hint": "Standalone image/video carousel for custom cards, editorial modules, and hero sections. One media item renders normally; multiple items add configurable arrows, dots, autoplay, hover advance, and swipe.",
+  "when_to_use": "Use anywhere custom HTML needs the shared MediaItem[] contract without a product-specific layout.",
+  "when_not_to_use": "Not for horizontal product scrolling (use ProductCarousel or FeaturedCollectionStage). Not for thumbnail-heavy PDP galleries (use ProductGallery).",
   "defaultHydrate": "visible",
   "combine_with": [
-    "QuickAdd (for product cards)",
-    "VariantSelector (to change images on variant select)"
+    "QuickAdd",
+    "VariantSelector",
+    "GalleryLightbox"
   ],
   "anti_patterns": [
-    "Using with single image (no carousel needed, use plain <img>)",
-    "Enabling swipeable inside a horizontal-scroll container (gesture conflict)",
-    "Setting autoplay with very short interval (<2000ms) \u2014 disorienting"
-  ],
-  "examples": [
-    {
-      "label": "Basic fade carousel with dots",
-      "html": "<div data-island=\"MediaCarousel\" data-props='{\"media\":[{\"src\":\"https://via.placeholder.com/400x500\",\"alt\":\"Image 1\"},{\"src\":\"https://via.placeholder.com/400x500\",\"alt\":\"Image 2\"}],\"transition\":\"fade\",\"showDots\":true,\"aspect\":\"3:4\"}'></div>"
-    },
-    {
-      "label": "Hover-advance carousel (for product cards)",
-      "html": "<div data-island=\"MediaCarousel\" data-props='{\"media\":[{\"src\":\"https://via.placeholder.com/400\",\"alt\":\"Front\"},{\"src\":\"https://via.placeholder.com/400\",\"alt\":\"Back\"}],\"hoverAdvance\":true,\"showDots\":true,\"aspect\":\"1:1\"}'></div>"
-    },
-    {
-      "label": "Autoplay with arrows",
-      "html": "<div data-island=\"MediaCarousel\" data-props='{\"media\":[{\"src\":\"https://via.placeholder.com/800x400\",\"alt\":\"Slide 1\"},{\"src\":\"https://via.placeholder.com/800x400\",\"alt\":\"Slide 2\"},{\"src\":\"https://via.placeholder.com/800x400\",\"alt\":\"Slide 3\"}],\"autoplay\":true,\"interval\":4000,\"showArrows\":true,\"aspect\":\"16:9\"}'></div>"
-    }
+    "Passing a singular image or video prop instead of the media array",
+    "Enabling capture swipe inside another gesture surface without intentionally assigning gesture ownership"
   ],
   "props": {
     "media": {
       "type": "array",
-      "required": true,
-      "shape": {
-        "src": "string",
-        "alt": "?string",
-        "poster": "?string"
-      }
+      "required": true
     },
     "transition": {
       "type": "enum",
       "required": false,
       "values": [
         "none",
-        "fade",
         "slide",
+        "fade",
         "zoom",
         "kenBurns"
       ],
@@ -70,6 +52,20 @@
       "required": false,
       "default": "false"
     },
+    "hoverAdvanceMode": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "next",
+        "cycle"
+      ],
+      "default": "cycle"
+    },
+    "hoverInterval": {
+      "type": "number",
+      "required": false,
+      "default": "1200"
+    },
     "showArrows": {
       "type": "boolean",
       "required": false,
@@ -79,6 +75,24 @@
       "type": "boolean",
       "required": false,
       "default": "true"
+    },
+    "arrows": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "hover",
+        "never",
+        "always"
+      ]
+    },
+    "dots": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "hover",
+        "never",
+        "always"
+      ]
     },
     "aspect": {
       "type": "string",
@@ -104,6 +118,61 @@
       "required": false,
       "default": "true"
     },
+    "swipe": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "auto",
+        "capture",
+        "disabled"
+      ]
+    },
+    "videoPlaybackMode": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "hover",
+        "manual",
+        "active",
+        "always-visible"
+      ],
+      "default": "active"
+    },
+    "videoSoundMode": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "hover",
+        "muted",
+        "toggle"
+      ],
+      "default": "muted"
+    },
+    "videoControls": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "hover",
+        "never",
+        "always"
+      ],
+      "default": "never"
+    },
+    "videoPreload": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "none",
+        "auto",
+        "metadata"
+      ],
+      "default": "metadata"
+    },
+    "videoLoop": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
     "animate": {
       "type": "boolean",
       "required": false,
@@ -112,19 +181,137 @@
   },
   "variants": null,
   "css_vars": [
-    "--lx-carousel-",
-    "--lx-carousel-arrow-bg",
-    "--lx-carousel-arrow-color",
-    "--lx-carousel-dot-active",
-    "--lx-carousel-dot-color"
+    "--lx-accent-color",
+    "--lx-bg-surface",
+    "--lx-featured-media-arrow-bg",
+    "--lx-featured-media-arrow-border",
+    "--lx-featured-media-arrow-color",
+    "--lx-featured-media-arrow-inset",
+    "--lx-featured-media-arrow-radius",
+    "--lx-featured-media-arrow-shadow",
+    "--lx-featured-media-arrow-size",
+    "--lx-featured-media-dot-color",
+    "--lx-featured-media-dot-gap",
+    "--lx-featured-media-dot-size",
+    "--lx-featured-media-dots-bottom",
+    "--lx-media-carousel-arrow-bg",
+    "--lx-media-carousel-arrow-border",
+    "--lx-media-carousel-arrow-color",
+    "--lx-media-carousel-arrow-hover-bg",
+    "--lx-media-carousel-arrow-offset",
+    "--lx-media-carousel-arrow-radius",
+    "--lx-media-carousel-arrow-shadow",
+    "--lx-media-carousel-arrow-size",
+    "--lx-media-carousel-bg",
+    "--lx-media-carousel-dot-active-color",
+    "--lx-media-carousel-dot-active-scale",
+    "--lx-media-carousel-dot-color",
+    "--lx-media-carousel-dot-gap",
+    "--lx-media-carousel-dot-offset",
+    "--lx-media-carousel-dot-shadow",
+    "--lx-media-carousel-dot-size",
+    "--lx-media-carousel-duration",
+    "--lx-media-carousel-ease",
+    "--lx-media-carousel-fit",
+    "--lx-media-carousel-placeholder",
+    "--lx-media-carousel-radius",
+    "--lx-shoppable-button-radius",
+    "--lx-shoppable-control-bg",
+    "--lx-shoppable-control-border",
+    "--lx-shoppable-control-color",
+    "--lx-shoppable-control-hover",
+    "--lx-shoppable-control-size",
+    "--lx-shoppable-progress-bg",
+    "--lx-shoppable-progress-color",
+    "--lx-shoppable-progress-height",
+    "--lx-shoppable-radius",
+    "--lx-shoppable-video-bg",
+    "--lx-shoppable-video-error-bg",
+    "--lx-text-color",
+    "--lx-video-bg",
+    "--lx-video-button-bg",
+    "--lx-video-button-color",
+    "--lx-video-button-padding-x",
+    "--lx-video-button-radius",
+    "--lx-video-control-bg",
+    "--lx-video-control-border",
+    "--lx-video-control-color",
+    "--lx-video-control-gap",
+    "--lx-video-control-hover",
+    "--lx-video-control-inset",
+    "--lx-video-control-radius",
+    "--lx-video-control-size",
+    "--lx-video-control-transition",
+    "--lx-video-error-bg",
+    "--lx-video-error-color",
+    "--lx-video-error-padding",
+    "--lx-video-focus-color",
+    "--lx-video-object-fit",
+    "--lx-video-preview-fit",
+    "--lx-video-preview-opacity",
+    "--lx-video-progress-bg",
+    "--lx-video-progress-color",
+    "--lx-video-progress-height",
+    "--lx-video-radius"
   ],
   "parts": [
-    "arrow-next",
-    "arrow-prev",
+    "adaptive-video",
+    "adaptive-video-controls",
+    "adaptive-video-element",
+    "adaptive-video-error",
+    "adaptive-video-error-content",
+    "adaptive-video-error-message",
+    "adaptive-video-mute",
+    "adaptive-video-play",
+    "adaptive-video-preview",
+    "adaptive-video-preview-media",
+    "adaptive-video-progress",
+    "adaptive-video-progress-fill",
+    "adaptive-video-retry",
+    "controls",
+    "dot",
     "dots",
+    "image",
+    "image-placeholder",
+    "next",
+    "previous",
     "root",
     "scroll-container",
-    "slide"
+    "slide",
+    "track",
+    "video",
+    "video-placeholder",
+    "video-poster",
+    "viewport"
   ],
-  "example": "<div data-island=\"MediaCarousel\" data-props='{\"media\":[{\"src\":\"example-src\"}]}'></div>"
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"MediaCarousel\">\n  <script type=\"application/json\">\n{\n  \"media\": []\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Single image",
+        "source": "<lx-island name=\"MediaCarousel\">\n  <script type=\"application/json\">{\"media\":[{\"type\":\"image\",\"src\":\"https://via.placeholder.com/600\",\"alt\":\"Product front\"}],\"aspect\":\"1:1\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Mixed image and HLS video",
+        "source": "<lx-island name=\"MediaCarousel\">\n  <script type=\"application/json\">{\"media\":[{\"type\":\"image\",\"src\":\"https://via.placeholder.com/600\",\"alt\":\"Product front\"},{\"type\":\"video\",\"poster\":\"https://via.placeholder.com/600\",\"sources\":[{\"url\":\"https://example.com/product.m3u8\"}],\"alt\":\"Product demonstration\"}],\"showArrows\":true,\"showDots\":true,\"swipeable\":true}</script>\n</lx-island>"
+      },
+      {
+        "label": "Swap to the next image on hover",
+        "source": "<lx-island name=\"MediaCarousel\">\n  <script type=\"application/json\">{\"media\":[{\"type\":\"image\",\"src\":\"https://via.placeholder.com/600?text=Front\"},{\"type\":\"image\",\"src\":\"https://via.placeholder.com/600?text=Back\"}],\"hoverAdvance\":true,\"hoverAdvanceMode\":\"next\",\"arrows\":\"never\",\"dots\":\"never\"}</script>\n</lx-island>"
+      }
+    ]
+  }
 }

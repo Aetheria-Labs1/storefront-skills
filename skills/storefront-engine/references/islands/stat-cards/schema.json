@@ -1,9 +1,13 @@
 {
+  "contract_version": 2,
   "name": "StatCards",
   "category": "unknown",
+  "deprecated": true,
+  "replacement": "HTML/CSS with optional IntersectionObserver",
+  "deprecation_reason": "Generic count-up presentation has no Shopify scope and should be authored in the page section.",
   "usage_hint": "Animated stat cards that count up on scroll. Renders percentage/number statistics with configurable layout and visual style. Perfect as overlay cards on hero sections or standalone social proof rows.",
   "when_to_use": "For displaying key metrics (conversion rates, customer counts, satisfaction scores) that benefit from scroll-triggered count-up animation. Use on hero overlays, trust sections, or above-the-fold proof points.",
-  "when_not_to_use": "For static numbers that don't need animation (use plain HTML). For live/real-time data that updates continuously (use a dashboard widget). For single isolated stats (overkill \u2014 use inline text).",
+  "when_not_to_use": "For static numbers that don't need animation (use plain HTML). For live/real-time data that updates continuously (use a dashboard widget). For single isolated stats (overkill — use inline text).",
   "defaultHydrate": "visible",
   "combine_with": [
     "HeroMedia (overlay cards on hero)",
@@ -11,28 +15,10 @@
     "SocialProofPopup (complementary urgency)"
   ],
   "anti_patterns": [
-    "Too many items (>6): overwhelming and dilutes impact \u2014 pick top 3-4 metrics",
+    "Too many items (>6): overwhelming and dilutes impact — pick top 3-4 metrics",
     "Placing below fold where animation isn't seen on first load (defeats the purpose of count-up)",
     "Using with animate:false AND glass style (static glass cards look like broken UI without the reveal)",
-    "Decimal values with long suffixes (e.g. 99.87% satisfaction) \u2014 round for impact"
-  ],
-  "examples": [
-    {
-      "label": "Glass overlay on hero (3 stats)",
-      "html": "<div data-island=\"StatCards\" data-props='{\"items\":[{\"value\":98,\"suffix\":\"%\",\"label\":\"Customer Satisfaction\"},{\"value\":50,\"suffix\":\"k+\",\"label\":\"Happy Customers\"},{\"value\":4.9,\"label\":\"Average Rating\",\"sublabel\":\"Based on 12,000+ reviews\"}],\"layout\":\"horizontal\",\"style\":\"glass\"}'></div>"
-    },
-    {
-      "label": "Solid row with stagger",
-      "html": "<div data-island=\"StatCards\" data-props='{\"items\":[{\"value\":250,\"suffix\":\"+\",\"label\":\"Brands Trust Us\"},{\"value\":99.9,\"suffix\":\"%\",\"label\":\"Uptime\"},{\"value\":24,\"suffix\":\"/7\",\"label\":\"Support\"}],\"layout\":\"horizontal\",\"style\":\"solid\",\"stagger\":300}'></div>"
-    },
-    {
-      "label": "Gradient numbers inline",
-      "html": "<div data-island=\"StatCards\" data-props='{\"items\":[{\"prefix\":\"$\",\"value\":2.5,\"suffix\":\"M\",\"label\":\"Revenue Generated\"},{\"value\":150,\"suffix\":\"%\",\"label\":\"Average ROI\"}],\"layout\":\"inline\",\"style\":\"gradient\"}'></div>"
-    },
-    {
-      "label": "Headless (fully section-styled)",
-      "html": "<div data-island=\"StatCards\" data-props='{\"items\":[{\"value\":10000,\"suffix\":\"+\",\"label\":\"Products Shipped\"},{\"value\":48,\"label\":\"Hours Avg Delivery\"}],\"style\":\"headless\"}'></div>"
-    }
+    "Decimal values with long suffixes (e.g. 99.87% satisfaction) — round for impact"
   ],
   "props": {
     "items": {
@@ -116,5 +102,38 @@
     "sublabel",
     "suffix"
   ],
-  "example": "<div data-island=\"StatCards\" data-props='{\"items\":[{\"value\":0,\"label\":\"example-label\"}]}'></div>"
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"StatCards\">\n  <script type=\"application/json\">\n{\n  \"items\": [\n    {\n      \"value\": 0,\n      \"label\": \"example-label\"\n    }\n  ]\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Glass overlay on hero (3 stats)",
+        "source": "<lx-island name=\"StatCards\">\n  <script type=\"application/json\">{\"items\":[{\"value\":98,\"suffix\":\"%\",\"label\":\"Customer Satisfaction\"},{\"value\":50,\"suffix\":\"k+\",\"label\":\"Happy Customers\"},{\"value\":4.9,\"label\":\"Average Rating\",\"sublabel\":\"Based on 12,000+ reviews\"}],\"layout\":\"horizontal\",\"style\":\"glass\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Solid row with stagger",
+        "source": "<lx-island name=\"StatCards\">\n  <script type=\"application/json\">{\"items\":[{\"value\":250,\"suffix\":\"+\",\"label\":\"Brands Trust Us\"},{\"value\":99.9,\"suffix\":\"%\",\"label\":\"Uptime\"},{\"value\":24,\"suffix\":\"/7\",\"label\":\"Support\"}],\"layout\":\"horizontal\",\"style\":\"solid\",\"stagger\":300}</script>\n</lx-island>"
+      },
+      {
+        "label": "Gradient numbers inline",
+        "source": "<lx-island name=\"StatCards\">\n  <script type=\"application/json\">{\"items\":[{\"prefix\":\"$\",\"value\":2.5,\"suffix\":\"M\",\"label\":\"Revenue Generated\"},{\"value\":150,\"suffix\":\"%\",\"label\":\"Average ROI\"}],\"layout\":\"inline\",\"style\":\"gradient\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Headless (fully section-styled)",
+        "source": "<lx-island name=\"StatCards\">\n  <script type=\"application/json\">{\"items\":[{\"value\":10000,\"suffix\":\"+\",\"label\":\"Products Shipped\"},{\"value\":48,\"label\":\"Hours Avg Delivery\"}],\"style\":\"headless\"}</script>\n</lx-island>"
+      }
+    ]
+  }
 }

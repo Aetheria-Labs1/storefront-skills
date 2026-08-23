@@ -1,0 +1,549 @@
+{
+  "contract_version": 2,
+  "name": "ShoppableVideoFeed",
+  "category": "commerce",
+  "usage_hint": "Shoppable short-form video sequence with reel, rail, and poster-grid presentations.",
+  "when_to_use": "Use for UGC, creator demonstrations, testimonials, and product videos with tagged Shopify products.",
+  "when_not_to_use": "Use VideoPlayer for one non-shoppable video and ProductGallery for product-media thumbnails.",
+  "defaultHydrate": "immediate",
+  "combine_with": [
+    "DrawerShell",
+    "CartLines",
+    "CartSummary",
+    "CartCheckoutButton"
+  ],
+  "anti_patterns": [
+    "Omitting poster images, which creates blank loading surfaces and layout instability",
+    "Constructing Cloudflare playback URLs in the browser instead of supplying explicit public source URLs",
+    "Enabling unmuted autoplay, which browsers block and shoppers do not expect"
+  ],
+  "props": {
+    "items": {
+      "type": "array",
+      "required": true,
+      "shape": {
+        "id": "string",
+        "media": "?{assetId: ?string, provider: ?'cloudflare_stream' | 'cloudflare_cdn' | 'external', sources: array<{url: object, type: object, width: ?object, height: ?object, bitrate: ?object}>, poster: string, preview: ?{url: object, type: object, poster: ?object}, captionsUrl: ?string}",
+        "src": "?string",
+        "poster": "?string",
+        "captionsSrc": "?string",
+        "alt": "string",
+        "title": "?string",
+        "caption": "?string",
+        "badge": "?string",
+        "creator": "?{name: string, handle: ?string, avatar: ?string, verified: ?boolean}",
+        "metrics": "?{views: ?number, likes: ?number, comments: ?number}",
+        "testimonial": "?{author: string, productLabel: ?string, rating: ?number, verified: ?boolean}",
+        "products": "array<{productId: string, variantId: ?string, label: ?string, ctaLabel: ?string, title: ?string, price: ?string, compareAtPrice: ?string, image: ?string, available: ?boolean, productUrl: ?string, variants: ?array<{id: object, title: object, price: object, available: object}>}>"
+      }
+    },
+    "variant": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "grid",
+        "rail",
+        "reel"
+      ]
+    },
+    "reelMode": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "paged",
+        "vertical-scroll"
+      ]
+    },
+    "railPresentation": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "standard",
+        "coverflow"
+      ]
+    },
+    "viewerMode": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "inline",
+        "fullscreen"
+      ]
+    },
+    "aspectRatio": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "9:16",
+        "4:5",
+        "1:1"
+      ]
+    },
+    "actionMode": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "add_to_cart",
+        "buy_now",
+        "view_product"
+      ]
+    },
+    "productPresentation": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "card",
+        "auto",
+        "button",
+        "hidden",
+        "chip"
+      ]
+    },
+    "openCartOnAdd": {
+      "type": "boolean",
+      "required": false
+    },
+    "showProductImage": {
+      "type": "boolean",
+      "required": false
+    },
+    "showProductPrice": {
+      "type": "boolean",
+      "required": false
+    },
+    "playbackMode": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "hover",
+        "manual",
+        "active",
+        "always-visible"
+      ]
+    },
+    "soundMode": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "hover",
+        "muted",
+        "toggle"
+      ]
+    },
+    "controlsVisibility": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "hover",
+        "never",
+        "always"
+      ]
+    },
+    "navigationMode": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "none",
+        "swipe",
+        "buttons",
+        "both"
+      ]
+    },
+    "mobileNavigationMode": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "none",
+        "swipe",
+        "buttons",
+        "both"
+      ]
+    },
+    "navigationPlacement": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "below",
+        "overlay"
+      ]
+    },
+    "autoAdvance": {
+      "type": "boolean",
+      "required": false
+    },
+    "autoAdvanceIntervalMs": {
+      "type": "number",
+      "required": false
+    },
+    "pauseAutoAdvanceOnHover": {
+      "type": "boolean",
+      "required": false
+    },
+    "pauseAutoAdvanceOnFocus": {
+      "type": "boolean",
+      "required": false
+    },
+    "resumeAutoAdvanceAfterMs": {
+      "type": "number",
+      "required": false
+    },
+    "previewMode": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "hover",
+        "always",
+        "poster"
+      ]
+    },
+    "loop": {
+      "type": "boolean",
+      "required": false
+    },
+    "showProgress": {
+      "type": "boolean",
+      "required": false
+    },
+    "pauseWhenHidden": {
+      "type": "boolean",
+      "required": false
+    },
+    "preload": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "none",
+        "auto",
+        "metadata"
+      ]
+    },
+    "preloadAdjacent": {
+      "type": "boolean",
+      "required": false
+    },
+    "heading": {
+      "type": "string",
+      "required": false
+    },
+    "showCreator": {
+      "type": "boolean",
+      "required": false
+    },
+    "showCaption": {
+      "type": "boolean",
+      "required": false
+    },
+    "showMetrics": {
+      "type": "boolean",
+      "required": false
+    },
+    "showBadge": {
+      "type": "boolean",
+      "required": false
+    },
+    "showTestimonial": {
+      "type": "boolean",
+      "required": false
+    },
+    "initialIndex": {
+      "type": "number",
+      "required": false
+    },
+    "showCounter": {
+      "type": "boolean",
+      "required": false
+    },
+    "columns": {
+      "type": "number",
+      "required": false
+    },
+    "maxVisibleItems": {
+      "type": "number",
+      "required": false
+    },
+    "autoplay": {
+      "type": "boolean",
+      "required": false
+    },
+    "muted": {
+      "type": "boolean",
+      "required": false
+    },
+    "showControls": {
+      "type": "boolean",
+      "required": false
+    },
+    "showNavigation": {
+      "type": "boolean",
+      "required": false
+    }
+  },
+  "variants": [
+    "grid",
+    "rail",
+    "reel"
+  ],
+  "css_vars": [
+    "--lx-accent-color",
+    "--lx-accent-color-hover",
+    "--lx-bg-surface",
+    "--lx-shoppable-action-color",
+    "--lx-shoppable-avatar-radius",
+    "--lx-shoppable-avatar-size",
+    "--lx-shoppable-badge-bg",
+    "--lx-shoppable-badge-border",
+    "--lx-shoppable-badge-color",
+    "--lx-shoppable-badge-inset",
+    "--lx-shoppable-badge-padding-x",
+    "--lx-shoppable-badge-padding-y",
+    "--lx-shoppable-badge-radius",
+    "--lx-shoppable-badge-size",
+    "--lx-shoppable-badge-weight",
+    "--lx-shoppable-button-bg",
+    "--lx-shoppable-button-height",
+    "--lx-shoppable-button-hover",
+    "--lx-shoppable-button-padding-x",
+    "--lx-shoppable-button-radius",
+    "--lx-shoppable-button-size",
+    "--lx-shoppable-button-weight",
+    "--lx-shoppable-caption-color",
+    "--lx-shoppable-caption-leading",
+    "--lx-shoppable-caption-lines",
+    "--lx-shoppable-caption-size",
+    "--lx-shoppable-card-width-desktop",
+    "--lx-shoppable-card-width-mobile",
+    "--lx-shoppable-card-width-tablet",
+    "--lx-shoppable-control-bg",
+    "--lx-shoppable-control-border",
+    "--lx-shoppable-control-color",
+    "--lx-shoppable-control-hover",
+    "--lx-shoppable-control-size",
+    "--lx-shoppable-coverflow-brightness",
+    "--lx-shoppable-coverflow-card-width-desktop",
+    "--lx-shoppable-coverflow-card-width-mobile",
+    "--lx-shoppable-coverflow-duration",
+    "--lx-shoppable-coverflow-easing",
+    "--lx-shoppable-coverflow-edge-padding",
+    "--lx-shoppable-coverflow-edge-padding-desktop",
+    "--lx-shoppable-coverflow-inactive-brightness",
+    "--lx-shoppable-coverflow-live-brightness",
+    "--lx-shoppable-coverflow-live-duration",
+    "--lx-shoppable-coverflow-live-scale",
+    "--lx-shoppable-coverflow-opacity",
+    "--lx-shoppable-coverflow-overlap-desktop",
+    "--lx-shoppable-coverflow-overlap-mobile",
+    "--lx-shoppable-coverflow-scale",
+    "--lx-shoppable-coverflow-scale-active",
+    "--lx-shoppable-coverflow-scale-far",
+    "--lx-shoppable-coverflow-scale-mid",
+    "--lx-shoppable-coverflow-scale-near",
+    "--lx-shoppable-coverflow-stage-padding-y",
+    "--lx-shoppable-coverflow-track-padding-y",
+    "--lx-shoppable-creator-color",
+    "--lx-shoppable-creator-gap",
+    "--lx-shoppable-creator-item-gap",
+    "--lx-shoppable-creator-size",
+    "--lx-shoppable-creator-weight",
+    "--lx-shoppable-disabled-bg",
+    "--lx-shoppable-error-color",
+    "--lx-shoppable-focus-color",
+    "--lx-shoppable-gap",
+    "--lx-shoppable-grid-gap",
+    "--lx-shoppable-heading-gap",
+    "--lx-shoppable-heading-size",
+    "--lx-shoppable-image-bg",
+    "--lx-shoppable-metric-label-size",
+    "--lx-shoppable-metric-value-size",
+    "--lx-shoppable-metrics-color",
+    "--lx-shoppable-metrics-gap",
+    "--lx-shoppable-metrics-inset",
+    "--lx-shoppable-muted-color",
+    "--lx-shoppable-navigation-gap",
+    "--lx-shoppable-navigation-inset",
+    "--lx-shoppable-overlay-color",
+    "--lx-shoppable-overlay-gap",
+    "--lx-shoppable-overlay-padding",
+    "--lx-shoppable-overlay-padding-desktop",
+    "--lx-shoppable-product-bg",
+    "--lx-shoppable-product-border",
+    "--lx-shoppable-product-color",
+    "--lx-shoppable-product-gap",
+    "--lx-shoppable-product-image-radius",
+    "--lx-shoppable-product-padding",
+    "--lx-shoppable-product-radius",
+    "--lx-shoppable-progress-bg",
+    "--lx-shoppable-progress-color",
+    "--lx-shoppable-progress-height",
+    "--lx-shoppable-radius",
+    "--lx-shoppable-rail-bottom-space",
+    "--lx-shoppable-rail-gap",
+    "--lx-shoppable-rail-scroll-padding",
+    "--lx-shoppable-reel-max-width",
+    "--lx-shoppable-scrim-soft",
+    "--lx-shoppable-scrim-stop",
+    "--lx-shoppable-scrim-strong",
+    "--lx-shoppable-testimonial-author-color",
+    "--lx-shoppable-testimonial-author-gap",
+    "--lx-shoppable-testimonial-author-size",
+    "--lx-shoppable-testimonial-author-weight",
+    "--lx-shoppable-testimonial-gap",
+    "--lx-shoppable-testimonial-product-color",
+    "--lx-shoppable-testimonial-product-size",
+    "--lx-shoppable-testimonial-star-color",
+    "--lx-shoppable-testimonial-star-gap",
+    "--lx-shoppable-testimonial-star-size",
+    "--lx-shoppable-testimonial-verified-bg",
+    "--lx-shoppable-testimonial-verified-color",
+    "--lx-shoppable-testimonial-verified-icon-size",
+    "--lx-shoppable-testimonial-verified-size",
+    "--lx-shoppable-tray-bg",
+    "--lx-shoppable-tray-max-height",
+    "--lx-shoppable-tray-padding",
+    "--lx-shoppable-video-bg",
+    "--lx-shoppable-video-error-bg",
+    "--lx-shoppable-viewer-backdrop",
+    "--lx-shoppable-viewer-max-width",
+    "--lx-text-color",
+    "--lx-video-bg",
+    "--lx-video-button-bg",
+    "--lx-video-button-color",
+    "--lx-video-button-padding-x",
+    "--lx-video-button-radius",
+    "--lx-video-control-bg",
+    "--lx-video-control-border",
+    "--lx-video-control-color",
+    "--lx-video-control-gap",
+    "--lx-video-control-hover",
+    "--lx-video-control-inset",
+    "--lx-video-control-radius",
+    "--lx-video-control-size",
+    "--lx-video-control-transition",
+    "--lx-video-error-bg",
+    "--lx-video-error-color",
+    "--lx-video-error-padding",
+    "--lx-video-focus-color",
+    "--lx-video-object-fit",
+    "--lx-video-preview-fit",
+    "--lx-video-preview-opacity",
+    "--lx-video-progress-bg",
+    "--lx-video-progress-color",
+    "--lx-video-progress-height",
+    "--lx-video-radius"
+  ],
+  "parts": [
+    "adaptive-video",
+    "adaptive-video-controls",
+    "adaptive-video-element",
+    "adaptive-video-error",
+    "adaptive-video-error-content",
+    "adaptive-video-error-message",
+    "adaptive-video-mute",
+    "adaptive-video-play",
+    "adaptive-video-preview",
+    "adaptive-video-preview-media",
+    "adaptive-video-progress",
+    "adaptive-video-progress-fill",
+    "adaptive-video-retry",
+    "badge",
+    "caption",
+    "counter",
+    "creator",
+    "creator-avatar",
+    "creator-name",
+    "creator-verified",
+    "grid",
+    "grid-item",
+    "grid-label",
+    "grid-play",
+    "grid-scrim",
+    "heading",
+    "metric",
+    "metric-label",
+    "metric-value",
+    "metrics",
+    "nav-next",
+    "nav-previous",
+    "navigation",
+    "overlay-content",
+    "product",
+    "product-action",
+    "product-action-wrap",
+    "product-button",
+    "product-compare-price",
+    "product-copy",
+    "product-error",
+    "product-image",
+    "product-image-wrap",
+    "product-list",
+    "product-price",
+    "product-title",
+    "product-tray",
+    "product-tray-close",
+    "product-tray-header",
+    "product-tray-heading",
+    "rail",
+    "rail-item",
+    "rail-item-stage",
+    "rail-shell",
+    "reel",
+    "reel-stage",
+    "root",
+    "shop-products",
+    "shoppable-video",
+    "shoppable-video-scrim",
+    "testimonial",
+    "testimonial-author",
+    "testimonial-author-row",
+    "testimonial-product",
+    "testimonial-rating",
+    "testimonial-star",
+    "testimonial-verified",
+    "variant-select",
+    "vertical-reel",
+    "vertical-reel-item",
+    "video",
+    "video-copy",
+    "viewer",
+    "viewer-backdrop",
+    "viewer-close",
+    "viewer-stage"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"ShoppableVideoFeed\">\n  <script type=\"application/json\">\n{\n  \"items\": [\n    {\n      \"id\": \"example-id\",\n      \"alt\": \"example-alt\",\n      \"products\": \"example-products\"\n    }\n  ]\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Active reel",
+        "source": "<lx-island name=\"ShoppableVideoFeed\">\n  <script type=\"application/json\">{\"variant\":\"reel\",\"playbackMode\":\"active\",\"items\":[{\"id\":\"demo-1\",\"media\":{\"provider\":\"cloudflare_cdn\",\"poster\":\"https://cdn.example.com/demo.jpg\",\"sources\":[{\"url\":\"https://cdn.example.com/demo.mp4\",\"type\":\"video/mp4\"}]},\"alt\":\"Creator demonstrates the serum\",\"products\":[{\"productId\":\"gid://shopify/Product/1\"}]}]}</script>\n</lx-island>"
+      },
+      {
+        "label": "Vertical swipe reel",
+        "source": "<lx-island name=\"ShoppableVideoFeed\">\n  <script type=\"application/json\">{\"variant\":\"reel\",\"reelMode\":\"vertical-scroll\",\"playbackMode\":\"active\",\"soundMode\":\"toggle\",\"controlsVisibility\":\"always\",\"navigationMode\":\"none\",\"mobileNavigationMode\":\"none\",\"items\":[{\"id\":\"demo-1\",\"src\":\"https://cdn.example.com/demo.mp4\",\"poster\":\"https://cdn.example.com/demo.jpg\",\"alt\":\"Creator demonstrates the product\",\"products\":[{\"productId\":\"gid://shopify/Product/1\"}]}]}</script>\n</lx-island>"
+      },
+      {
+        "label": "Auto rail without controls",
+        "source": "<lx-island name=\"ShoppableVideoFeed\">\n  <script type=\"application/json\">{\"variant\":\"rail\",\"controlsVisibility\":\"never\",\"navigationMode\":\"none\",\"mobileNavigationMode\":\"swipe\",\"autoAdvance\":true,\"items\":[{\"id\":\"demo-1\",\"src\":\"https://cdn.example.com/demo.mp4\",\"poster\":\"https://cdn.example.com/demo.jpg\",\"alt\":\"Customer demonstrates the product\",\"products\":[{\"productId\":\"gid://shopify/Product/1\"}]}]}</script>\n</lx-island>"
+      },
+      {
+        "label": "Testimonial coverflow",
+        "source": "<lx-island name=\"ShoppableVideoFeed\">\n  <script type=\"application/json\">{\"variant\":\"rail\",\"railPresentation\":\"coverflow\",\"aspectRatio\":\"4:5\",\"productPresentation\":\"hidden\",\"playbackMode\":\"active\",\"navigationMode\":\"buttons\",\"mobileNavigationMode\":\"swipe\",\"items\":[{\"id\":\"review-1\",\"src\":\"https://cdn.example.com/review.mp4\",\"poster\":\"https://cdn.example.com/review.jpg\",\"alt\":\"Customer reviews the product\",\"testimonial\":{\"author\":\"Maya F.\",\"productLabel\":\"Blue Velvet Blazer\",\"rating\":5,\"verified\":true},\"products\":[]}]}</script>\n</lx-island>"
+      },
+      {
+        "label": "Animated preview grid",
+        "source": "<lx-island name=\"ShoppableVideoFeed\">\n  <script type=\"application/json\">{\"variant\":\"grid\",\"previewMode\":\"hover\",\"items\":[{\"id\":\"demo-1\",\"media\":{\"poster\":\"https://cdn.example.com/demo.jpg\",\"preview\":{\"url\":\"https://cdn.example.com/demo.webp\",\"type\":\"image/webp\"},\"sources\":[{\"url\":\"https://cdn.example.com/demo.m3u8\",\"type\":\"application/x-mpegURL\"},{\"url\":\"https://cdn.example.com/demo.mp4\",\"type\":\"video/mp4\"}]},\"alt\":\"Creator demonstrates the product\",\"products\":[{\"productId\":\"gid://shopify/Product/1\"}]}]}</script>\n</lx-island>"
+      }
+    ]
+  }
+}

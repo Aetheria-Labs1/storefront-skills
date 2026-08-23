@@ -1,4 +1,5 @@
 {
+  "contract_version": 2,
   "name": "ReviewCarousel",
   "category": "social_proof",
   "usage_hint": "Rotating customer review showcase with star ratings, typically placed below product info or before FAQ on PDPs. Supports static reviews array or runtime fetch from our reviews API.",
@@ -14,27 +15,9 @@
   "anti_patterns": [
     "Passing more than 12 reviews in static mode (carousel becomes too long; pre-filter to top reviews by rating/helpfulness)",
     "Using minimal variant with long review bodies (text doesn't truncate well; use grid or default instead)",
-    "Setting interval below 3000ms (users can't read reviews; keep it \u22654000ms)",
+    "Setting interval below 3000ms (users can't read reviews; keep it ≥4000ms)",
     "Mixing verified and unverified reviews without the verified flag (damages trust; always mark verified purchases)",
     "Using both reviews[] and reviewsEndpoint (reviews[] takes priority; pick one mode)"
-  ],
-  "examples": [
-    {
-      "label": "Default carousel with 4 reviews (autoplay, 5s interval)",
-      "html": "<div data-island=\"ReviewCarousel\" data-props='{\"reviews\":[{\"author\":\"Sarah M.\",\"rating\":5,\"body\":\"Absolutely love this product! Quality exceeded my expectations and shipping was super fast.\",\"date\":\"2 weeks ago\",\"verified\":true},{\"author\":\"Mike R.\",\"rating\":4,\"body\":\"Great value for money. Minor issue with packaging but product itself is perfect.\",\"date\":\"1 month ago\",\"verified\":true},{\"author\":\"Emma L.\",\"rating\":5,\"body\":\"This is my third purchase. Consistent quality every time. Highly recommend!\",\"date\":\"3 days ago\",\"verified\":true,\"avatar\":\"/avatars/emma.jpg\"},{\"author\":\"David K.\",\"rating\":5,\"body\":\"Best decision I made this year. Customer service was also incredibly helpful.\",\"date\":\"1 week ago\",\"verified\":true}],\"autoplay\":true,\"interval\":5000,\"variant\":\"default\"}'></div>"
-    },
-    {
-      "label": "Fetch mode \u2014 reviews from API endpoint filtered by product",
-      "html": "<div data-island=\"ReviewCarousel\" data-props='{\"reviewsEndpoint\":\"/api/v1/storefront/public/reviews/abc12345\",\"productIds\":[\"gid://shopify/Product/8234567890\"],\"sort\":\"most_helpful\",\"minRating\":4,\"variant\":\"grid\"}'></div>"
-    },
-    {
-      "label": "Grid layout showing all reviews at once (no autoplay)",
-      "html": "<div data-island=\"ReviewCarousel\" data-props='{\"reviews\":[{\"author\":\"Sarah M.\",\"rating\":5,\"body\":\"Absolutely love this product! Quality exceeded my expectations and shipping was super fast.\",\"verified\":true},{\"author\":\"Mike R.\",\"rating\":4,\"body\":\"Great value for money. Minor issue with packaging but product itself is perfect.\",\"verified\":true},{\"author\":\"Emma L.\",\"rating\":5,\"body\":\"This is my third purchase. Consistent quality every time.\",\"verified\":true}],\"variant\":\"grid\"}'></div>"
-    },
-    {
-      "label": "Compact horizontal strip for header/footer",
-      "html": "<div data-island=\"ReviewCarousel\" data-props='{\"reviews\":[{\"author\":\"Sarah M.\",\"rating\":5,\"body\":\"Love it!\"},{\"author\":\"Mike R.\",\"rating\":4,\"body\":\"Great quality\"},{\"author\":\"Emma L.\",\"rating\":5,\"body\":\"Highly recommend\"},{\"author\":\"David K.\",\"rating\":5,\"body\":\"Perfect product\"}],\"variant\":\"compact\"}'></div>"
-    }
   ],
   "props": {
     "reviews": {
@@ -92,8 +75,8 @@
       "values": [
         "default",
         "compact",
-        "grid",
-        "minimal"
+        "minimal",
+        "grid"
       ],
       "default": "default"
     }
@@ -101,8 +84,8 @@
   "variants": [
     "default",
     "compact",
-    "grid",
-    "minimal"
+    "minimal",
+    "grid"
   ],
   "css_vars": [
     "--lx-accent-color",
@@ -122,5 +105,38 @@
     "root",
     "verified"
   ],
-  "example": "<div data-island=\"ReviewCarousel\" data-props='{}'></div>"
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"ReviewCarousel\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Default carousel with 4 reviews (autoplay, 5s interval)",
+        "source": "<lx-island name=\"ReviewCarousel\">\n  <script type=\"application/json\">{\"reviews\":[{\"author\":\"Sarah M.\",\"rating\":5,\"body\":\"Absolutely love this product! Quality exceeded my expectations and shipping was super fast.\",\"date\":\"2 weeks ago\",\"verified\":true},{\"author\":\"Mike R.\",\"rating\":4,\"body\":\"Great value for money. Minor issue with packaging but product itself is perfect.\",\"date\":\"1 month ago\",\"verified\":true},{\"author\":\"Emma L.\",\"rating\":5,\"body\":\"This is my third purchase. Consistent quality every time. Highly recommend!\",\"date\":\"3 days ago\",\"verified\":true,\"avatar\":\"/avatars/emma.jpg\"},{\"author\":\"David K.\",\"rating\":5,\"body\":\"Best decision I made this year. Customer service was also incredibly helpful.\",\"date\":\"1 week ago\",\"verified\":true}],\"autoplay\":true,\"interval\":5000,\"variant\":\"default\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Fetch mode — reviews from API endpoint filtered by product",
+        "source": "<lx-island name=\"ReviewCarousel\">\n  <script type=\"application/json\">{\"reviewsEndpoint\":\"/api/v1/storefront/public/reviews/abc12345\",\"productIds\":[\"gid://shopify/Product/8234567890\"],\"sort\":\"most_helpful\",\"minRating\":4,\"variant\":\"grid\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Grid layout showing all reviews at once (no autoplay)",
+        "source": "<lx-island name=\"ReviewCarousel\">\n  <script type=\"application/json\">{\"reviews\":[{\"author\":\"Sarah M.\",\"rating\":5,\"body\":\"Absolutely love this product! Quality exceeded my expectations and shipping was super fast.\",\"verified\":true},{\"author\":\"Mike R.\",\"rating\":4,\"body\":\"Great value for money. Minor issue with packaging but product itself is perfect.\",\"verified\":true},{\"author\":\"Emma L.\",\"rating\":5,\"body\":\"This is my third purchase. Consistent quality every time.\",\"verified\":true}],\"variant\":\"grid\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Compact horizontal strip for header/footer",
+        "source": "<lx-island name=\"ReviewCarousel\">\n  <script type=\"application/json\">{\"reviews\":[{\"author\":\"Sarah M.\",\"rating\":5,\"body\":\"Love it!\"},{\"author\":\"Mike R.\",\"rating\":4,\"body\":\"Great quality\"},{\"author\":\"Emma L.\",\"rating\":5,\"body\":\"Highly recommend\"},{\"author\":\"David K.\",\"rating\":5,\"body\":\"Perfect product\"}],\"variant\":\"compact\"}</script>\n</lx-island>"
+      }
+    ]
+  }
 }

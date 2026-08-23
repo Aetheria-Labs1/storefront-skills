@@ -1,23 +1,22 @@
 {
+  "contract_version": 2,
   "name": "DrawerShell",
   "category": "commerce",
-  "usage_hint": "Multi-mode container island that lazily hydrates child islands on open. Used as the cart profile shell or any deferred-content drawer/modal/sheet.",
-  "when_to_use": "Wrap CartLines, CartSummary, CartCheckoutButton, CartProgressBar, CartDiscountInput inside DrawerShell for lazy-loaded cart UI. Also usable for any deferred sidebar, bottom sheet, or modal pattern.",
-  "when_not_to_use": "Do not use for always-visible content. Not a replacement for inline sections. If content must be visible on page load, use regular islands.",
+  "usage_hint": "Multi-mode container island that lazily hydrates child islands on first open and keeps them mounted across subsequent opens.",
+  "when_to_use": "Wrap CartLines, CartSummary, CartCheckoutButton, CartProgressBar, and CartCrossSell inside DrawerShell for a composable cart.",
+  "when_not_to_use": "Do not use for always-visible content or nest one DrawerShell inside another.",
   "defaultHydrate": "immediate",
   "combine_with": [
     "CartLines",
     "CartSummary",
     "CartCheckoutButton",
     "CartProgressBar",
-    "CartDiscountInput"
+    "CartCrossSell"
   ],
   "anti_patterns": [
-    "Nesting DrawerShell inside another DrawerShell (recursive containers not supported)",
-    "Omitting data-island-container attribute (children would hydrate immediately, defeating lazy loading)",
-    "Using without any child islands (empty shell serves no purpose)"
+    "Omitting data-island-container (children hydrate eagerly instead of on first open)",
+    "Nesting DrawerShell instances (focus, scroll locking, and overlays conflict)"
   ],
-  "examples": [],
   "props": {
     "mode": {
       "type": "enum",
@@ -44,6 +43,11 @@
       "type": "string",
       "required": false,
       "default": "cart:open"
+    },
+    "title": {
+      "type": "string",
+      "required": false,
+      "default": "Shopping cart"
     },
     "width": {
       "type": "string",
@@ -83,9 +87,38 @@
   },
   "variants": null,
   "css_vars": [
+    "--lx-bg-color",
     "--lx-border-color",
-    "--lx-text-color"
+    "--lx-surface-alt",
+    "--lx-text-color",
+    "--lx-text-muted"
   ],
-  "parts": [],
-  "example": "<div data-island=\"DrawerShell\" data-props='{}'></div>"
+  "parts": [
+    "close",
+    "content",
+    "drag-handle",
+    "header",
+    "header-count",
+    "header-title",
+    "overlay",
+    "panel",
+    "portal"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"DrawerShell\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
+    "examples": []
+  }
 }

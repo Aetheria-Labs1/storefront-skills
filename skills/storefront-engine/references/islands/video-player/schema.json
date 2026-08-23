@@ -1,4 +1,5 @@
 {
+  "contract_version": 2,
   "name": "VideoPlayer",
   "category": "content",
   "usage_hint": "Responsive video player with controls, autoplay, loop. Supports direct video files and YouTube/Vimeo embeds.",
@@ -12,27 +13,25 @@
   ],
   "anti_patterns": [
     "Autoplaying unmuted video (violates accessibility and most browsers block it)",
-    "Using large uncompressed video files (>5MB \u2014 slows page load)",
+    "Using large uncompressed video files (>5MB — slows page load)",
     "Not providing poster image (shows blank frame until video loads)"
-  ],
-  "examples": [
-    {
-      "label": "Direct video with poster",
-      "html": "<div data-island=\"VideoPlayer\" data-props='{\"src\":\"/videos/product-demo.mp4\",\"poster\":\"/images/video-poster.jpg\",\"autoplay\":false,\"muted\":false,\"loop\":false,\"aspectRatio\":\"16/9\"}'></div>"
-    },
-    {
-      "label": "YouTube embed with autoplay",
-      "html": "<div data-island=\"VideoPlayer\" data-props='{\"src\":\"https://www.youtube.com/watch?v=dQw4w9WgXcQ\",\"poster\":\"/images/yt-thumb.jpg\",\"autoplay\":true,\"aspectRatio\":\"16/9\"}'></div>"
-    },
-    {
-      "label": "Vimeo embed looping",
-      "html": "<div data-island=\"VideoPlayer\" data-props='{\"src\":\"https://vimeo.com/123456789\",\"autoplay\":true,\"muted\":true,\"loop\":true,\"aspectRatio\":\"16/9\"}'></div>"
-    }
   ],
   "props": {
     "src": {
       "type": "string",
-      "required": true
+      "required": false
+    },
+    "media": {
+      "type": "object",
+      "required": false,
+      "shape": {
+        "assetId": "?string",
+        "provider": "?'cloudflare_stream' | 'cloudflare_cdn' | 'external'",
+        "sources": "array<{url: string, type: 'application/x-mpegURL' | 'application/vnd.apple.mpegurl' | 'application/dash+xml' | 'video/mp4' | 'video/webm' | 'video/ogg', width: ?number, height: ?number, bitrate: ?number}>",
+        "poster": "string",
+        "preview": "?{url: string, type: 'video/mp4' | 'image/gif' | 'image/webp', poster: ?string}",
+        "captionsUrl": "?string"
+      }
     },
     "poster": {
       "type": "string",
@@ -60,18 +59,137 @@
   },
   "variants": null,
   "css_vars": [
-    "--lx-accent-color"
+    "--lx-accent-color",
+    "--lx-bg-surface",
+    "--lx-featured-media-arrow-bg",
+    "--lx-featured-media-arrow-border",
+    "--lx-featured-media-arrow-color",
+    "--lx-featured-media-arrow-inset",
+    "--lx-featured-media-arrow-radius",
+    "--lx-featured-media-arrow-shadow",
+    "--lx-featured-media-arrow-size",
+    "--lx-featured-media-dot-color",
+    "--lx-featured-media-dot-gap",
+    "--lx-featured-media-dot-size",
+    "--lx-featured-media-dots-bottom",
+    "--lx-media-carousel-arrow-bg",
+    "--lx-media-carousel-arrow-border",
+    "--lx-media-carousel-arrow-color",
+    "--lx-media-carousel-arrow-hover-bg",
+    "--lx-media-carousel-arrow-offset",
+    "--lx-media-carousel-arrow-radius",
+    "--lx-media-carousel-arrow-shadow",
+    "--lx-media-carousel-arrow-size",
+    "--lx-media-carousel-bg",
+    "--lx-media-carousel-dot-active-color",
+    "--lx-media-carousel-dot-active-scale",
+    "--lx-media-carousel-dot-color",
+    "--lx-media-carousel-dot-gap",
+    "--lx-media-carousel-dot-offset",
+    "--lx-media-carousel-dot-shadow",
+    "--lx-media-carousel-dot-size",
+    "--lx-media-carousel-duration",
+    "--lx-media-carousel-ease",
+    "--lx-media-carousel-fit",
+    "--lx-media-carousel-placeholder",
+    "--lx-media-carousel-radius",
+    "--lx-shoppable-button-radius",
+    "--lx-shoppable-control-bg",
+    "--lx-shoppable-control-border",
+    "--lx-shoppable-control-color",
+    "--lx-shoppable-control-hover",
+    "--lx-shoppable-control-size",
+    "--lx-shoppable-progress-bg",
+    "--lx-shoppable-progress-color",
+    "--lx-shoppable-progress-height",
+    "--lx-shoppable-radius",
+    "--lx-shoppable-video-bg",
+    "--lx-shoppable-video-error-bg",
+    "--lx-text-color",
+    "--lx-video-bg",
+    "--lx-video-button-bg",
+    "--lx-video-button-color",
+    "--lx-video-button-padding-x",
+    "--lx-video-button-radius",
+    "--lx-video-control-bg",
+    "--lx-video-control-border",
+    "--lx-video-control-color",
+    "--lx-video-control-gap",
+    "--lx-video-control-hover",
+    "--lx-video-control-inset",
+    "--lx-video-control-radius",
+    "--lx-video-control-size",
+    "--lx-video-control-transition",
+    "--lx-video-error-bg",
+    "--lx-video-error-color",
+    "--lx-video-error-padding",
+    "--lx-video-focus-color",
+    "--lx-video-object-fit",
+    "--lx-video-preview-fit",
+    "--lx-video-preview-opacity",
+    "--lx-video-progress-bg",
+    "--lx-video-progress-color",
+    "--lx-video-progress-height",
+    "--lx-video-radius"
   ],
   "parts": [
-    "control-mute",
-    "control-play",
+    "adaptive-video",
+    "adaptive-video-controls",
+    "adaptive-video-element",
+    "adaptive-video-error",
+    "adaptive-video-error-content",
+    "adaptive-video-error-message",
+    "adaptive-video-mute",
+    "adaptive-video-play",
+    "adaptive-video-preview",
+    "adaptive-video-preview-media",
+    "adaptive-video-progress",
+    "adaptive-video-progress-fill",
+    "adaptive-video-retry",
     "controls",
-    "play-btn",
-    "poster-overlay",
-    "progress-fill",
-    "progress-track",
+    "dot",
+    "dots",
+    "image",
+    "image-placeholder",
+    "next",
+    "previous",
     "root",
-    "video"
+    "scroll-container",
+    "slide",
+    "track",
+    "video",
+    "video-placeholder",
+    "video-poster",
+    "viewport"
   ],
-  "example": "<div data-island=\"VideoPlayer\" data-props='{\"src\":\"example-src\"}'></div>"
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"VideoPlayer\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Direct video with poster",
+        "source": "<lx-island name=\"VideoPlayer\">\n  <script type=\"application/json\">{\"src\":\"/videos/product-demo.mp4\",\"poster\":\"/images/video-poster.jpg\",\"autoplay\":false,\"muted\":false,\"loop\":false,\"aspectRatio\":\"16/9\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "YouTube embed with autoplay",
+        "source": "<lx-island name=\"VideoPlayer\">\n  <script type=\"application/json\">{\"src\":\"https://www.youtube.com/watch?v=dQw4w9WgXcQ\",\"poster\":\"/images/yt-thumb.jpg\",\"autoplay\":true,\"aspectRatio\":\"16/9\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Vimeo embed looping",
+        "source": "<lx-island name=\"VideoPlayer\">\n  <script type=\"application/json\">{\"src\":\"https://vimeo.com/123456789\",\"autoplay\":true,\"muted\":true,\"loop\":true,\"aspectRatio\":\"16/9\"}</script>\n</lx-island>"
+      }
+    ]
+  }
 }

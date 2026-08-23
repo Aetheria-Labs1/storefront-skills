@@ -1,53 +1,43 @@
 {
+  "contract_version": 2,
   "name": "HeroMedia",
-  "category": "hero",
+  "category": "unknown",
   "usage_hint": "Full-bleed background media layer for hero sections. Supports static image, carousel (fade/slide), and video modes with parallax, ken-burns, and zoom-on-scroll effects. Positioned absolute to fill its parent section container.",
   "when_to_use": "As the background media layer inside any hero section with position:relative and overflow:hidden. Use for landing page heroes, campaign headers, collection banners, and any section needing immersive full-bleed background media.",
   "when_not_to_use": "Not for inline product images (use ProductGallery). Not for thumbnail galleries (use ProductHero). Not for standalone video players (use VideoPlayer). Not for card-based carousels (use MediaCarousel).",
   "defaultHydrate": "eager",
   "combine_with": [
-    "Hero text overlays (headline, subheadline, CTA)",
+    "Hero text overlays (headline",
+    "subheadline",
+    "CTA)",
     "CountdownTimer (overlaid on hero)",
-    "AnnouncementBar (above hero section)",
-    "EmailCapture (overlaid CTA form)"
+    "AnnouncementBar (above hero section)"
   ],
   "anti_patterns": [
-    "Using without a parent that has position:relative and overflow:hidden (media escapes bounds)",
+    "Using without a parent that has position:relative and overflow:hidden (media will escape bounds)",
     "Setting parallax effect on mobile (janky on iOS Safari due to scroll handling)",
     "Using carousel with interval < 3000ms (disorienting, hurts readability of overlaid text)",
     "Using video without poster (shows black frame on slow connections)",
     "Combining ken-burns effect with carousel mode (conflicting animations)",
     "Setting overlay to 0 when text is overlaid on a busy image (text becomes unreadable)"
   ],
-  "examples": [
-    {
-      "label": "Static hero image with parallax and dark overlay",
-      "html": "<div data-island=\"HeroMedia\" data-props='{\"type\":\"image\",\"src\":\"https://via.placeholder.com/1920x1080\",\"alt\":\"Hero background\",\"effect\":\"parallax\",\"overlay\":60,\"overlayColor\":\"#000000\",\"minHeight\":\"100vh\"}'></div>"
-    },
-    {
-      "label": "Carousel with fade transition and autoplay",
-      "html": "<div data-island=\"HeroMedia\" data-props='{\"type\":\"carousel\",\"slides\":[{\"src\":\"https://via.placeholder.com/1920x1080\",\"alt\":\"Slide 1\"},{\"src\":\"https://via.placeholder.com/1920x1080\",\"alt\":\"Slide 2\"},{\"src\":\"https://via.placeholder.com/1920x1080\",\"alt\":\"Slide 3\"}],\"autoplay\":true,\"interval\":5000,\"transition\":\"fade\",\"overlay\":40}'></div>"
-    },
-    {
-      "label": "Looping background video with poster",
-      "html": "<div data-island=\"HeroMedia\" data-props='{\"type\":\"video\",\"videoSrc\":\"https://example.com/hero.mp4\",\"poster\":\"https://via.placeholder.com/1920x1080\",\"loop\":true,\"muted\":true,\"overlay\":30,\"minHeight\":\"100vh\"}'></div>"
-    }
-  ],
   "props": {
     "type": {
       "type": "enum",
       "required": true,
-      "values": ["image", "carousel", "video"]
+      "values": [
+        "image",
+        "carousel",
+        "video"
+      ]
     },
     "src": {
       "type": "string",
-      "required": false,
-      "description": "Image URL for image mode"
+      "required": false
     },
     "mobileSrc": {
       "type": "string",
-      "required": false,
-      "description": "Mobile-optimized image URL (swapped via <picture> at <1024px)"
+      "required": false
     },
     "alt": {
       "type": "string",
@@ -57,109 +47,233 @@
     "effect": {
       "type": "enum",
       "required": false,
-      "values": ["none", "parallax", "ken-burns", "zoom-on-scroll"],
-      "default": "none",
-      "description": "Scroll/animation effect applied to the media. Only for image mode."
+      "values": [
+        "none",
+        "parallax",
+        "ken-burns",
+        "zoom-on-scroll"
+      ],
+      "default": "none"
     },
     "slides": {
       "type": "array",
       "required": false,
-      "items": {
-        "src": "string (required)",
+      "shape": {
+        "src": "string",
         "mobileSrc": "?string",
         "alt": "?string"
       },
-      "description": "Array of slide objects for carousel mode"
+      "default": "[]"
     },
     "autoplay": {
       "type": "boolean",
       "required": false,
-      "default": true,
-      "description": "Auto-advance carousel slides"
+      "default": "true"
     },
     "interval": {
       "type": "number",
       "required": false,
-      "default": 5000,
-      "description": "Autoplay interval in milliseconds (min recommended: 3000)"
+      "default": "5000"
     },
     "transition": {
       "type": "enum",
       "required": false,
-      "values": ["fade", "slide"],
-      "default": "fade",
-      "description": "Carousel transition style"
+      "values": [
+        "slide",
+        "fade"
+      ],
+      "default": "fade"
     },
     "videoSrc": {
       "type": "string",
-      "required": false,
-      "description": "Video URL for video mode (MP4 recommended)"
+      "required": false
     },
     "poster": {
       "type": "string",
-      "required": false,
-      "description": "Poster image shown before video loads"
+      "required": false
     },
     "loop": {
       "type": "boolean",
       "required": false,
-      "default": true
+      "default": "true"
     },
     "muted": {
       "type": "boolean",
       "required": false,
-      "default": true,
-      "description": "Must be true for autoplay to work in most browsers"
+      "default": "true"
     },
     "overlay": {
       "type": "number",
       "required": false,
-      "default": 0,
-      "description": "Overlay opacity as percentage (0-100). Use 40-70 for text readability over busy images."
+      "default": "0"
     },
     "overlayColor": {
       "type": "string",
       "required": false,
-      "default": "#000000",
-      "description": "Overlay color (hex). Overridden by --lx-hero-overlay-color CSS variable."
+      "default": "#000000"
     },
     "objectFit": {
       "type": "enum",
       "required": false,
-      "values": ["cover", "contain"],
+      "values": [
+        "cover",
+        "contain"
+      ],
       "default": "cover"
     },
     "minHeight": {
       "type": "string",
       "required": false,
-      "default": "100vh",
-      "description": "Minimum height of the media container. Overridden by --lx-hero-min-height CSS variable."
+      "default": "100vh"
     },
     "loading": {
       "type": "enum",
       "required": false,
-      "values": ["eager", "lazy"],
-      "default": "eager",
-      "description": "Image loading strategy. Use eager for above-fold heroes."
+      "values": [
+        "eager",
+        "lazy"
+      ],
+      "default": "eager"
     }
   },
-  "variants": ["image", "carousel", "video"],
+  "variants": null,
   "css_vars": [
+    "--lx-accent-color",
+    "--lx-bg-surface",
+    "--lx-featured-media-arrow-bg",
+    "--lx-featured-media-arrow-border",
+    "--lx-featured-media-arrow-color",
+    "--lx-featured-media-arrow-inset",
+    "--lx-featured-media-arrow-radius",
+    "--lx-featured-media-arrow-shadow",
+    "--lx-featured-media-arrow-size",
+    "--lx-featured-media-dot-color",
+    "--lx-featured-media-dot-gap",
+    "--lx-featured-media-dot-size",
+    "--lx-featured-media-dots-bottom",
     "--lx-hero-min-height",
     "--lx-hero-overlay-color",
-    "--lx-hero-overlay-opacity"
+    "--lx-hero-overlay-opacity",
+    "--lx-media-carousel-arrow-bg",
+    "--lx-media-carousel-arrow-border",
+    "--lx-media-carousel-arrow-color",
+    "--lx-media-carousel-arrow-hover-bg",
+    "--lx-media-carousel-arrow-offset",
+    "--lx-media-carousel-arrow-radius",
+    "--lx-media-carousel-arrow-shadow",
+    "--lx-media-carousel-arrow-size",
+    "--lx-media-carousel-bg",
+    "--lx-media-carousel-dot-active-color",
+    "--lx-media-carousel-dot-active-scale",
+    "--lx-media-carousel-dot-color",
+    "--lx-media-carousel-dot-gap",
+    "--lx-media-carousel-dot-offset",
+    "--lx-media-carousel-dot-shadow",
+    "--lx-media-carousel-dot-size",
+    "--lx-media-carousel-duration",
+    "--lx-media-carousel-ease",
+    "--lx-media-carousel-fit",
+    "--lx-media-carousel-placeholder",
+    "--lx-media-carousel-radius",
+    "--lx-shoppable-button-radius",
+    "--lx-shoppable-control-bg",
+    "--lx-shoppable-control-border",
+    "--lx-shoppable-control-color",
+    "--lx-shoppable-control-hover",
+    "--lx-shoppable-control-size",
+    "--lx-shoppable-progress-bg",
+    "--lx-shoppable-progress-color",
+    "--lx-shoppable-progress-height",
+    "--lx-shoppable-radius",
+    "--lx-shoppable-video-bg",
+    "--lx-shoppable-video-error-bg",
+    "--lx-text-color",
+    "--lx-video-bg",
+    "--lx-video-button-bg",
+    "--lx-video-button-color",
+    "--lx-video-button-padding-x",
+    "--lx-video-button-radius",
+    "--lx-video-control-bg",
+    "--lx-video-control-border",
+    "--lx-video-control-color",
+    "--lx-video-control-gap",
+    "--lx-video-control-hover",
+    "--lx-video-control-inset",
+    "--lx-video-control-radius",
+    "--lx-video-control-size",
+    "--lx-video-control-transition",
+    "--lx-video-error-bg",
+    "--lx-video-error-color",
+    "--lx-video-error-padding",
+    "--lx-video-focus-color",
+    "--lx-video-object-fit",
+    "--lx-video-preview-fit",
+    "--lx-video-preview-opacity",
+    "--lx-video-progress-bg",
+    "--lx-video-progress-color",
+    "--lx-video-progress-height",
+    "--lx-video-radius"
   ],
   "parts": [
-    "root",
-    "media",
-    "slide",
-    "overlay",
+    "adaptive-video",
+    "adaptive-video-controls",
+    "adaptive-video-element",
+    "adaptive-video-error",
+    "adaptive-video-error-content",
+    "adaptive-video-error-message",
+    "adaptive-video-mute",
+    "adaptive-video-play",
+    "adaptive-video-preview",
+    "adaptive-video-preview-media",
+    "adaptive-video-progress",
+    "adaptive-video-progress-fill",
+    "adaptive-video-retry",
+    "controls",
+    "dot",
     "dots",
-    "dot"
+    "image",
+    "image-placeholder",
+    "media",
+    "next",
+    "overlay",
+    "previous",
+    "root",
+    "scroll-container",
+    "slide",
+    "track",
+    "video",
+    "video-placeholder",
+    "video-poster",
+    "viewport"
   ],
-  "internals": {
-    "uses_primitive": "MediaLoop",
-    "note": "All image and video rendering is delegated to the MediaLoop primitive (handles srcSet, webp, shimmer, video auto-detection, objectFit). HeroMedia adds hero-specific orchestration: parallax, ken-burns, zoom-on-scroll, carousel state machine, overlay, and full-bleed positioning."
-  },
-  "example": "<div data-island=\"HeroMedia\" data-props='{\"type\":\"image\",\"src\":\"https://via.placeholder.com/1920x1080\",\"overlay\":50}'></div>"
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"HeroMedia\">\n  <script type=\"application/json\">\n{\n  \"type\": \"image\"\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Static hero image with parallax and dark overlay",
+        "source": "<lx-island name=\"HeroMedia\">\n  <script type=\"application/json\">{\"type\":\"image\",\"src\":\"https://via.placeholder.com/1920x1080\",\"alt\":\"Hero background\",\"effect\":\"parallax\",\"overlay\":60,\"overlayColor\":\"#000000\",\"minHeight\":\"100vh\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Carousel with fade transition and autoplay",
+        "source": "<lx-island name=\"HeroMedia\">\n  <script type=\"application/json\">{\"type\":\"carousel\",\"slides\":[{\"src\":\"https://via.placeholder.com/1920x1080\",\"alt\":\"Slide 1\"},{\"src\":\"https://via.placeholder.com/1920x1080\",\"alt\":\"Slide 2\"},{\"src\":\"https://via.placeholder.com/1920x1080\",\"alt\":\"Slide 3\"}],\"autoplay\":true,\"interval\":5000,\"transition\":\"fade\",\"overlay\":40}</script>\n</lx-island>"
+      },
+      {
+        "label": "Looping background video with poster",
+        "source": "<lx-island name=\"HeroMedia\">\n  <script type=\"application/json\">{\"type\":\"video\",\"videoSrc\":\"https://example.com/hero.mp4\",\"poster\":\"https://via.placeholder.com/1920x1080\",\"loop\":true,\"muted\":true,\"overlay\":30,\"minHeight\":\"100vh\"}</script>\n</lx-island>"
+      }
+    ]
+  }
 }

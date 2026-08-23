@@ -1,4 +1,5 @@
 {
+  "contract_version": 2,
   "name": "BundleBuilder",
   "category": "commerce",
   "usage_hint": "Multi-product bundle selector with optional discount and \"Add All to Cart\" action. Shows main product + checkbox-selectable recommendations with pricing summary.",
@@ -14,20 +15,6 @@
     "Using without a discount: reduces incentive; bundle builders work best with visible savings",
     "Mixing incompatible products: bundle should make logical sense (e.g., phone + case + charger, not random items)",
     "Using layout:\"stacked\" with 5+ recommendations: becomes very tall; use horizontal layout or limit items"
-  ],
-  "examples": [
-    {
-      "label": "Stacked bundle with percentage discount",
-      "html": "<div data-island=\"BundleBuilder\" data-props='{\"mainProduct\":{\"id\":\"p1\",\"title\":\"Wireless Headphones\",\"price\":\"$99.00\",\"image\":\"https://via.placeholder.com/64\"},\"recommendations\":[{\"id\":\"p2\",\"title\":\"Carrying Case\",\"price\":\"$19.00\",\"image\":\"https://via.placeholder.com/64\"},{\"id\":\"p3\",\"title\":\"Audio Cable\",\"price\":\"$9.00\",\"image\":\"https://via.placeholder.com/64\"}],\"bundleDiscount\":{\"type\":\"percentage\",\"value\":10},\"title\":\"Complete Your Setup\",\"layout\":\"stacked\"}'></div>"
-    },
-    {
-      "label": "Horizontal bundle with fixed discount",
-      "html": "<div data-island=\"BundleBuilder\" data-props='{\"mainProduct\":{\"id\":\"p1\",\"title\":\"Camera\",\"price\":\"$499.00\",\"image\":\"https://via.placeholder.com/64\"},\"recommendations\":[{\"id\":\"p2\",\"title\":\"Lens\",\"price\":\"$199.00\",\"image\":\"https://via.placeholder.com/64\"},{\"id\":\"p3\",\"title\":\"Tripod\",\"price\":\"$49.00\",\"image\":\"https://via.placeholder.com/64\"}],\"bundleDiscount\":{\"type\":\"fixed\",\"value\":50},\"layout\":\"horizontal\"}'></div>"
-    },
-    {
-      "label": "Bundle without checkboxes (all items pre-selected)",
-      "html": "<div data-island=\"BundleBuilder\" data-props='{\"mainProduct\":{\"id\":\"p1\",\"title\":\"Laptop\",\"price\":\"$999.00\",\"image\":\"https://via.placeholder.com/64\"},\"recommendations\":[{\"id\":\"p2\",\"title\":\"Mouse\",\"price\":\"$29.00\",\"image\":\"https://via.placeholder.com/64\"}],\"showCheckboxes\":false,\"title\":\"Bundle & Save\"}'></div>"
-    }
   ],
   "props": {
     "mainProduct": {
@@ -106,5 +93,34 @@
     "subtotal",
     "total"
   ],
-  "example": "<div data-island=\"BundleBuilder\" data-props='{\"mainProduct\":{\"id\":\"example-id\",\"title\":\"example-title\",\"price\":\"example-price\",\"image\":\"example-image\"},\"recommendations\":[{\"id\":\"example-id\",\"title\":\"example-title\",\"price\":\"example-price\",\"image\":\"example-image\"}]}'></div>"
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"BundleBuilder\">\n  <script type=\"application/json\">\n{\n  \"mainProduct\": {\n    \"id\": \"example-id\",\n    \"title\": \"example-title\",\n    \"price\": \"example-price\",\n    \"image\": \"example-image\"\n  },\n  \"recommendations\": [\n    {\n      \"id\": \"example-id\",\n      \"title\": \"example-title\",\n      \"price\": \"example-price\",\n      \"image\": \"example-image\"\n    }\n  ]\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Stacked bundle with percentage discount",
+        "source": "<lx-island name=\"BundleBuilder\">\n  <script type=\"application/json\">{\"mainProduct\":{\"id\":\"p1\",\"title\":\"Wireless Headphones\",\"price\":\"$99.00\",\"image\":\"https://via.placeholder.com/64\"},\"recommendations\":[{\"id\":\"p2\",\"title\":\"Carrying Case\",\"price\":\"$19.00\",\"image\":\"https://via.placeholder.com/64\"},{\"id\":\"p3\",\"title\":\"Audio Cable\",\"price\":\"$9.00\",\"image\":\"https://via.placeholder.com/64\"}],\"bundleDiscount\":{\"type\":\"percentage\",\"value\":10},\"title\":\"Complete Your Setup\",\"layout\":\"stacked\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Horizontal bundle with fixed discount",
+        "source": "<lx-island name=\"BundleBuilder\">\n  <script type=\"application/json\">{\"mainProduct\":{\"id\":\"p1\",\"title\":\"Camera\",\"price\":\"$499.00\",\"image\":\"https://via.placeholder.com/64\"},\"recommendations\":[{\"id\":\"p2\",\"title\":\"Lens\",\"price\":\"$199.00\",\"image\":\"https://via.placeholder.com/64\"},{\"id\":\"p3\",\"title\":\"Tripod\",\"price\":\"$49.00\",\"image\":\"https://via.placeholder.com/64\"}],\"bundleDiscount\":{\"type\":\"fixed\",\"value\":50},\"layout\":\"horizontal\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Bundle without checkboxes (all items pre-selected)",
+        "source": "<lx-island name=\"BundleBuilder\">\n  <script type=\"application/json\">{\"mainProduct\":{\"id\":\"p1\",\"title\":\"Laptop\",\"price\":\"$999.00\",\"image\":\"https://via.placeholder.com/64\"},\"recommendations\":[{\"id\":\"p2\",\"title\":\"Mouse\",\"price\":\"$29.00\",\"image\":\"https://via.placeholder.com/64\"}],\"showCheckboxes\":false,\"title\":\"Bundle & Save\"}</script>\n</lx-island>"
+      }
+    ]
+  }
 }

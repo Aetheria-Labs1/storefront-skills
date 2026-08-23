@@ -1,7 +1,8 @@
 {
+  "contract_version": 2,
   "name": "EmailCapture",
   "category": "engagement",
-  "usage_hint": "Email signup form with validation, loading states, and success feedback \u2014 typically used in footer, modal, or dedicated newsletter sections.",
+  "usage_hint": "Email signup form with validation, loading states, and success feedback — typically used in footer, modal, or dedicated newsletter sections.",
   "when_to_use": "For newsletter signups, discount code capture (pair with discount prop), product launch waitlists, or general lead capture. Works inline or nested in a Modal island for exit-intent popups.",
   "when_not_to_use": "For complex multi-field forms (name, phone, etc.; use a custom form island). Don't use for transactional email collection at checkout (Shopify handles that).",
   "defaultHydrate": "immediate",
@@ -16,24 +17,6 @@
     "Using inside a Modal without setting showOnce:true on the modal (spams users every page load)",
     "Overly aggressive placement (multiple EmailCapture islands on one page; stick to one primary location)",
     "Generic placeholder text (\"Enter your email\" is boring; try \"Get 10% off your first order\" or \"Join 10,000+ subscribers\")"
-  ],
-  "examples": [
-    {
-      "label": "Newsletter signup (footer, default variant)",
-      "html": "<div data-island=\"EmailCapture\" data-props='{\"placeholder\":\"Enter your email for updates\",\"buttonText\":\"Subscribe\",\"successMessage\":\"Thanks! Check your inbox to confirm.\",\"variant\":\"default\"}'></div>"
-    },
-    {
-      "label": "Discount offer (compact, with discount message)",
-      "html": "<div data-island=\"EmailCapture\" data-props='{\"placeholder\":\"Your email\",\"buttonText\":\"Get 10% Off\",\"successMessage\":\"Code sent! Check your email.\",\"discount\":\"\ud83c\udf89 Get 10% off your first order\",\"variant\":\"compact\"}'></div>"
-    },
-    {
-      "label": "Product launch waitlist (default, custom copy)",
-      "html": "<div data-island=\"EmailCapture\" data-props='{\"placeholder\":\"Enter your email to get early access\",\"buttonText\":\"Join Waitlist\",\"successMessage\":\"You're on the list! We'll notify you at launch.\",\"variant\":\"default\"}'></div>"
-    },
-    {
-      "label": "Exit-intent modal email capture (nested in Modal)",
-      "html": "<div data-island=\"Modal\" data-props='{\"trigger\":\"exit_intent\",\"triggerValue\":5000,\"position\":\"center\",\"size\":\"md\",\"headline\":\"Wait! Before you go...\",\"body\":\"Join our newsletter and get 15% off your first order.\",\"showOnce\":true,\"children\":[{\"island\":\"EmailCapture\",\"props\":{\"placeholder\":\"Your email address\",\"buttonText\":\"Claim My Discount\",\"discount\":\"15% OFF\",\"variant\":\"compact\"}}]}'></div>"
-    }
   ],
   "props": {
     "placeholder": {
@@ -82,5 +65,38 @@
     "success",
     "success-icon"
   ],
-  "example": "<div data-island=\"EmailCapture\" data-props='{}'></div>"
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"EmailCapture\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Newsletter signup (footer, default variant)",
+        "source": "<lx-island name=\"EmailCapture\">\n  <script type=\"application/json\">{\"placeholder\":\"Enter your email for updates\",\"buttonText\":\"Subscribe\",\"successMessage\":\"Thanks! Check your inbox to confirm.\",\"variant\":\"default\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Discount offer (compact, with discount message)",
+        "source": "<lx-island name=\"EmailCapture\">\n  <script type=\"application/json\">{\"placeholder\":\"Your email\",\"buttonText\":\"Get 10% Off\",\"successMessage\":\"Code sent! Check your email.\",\"discount\":\"🎉 Get 10% off your first order\",\"variant\":\"compact\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Product launch waitlist (default, custom copy)",
+        "source": "<lx-island name=\"EmailCapture\">\n  <script type=\"application/json\">{\"placeholder\":\"Enter your email to get early access\",\"buttonText\":\"Join Waitlist\",\"successMessage\":\"You're on the list! We'll notify you at launch.\",\"variant\":\"default\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Exit-intent modal email capture (nested in Modal)",
+        "source": "<lx-island name=\"Modal\">\n  <script type=\"application/json\">{\"trigger\":\"exit_intent\",\"triggerValue\":5000,\"position\":\"center\",\"size\":\"md\",\"headline\":\"Wait! Before you go...\",\"body\":\"Join our newsletter and get 15% off your first order.\",\"showOnce\":true,\"children\":[{\"island\":\"EmailCapture\",\"props\":{\"placeholder\":\"Your email address\",\"buttonText\":\"Claim My Discount\",\"discount\":\"15% OFF\",\"variant\":\"compact\"}}]}</script>\n</lx-island>"
+      }
+    ]
+  }
 }
