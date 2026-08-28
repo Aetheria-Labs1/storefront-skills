@@ -2470,17 +2470,20 @@ Phase 4-4: Same as Standard Flow
 
 ```
 1. find_page({ query })                              → locate page by handle/title/UUID
-2. get_page_source({ page_id })                      → read round-trip source when available
-3. inspect_page_sections({ page_id })                → inspect current compiled sections
-4. Identify which sections to modify
-5. update_section_from_source({ page_id, source })   → compile, preflight, commit
-6. check_page_integrity({ page_id, archetype })           → structural QA pass
-7. [Optional] diff_page_versions({ page_id, version_a, version_b })  → review all changes
-8. [If broken] rollback_page_version({ page_id, target_version })    → revert to prior version
+2. get_page_edit_context({ page_id })                 → resolve store/workspace + current version
+3. get_page_source({ page_id })                       → read round-trip source when available
+4. inspect_page_sections({ page_id })                 → inspect current compiled sections
+5. Identify which sections to modify
+6. update_section_from_source({ page_id, source, expected_version }) → compile, preflight, commit
+7. check_page_integrity({ page_id, archetype })       → structural QA pass
+8. [Optional] diff_page_versions({ page_id, version_a, version_b })  → review all changes
+9. [If broken] rollback_page_version({ page_id, target_version })    → revert to prior version
 ```
 
 **Key rules:**
 - `update_section_from_source` compiles and runs the full-page preflight before it writes
+- Existing page writes derive store/workspace from `page_id`; omit redundant `store_id`
+- A `version_conflict` means another write landed first; re-read and rebase
 - Run `check_page_integrity` after all edits complete — catches archetype violations (e.g. PDP without BuyBox)
 - Use `diff_page_versions` to verify your changes look correct before publishing
 - Use `rollback_page_version` if integrity check fails — creates a new forward version, preserves history
@@ -4402,26 +4405,42 @@ Edit existing pages using section-level operations.
 ## Edit Flow
 
 1. `find_page` — locate the target page
-2. `get_page_source` and `inspect_page_sections` — read source and structure
-3. Edit exactly one source-format section
-4. `update_section_from_source` — compile, preflight, and save
-5. `check_page_integrity` — verify the completed page
+2. `get_page_edit_context` — resolve the page's store, workspace, theme, source availability, and current version
+3. `get_page_source` and `inspect_page_sections` — read source and structure
+4. Edit exactly one source-format section
+5. `update_section_from_source` — compile, preflight, and save with `expected_version`
+6. `check_page_integrity` — verify the completed page
+
+For existing pages, `page_id` is authoritative. Do not require the user to
+reselect a workspace or pass `store_id`; an optional store ID is only an
+assertion. Service-token store/workspace scopes remain authorization boundaries.
 
 ## Operations
 
 ### Update/Replace a Section
 
 ```
-update_section_from_source({ page_id, section_id, source })
+update_section_from_source({
+  page_id,
+  section_id,
+  source,
+  expected_version
+})
 ```
 - Replaces the compiled section from source-format HTML
 - Auto-bumps page version
+- Returns `version_conflict` if another edit landed first
 - Use for: changing copy, swapping images, restyling
 
 ### Add a New Section
 
 ```
-update_section_from_source({ page_id, source, position })
+update_section_from_source({
+  page_id,
+  source,
+  position,
+  expected_version
+})
 ```
 - Position: "before:{section_id}" or "after:{section_id}" or index number
 - Must include full section HTML
@@ -4444,12 +4463,16 @@ move_page_section(page_id, section_id, new_position)
 
 ## Best Practices
 
-- Always `get_page` first to understand current structure
+- Always call `get_page_edit_context` before a write
+- Re-read context/source and rebase when an edit returns `version_conflict`
 - Reference section IDs from the page data (don't guess)
 - After editing, run `check_page_integrity` before telling the user it is done
 - For multi-section changes, batch them (each call bumps version)
 - Preserve existing CSS variables and island configurations
 - Don't break mobile responsiveness when editing desktop layout
+
+Minor edits use this workflow directly. They do not repeat the new-page planning
+workflow; the existing page retains its approved plan.
 
 ---
 

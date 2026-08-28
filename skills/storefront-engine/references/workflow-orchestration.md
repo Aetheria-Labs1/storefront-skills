@@ -72,17 +72,20 @@ Phase 4-4: Same as Standard Flow
 
 ```
 1. find_page({ query })                              → locate page by handle/title/UUID
-2. get_page_source({ page_id })                      → read round-trip source when available
-3. inspect_page_sections({ page_id })                → inspect current compiled sections
-4. Identify which sections to modify
-5. update_section_from_source({ page_id, source })   → compile, preflight, commit
-6. check_page_integrity({ page_id, archetype })           → structural QA pass
-7. [Optional] diff_page_versions({ page_id, version_a, version_b })  → review all changes
-8. [If broken] rollback_page_version({ page_id, target_version })    → revert to prior version
+2. get_page_edit_context({ page_id })                 → resolve store/workspace + current version
+3. get_page_source({ page_id })                       → read round-trip source when available
+4. inspect_page_sections({ page_id })                 → inspect current compiled sections
+5. Identify which sections to modify
+6. update_section_from_source({ page_id, source, expected_version }) → compile, preflight, commit
+7. check_page_integrity({ page_id, archetype })       → structural QA pass
+8. [Optional] diff_page_versions({ page_id, version_a, version_b })  → review all changes
+9. [If broken] rollback_page_version({ page_id, target_version })    → revert to prior version
 ```
 
 **Key rules:**
 - `update_section_from_source` compiles and runs the full-page preflight before it writes
+- Existing page writes derive store/workspace from `page_id`; omit redundant `store_id`
+- A `version_conflict` means another write landed first; re-read and rebase
 - Run `check_page_integrity` after all edits complete — catches archetype violations (e.g. PDP without BuyBox)
 - Use `diff_page_versions` to verify your changes look correct before publishing
 - Use `rollback_page_version` if integrity check fails — creates a new forward version, preserves history
