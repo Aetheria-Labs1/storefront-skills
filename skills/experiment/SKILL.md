@@ -21,19 +21,19 @@ Access page performance data and manage A/B experiments.
 
 ### Page-Level Deep Dive
 ```
-get_page_analytics(page_id)
+lexsis_analytics({ action: "page", args: { page_id } })
 ```
 Returns: CVR, bounce rate, time on page, traffic sources, device split, top-performing sections.
 
 ### Time Series Trends
 ```
-get_analytics_timeseries({ metric: "conversions", period: "daily", range: "30d" })
+lexsis_analytics({ action: "timeseries", args: { metric: "conversions", period: "daily", range: "30d" } })
 ```
 Returns: daily/weekly trends for hits, conversions, revenue, AOV.
 
 ### Revenue Attribution
 ```
-get_attribution({ page_id? })
+lexsis_analytics({ action: "attribution", args: { page_id? } })
 ```
 Returns: ROAS by channel, revenue per page, top campaigns driving conversions.
 
@@ -41,21 +41,24 @@ Returns: ROAS by channel, revenue per page, top campaigns driving conversions.
 
 ### 1. Create Experiment
 ```
-create_ab_test({
-  page_id: "...",
-  variants: [{ blueprint_id: "...", weight: 50 }, { blueprint_id: "...", weight: 50 }]
+lexsis_drafts({
+  action: "experiment_create",
+  args: {
+    page_id: "...",
+    variants: [{ blueprint_id: "...", weight: 50 }, { blueprint_id: "...", weight: 50 }]
+  }
 })
 ```
 
 ### 2. Monitor Results
 ```
-get_experiment_results(experiment_id)
+lexsis_analytics({ action: "experiment", args: { experiment_id } })
 ```
 Returns: CVR per variant, statistical significance (mSPRT), sample sizes, winner recommendation.
 
 ### 3. Scale Winner
 ```
-scale_winner(experiment_id, { variant_id: "..." })
+lexsis_live_ops({ action: "scale_winner", args: { experiment_id, variant_id: "..." } })
 ```
 Scales winning variant to 100% traffic, marks experiment complete.
 
@@ -83,9 +86,8 @@ Create targeted page variants adapting messaging, imagery, social proof, and CTA
 ### Step 1 — Context Gathering
 
 ```
-get_workspace_details()          → workspace ID, plan tier
-get_connected_stores()           → store domain, Shopify data
-get_brand_kit()                  → logo, fonts, colors, voice, radius
+lexsis_workspace → get/stores
+lexsis_brand → brand_kit/list_themes/get_theme
 ```
 
 These three calls ALWAYS run first. No exceptions.
@@ -93,14 +95,14 @@ These three calls ALWAYS run first. No exceptions.
 ### Step 2 — Load Personas and Base Page
 
 ```
-list_personas()
+lexsis_campaigns({ action: "personas", args: { workspace_id } })
 ```
 
 Review available audience segments. If none exist, define inline: name, demographics, pain points, motivations, objections, buying stage, tone preference.
 
 ```
-get_page(page_id)
-get_page_content(page_id)
+lexsis_pages({ action: "get", args: { page_id } })
+lexsis_pages({ action: "content", args: { page_id } })
 ```
 
 Understand current structure, copy, and section types. This is the default variant.
@@ -123,26 +125,30 @@ Not everything changes. Keep brand identity (colors, fonts, logo) consistent acr
 
 For each persona:
 ```
-search_design_library({ query: "<persona-relevant imagery>" })
+lexsis_asset_library({ action: "search", args: { query: "<persona-relevant imagery>", workspace_id } })
 ```
 
 Find images reflecting the persona's world. Generate if needed:
 ```
-generate_asset({ prompt: "...", demographic: "<persona context>" })
+lexsis_drafts({ action: "asset_generate", args: { prompt: "...", demographic: "<persona context>", workspace_id } })
 ```
 
 ### Step 5 — Create Each Variant
 
 For each persona:
 ```
-create_page_variation(page_id, {
-  name: "<persona_name> variant",
-  changes: {
-    sections: [
-      { section_id: "hero", html: "...", css: "..." },
-      { section_id: "social-proof", html: "..." },
-      { section_id: "cta-block", html: "..." }
-    ]
+lexsis_drafts({
+  action: "page_variation",
+  args: {
+    page_id,
+    name: "<persona_name> variant",
+    changes: {
+      sections: [
+        { section_id: "hero", html: "...", css: "..." },
+        { section_id: "social-proof", html: "..." },
+        { section_id: "cta-block", html: "..." }
+      ]
+    }
   }
 })
 ```
@@ -163,14 +169,16 @@ When a prop change is part of the experiment, edit source-format markup:
 
 For each variant:
 ```
-check_page_integrity({ page_id: variant_page_id, archetype })
+lexsis_pages({ action: "integrity", args: { page_id: variant_page_id, archetype } })
 ```
 
 Ensure all render correctly, islands work, mobile intact.
 
 ### Step 7 — Visual Verification (Each Variant)
 
-Use Codex Browser to open every variant preview, capture desktop and mobile screenshots, and inspect the rendered result. If Browser is unavailable, provide the preview URLs and state that visual verification remains manual.
+Use the host agent's browser capability at 390px, 768px, and 1280px for every
+variant. Lexsis does not create shared browser sessions. If browser access is
+unavailable, provide the preview URLs and state that visual QA remains.
 
 Checklist (per variant):
 - [ ] Headline tone matches persona (urgent vs aspirational vs analytical)
@@ -184,13 +192,16 @@ Checklist (per variant):
 ### Step 8 — (Optional) Set Up Persona-Targeted Experiment
 
 ```
-create_ab_test({
-  page_id: base_page_id,
-  variants: [
-    { page_id: variant_a_id, weight: 33, targeting: { persona: "deal-seekers" } },
-    { page_id: variant_b_id, weight: 33, targeting: { persona: "quality-seekers" } },
-    { page_id: base_page_id, weight: 34, targeting: { default: true } }
-  ]
+lexsis_drafts({
+  action: "experiment_create",
+  args: {
+    page_id: base_page_id,
+    variants: [
+      { page_id: variant_a_id, weight: 33, targeting: { persona: "deal-seekers" } },
+      { page_id: variant_b_id, weight: 33, targeting: { persona: "quality-seekers" } },
+      { page_id: base_page_id, weight: 34, targeting: { default: true } }
+    ]
+  }
 })
 ```
 
@@ -213,7 +224,7 @@ Traffic routes to matching persona variant based on UTM/audience signals.
 - CTA language aligns with persona motivation
 - Social proof relevant to persona (industry-matched, use-case-matched)
 - All variants share same `--lx-*` brand identity
-- Each variant passes `check_page_integrity` independently
+- Each variant passes `lexsis_pages` action `integrity` independently
 - Tone consistent within each variant (headline tone = body copy tone)
 - Structural integrity maintained (no broken sections or islands)
 
@@ -233,8 +244,7 @@ Clone an existing page, apply a single focused change based on a clear hypothesi
 ### Step 1 — Context Gathering
 
 ```
-get_workspace_details()          → workspace ID, plan tier
-get_connected_stores()           → store domain, Shopify data
+lexsis_workspace → get/stores
 ```
 
 These two calls ALWAYS run first. No exceptions.
@@ -242,8 +252,8 @@ These two calls ALWAYS run first. No exceptions.
 ### Step 2 — Load Current Page and Baseline
 
 ```
-get_page(page_id)
-get_page_analytics(page_id)
+lexsis_pages({ action: "get", args: { page_id } })
+lexsis_analytics({ action: "page", args: { page_id } })
 ```
 
 Record baseline performance:
@@ -271,12 +281,15 @@ Common high-impact tests (ordered by typical lift):
 ### Step 4 — Create the Variant
 
 ```
-duplicate_page(page_id)
+lexsis_drafts({ action: "page_duplicate", args: { page_id } })
 ```
 
 Creates exact copy. Then apply the SINGLE focused change:
 ```
-update_section_from_source({ page_id: variant_page_id, section_id, source })
+lexsis_drafts({
+  action: "page_update_section",
+  args: { page_id: variant_page_id, section_id, source, expected_version }
+})
 ```
 
 RULE: ONE change per test. Multiple changes make attribution impossible.
@@ -294,14 +307,15 @@ test specifically targets island props:
 ### Step 5 — Validate Variant
 
 ```
-check_page_integrity({ page_id: variant_page_id, archetype })
+lexsis_pages({ action: "integrity", args: { page_id: variant_page_id, archetype } })
 ```
 
 Ensure variant renders correctly, all islands work, mobile intact.
 
 ### Step 6 — Visual Verification
 
-Use Codex Browser to open the variant preview, capture desktop and mobile screenshots, and inspect the rendered result. If Browser is unavailable, provide the preview URL and state that visual verification remains manual.
+Use the host agent's browser capability at 390px, 768px, and 1280px. If it is
+unavailable, provide the preview URL and state that visual QA remains.
 
 Checklist:
 - [ ] The ONE change is clearly visible
@@ -313,15 +327,18 @@ Checklist:
 ### Step 7 — Launch Experiment
 
 ```
-create_ab_test({
-  page_id: page_id,
-  hypothesis: "Changing [X] will improve [metric] because [reason]",
-  variants: [
-    { page_id: page_id, weight: 50, name: "Control (A)" },
-    { page_id: variant_page_id, weight: 50, name: "Variant (B)" }
-  ],
-  primary_metric: "conversion_rate",
-  minimum_sample: 1000
+lexsis_drafts({
+  action: "experiment_create",
+  args: {
+    page_id: page_id,
+    hypothesis: "Changing [X] will improve [metric] because [reason]",
+    variants: [
+      { page_id: page_id, weight: 50, name: "Control (A)" },
+      { page_id: variant_page_id, weight: 50, name: "Variant (B)" }
+    ],
+    primary_metric: "conversion_rate",
+    minimum_sample: 1000
+  }
 })
 ```
 
@@ -330,7 +347,7 @@ create_ab_test({
 ### Step 8 — Monitor Results
 
 ```
-get_experiment_results(experiment_id)
+lexsis_analytics({ action: "experiment", args: { experiment_id } })
 ```
 
 Returns: CVR per variant with confidence intervals, statistical significance (mSPRT), sample size, winner recommendation, secondary metrics.
@@ -345,7 +362,7 @@ RULES:
 
 Only when `significant: true`:
 ```
-scale_winner(experiment_id, winning_variant_id)
+lexsis_live_ops({ action: "scale_winner", args: { experiment_id, variant_id: winning_variant_id } })
 ```
 
 Routes 100% traffic to winner. Marks experiment complete.
@@ -369,7 +386,7 @@ If no winner after 2000+ visitors per variant: the change has no meaningful impa
 - Hypothesis documented BEFORE variant creation
 - Minimum 1000 visitors per variant before evaluating
 - Statistical significance required (mSPRT p<0.05) before declaring winner
-- Both variants pass `check_page_integrity`
+- Both variants pass `lexsis_pages` action `integrity`
 - Control remains untouched for test duration
 - Secondary metrics monitored alongside primary
 - Learning documented regardless of outcome (losses teach as much as wins)

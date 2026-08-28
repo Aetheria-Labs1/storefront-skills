@@ -59,10 +59,10 @@ Ask ONLY questions whose answers are missing. Never ask more than 4 at once.
 
 Use MCP tools to gather brand context:
 ```
-get_brand_kit        → colors, fonts, voice, spacing
-get_design_md        → brand philosophy + don'ts
-list_products        → available product data
-get_navigation       → navbar/footer links
+lexsis_brand → brand_kit/get_theme → colors, fonts, voice, spacing
+lexsis_design → guide              → brand philosophy + don'ts
+lexsis_catalog → list              → available product data
+lexsis_brand → navigation          → navbar/footer links
 ```
 
 Then produce a structured plan covering:
@@ -97,7 +97,8 @@ For each section:
 
 When `visual-page` calls this workflow, produce the same plan as
 `PLAN_DRAFT` and do not ask for approval yet. `visual-page` creates a visual
-layout reference with `generate_asset` and presents it plus the plan as one
+layout reference with `lexsis_drafts` action `asset_generate` and presents it
+plus the plan as one
 approval decision.
 
 Show the plan to the user in this format:

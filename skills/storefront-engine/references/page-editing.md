@@ -4,12 +4,12 @@ Edit existing pages using section-level operations.
 
 ## Edit Flow
 
-1. `find_page` — locate the target page
-2. `get_page_edit_context` — resolve the page's store, workspace, theme, source availability, and current version
-3. `get_page_source` and `inspect_page_sections` — read source and structure
+1. `lexsis_pages` action `find`
+2. `lexsis_pages` action `edit_context`
+3. `lexsis_pages` actions `section_source`, `source`, or `inspect`
 4. Edit exactly one source-format section
-5. `update_section_from_source` — compile, preflight, and save with `expected_version`
-6. `check_page_integrity` — verify the completed page
+5. `lexsis_drafts` action `page_update_section` or `page_patch`
+6. `lexsis_pages` actions `diff` and `integrity`
 
 For existing pages, `page_id` is authoritative. Do not require the user to
 reselect a workspace or pass `store_id`; an optional store ID is only an
@@ -20,11 +20,9 @@ assertion. Service-token store/workspace scopes remain authorization boundaries.
 ### Update/Replace a Section
 
 ```
-update_section_from_source({
-  page_id,
-  section_id,
-  source,
-  expected_version
+lexsis_drafts({
+  action: "page_update_section",
+  args: { page_id, section_id, source, expected_version }
 })
 ```
 - Replaces the compiled section from source-format HTML
@@ -35,11 +33,9 @@ update_section_from_source({
 ### Add a New Section
 
 ```
-update_section_from_source({
-  page_id,
-  source,
-  position,
-  expected_version
+lexsis_drafts({
+  action: "page_update_section",
+  args: { page_id, source, position, expected_version }
 })
 ```
 - Position: "before:{section_id}" or "after:{section_id}" or index number
@@ -48,28 +44,31 @@ update_section_from_source({
 ### Remove a Section
 
 ```
-remove_page_section(page_id, section_id)
+lexsis_drafts({ action: "page_remove_section", args: { page_id, section_id, expected_version } })
 ```
-- Irreversible — confirm with user first
+- Creates a reversible new page version
 - Auto-bumps version
 
 ### Reorder Sections
 
 ```
-move_page_section(page_id, section_id, new_position)
+lexsis_drafts({ action: "page_move_section", args: { page_id, section_id, position, expected_version } })
 ```
 - Position is 0-indexed
 - All other sections shift accordingly
 
 ## Best Practices
 
-- Always call `get_page_edit_context` before a write
+- Always call `lexsis_pages` action `edit_context` before a write
 - Re-read context/source and rebase when an edit returns `version_conflict`
 - Reference section IDs from the page data (don't guess)
-- After editing, run `check_page_integrity` before telling the user it is done
-- For multi-section changes, batch them (each call bumps version)
+- After editing, run `diff` and `integrity`
+- Batch related multi-section changes with `page_patch` so they create one version
 - Preserve existing CSS variables and island configurations
 - Don't break mobile responsiveness when editing desktop layout
 
 Minor edits use this workflow directly. They do not repeat the new-page planning
 workflow; the existing page retains its approved plan.
+
+For published pages, `current_version` can advance while the live renderer
+remains pinned to `published_version_id`. Publish only after QA.

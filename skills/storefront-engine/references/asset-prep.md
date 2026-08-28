@@ -13,17 +13,18 @@
 ```
 Need an image or video for a section?
 │
-├─ search_design_library({ query }) → found good match?
+├─ lexsis_asset_library({ action: "search", args: { query, workspace_id } })
+│  → found good match?
 │  ├─ YES → use it (free, on-brand)
 │  └─ NO ↓
 │
 ├─ Product shot needed?
-│  ├─ YES → use real images from list_products (NEVER generate fake products)
+│  ├─ YES → use real images from lexsis_catalog action list/get
 │  └─ NO ↓
 │
 ├─ What type of asset?
 │  ├─ Static image (background, lifestyle, texture, composite)
-│  │  └─ generate_asset (built-in, costs credits; add reference_images to composite or edit)
+│  │  └─ lexsis_drafts action asset_generate
 │  │
 │  ├─ Video (hero, demo, UGC-style)
 │  │  └─ External MCP: HiggsField / Runway / Kling
@@ -37,7 +38,7 @@ Need an image or video for a section?
 │  └─ Specialized illustration (custom style beyond built-in)
 │     └─ External MCP: OpenArt
 │
-└─ After sourcing → import_asset({ url, purpose, tags }) to persist in library
+└─ After sourcing → lexsis_asset_upload action import
 ```
 
 ---
@@ -46,12 +47,13 @@ Need an image or video for a section?
 
 | Tool | What it does | Cost |
 |------|-------------|------|
-| `search_design_library` | Search existing brand assets | Free |
-| `generate_asset` | AI image generation, compositing, inpainting, or style transfer; add `reference_images` for source-based work | Credits |
-| `view_asset` | Visually verify a generated/edited asset before using | Free |
-| `import_asset` | Bring an external URL (or base64) into the design library for reuse. Call with **no arguments** to open an upload picker so the user can supply their own file — use that when they want to add their own logo/photo and you have no URL for it | Free |
+| `lexsis_asset_library` → `search` | Search workspace assets | Free |
+| `lexsis_drafts` → `asset_generate` | Generate, composite, inpaint, or restyle | Credits |
+| `lexsis_assets` → `view` | Verify an asset | Free |
+| `lexsis_asset_upload` → `import` | Import URL, base64, attachments, or use upload picker | Free |
 
-**Always `search_design_library` first.** Existing assets are free and already brand-consistent.
+Always search first. Pass `workspace_id` explicitly when multiple workspaces
+are available.
 
 See `design-enrichment.md` for detailed prompt patterns, style selection guide, compositing recipes, and HTML placement patterns.
 
@@ -69,7 +71,8 @@ web_search_exa({ query: "skincare brand hero photography editorial style" })
 
 Use for: mood boards, competitor visual research, finding reference imagery to brief `generate_asset` more precisely, sourcing real lifestyle photos.
 
-**Flow:** Exa search → find reference URL → `import_asset({ url })` to persist → use in page.
+**Flow:** Exa search → find URL → `lexsis_asset_upload` action `import` → use
+the returned permanent URL.
 
 ### HiggsField / Runway / Kling — Video Generation
 
@@ -103,7 +106,10 @@ All external assets MUST be persisted before use:
 
 ```
 1. Source asset via external MCP → get URL
-2. import_asset({ url, purpose: "hero_bg", tags: ["lifestyle", "summer"] })
+2. lexsis_asset_upload({
+     action: "import",
+     args: { url, purpose: "hero_bg", tags: ["lifestyle", "summer"], workspace_id }
+   })
    → returns { asset_id, url, width, height }
 3. Use returned URL in page HTML (same as built-in assets)
 ```
@@ -124,7 +130,7 @@ This ensures: the asset is stored in the brand's library, available for reuse, a
 | Bundle | 1 | 1 | 0 | 0 | 2-3 |
 
 **Rules:**
-- Check `get_credits_balance` before any generation
+- Check `lexsis_workspace` action `credits` before generation
 - Use `quality: "medium"` default; `"high"` only for hero images
 - Products have their own Shopify images — never generate product shots
 
@@ -140,8 +146,12 @@ This ensures: the asset is stored in the brand's library, available for reuse, a
 
 ### Technical Integration
 ```html
-<!-- Click-to-play video hero (use HeroMedia island) -->
-<div data-island="HeroMedia" data-props='{"media":{"type":"video","src":"VIDEO_URL","poster":"THUMBNAIL_URL","autoplay":false}}'></div>
+<!-- Click-to-play video hero -->
+<lx-island name="HeroMedia">
+  <script type="application/json">
+    { "media": { "type": "video", "src": "VIDEO_URL", "poster": "THUMBNAIL_URL", "autoplay": false } }
+  </script>
+</lx-island>
 
 <!-- Inline video (no island needed for simple playback) -->
 <video class="w-full rounded-xl" poster="THUMBNAIL_URL" controls playsinline>
@@ -152,7 +162,7 @@ This ensures: the asset is stored in the brand's library, available for reuse, a
 ### Anti-Patterns
 - NEVER autoplay video (-7% CVR)
 - NEVER use video as only hero content (needs fallback image)
-- NEVER serve uncompressed video (use CDN URL from import_asset)
+- NEVER serve uncompressed video; use the imported CDN URL
 
 ---
 
@@ -184,9 +194,9 @@ The generation workflow uses these URLs directly in `<img src="">` and island pr
 
 ## Cost Control
 
-1. `search_design_library` first — always (free)
-2. `get_credits_balance` before expensive operations
+1. `lexsis_asset_library` action `search` first
+2. `lexsis_workspace` action `credits` before expensive operations
 3. Prefer `quality: "medium"` — reserve `"high"` for hero only
-4. External MCP assets → `import_asset` to avoid re-fetching
+4. External MCP assets → `lexsis_asset_upload` action `import`
 5. CSS gradients/solid colors for sections that don't need imagery
 6. Reuse: one hero image can serve as dimmed background for 2-3 sections

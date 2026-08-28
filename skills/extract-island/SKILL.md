@@ -11,7 +11,7 @@ JSON compatible with the Lexsis renderer.
 
 > This is a maintainer-only layout format. The `html` field contains compiled
 > runtime markup. Agents authoring a page must convert that markup to
-> `<lx-island>` source format before calling `compile_page_source`.
+> `<lx-island>` source format before calling `lexsis_pages` action `compile`.
 
 ## When to Use
 

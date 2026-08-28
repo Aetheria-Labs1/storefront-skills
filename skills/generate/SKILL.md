@@ -38,24 +38,28 @@ Generate high-quality Shopify storefront pages using the Lexsis AI MCP tools.
 ### Phase 2 — Context Gathering (run ALL in parallel)
 
 ```
-get_workspace_details    → workspace ID
-get_connected_stores     → store domain
-get_brand_kit            → logo, fonts, colors, voice, border radius
-get_design_md            → brand brief + design philosophy + don'ts
-list_products            → product catalog (for commerce islands)
-get_navigation           → navbar/footer links
-search_design_library    → existing brand assets (hero images, lifestyle shots)
+lexsis_workspace → get       → workspace context
+lexsis_workspace → stores    → store ID and domain
+lexsis_brand → brand_kit     → logo, fonts, colors, voice, border radius
+lexsis_brand → list_themes   → available themes
+lexsis_brand → get_theme     → complete selected theme + theme_css
+lexsis_design → guide        → design philosophy + don'ts
+lexsis_catalog → list        → product catalog
+lexsis_asset_library → search → existing brand assets
 ```
 
-All 7 calls can run in parallel. Wait for all before proceeding.
+Run independent reads in parallel. If more than one workspace or store is
+available, select explicitly. If no valid theme exists in the selected
+workspace, stop and report the configuration error—never borrow another
+workspace's theme.
 
 ### Phase 3 — Asset Preparation
 
 Decision tree per section:
-1. `search_design_library` — check existing assets FIRST (always)
-2. `generate_asset` — only if library has nothing suitable
-3. `generate_asset` with `reference_images` — composite or modify if needed
-4. `view_asset` — verify result before using in page
+1. `lexsis_asset_library` action `search` — check existing assets first
+2. `lexsis_drafts` action `asset_generate` — only if no suitable match exists
+3. Add `reference_images` to edit or composite
+4. `lexsis_assets` action `view` — verify before page use
 
 Budget: 3-5 generated assets per page max. Existing assets = free.
 
@@ -65,7 +69,8 @@ Author the page in **source format** (see `vibe://skills/source-format`) — pla
 - Sections delimited by `<!-- section: id -->` comments
 - Islands as `<lx-island name="BuyBox"><script type="application/json">{...props}</script></lx-island>` — use `vibe://schema/island/{name}` for exact prop shapes
 - Section CSS in a `<style>` block, section JS in a `<script>` block per section
-- Generate `theme_css` with `compile_theme` (WCAG-checked, from brand kit colors)
+- Use `theme_css` returned by `lexsis_brand` action `get_theme`, or generate it
+  with action `compile_theme` when intentionally authoring a new palette
 - Focus on visual design: layout, typography, color, spacing, imagery; animations via `data-behavior="gsap-*"` presets or shared keyframes
 - Write real copy naturally (apostrophes/quotes are fine — never escape anything; never Lorem Ipsum)
 - Use asset URLs from Phase 3 in `<img>` tags
@@ -73,35 +78,48 @@ Author the page in **source format** (see `vibe://skills/source-format`) — pla
 ### Phase 4b — Compile & Fix
 
 ```
-compile_page_source(source, head, theme_css, scripts)   → compiled page + issues
+lexsis_pages({
+  action: "compile",
+  args: { source, head, theme_css, scripts }
+}) → compiled page + issues + compiled_page_css
 ```
 
-Fix reported issues in the source and re-compile. Common issues: duplicate section IDs, invalid island names, malformed props JSON, missing headless hooks, external scripts in section HTML.
+Fix reported issues and recompile. `missing_candidates` must be empty: Tailwind
+is compiled once into `compiled_page_css`; do not add a runtime Tailwind CDN or
+separate page stylesheet.
 
 ### Phase 5 — Publish + Visual Verify
 
 ```
-create_page_from_source(source, head, theme_css, scripts, slug, archetype, publish=false)  → preview_url
+lexsis_page_create({
+  action: "create",
+  args: {
+    source, head, theme_css, scripts, slug, archetype,
+    workspace_id, store_id, theme_id,
+    inherit_header: true, inherit_footer: true,
+    publish: false
+  }
+}) → preview_url
 ```
 
 **Visual verification is REQUIRED before marking complete:**
 
-| Environment | How to Verify |
-|-------------|--------------|
-| Codex Browser | Open `preview_url`, capture desktop and mobile screenshots, then review them |
-| No Browser | Provide `preview_url` and state that visual verification remains manual |
+Use the host agent's own browser capability. The Lexsis MCP does not create or
+pool Playwright sessions. Verify 390px, 768px, and 1280px; use screenshots when
+available and computed styles/DOM geometry when they are not.
 
 **Checklist:**
 - [ ] Hero visible above fold (headline + CTA without scrolling)
 - [ ] Brand colors applied (not default purple)
 - [ ] Fonts loaded (not system fallback)
 - [ ] Images rendering (not broken/placeholder)
-- [ ] Mobile layout correct (375px viewport, no horizontal scroll)
+- [ ] Layout correct at 390px, 768px, and 1280px with no horizontal scroll
 - [ ] Islands hydrated (BuyBox shows product data, not empty div)
 - [ ] CTA contrast ≥ 4.5:1
 
-If issues → `update_section_from_source` (one section per call) → re-screenshot.
-When satisfied, return the draft preview. Call `publish_page(page_id)` only after the user explicitly approves a live publish.
+If issues, use `lexsis_drafts` action `page_update_section` or `page_patch`,
+then repeat QA. Return the draft preview. Call `lexsis_live_ops` action
+`publish` only after explicit approval.
 
 ## Page Type Templates
 
@@ -119,7 +137,7 @@ Hero Banner → Filter/Sort → Product Grid → Promo Card → Social Proof →
 
 ## Quality Bar
 
-- Mobile-first (375px viewport — test this)
+- Mobile-first (test 390px, 768px, and 1280px)
 - All brand colors via `--lx-*` CSS variables (never hardcoded hex in HTML)
 - Proper heading hierarchy (single h1 in hero, h2 per section, h3 for sub-items)
 - Islands for ALL commerce interactions (add-to-cart, checkout, cart drawer)

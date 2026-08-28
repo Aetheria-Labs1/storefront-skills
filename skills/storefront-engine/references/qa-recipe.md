@@ -2,15 +2,16 @@
 
 ## Pre-flight Checklist
 
-1. **Compile and validate source** — call `compile_page_source` with `source`, `head`, `theme_css`, and `scripts`
-2. **Save as draft** — call `create_page_from_source` with `publish: false`
-3. **Check integrity** — call `check_page_integrity` with the page's archetype
+1. **Compile and validate source** — `lexsis_pages` action `compile`
+2. **Save as draft** — `lexsis_page_create` action `create` with `publish:false`
+3. **Check integrity** — `lexsis_pages` action `integrity`
 
 ## Browser QA (if available)
 
 ### Viewports to test:
-- Mobile: 390×844 (iPhone 14)
-- Desktop: 1440×900
+- Mobile: 390px
+- Tablet: 768px
+- Desktop: 1280px
 
 ### Check for:
 - [ ] No horizontal overflow at any viewport
@@ -32,5 +33,6 @@
 ## Draft vs Live
 
 - `publish: false` → draft at `/v/{slug}?shop={domain}&preview=1`
-- `publish: true` → live page, edge-cached, visible to shoppers
-- Always draft first, QA, then publish
+- `lexsis_page_create` is draft-only and rejects `publish:true`
+- Publish later with `lexsis_live_ops` action `publish` after explicit approval
+- Draft edits do not replace the public `published_version_id`

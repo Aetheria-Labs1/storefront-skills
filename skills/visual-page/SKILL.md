@@ -26,7 +26,7 @@ Route inputs before creating a layout:
 |---|---|
 | Reference URL or screenshot | Load `browser-analyze` or `analyze-page` |
 | Ad creative | `analyze_ad_creative`, then `match_persona_to_ad` |
-| Product or collection | `list_products` and use real Shopify imagery |
+| Product or collection | `lexsis_catalog` action `list` and use real Shopify imagery |
 | Brief only | Run the embedded `plan-page` assessment |
 | Existing page edit | Use the edit flow, not this skill |
 
@@ -36,20 +36,21 @@ inputs are for composition, hierarchy, and interaction patterns only.
 ## Phase 1: Draft Plan and Layout
 
 1. Gather the minimum missing requirements with the `plan-page` assessment.
-2. Gather brand context: `get_brand_kit`, `get_design_md`, `list_products`,
-   `get_navigation`, and `search_design_library`.
+2. Gather brand context through `lexsis_brand`, `lexsis_design`,
+   `lexsis_catalog`, and `lexsis_asset_library`.
 3. Create an internal `PLAN_DRAFT`: section order, conversion goal, visual
    rhythm, asset needs, and required islands.
-4. Call `get_credits_balance` and `list_image_capabilities`.
-5. Generate a layout reference with `generate_asset`.
-6. Call `view_asset` to inspect it. Translate the concept into a layout brief:
+4. Call `lexsis_workspace` action `credits` and `lexsis_assets` action
+   `capabilities`.
+5. Generate a layout reference with `lexsis_drafts` action `asset_generate`.
+6. Call `lexsis_assets` action `view` to inspect it. Translate the concept into a layout brief:
    desktop composition, mobile stacking, section proportions, CTA positions,
    image placement, and island mapping.
 7. Present the layout concept and the plan together. Wait for approval before
    producing final assets or page source.
 
-Use only `generate_asset` for layout-reference creation. Do not assume a
-provider or model in this workflow. Call `list_image_capabilities` only when
+Use only `lexsis_drafts` action `asset_generate` for layout-reference creation.
+Do not assume a provider or model. Call `lexsis_assets` action `capabilities` when
 the brief requires a specific quality, cost, reference-image, size, or output
 format decision.
 
@@ -85,7 +86,8 @@ After approval:
 5. Fix material composition, overflow, asset, or island failures before
    returning the preview.
 
-Never call `publish_page` unless the user separately approves a live publish.
+Never call `lexsis_live_ops` action `publish` unless the user separately
+approves a live publish.
 
 ## Optional Follow-Up
 

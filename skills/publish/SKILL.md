@@ -21,8 +21,11 @@ Manage page publishing, previews, and lifecycle.
 
 1. Require a `DRAFT_READY` page from `generate` or a validated update from
    `optimize`.
-2. Confirm the preview has passed desktop and mobile QA.
-3. Confirm the user explicitly wants a live release before `publish_page`.
+2. Read `lexsis_pages` action `edit_context` and confirm
+   `has_unpublished_changes` when promoting an edited published page.
+3. Confirm the preview has passed QA at 390px, 768px, and 1280px using the host
+   agent's browser capability.
+4. Confirm the user explicitly wants a live release.
 
 ## Operations
 
@@ -33,33 +36,42 @@ compile it here. Require the page ID, preview URL, and completed visual QA
 before release.
 
 ### Publish Live (Explicit Approval Required)
+```json
+{
+  "name": "lexsis_live_ops",
+  "arguments": {
+    "action": "publish",
+    "args": { "page_id": "page-uuid" }
+  }
+}
 ```
-publish_page(page_id)
-```
-Only call this after the user explicitly says to publish live. Makes a draft page live.
+Only call this after explicit approval. A successful publish promotes the
+reviewed current version to the immutable public `published_version_id`.
+Failure preserves the previous live version.
 
 ### Unpublish
 ```
-unpublish_page(page_id)
+lexsis_live_ops({ action: "unpublish", args: { page_id } })
 ```
 Takes page offline but preserves it in DB.
 
 ### Duplicate
 ```
-duplicate_page(page_id, { title: "New Title" })
+lexsis_drafts({ action: "page_duplicate", args: { page_id, title: "New Title" } })
 ```
 Creates a copy — useful for A/B test variants.
 
 ### Create Experiment Variant
 ```
-create_page_variation(page_id, { changes: {...} })
+lexsis_drafts({ action: "page_variation", args: { page_id, changes: {...} } })
 ```
 Creates variant for A/B testing.
 
 ## Prerequisites
 
-- Store must be connected (`get_connected_stores`)
-- Brand kit should exist for proper theming
+- Resolve the store with `lexsis_workspace` action `stores`
+- `lexsis_brand` action `list_themes` must return a valid selected/default theme
+- Run `lexsis_pages` action `integrity` before publishing
 
 ## Post-Publish
 

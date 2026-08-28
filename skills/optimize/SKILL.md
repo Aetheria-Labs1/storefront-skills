@@ -20,18 +20,18 @@ Edit existing pages using section-level operations.
 
 ## Edit Flow
 
-1. `find_page` — locate the target page
-2. `get_page_source` and `inspect_page_sections` — read current source and structure
+1. `lexsis_pages` action `find`
+2. `lexsis_pages` actions `edit_context`, `source`, and `inspect`
 3. Make section-level source changes
-4. `update_section_from_source` — compiles and preflights before saving
-5. `check_page_integrity` — verify the completed page
+4. `lexsis_drafts` action `page_update_section` or `page_patch`
+5. `lexsis_pages` actions `diff` and `integrity`
 
 ## Operations
 
 ### Update/Replace a Section
 
 ```
-update_section_from_source({ page_id, section_id, source })
+lexsis_drafts({ action: "page_update_section", args: { page_id, section_id, source, expected_version } })
 ```
 - Replaces the compiled section from one source-format section
 - Auto-bumps page version
@@ -40,7 +40,7 @@ update_section_from_source({ page_id, section_id, source })
 ### Add a New Section
 
 ```
-update_section_from_source({ page_id, source, position })
+lexsis_drafts({ action: "page_update_section", args: { page_id, source, position, expected_version } })
 ```
 - Position: "before:{section_id}" or "after:{section_id}" or index number
 - Must include full section HTML
@@ -48,25 +48,25 @@ update_section_from_source({ page_id, source, position })
 ### Remove a Section
 
 ```
-remove_page_section(page_id, section_id)
+lexsis_drafts({ action: "page_remove_section", args: { page_id, section_id, expected_version } })
 ```
-- Irreversible — confirm with user first
+- Creates a reversible new page version
 - Auto-bumps version
 
 ### Reorder Sections
 
 ```
-move_page_section(page_id, section_id, new_position)
+lexsis_drafts({ action: "page_move_section", args: { page_id, section_id, position, expected_version } })
 ```
 - Position is 0-indexed
 - All other sections shift accordingly
 
 ## Best Practices
 
-- Always `get_page` first to understand current structure
+- Always read `edit_context` before writing
 - Reference section IDs from the page data (don't guess)
-- After all edits, run `check_page_integrity` before telling the user it is done
-- For multi-section changes, batch them (each call bumps version)
+- After edits, run `diff` and `integrity`
+- Batch related changes with `page_patch` so they create one version
 - Preserve existing CSS variables and island configurations
 - Don't break mobile responsiveness when editing desktop layout
 
@@ -86,10 +86,9 @@ Visually refresh an existing page using performance data to preserve what works 
 ### Step 1 — Context Gathering
 
 ```
-get_workspace_details()          → workspace ID, plan tier
-get_connected_stores()           → store domain, Shopify data
-get_brand_kit()                  → logo, fonts, colors, voice, radius
-get_design_md()                  → brand brief, design philosophy, constraints
+lexsis_workspace → get/stores
+lexsis_brand → brand_kit/list_themes/get_theme
+lexsis_design → guide
 ```
 
 These four calls ALWAYS run first. No exceptions.
@@ -97,17 +96,17 @@ These four calls ALWAYS run first. No exceptions.
 ### Step 2 — Locate and Inspect Target Page
 
 ```
-find_page({ query: "page name or slug" })
+lexsis_pages({ action: "find", args: { query: "page name or slug" } })
 ```
 Or:
 ```
-list_pages({ status: "published" })
+lexsis_pages({ action: "list", args: { status: "published" } })
 ```
 
 Then load full page data:
 ```
-get_page(page_id)
-inspect_page_sections(page_id)
+lexsis_pages({ action: "get", args: { page_id } })
+lexsis_pages({ action: "inspect", args: { page_id } })
 ```
 
 Understand: section count, section types, content blocks, current `--lx-*` variables, islands in use.
@@ -115,7 +114,7 @@ Understand: section count, section types, content blocks, current `--lx-*` varia
 ### Step 3 — Analyze Performance
 
 ```
-get_page_analytics(page_id)
+lexsis_analytics({ action: "page", args: { page_id } })
 ```
 
 Categorize each section:
@@ -130,12 +129,12 @@ Key rule: NEVER redesign sections that are converting well. Analytics data overr
 
 For each section to change:
 ```
-update_section_from_source({ page_id, section_id, source })
+lexsis_drafts({ action: "page_update_section", args: { page_id, section_id, source, expected_version } })
 ```
 
 For reordering (if scroll-depth data suggests better flow):
 ```
-move_page_section(page_id, section_id, new_position)
+lexsis_drafts({ action: "page_move_section", args: { page_id, section_id, position, expected_version } })
 ```
 
 All updated sections must use `--lx-*` CSS variables from current brand kit. No hardcoded colors or fonts.
@@ -143,7 +142,7 @@ All updated sections must use `--lx-*` CSS variables from current brand kit. No 
 ### Step 5 — Validate
 
 ```
-check_page_integrity({ page_id, archetype })
+lexsis_pages({ action: "integrity", args: { page_id, archetype } })
 ```
 
 Ensure no broken islands, valid HTML structure, responsive layout intact.
@@ -151,7 +150,7 @@ Ensure no broken islands, valid HTML structure, responsive layout intact.
 ### Step 6 — Show Before/After
 
 ```
-diff_page_versions(page_id, { from: previous_version, to: current_version })
+lexsis_pages({ action: "diff", args: { page_id, version_a: previous_version, version_b: current_version } })
 ```
 
 Present structural diff to user for approval before publishing.
@@ -159,12 +158,14 @@ Present structural diff to user for approval before publishing.
 ### Step 7 — Load Preview and Verify Visually
 
 ```
-get_page(page_id)
+lexsis_pages({ action: "get", args: { page_id } })
 ```
 
 Use the returned `preview_url`.
 
-Use Codex Browser to open `preview_url`, capture desktop and mobile screenshots, and inspect the rendered result. If Browser is unavailable, provide the preview URL and state that visual verification remains manual.
+Use the host agent's browser capability at 390px, 768px, and 1280px. Lexsis
+does not create a shared browser session. If unavailable, provide the preview
+URL and state that visual verification remains.
 
 Checklist:
 - [ ] Brand colors applied (current kit, not old defaults)
@@ -175,13 +176,13 @@ Checklist:
 - [ ] Section spacing consistent
 - [ ] No horizontal scroll on mobile
 
-If issues found: `update_section_from_source` to fix, then re-verify.
+If issues are found, patch through `lexsis_drafts`, then re-verify.
 
 ### Step 8 — Go Live (User Confirms)
 
 Only after user approves:
 ```
-publish_page(page_id)
+lexsis_live_ops({ action: "publish", args: { page_id } })
 ```
 
 If redesign later hurts metrics: `rollback_page_version(page_id, version_id)` is available.
@@ -205,7 +206,7 @@ If redesign later hurts metrics: `rollback_page_version(page_id, version_id)` is
 - Mobile responsiveness maintained or improved
 - All existing islands remain functional
 - Version history intact (rollback available)
-- Page passes `check_page_integrity` with zero errors
+- Page passes `lexsis_pages` action `integrity` with zero errors
 
 ## Optional Follow-Up
 

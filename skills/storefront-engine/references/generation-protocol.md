@@ -11,16 +11,15 @@
 ## MCP Workflow (Correct Order)
 
 ```
-1. get_workspace_details      → workspace ID, plan tier
-2. get_connected_stores       → store domain, Shopify data
-3. get_brand_kit              → logo, fonts, colors, voice, border radius
-4. get_design_md              → brand brief, design philosophy, don'ts
-5. [page-type specific tools] → products, navigation, ad creatives, etc.
-6. compile_theme              → WCAG-checked --lx-* theme_css from brand colors
+1. lexsis_workspace → get/stores
+2. lexsis_brand → brand_kit/list_themes/get_theme
+3. lexsis_design → guide
+4. [page-type routers] → catalog, navigation, campaigns, assets
+5. Require a valid selected/default theme in the chosen workspace
 7. Generate page (two-phase, SOURCE FORMAT — see source-format.md)
-8. compile_page_source        → dry-run compile + validation issues
-9. create_page_from_source    → persists page, returns preview_url
-10. Visual verification       → screenshot and verify
+8. lexsis_pages → compile
+9. lexsis_page_create → create draft
+10. Host-agent visual verification
 ```
 
 Steps 1-4 are ALWAYS run first. They establish context. Steps 5+ vary by skill.
@@ -30,7 +29,7 @@ Steps 1-4 are ALWAYS run first. They establish context. Steps 5+ vary by skill.
 > **Authoring format**: write pages in the HTML-native **source format** (`source-format.md`) — plain HTML sections delimited by `<!-- section: id -->`, islands as `<lx-island name>` with a JSON `<script>` child. The compiler produces VibePage JSON and does all escaping.
 
 > **Templates**: search before drafting. Retrieve templates you intend to edit
-> with `get_section_template({ ids })`. Each returned `source` is ready for
+> with `lexsis_design` action `get_section`. Each returned `source` is ready for
 > editing and compiling. `format: "compiled_reference"` is renderer output and cannot be passed directly to
 > source-authoring tools.
 
@@ -46,14 +45,16 @@ Generate the FULL page as source-format HTML first:
 - Write all copy naturally — apostrophes/quotes need no escaping
 - Set all colors via `--lx-*` CSS variables (from `compile_theme`)
 - Mobile-first responsive; shared keyframes or `data-behavior="gsap-*"` presets for animation
-- Islands go in directly as `<lx-island name="BuyBox">` with a JSON `<script>` child — use `get_island_schema({island_name})` for exact prop shapes
+- Islands go in directly as `<lx-island name="BuyBox">` with a JSON `<script>` child — use `lexsis_design` action `island_schema` for exact prop shapes
 
 ### Phase 4b — Compile & Fix
 
-Run `compile_page_source { source, head, theme_css, scripts }`:
+Run `lexsis_pages` action `compile`:
 - Returns the compiled VibePage + compile issues + publish validation
 - Fix reported issues in the source (unknown islands, bad props, missing hooks) and re-compile
-- When clean, `create_page_from_source` persists it (the agent-authored source is stored too, retrievable via `get_page_source` for later edits)
+- Require `missing_candidates` to be empty
+- When clean, `lexsis_page_create` action `create` persists a draft; retrieve
+  source later with `lexsis_pages` action `source`
 
 ### Why Two-Phase?
 - Source HTML renders in any browser preview — fast visual feedback
@@ -82,7 +83,8 @@ Run `compile_page_source { source, head, theme_css, scripts }`:
 ```
 
 ### Rules
-- **Tailwind CSS** in HTML class attributes (renderer includes Tailwind CDN)
+- **Tailwind CSS** in HTML class attributes. The compiler emits one
+  deterministic `compiled_page_css`; there is no runtime Tailwind CDN.
 - **CSS Variables** (`--lx-*`) for all brand colors/fonts — set in `theme_css` (generate with `compile_theme`)
 - **Islands** compile to `data-island="Name"` + `data-props='JSON'` attributes (in source format, write `<lx-island>` instead)
 - **Section IDs** must be unique, kebab-case: "hero", "social-proof", "faq"
@@ -110,45 +112,14 @@ Run `compile_page_source { source, head, theme_css, scripts }`:
 
 ## Visual Verification (Critical Step)
 
-After `create_page_from_source` returns a `preview_url`, ALWAYS verify visually.
+After `lexsis_page_create` returns a `preview_url`, always verify visually.
+Use the calling agent's browser capability; Lexsis does not create a shared
+Playwright session or browser pool.
 
-### For Claude Code (Playwright MCP)
-
-Install: https://playwright.dev/docs/getting-started-mcp
-
-Add to Claude Code MCP config:
-```json
-{
-  "mcpServers": {
-    "playwright": {
-      "command": "npx",
-      "args": ["@playwright/mcp@latest"]
-    }
-  }
-}
-```
-
-Then:
-```
-1. browser_navigate → preview_url
-2. browser_take_screenshot({fullPage: true}) → full page capture
-3. Review: layout, spacing, mobile responsiveness, broken images
-4. If issues found → `update_section_from_source({ page_id, source })` → re-verify
-```
-
-### For Codex (Built-in Browser)
-
-Use the built-in browser tool to open the preview URL and visually inspect.
-
-### For Cursor / Other IDEs
-
-If no browser tool available, instruct user:
-- "Preview URL: {url} — open in browser to verify"
-- Suggest mobile viewport check (375px width)
-
-### Installation Reference
-
-Playwright MCP docs: https://playwright.dev/docs/getting-started-mcp
+Test 390px, 768px, and 1280px. Use screenshots when available. Otherwise use
+computed styles, DOM bounds, scroll dimensions, image completeness, hover
+state, and console inspection. If the host has no browser capability, return
+the preview URL and state that visual QA remains.
 
 ### What to Check
 - [ ] Hero section visible above fold (no scroll needed for headline + CTA)
@@ -169,7 +140,9 @@ Islands are React components that hydrate client-side. They handle interactive c
 
 ### How to Embed
 ```html
-<div data-island="IslandName" data-props='{"key": "value"}'></div>
+<lx-island name="IslandName">
+  <script type="application/json">{ "key": "value" }</script>
+</lx-island>
 ```
 
 ### Key Islands by Use Case
@@ -190,10 +163,10 @@ Islands are React components that hydrate client-side. They handle interactive c
 | Social proof popup | SocialProofPopup | provider, delay |
 
 ### Prop Data Sources
-- Product data → `get_product(product_id)` or `list_products`
-- Navigation → `get_navigation`
+- Product data → `lexsis_catalog` action `get` or `list`
+- Navigation → `lexsis_brand` action `navigation`
 - Reviews → configured in store (no manual data needed)
-- Brand tokens → `get_brand_kit`
+- Brand tokens → `lexsis_brand` action `brand_kit` or `get_theme`
 
 ---
 
@@ -214,10 +187,10 @@ These tools appeared in older skill versions but are no longer available:
 
 ## Quality Gates (Before Publishing)
 
-1. **compile_page_source** — compile and validate source before creating a page
-2. **check_page_integrity** — archetype-specific rules (recommended)
-3. **Visual verification** — browser screenshot (required for final delivery)
+1. `lexsis_pages` action `compile`
+2. `lexsis_pages` action `integrity`
+3. Host-agent visual verification
 
-If `compile_page_source` fails → fix source errors → re-compile.
-If `check_page_integrity` warns → assess if acceptable → proceed or fix.
-If visual check fails → `update_section_from_source` → re-screenshot.
+If compile fails, fix source and retry. If integrity warns, assess and fix.
+If visual QA fails, use `lexsis_drafts` action `page_update_section` or
+`page_patch`, then repeat QA.

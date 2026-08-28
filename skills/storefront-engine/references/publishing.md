@@ -4,54 +4,58 @@ Manage page publishing, previews, and lifecycle.
 
 ## Publish Flow
 
-1. `compile_page_source` — compile and validate the generated source
-2. `create_page_from_source` — persist the initial draft
-   - `publish: false` → preview URL only (not live on store)
-3. `publish_page` — go live only after explicit approval
+1. `lexsis_pages` action `compile`
+2. `lexsis_page_create` action `create` with `publish:false`
+3. `lexsis_pages` action `integrity`
+4. Host-agent browser QA at 390px, 768px, and 1280px
+5. `lexsis_live_ops` action `publish` after explicit approval
 
 ## Operations
 
 ### Create Draft (New Page)
 ```
-compile_page_source({ source, head, theme_css, scripts })
-create_page_from_source({ source, head, theme_css, scripts, slug, publish: false })
+lexsis_pages({ action: "compile", args: { source, head, theme_css, scripts } })
+lexsis_page_create({ action: "create", args: { source, head, theme_css, scripts, slug, publish: false } })
 ```
 Returns: page_id, page_url, preview_url
 
 ### Preview (Draft)
 ```
-create_page_from_source({ source, head, theme_css, scripts, slug, publish: false })
+lexsis_page_create({ action: "create", args: { source, head, theme_css, scripts, slug, publish: false } })
 ```
 Returns: preview_url (not visible to store visitors)
 
 ### Publish Existing Page
 ```
-publish_page(page_id)
+lexsis_live_ops({ action: "publish", args: { page_id } })
 ```
-Makes a draft page live.
+Promotes the exact reviewed version to `published_version_id`.
 
 ### Unpublish
 ```
-unpublish_page(page_id)
+lexsis_live_ops({ action: "unpublish", args: { page_id } })
 ```
 Takes page offline but preserves it in DB.
 
 ### Duplicate
 ```
-duplicate_page(page_id, { title: "New Title" })
+lexsis_drafts({ action: "page_duplicate", args: { page_id, title: "New Title" } })
 ```
 Creates a copy — useful for A/B test variants.
 
 ### Create Experiment Variant
 ```
-create_page_variation(page_id, { changes: {...} })
+lexsis_drafts({ action: "page_variation", args: { page_id, changes: {...} } })
 ```
 Creates variant for A/B testing.
 
 ## Prerequisites
 
-- Store must be connected (`get_connected_stores`)
-- Brand kit should exist for proper theming
+- Resolve a connected store with `lexsis_workspace` action `stores`
+- Require a valid selected/default theme from `lexsis_brand`
+
+Edits to a published page remain draft-only until publish succeeds. A failed
+republish keeps the prior public version live.
 
 ## Post-Publish
 

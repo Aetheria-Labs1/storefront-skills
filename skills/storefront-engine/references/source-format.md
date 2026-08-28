@@ -1,6 +1,9 @@
 # Source Format — HTML-Native Page Authoring (V2)
 
-> **This is the preferred way to author pages.** Write plain HTML with `<lx-island>` elements; the `compile_page_source` / `create_page_from_source` tools compile it to VibePage JSON deterministically. Never hand-write `data-island` / `data-props` attributes or escape HTML into JSON strings — the compiler does all escaping for you.
+> **This is the preferred way to author pages.** Write plain HTML with
+> `<lx-island>` elements; `lexsis_pages` action `compile` and
+> `lexsis_page_create` action `create` compile it deterministically. Never
+> hand-write `data-island` / `data-props` or escape HTML into JSON strings.
 
 ## Why this format exists
 
@@ -48,22 +51,26 @@ The old path (VibePage JSON with HTML in strings and JSON inside `data-props='..
 2. **Islands** are `<lx-island name="IslandName">` with props as a `<script type="application/json">` child. Write natural copy — apostrophes, quotes, em-dashes are all fine; no escaping needed.
 3. **`<lx-island>` attributes**: `name` (required), `hydrate` (`immediate|visible|idle|interaction`), `headless` (headless mode — see below), plus `class`/`id`/`style` which pass through to the compiled element.
 4. **Section CSS** goes in a top-level `<style>` block; **section JS** in a top-level `<script>` block (multiple blocks are concatenated). `application/json` / `ld+json` scripts stay in the HTML.
-5. **External libraries** (GSAP etc.) do NOT go in section HTML — pass them via the `scripts` param of the compile tools.
-6. **`head`, `theme_css`, `scripts`** are structured tool params, not part of the source. Generate `theme_css` with `compile_theme` (WCAG-checked palette from brand colors) instead of writing it by hand.
+5. **External libraries** do not go in section HTML—pass them through `scripts`.
+6. **`head`, `theme_css`, `scripts`** are structured tool arguments. Prefer
+   `theme_css` from `lexsis_brand` action `get_theme`.
+7. Tailwind classes compile into one `compiled_page_css` artifact. Fix every
+   missing candidate; do not add Tailwind CDN or a separate generated sheet.
 
 ### Tool workflow
 
 ```
-get_brand_kit → compile_theme { accent, bg, fonts... } → theme_css
+lexsis_brand → list_themes/get_theme → theme_css
 draft source HTML (whole page)
-compile_page_source { source, head, theme_css, scripts }   ← dry-run: compiled page + issues
+lexsis_pages { action: "compile", args: { source, head, theme_css, scripts } }
 fix any issues, then:
-create_page_from_source { source, head, theme_css, scripts, slug, publish }
-edits: update_section_from_source { page_id, source }      ← one section per call
-round-trip: get_page_source { page_id } → edit → update_section_from_source
+lexsis_page_create { action: "create", args: { source, head, theme_css, scripts, slug, publish: false } }
+edits: lexsis_drafts → page_update_section or page_patch
+round-trip: lexsis_pages → source/section_source → lexsis_drafts
 ```
 
-`update_section_from_source` compiles ONE section (delimiter optional — pass `section_id` if absent) and upserts it. Prefer it over whole-page rewrites: smaller payloads, no blob races.
+`page_update_section` compiles one section and upserts it. `page_patch` batches
+related localized changes into one version. Pass `expected_version`.
 
 ## Starting From a Template
 
@@ -71,12 +78,12 @@ Search the section library before writing a section from scratch. When you pick
 a template, request editable source:
 
 ```text
-get_section_template({ ids: ["template-id"] })
+lexsis_design({ action: "get_section", args: { ids: ["template-id"] } })
 ```
 
 The response's `source` is one complete source-format section: a delimiter,
 `<lx-island>` markup, and the template CSS/JS. Tailor it, then run
-`compile_page_source`.
+`lexsis_pages` action `compile`.
 
 `format: "compiled_reference"` is renderer output containing
 `data-island` / `data-props`. It is useful for inspection but must never be

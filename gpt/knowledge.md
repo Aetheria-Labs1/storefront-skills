@@ -1,5 +1,5 @@
 <!-- GENERATED from skills/ by scripts/build-distributions.py — DO NOT EDIT.
-     storefront-skills v5.3.0 · 14 skills · 53 island schemas -->
+     storefront-skills v6.0.0 · 14 skills · 54 island schemas -->
 
 # Lexsis Storefront Skills — Knowledge Base
 
@@ -69,17 +69,18 @@ new brand-owned page from that brief, `visual-page` can use it as input.
 ```
 Need an image or video for a section?
 │
-├─ search_design_library({ query }) → found good match?
+├─ lexsis_asset_library({ action: "search", args: { query, workspace_id } })
+│  → found good match?
 │  ├─ YES → use it (free, on-brand)
 │  └─ NO ↓
 │
 ├─ Product shot needed?
-│  ├─ YES → use real images from list_products (NEVER generate fake products)
+│  ├─ YES → use real images from lexsis_catalog action list/get
 │  └─ NO ↓
 │
 ├─ What type of asset?
 │  ├─ Static image (background, lifestyle, texture, composite)
-│  │  └─ generate_asset (built-in, costs credits; add reference_images to composite or edit)
+│  │  └─ lexsis_drafts action asset_generate
 │  │
 │  ├─ Video (hero, demo, UGC-style)
 │  │  └─ External MCP: HiggsField / Runway / Kling
@@ -93,7 +94,8 @@ Need an image or video for a section?
 │  └─ Specialized illustration (custom style beyond built-in)
 │     └─ External MCP: OpenArt
 │
-└─ After sourcing → import_asset({ url, purpose, tags }) to persist in library
+└─ After sourcing → lexsis_asset_upload action import
+   with { url, purpose, tags, workspace_id }
 ```
 
 ---
@@ -102,12 +104,13 @@ Need an image or video for a section?
 
 | Tool | What it does | Cost |
 |------|-------------|------|
-| `search_design_library` | Search existing brand assets | Free |
-| `generate_asset` | AI image generation, compositing, inpainting, or style transfer; add `reference_images` for source-based work | Credits |
-| `view_asset` | Visually verify a generated/edited asset before using | Free |
-| `import_asset` | Bring an external URL (or base64) into the design library for reuse. Call with **no arguments** to open an upload picker so the user can supply their own file — use that when they want to add their own logo/photo and you have no URL for it | Free |
+| `lexsis_asset_library` → `search` | Search workspace assets | Free |
+| `lexsis_drafts` → `asset_generate` | Generate, composite, inpaint, or restyle | Credits |
+| `lexsis_assets` → `view` | Visually verify an asset | Free |
+| `lexsis_asset_upload` → `import` | Import URL, base64, conversation attachments, or open the upload picker | Free |
 
-**Always `search_design_library` first.** Existing assets are free and already brand-consistent.
+Always search first. Pass `workspace_id` explicitly for multi-workspace
+accounts. Automatic selection is allowed only with one active workspace.
 
 When a `visual-page` layout concept is supplied, use it only for composition,
 crop, and visual-rhythm guidance. It is not a production asset. Source final
@@ -127,9 +130,12 @@ These tools are available when the user has the corresponding MCP installed. Che
 web_search_exa({ query: "skincare brand hero photography editorial style" })
 ```
 
-Use for: mood boards, competitor visual research, finding reference imagery to brief `generate_asset` more precisely, sourcing real lifestyle photos.
+Use for: mood boards, competitor visual research, finding reference imagery to
+brief `lexsis_drafts` action `asset_generate`, and sourcing real lifestyle
+photos.
 
-**Flow:** Exa search → find reference URL → `import_asset({ url })` to persist → use in page.
+**Flow:** Exa search → find reference URL → `lexsis_asset_upload` action
+`import` → use the returned permanent URL.
 
 ### HiggsField / Runway / Kling — Video Generation
 
@@ -149,7 +155,8 @@ Use when: TikTok traffic source, fashion/luxury vertical, product demo needed, b
 
 ### OpenArt — Specialized AI Illustration
 
-Use when: `generate_asset(style: "illustration")` doesn't provide enough control over style, need specific artistic direction, or brand has a custom illustration language.
+Use when `lexsis_drafts` action `asset_generate` with illustration styling does
+not provide enough control, or the brand has a custom illustration language.
 
 ### Unsplash / Pexels — Stock Photography
 
@@ -163,7 +170,15 @@ All external assets MUST be persisted before use:
 
 ```
 1. Source asset via external MCP → get URL
-2. import_asset({ url, purpose: "hero_bg", tags: ["lifestyle", "summer"] })
+2. lexsis_asset_upload({
+     action: "import",
+     args: {
+       url,
+       purpose: "hero_bg",
+       tags: ["lifestyle", "summer"],
+       workspace_id
+     }
+   })
    → returns { asset_id, url, width, height }
 3. Use returned URL in page HTML (same as built-in assets)
 ```
@@ -184,7 +199,7 @@ This ensures: the asset is stored in the brand's library, available for reuse, a
 | Bundle | 1 | 1 | 0 | 0 | 2-3 |
 
 **Rules:**
-- Check `get_credits_balance` before any generation
+- Check `lexsis_workspace` action `credits` before generation
 - Use `quality: "medium"` default; `"high"` only for hero images
 - Products have their own Shopify images — never generate product shots
 
@@ -216,7 +231,7 @@ This ensures: the asset is stored in the brand's library, available for reuse, a
 ### Anti-Patterns
 - NEVER autoplay video (-7% CVR)
 - NEVER use video as only hero content (needs fallback image)
-- NEVER serve uncompressed video (use CDN URL from import_asset)
+- NEVER serve uncompressed video; use the permanent imported CDN URL
 
 ---
 
@@ -248,10 +263,10 @@ The generation workflow uses these URLs directly in `<img src="">` and island pr
 
 ## Cost Control
 
-1. `search_design_library` first — always (free)
-2. `get_credits_balance` before expensive operations
+1. `lexsis_asset_library` action `search` first
+2. `lexsis_workspace` action `credits` before expensive operations
 3. Prefer `quality: "medium"` — reserve `"high"` for hero only
-4. External MCP assets → `import_asset` to avoid re-fetching
+4. External MCP assets → `lexsis_asset_upload` action `import`
 5. CSS gradients/solid colors for sections that don't need imagery
 6. Reuse: one hero image can serve as dimmed background for 2-3 sections
 
@@ -612,19 +627,19 @@ Access page performance data and manage A/B experiments.
 
 ### Page-Level Deep Dive
 ```
-get_page_analytics(page_id)
+lexsis_analytics({ action: "page", args: { page_id } })
 ```
 Returns: CVR, bounce rate, time on page, traffic sources, device split, top-performing sections.
 
 ### Time Series Trends
 ```
-get_analytics_timeseries({ metric: "conversions", period: "daily", range: "30d" })
+lexsis_analytics({ action: "timeseries", args: { metric: "conversions", period: "daily", range: "30d" } })
 ```
 Returns: daily/weekly trends for hits, conversions, revenue, AOV.
 
 ### Revenue Attribution
 ```
-get_attribution({ page_id? })
+lexsis_analytics({ action: "attribution", args: { page_id? } })
 ```
 Returns: ROAS by channel, revenue per page, top campaigns driving conversions.
 
@@ -632,21 +647,24 @@ Returns: ROAS by channel, revenue per page, top campaigns driving conversions.
 
 ### 1. Create Experiment
 ```
-create_ab_test({
-  page_id: "...",
-  variants: [{ blueprint_id: "...", weight: 50 }, { blueprint_id: "...", weight: 50 }]
+lexsis_drafts({
+  action: "experiment_create",
+  args: {
+    page_id: "...",
+    variants: [{ blueprint_id: "...", weight: 50 }, { blueprint_id: "...", weight: 50 }]
+  }
 })
 ```
 
 ### 2. Monitor Results
 ```
-get_experiment_results(experiment_id)
+lexsis_analytics({ action: "experiment", args: { experiment_id } })
 ```
 Returns: CVR per variant, statistical significance (mSPRT), sample sizes, winner recommendation.
 
 ### 3. Scale Winner
 ```
-scale_winner(experiment_id, { variant_id: "..." })
+lexsis_live_ops({ action: "scale_winner", args: { experiment_id, variant_id: "..." } })
 ```
 Scales winning variant to 100% traffic, marks experiment complete.
 
@@ -674,9 +692,8 @@ Create targeted page variants adapting messaging, imagery, social proof, and CTA
 ### Step 1 — Context Gathering
 
 ```
-get_workspace_details()          → workspace ID, plan tier
-get_connected_stores()           → store domain, Shopify data
-get_brand_kit()                  → logo, fonts, colors, voice, radius
+lexsis_workspace → get/stores
+lexsis_brand → brand_kit/list_themes/get_theme
 ```
 
 These three calls ALWAYS run first. No exceptions.
@@ -684,14 +701,14 @@ These three calls ALWAYS run first. No exceptions.
 ### Step 2 — Load Personas and Base Page
 
 ```
-list_personas()
+lexsis_campaigns({ action: "personas", args: { workspace_id } })
 ```
 
 Review available audience segments. If none exist, define inline: name, demographics, pain points, motivations, objections, buying stage, tone preference.
 
 ```
-get_page(page_id)
-get_page_content(page_id)
+lexsis_pages({ action: "get", args: { page_id } })
+lexsis_pages({ action: "content", args: { page_id } })
 ```
 
 Understand current structure, copy, and section types. This is the default variant.
@@ -714,26 +731,30 @@ Not everything changes. Keep brand identity (colors, fonts, logo) consistent acr
 
 For each persona:
 ```
-search_design_library({ query: "<persona-relevant imagery>" })
+lexsis_asset_library({ action: "search", args: { query: "<persona-relevant imagery>", workspace_id } })
 ```
 
 Find images reflecting the persona's world. Generate if needed:
 ```
-generate_asset({ prompt: "...", demographic: "<persona context>" })
+lexsis_drafts({ action: "asset_generate", args: { prompt: "...", demographic: "<persona context>", workspace_id } })
 ```
 
 ### Step 5 — Create Each Variant
 
 For each persona:
 ```
-create_page_variation(page_id, {
-  name: "<persona_name> variant",
-  changes: {
-    sections: [
-      { section_id: "hero", html: "...", css: "..." },
-      { section_id: "social-proof", html: "..." },
-      { section_id: "cta-block", html: "..." }
-    ]
+lexsis_drafts({
+  action: "page_variation",
+  args: {
+    page_id,
+    name: "<persona_name> variant",
+    changes: {
+      sections: [
+        { section_id: "hero", html: "...", css: "..." },
+        { section_id: "social-proof", html: "..." },
+        { section_id: "cta-block", html: "..." }
+      ]
+    }
   }
 })
 ```
@@ -754,14 +775,16 @@ When a prop change is part of the experiment, edit source-format markup:
 
 For each variant:
 ```
-check_page_integrity({ page_id: variant_page_id, archetype })
+lexsis_pages({ action: "integrity", args: { page_id: variant_page_id, archetype } })
 ```
 
 Ensure all render correctly, islands work, mobile intact.
 
 ### Step 7 — Visual Verification (Each Variant)
 
-Use Codex Browser to open every variant preview, capture desktop and mobile screenshots, and inspect the rendered result. If Browser is unavailable, provide the preview URLs and state that visual verification remains manual.
+Use the host agent's browser capability at 390px, 768px, and 1280px for every
+variant. Lexsis does not create shared browser sessions. If browser access is
+unavailable, provide the preview URLs and state that visual QA remains.
 
 Checklist (per variant):
 - [ ] Headline tone matches persona (urgent vs aspirational vs analytical)
@@ -775,13 +798,16 @@ Checklist (per variant):
 ### Step 8 — (Optional) Set Up Persona-Targeted Experiment
 
 ```
-create_ab_test({
-  page_id: base_page_id,
-  variants: [
-    { page_id: variant_a_id, weight: 33, targeting: { persona: "deal-seekers" } },
-    { page_id: variant_b_id, weight: 33, targeting: { persona: "quality-seekers" } },
-    { page_id: base_page_id, weight: 34, targeting: { default: true } }
-  ]
+lexsis_drafts({
+  action: "experiment_create",
+  args: {
+    page_id: base_page_id,
+    variants: [
+      { page_id: variant_a_id, weight: 33, targeting: { persona: "deal-seekers" } },
+      { page_id: variant_b_id, weight: 33, targeting: { persona: "quality-seekers" } },
+      { page_id: base_page_id, weight: 34, targeting: { default: true } }
+    ]
+  }
 })
 ```
 
@@ -804,7 +830,7 @@ Traffic routes to matching persona variant based on UTM/audience signals.
 - CTA language aligns with persona motivation
 - Social proof relevant to persona (industry-matched, use-case-matched)
 - All variants share same `--lx-*` brand identity
-- Each variant passes `check_page_integrity` independently
+- Each variant passes `lexsis_pages` action `integrity` independently
 - Tone consistent within each variant (headline tone = body copy tone)
 - Structural integrity maintained (no broken sections or islands)
 
@@ -824,8 +850,7 @@ Clone an existing page, apply a single focused change based on a clear hypothesi
 ### Step 1 — Context Gathering
 
 ```
-get_workspace_details()          → workspace ID, plan tier
-get_connected_stores()           → store domain, Shopify data
+lexsis_workspace → get/stores
 ```
 
 These two calls ALWAYS run first. No exceptions.
@@ -833,8 +858,8 @@ These two calls ALWAYS run first. No exceptions.
 ### Step 2 — Load Current Page and Baseline
 
 ```
-get_page(page_id)
-get_page_analytics(page_id)
+lexsis_pages({ action: "get", args: { page_id } })
+lexsis_analytics({ action: "page", args: { page_id } })
 ```
 
 Record baseline performance:
@@ -862,12 +887,15 @@ Common high-impact tests (ordered by typical lift):
 ### Step 4 — Create the Variant
 
 ```
-duplicate_page(page_id)
+lexsis_drafts({ action: "page_duplicate", args: { page_id } })
 ```
 
 Creates exact copy. Then apply the SINGLE focused change:
 ```
-update_section_from_source({ page_id: variant_page_id, section_id, source })
+lexsis_drafts({
+  action: "page_update_section",
+  args: { page_id: variant_page_id, section_id, source, expected_version }
+})
 ```
 
 RULE: ONE change per test. Multiple changes make attribution impossible.
@@ -885,14 +913,15 @@ test specifically targets island props:
 ### Step 5 — Validate Variant
 
 ```
-check_page_integrity({ page_id: variant_page_id, archetype })
+lexsis_pages({ action: "integrity", args: { page_id: variant_page_id, archetype } })
 ```
 
 Ensure variant renders correctly, all islands work, mobile intact.
 
 ### Step 6 — Visual Verification
 
-Use Codex Browser to open the variant preview, capture desktop and mobile screenshots, and inspect the rendered result. If Browser is unavailable, provide the preview URL and state that visual verification remains manual.
+Use the host agent's browser capability at 390px, 768px, and 1280px. If it is
+unavailable, provide the preview URL and state that visual QA remains.
 
 Checklist:
 - [ ] The ONE change is clearly visible
@@ -904,15 +933,18 @@ Checklist:
 ### Step 7 — Launch Experiment
 
 ```
-create_ab_test({
-  page_id: page_id,
-  hypothesis: "Changing [X] will improve [metric] because [reason]",
-  variants: [
-    { page_id: page_id, weight: 50, name: "Control (A)" },
-    { page_id: variant_page_id, weight: 50, name: "Variant (B)" }
-  ],
-  primary_metric: "conversion_rate",
-  minimum_sample: 1000
+lexsis_drafts({
+  action: "experiment_create",
+  args: {
+    page_id: page_id,
+    hypothesis: "Changing [X] will improve [metric] because [reason]",
+    variants: [
+      { page_id: page_id, weight: 50, name: "Control (A)" },
+      { page_id: variant_page_id, weight: 50, name: "Variant (B)" }
+    ],
+    primary_metric: "conversion_rate",
+    minimum_sample: 1000
+  }
 })
 ```
 
@@ -921,7 +953,7 @@ create_ab_test({
 ### Step 8 — Monitor Results
 
 ```
-get_experiment_results(experiment_id)
+lexsis_analytics({ action: "experiment", args: { experiment_id } })
 ```
 
 Returns: CVR per variant with confidence intervals, statistical significance (mSPRT), sample size, winner recommendation, secondary metrics.
@@ -936,7 +968,7 @@ RULES:
 
 Only when `significant: true`:
 ```
-scale_winner(experiment_id, winning_variant_id)
+lexsis_live_ops({ action: "scale_winner", args: { experiment_id, variant_id: winning_variant_id } })
 ```
 
 Routes 100% traffic to winner. Marks experiment complete.
@@ -960,7 +992,7 @@ If no winner after 2000+ visitors per variant: the change has no meaningful impa
 - Hypothesis documented BEFORE variant creation
 - Minimum 1000 visitors per variant before evaluating
 - Statistical significance required (mSPRT p<0.05) before declaring winner
-- Both variants pass `check_page_integrity`
+- Both variants pass `lexsis_pages` action `integrity`
 - Control remains untouched for test duration
 - Secondary metrics monitored alongside primary
 - Learning documented regardless of outcome (losses teach as much as wins)
@@ -1012,24 +1044,28 @@ Generate high-quality Shopify storefront pages using the Lexsis AI MCP tools.
 ### Phase 2 — Context Gathering (run ALL in parallel)
 
 ```
-get_workspace_details    → workspace ID
-get_connected_stores     → store domain
-get_brand_kit            → logo, fonts, colors, voice, border radius
-get_design_md            → brand brief + design philosophy + don'ts
-list_products            → product catalog (for commerce islands)
-get_navigation           → navbar/footer links
-search_design_library    → existing brand assets (hero images, lifestyle shots)
+lexsis_workspace → get       → workspace context
+lexsis_workspace → stores    → store ID and domain
+lexsis_brand → brand_kit     → logo, fonts, colors, voice, border radius
+lexsis_brand → list_themes   → available themes
+lexsis_brand → get_theme     → complete selected theme + theme_css
+lexsis_design → guide        → design philosophy + don'ts
+lexsis_catalog → list        → product catalog
+lexsis_asset_library → search → existing brand assets
 ```
 
-All 7 calls can run in parallel. Wait for all before proceeding.
+Run independent reads in parallel. If more than one workspace or store is
+available, select explicitly. If no valid theme exists in the selected
+workspace, stop and report the configuration error—never borrow another
+workspace's theme.
 
 ### Phase 3 — Asset Preparation
 
 Decision tree per section:
-1. `search_design_library` — check existing assets FIRST (always)
-2. `generate_asset` — only if library has nothing suitable
-3. `generate_asset` with `reference_images` — composite or modify if needed
-4. `view_asset` — verify result before using in page
+1. `lexsis_asset_library` action `search` — check existing assets first
+2. `lexsis_drafts` action `asset_generate` — only if no suitable match exists
+3. Add `reference_images` to edit or composite
+4. `lexsis_assets` action `view` — verify before page use
 
 Budget: 3-5 generated assets per page max. Existing assets = free.
 
@@ -1039,7 +1075,8 @@ Author the page in **source format** (see `vibe://skills/source-format`) — pla
 - Sections delimited by `<!-- section: id -->` comments
 - Islands as `<lx-island name="BuyBox"><script type="application/json">{...props}</script></lx-island>` — use `vibe://schema/island/{name}` for exact prop shapes
 - Section CSS in a `<style>` block, section JS in a `<script>` block per section
-- Generate `theme_css` with `compile_theme` (WCAG-checked, from brand kit colors)
+- Use `theme_css` returned by `lexsis_brand` action `get_theme`, or generate it
+  with action `compile_theme` when intentionally authoring a new palette
 - Focus on visual design: layout, typography, color, spacing, imagery; animations via `data-behavior="gsap-*"` presets or shared keyframes
 - Write real copy naturally (apostrophes/quotes are fine — never escape anything; never Lorem Ipsum)
 - Use asset URLs from Phase 3 in `<img>` tags
@@ -1047,35 +1084,48 @@ Author the page in **source format** (see `vibe://skills/source-format`) — pla
 ### Phase 4b — Compile & Fix
 
 ```
-compile_page_source(source, head, theme_css, scripts)   → compiled page + issues
+lexsis_pages({
+  action: "compile",
+  args: { source, head, theme_css, scripts }
+}) → compiled page + issues + compiled_page_css
 ```
 
-Fix reported issues in the source and re-compile. Common issues: duplicate section IDs, invalid island names, malformed props JSON, missing headless hooks, external scripts in section HTML.
+Fix reported issues and recompile. `missing_candidates` must be empty: Tailwind
+is compiled once into `compiled_page_css`; do not add a runtime Tailwind CDN or
+separate page stylesheet.
 
 ### Phase 5 — Publish + Visual Verify
 
 ```
-create_page_from_source(source, head, theme_css, scripts, slug, archetype, publish=false)  → preview_url
+lexsis_page_create({
+  action: "create",
+  args: {
+    source, head, theme_css, scripts, slug, archetype,
+    workspace_id, store_id, theme_id,
+    inherit_header: true, inherit_footer: true,
+    publish: false
+  }
+}) → preview_url
 ```
 
 **Visual verification is REQUIRED before marking complete:**
 
-| Environment | How to Verify |
-|-------------|--------------|
-| Codex Browser | Open `preview_url`, capture desktop and mobile screenshots, then review them |
-| No Browser | Provide `preview_url` and state that visual verification remains manual |
+Use the host agent's own browser capability. The Lexsis MCP does not create or
+pool Playwright sessions. Verify 390px, 768px, and 1280px; use screenshots when
+available and computed styles/DOM geometry when they are not.
 
 **Checklist:**
 - [ ] Hero visible above fold (headline + CTA without scrolling)
 - [ ] Brand colors applied (not default purple)
 - [ ] Fonts loaded (not system fallback)
 - [ ] Images rendering (not broken/placeholder)
-- [ ] Mobile layout correct (375px viewport, no horizontal scroll)
+- [ ] Layout correct at 390px, 768px, and 1280px with no horizontal scroll
 - [ ] Islands hydrated (BuyBox shows product data, not empty div)
 - [ ] CTA contrast ≥ 4.5:1
 
-If issues → `update_section_from_source` (one section per call) → re-screenshot.
-When satisfied, return the draft preview. Call `publish_page(page_id)` only after the user explicitly approves a live publish.
+If issues, use `lexsis_drafts` action `page_update_section` or `page_patch`,
+then repeat QA. Return the draft preview. Call `lexsis_live_ops` action
+`publish` only after explicit approval.
 
 ## Page Type Templates
 
@@ -1093,7 +1143,7 @@ Hero Banner → Filter/Sort → Product Grid → Promo Card → Social Proof →
 
 ## Quality Bar
 
-- Mobile-first (375px viewport — test this)
+- Mobile-first (test 390px, 768px, and 1280px)
 - All brand colors via `--lx-*` CSS variables (never hardcoded hex in HTML)
 - Proper heading hierarchy (single h1 in hero, h2 per section, h3 for sub-items)
 - Islands for ALL commerce interactions (add-to-cart, checkout, cart drawer)
@@ -1137,18 +1187,18 @@ Edit existing pages using section-level operations.
 
 ## Edit Flow
 
-1. `find_page` — locate the target page
-2. `get_page_source` and `inspect_page_sections` — read current source and structure
+1. `lexsis_pages` action `find`
+2. `lexsis_pages` actions `edit_context`, `source`, and `inspect`
 3. Make section-level source changes
-4. `update_section_from_source` — compiles and preflights before saving
-5. `check_page_integrity` — verify the completed page
+4. `lexsis_drafts` action `page_update_section` or `page_patch`
+5. `lexsis_pages` actions `diff` and `integrity`
 
 ## Operations
 
 ### Update/Replace a Section
 
 ```
-update_section_from_source({ page_id, section_id, source })
+lexsis_drafts({ action: "page_update_section", args: { page_id, section_id, source, expected_version } })
 ```
 - Replaces the compiled section from one source-format section
 - Auto-bumps page version
@@ -1157,7 +1207,7 @@ update_section_from_source({ page_id, section_id, source })
 ### Add a New Section
 
 ```
-update_section_from_source({ page_id, source, position })
+lexsis_drafts({ action: "page_update_section", args: { page_id, source, position, expected_version } })
 ```
 - Position: "before:{section_id}" or "after:{section_id}" or index number
 - Must include full section HTML
@@ -1165,25 +1215,25 @@ update_section_from_source({ page_id, source, position })
 ### Remove a Section
 
 ```
-remove_page_section(page_id, section_id)
+lexsis_drafts({ action: "page_remove_section", args: { page_id, section_id, expected_version } })
 ```
-- Irreversible — confirm with user first
+- Creates a reversible new page version
 - Auto-bumps version
 
 ### Reorder Sections
 
 ```
-move_page_section(page_id, section_id, new_position)
+lexsis_drafts({ action: "page_move_section", args: { page_id, section_id, position, expected_version } })
 ```
 - Position is 0-indexed
 - All other sections shift accordingly
 
 ## Best Practices
 
-- Always `get_page` first to understand current structure
+- Always read `edit_context` before writing
 - Reference section IDs from the page data (don't guess)
-- After all edits, run `check_page_integrity` before telling the user it is done
-- For multi-section changes, batch them (each call bumps version)
+- After edits, run `diff` and `integrity`
+- Batch related changes with `page_patch` so they create one version
 - Preserve existing CSS variables and island configurations
 - Don't break mobile responsiveness when editing desktop layout
 
@@ -1203,10 +1253,9 @@ Visually refresh an existing page using performance data to preserve what works 
 ### Step 1 — Context Gathering
 
 ```
-get_workspace_details()          → workspace ID, plan tier
-get_connected_stores()           → store domain, Shopify data
-get_brand_kit()                  → logo, fonts, colors, voice, radius
-get_design_md()                  → brand brief, design philosophy, constraints
+lexsis_workspace → get/stores
+lexsis_brand → brand_kit/list_themes/get_theme
+lexsis_design → guide
 ```
 
 These four calls ALWAYS run first. No exceptions.
@@ -1214,17 +1263,17 @@ These four calls ALWAYS run first. No exceptions.
 ### Step 2 — Locate and Inspect Target Page
 
 ```
-find_page({ query: "page name or slug" })
+lexsis_pages({ action: "find", args: { query: "page name or slug" } })
 ```
 Or:
 ```
-list_pages({ status: "published" })
+lexsis_pages({ action: "list", args: { status: "published" } })
 ```
 
 Then load full page data:
 ```
-get_page(page_id)
-inspect_page_sections(page_id)
+lexsis_pages({ action: "get", args: { page_id } })
+lexsis_pages({ action: "inspect", args: { page_id } })
 ```
 
 Understand: section count, section types, content blocks, current `--lx-*` variables, islands in use.
@@ -1232,7 +1281,7 @@ Understand: section count, section types, content blocks, current `--lx-*` varia
 ### Step 3 — Analyze Performance
 
 ```
-get_page_analytics(page_id)
+lexsis_analytics({ action: "page", args: { page_id } })
 ```
 
 Categorize each section:
@@ -1247,12 +1296,12 @@ Key rule: NEVER redesign sections that are converting well. Analytics data overr
 
 For each section to change:
 ```
-update_section_from_source({ page_id, section_id, source })
+lexsis_drafts({ action: "page_update_section", args: { page_id, section_id, source, expected_version } })
 ```
 
 For reordering (if scroll-depth data suggests better flow):
 ```
-move_page_section(page_id, section_id, new_position)
+lexsis_drafts({ action: "page_move_section", args: { page_id, section_id, position, expected_version } })
 ```
 
 All updated sections must use `--lx-*` CSS variables from current brand kit. No hardcoded colors or fonts.
@@ -1260,7 +1309,7 @@ All updated sections must use `--lx-*` CSS variables from current brand kit. No 
 ### Step 5 — Validate
 
 ```
-check_page_integrity({ page_id, archetype })
+lexsis_pages({ action: "integrity", args: { page_id, archetype } })
 ```
 
 Ensure no broken islands, valid HTML structure, responsive layout intact.
@@ -1268,7 +1317,7 @@ Ensure no broken islands, valid HTML structure, responsive layout intact.
 ### Step 6 — Show Before/After
 
 ```
-diff_page_versions(page_id, { from: previous_version, to: current_version })
+lexsis_pages({ action: "diff", args: { page_id, version_a: previous_version, version_b: current_version } })
 ```
 
 Present structural diff to user for approval before publishing.
@@ -1276,12 +1325,14 @@ Present structural diff to user for approval before publishing.
 ### Step 7 — Load Preview and Verify Visually
 
 ```
-get_page(page_id)
+lexsis_pages({ action: "get", args: { page_id } })
 ```
 
 Use the returned `preview_url`.
 
-Use Codex Browser to open `preview_url`, capture desktop and mobile screenshots, and inspect the rendered result. If Browser is unavailable, provide the preview URL and state that visual verification remains manual.
+Use the host agent's browser capability at 390px, 768px, and 1280px. Lexsis
+does not create a shared browser session. If unavailable, provide the preview
+URL and state that visual verification remains.
 
 Checklist:
 - [ ] Brand colors applied (current kit, not old defaults)
@@ -1292,13 +1343,13 @@ Checklist:
 - [ ] Section spacing consistent
 - [ ] No horizontal scroll on mobile
 
-If issues found: `update_section_from_source` to fix, then re-verify.
+If issues are found, patch through `lexsis_drafts`, then re-verify.
 
 ### Step 8 — Go Live (User Confirms)
 
 Only after user approves:
 ```
-publish_page(page_id)
+lexsis_live_ops({ action: "publish", args: { page_id } })
 ```
 
 If redesign later hurts metrics: `rollback_page_version(page_id, version_id)` is available.
@@ -1322,7 +1373,7 @@ If redesign later hurts metrics: `rollback_page_version(page_id, version_id)` is
 - Mobile responsiveness maintained or improved
 - All existing islands remain functional
 - Version history intact (rollback available)
-- Page passes `check_page_integrity` with zero errors
+- Page passes `lexsis_pages` action `integrity` with zero errors
 
 ## Optional Follow-Up
 
@@ -1392,10 +1443,10 @@ Ask ONLY questions whose answers are missing. Never ask more than 4 at once.
 
 Use MCP tools to gather brand context:
 ```
-get_brand_kit        → colors, fonts, voice, spacing
-get_design_md        → brand philosophy + don'ts
-list_products        → available product data
-get_navigation       → navbar/footer links
+lexsis_brand → brand_kit/get_theme → colors, fonts, voice, spacing
+lexsis_design → guide              → brand philosophy + don'ts
+lexsis_catalog → list              → available product data
+lexsis_brand → navigation          → navbar/footer links
 ```
 
 Then produce a structured plan covering:
@@ -1430,7 +1481,8 @@ For each section:
 
 When `visual-page` calls this workflow, produce the same plan as
 `PLAN_DRAFT` and do not ask for approval yet. `visual-page` creates a visual
-layout reference with `generate_asset` and presents it plus the plan as one
+layout reference with `lexsis_drafts` action `asset_generate` and presents it
+plus the plan as one
 approval decision.
 
 Show the plan to the user in this format:
@@ -1502,8 +1554,11 @@ Manage page publishing, previews, and lifecycle.
 
 1. Require a `DRAFT_READY` page from `generate` or a validated update from
    `optimize`.
-2. Confirm the preview has passed desktop and mobile QA.
-3. Confirm the user explicitly wants a live release before `publish_page`.
+2. Read `lexsis_pages` action `edit_context` and confirm
+   `has_unpublished_changes` when promoting an edited published page.
+3. Confirm the preview has passed QA at 390px, 768px, and 1280px using the host
+   agent's browser capability.
+4. Confirm the user explicitly wants a live release.
 
 ## Operations
 
@@ -1514,33 +1569,42 @@ compile it here. Require the page ID, preview URL, and completed visual QA
 before release.
 
 ### Publish Live (Explicit Approval Required)
+```json
+{
+  "name": "lexsis_live_ops",
+  "arguments": {
+    "action": "publish",
+    "args": { "page_id": "page-uuid" }
+  }
+}
 ```
-publish_page(page_id)
-```
-Only call this after the user explicitly says to publish live. Makes a draft page live.
+Only call this after explicit approval. A successful publish promotes the
+reviewed current version to the immutable public `published_version_id`.
+Failure preserves the previous live version.
 
 ### Unpublish
 ```
-unpublish_page(page_id)
+lexsis_live_ops({ action: "unpublish", args: { page_id } })
 ```
 Takes page offline but preserves it in DB.
 
 ### Duplicate
 ```
-duplicate_page(page_id, { title: "New Title" })
+lexsis_drafts({ action: "page_duplicate", args: { page_id, title: "New Title" } })
 ```
 Creates a copy — useful for A/B test variants.
 
 ### Create Experiment Variant
 ```
-create_page_variation(page_id, { changes: {...} })
+lexsis_drafts({ action: "page_variation", args: { page_id, changes: {...} } })
 ```
 Creates variant for A/B testing.
 
 ## Prerequisites
 
-- Store must be connected (`get_connected_stores`)
-- Brand kit should exist for proper theming
+- Resolve the store with `lexsis_workspace` action `stores`
+- `lexsis_brand` action `list_themes` must return a valid selected/default theme
+- Run `lexsis_pages` action `integrity` before publishing
 
 ## Post-Publish
 
@@ -1763,7 +1827,7 @@ Route inputs before creating a layout:
 |---|---|
 | Reference URL or screenshot | Load `browser-analyze` or `analyze-page` |
 | Ad creative | `analyze_ad_creative`, then `match_persona_to_ad` |
-| Product or collection | `list_products` and use real Shopify imagery |
+| Product or collection | `lexsis_catalog` action `list` and use real Shopify imagery |
 | Brief only | Run the embedded `plan-page` assessment |
 | Existing page edit | Use the edit flow, not this skill |
 
@@ -1773,20 +1837,21 @@ inputs are for composition, hierarchy, and interaction patterns only.
 ## Phase 1: Draft Plan and Layout
 
 1. Gather the minimum missing requirements with the `plan-page` assessment.
-2. Gather brand context: `get_brand_kit`, `get_design_md`, `list_products`,
-   `get_navigation`, and `search_design_library`.
+2. Gather brand context through `lexsis_brand`, `lexsis_design`,
+   `lexsis_catalog`, and `lexsis_asset_library`.
 3. Create an internal `PLAN_DRAFT`: section order, conversion goal, visual
    rhythm, asset needs, and required islands.
-4. Call `get_credits_balance` and `list_image_capabilities`.
-5. Generate a layout reference with `generate_asset`.
-6. Call `view_asset` to inspect it. Translate the concept into a layout brief:
+4. Call `lexsis_workspace` action `credits` and `lexsis_assets` action
+   `capabilities`.
+5. Generate a layout reference with `lexsis_drafts` action `asset_generate`.
+6. Call `lexsis_assets` action `view` to inspect it. Translate the concept into a layout brief:
    desktop composition, mobile stacking, section proportions, CTA positions,
    image placement, and island mapping.
 7. Present the layout concept and the plan together. Wait for approval before
    producing final assets or page source.
 
-Use only `generate_asset` for layout-reference creation. Do not assume a
-provider or model in this workflow. Call `list_image_capabilities` only when
+Use only `lexsis_drafts` action `asset_generate` for layout-reference creation.
+Do not assume a provider or model. Call `lexsis_assets` action `capabilities` when
 the brief requires a specific quality, cost, reference-image, size, or output
 format decision.
 
@@ -1822,7 +1887,8 @@ After approval:
 5. Fix material composition, overflow, asset, or island failures before
    returning the preview.
 
-Never call `publish_page` unless the user separately approves a live publish.
+Never call `lexsis_live_ops` action `publish` unless the user separately
+approves a live publish.
 
 ## Optional Follow-Up
 
@@ -2015,16 +2081,15 @@ Use descriptive kebab-case: `hero`, `product-gallery`, `social-proof`, `ingredie
 ## MCP Workflow (Correct Order)
 
 ```
-1. get_workspace_details      → workspace ID, plan tier
-2. get_connected_stores       → store domain, Shopify data
-3. get_brand_kit              → logo, fonts, colors, voice, border radius
-4. get_design_md              → brand brief, design philosophy, don'ts
-5. [page-type specific tools] → products, navigation, ad creatives, etc.
-6. compile_theme              → WCAG-checked --lx-* theme_css from brand colors
+1. lexsis_workspace → get/stores
+2. lexsis_brand → brand_kit/list_themes/get_theme
+3. lexsis_design → guide
+4. [page-type routers] → catalog, navigation, campaigns, assets
+5. Require a valid selected/default theme in the chosen workspace
 7. Generate page (two-phase, SOURCE FORMAT — see source-format.md)
-8. compile_page_source        → dry-run compile + validation issues
-9. create_page_from_source    → persists page, returns preview_url
-10. Visual verification       → screenshot and verify
+8. lexsis_pages → compile
+9. lexsis_page_create → create draft
+10. Host-agent visual verification
 ```
 
 Steps 1-4 are ALWAYS run first. They establish context. Steps 5+ vary by skill.
@@ -2034,7 +2099,7 @@ Steps 1-4 are ALWAYS run first. They establish context. Steps 5+ vary by skill.
 > **Authoring format**: write pages in the HTML-native **source format** (`source-format.md`) — plain HTML sections delimited by `<!-- section: id -->`, islands as `<lx-island name>` with a JSON `<script>` child. The compiler produces VibePage JSON and does all escaping.
 
 > **Templates**: search before drafting. Retrieve templates you intend to edit
-> with `get_section_template({ ids })`. Each returned `source` is ready for
+> with `lexsis_design` action `get_section`. Each returned `source` is ready for
 > editing and compiling. `format: "compiled_reference"` is renderer output and cannot be passed directly to
 > source-authoring tools.
 
@@ -2050,14 +2115,16 @@ Generate the FULL page as source-format HTML first:
 - Write all copy naturally — apostrophes/quotes need no escaping
 - Set all colors via `--lx-*` CSS variables (from `compile_theme`)
 - Mobile-first responsive; shared keyframes or `data-behavior="gsap-*"` presets for animation
-- Islands go in directly as `<lx-island name="BuyBox">` with a JSON `<script>` child — use `get_island_schema({island_name})` for exact prop shapes
+- Islands go in directly as `<lx-island name="BuyBox">` with a JSON `<script>` child — use `lexsis_design` action `island_schema` for exact prop shapes
 
 ### Phase 4b — Compile & Fix
 
-Run `compile_page_source { source, head, theme_css, scripts }`:
+Run `lexsis_pages` action `compile`:
 - Returns the compiled VibePage + compile issues + publish validation
 - Fix reported issues in the source (unknown islands, bad props, missing hooks) and re-compile
-- When clean, `create_page_from_source` persists it (the agent-authored source is stored too, retrievable via `get_page_source` for later edits)
+- Require `missing_candidates` to be empty
+- When clean, `lexsis_page_create` action `create` persists a draft; retrieve
+  source later with `lexsis_pages` action `source`
 
 ### Why Two-Phase?
 - Source HTML renders in any browser preview — fast visual feedback
@@ -2086,7 +2153,8 @@ Run `compile_page_source { source, head, theme_css, scripts }`:
 ```
 
 ### Rules
-- **Tailwind CSS** in HTML class attributes (renderer includes Tailwind CDN)
+- **Tailwind CSS** in HTML class attributes. The compiler emits one
+  deterministic `compiled_page_css`; there is no runtime Tailwind CDN.
 - **CSS Variables** (`--lx-*`) for all brand colors/fonts — set in `theme_css` (generate with `compile_theme`)
 - **Islands** compile to `data-island="Name"` + `data-props='JSON'` attributes (in source format, write `<lx-island>` instead)
 - **Section IDs** must be unique, kebab-case: "hero", "social-proof", "faq"
@@ -2114,45 +2182,14 @@ Run `compile_page_source { source, head, theme_css, scripts }`:
 
 ## Visual Verification (Critical Step)
 
-After `create_page_from_source` returns a `preview_url`, ALWAYS verify visually.
+After `lexsis_page_create` returns a `preview_url`, always verify visually.
+Use the calling agent's browser capability; Lexsis does not create a shared
+Playwright session or browser pool.
 
-### For Claude Code (Playwright MCP)
-
-Install: https://playwright.dev/docs/getting-started-mcp
-
-Add to Claude Code MCP config:
-```json
-{
-  "mcpServers": {
-    "playwright": {
-      "command": "npx",
-      "args": ["@playwright/mcp@latest"]
-    }
-  }
-}
-```
-
-Then:
-```
-1. browser_navigate → preview_url
-2. browser_take_screenshot({fullPage: true}) → full page capture
-3. Review: layout, spacing, mobile responsiveness, broken images
-4. If issues found → `update_section_from_source({ page_id, source })` → re-verify
-```
-
-### For Codex (Built-in Browser)
-
-Use the built-in browser tool to open the preview URL and visually inspect.
-
-### For Cursor / Other IDEs
-
-If no browser tool available, instruct user:
-- "Preview URL: {url} — open in browser to verify"
-- Suggest mobile viewport check (375px width)
-
-### Installation Reference
-
-Playwright MCP docs: https://playwright.dev/docs/getting-started-mcp
+Test 390px, 768px, and 1280px. Use screenshots when available. Otherwise use
+computed styles, DOM bounds, scroll dimensions, image completeness, hover
+state, and console inspection. If the host has no browser capability, return
+the preview URL and state that visual QA remains.
 
 ### What to Check
 - [ ] Hero section visible above fold (no scroll needed for headline + CTA)
@@ -2173,7 +2210,9 @@ Islands are React components that hydrate client-side. They handle interactive c
 
 ### How to Embed
 ```html
-<div data-island="IslandName" data-props='{"key": "value"}'></div>
+<lx-island name="IslandName">
+  <script type="application/json">{ "key": "value" }</script>
+</lx-island>
 ```
 
 ### Key Islands by Use Case
@@ -2194,10 +2233,10 @@ Islands are React components that hydrate client-side. They handle interactive c
 | Social proof popup | SocialProofPopup | provider, delay |
 
 ### Prop Data Sources
-- Product data → `get_product(product_id)` or `list_products`
-- Navigation → `get_navigation`
+- Product data → `lexsis_catalog` action `get` or `list`
+- Navigation → `lexsis_brand` action `navigation`
 - Reviews → configured in store (no manual data needed)
-- Brand tokens → `get_brand_kit`
+- Brand tokens → `lexsis_brand` action `brand_kit` or `get_theme`
 
 ---
 
@@ -2218,19 +2257,22 @@ These tools appeared in older skill versions but are no longer available:
 
 ## Quality Gates (Before Publishing)
 
-1. **compile_page_source** — compile and validate source before creating a page
-2. **check_page_integrity** — archetype-specific rules (recommended)
-3. **Visual verification** — browser screenshot (required for final delivery)
+1. `lexsis_pages` action `compile`
+2. `lexsis_pages` action `integrity`
+3. Host-agent visual verification
 
-If `compile_page_source` fails → fix source errors → re-compile.
-If `check_page_integrity` warns → assess if acceptable → proceed or fix.
-If visual check fails → `update_section_from_source` → re-screenshot.
+If compile fails, fix source and retry. If integrity warns, assess and fix.
+If visual QA fails, use `lexsis_drafts` action `page_update_section` or
+`page_patch`, then repeat QA.
 
 ---
 
 # Source Format — HTML-Native Page Authoring (V2)
 
-> **This is the preferred way to author pages.** Write plain HTML with `<lx-island>` elements; the `compile_page_source` / `create_page_from_source` tools compile it to VibePage JSON deterministically. Never hand-write `data-island` / `data-props` attributes or escape HTML into JSON strings — the compiler does all escaping for you.
+> **This is the preferred way to author pages.** Write plain HTML with
+> `<lx-island>` elements; `lexsis_pages` action `compile` and
+> `lexsis_page_create` action `create` compile it deterministically. Never
+> hand-write `data-island` / `data-props` or escape HTML into JSON strings.
 
 ## Why this format exists
 
@@ -2278,22 +2320,26 @@ The old path (VibePage JSON with HTML in strings and JSON inside `data-props='..
 2. **Islands** are `<lx-island name="IslandName">` with props as a `<script type="application/json">` child. Write natural copy — apostrophes, quotes, em-dashes are all fine; no escaping needed.
 3. **`<lx-island>` attributes**: `name` (required), `hydrate` (`immediate|visible|idle|interaction`), `headless` (headless mode — see below), plus `class`/`id`/`style` which pass through to the compiled element.
 4. **Section CSS** goes in a top-level `<style>` block; **section JS** in a top-level `<script>` block (multiple blocks are concatenated). `application/json` / `ld+json` scripts stay in the HTML.
-5. **External libraries** (GSAP etc.) do NOT go in section HTML — pass them via the `scripts` param of the compile tools.
-6. **`head`, `theme_css`, `scripts`** are structured tool params, not part of the source. Generate `theme_css` with `compile_theme` (WCAG-checked palette from brand colors) instead of writing it by hand.
+5. **External libraries** do not go in section HTML—pass them through `scripts`.
+6. **`head`, `theme_css`, `scripts`** are structured tool arguments. Prefer
+   `theme_css` from `lexsis_brand` action `get_theme`.
+7. Tailwind classes compile into one `compiled_page_css` artifact. Fix every
+   missing candidate; do not add Tailwind CDN or a separate generated sheet.
 
 ### Tool workflow
 
 ```
-get_brand_kit → compile_theme { accent, bg, fonts... } → theme_css
+lexsis_brand → list_themes/get_theme → theme_css
 draft source HTML (whole page)
-compile_page_source { source, head, theme_css, scripts }   ← dry-run: compiled page + issues
+lexsis_pages { action: "compile", args: { source, head, theme_css, scripts } }
 fix any issues, then:
-create_page_from_source { source, head, theme_css, scripts, slug, publish }
-edits: update_section_from_source { page_id, source }      ← one section per call
-round-trip: get_page_source { page_id } → edit → update_section_from_source
+lexsis_page_create { action: "create", args: { source, head, theme_css, scripts, slug, publish: false } }
+edits: lexsis_drafts → page_update_section or page_patch
+round-trip: lexsis_pages → source/section_source → lexsis_drafts
 ```
 
-`update_section_from_source` compiles ONE section (delimiter optional — pass `section_id` if absent) and upserts it. Prefer it over whole-page rewrites: smaller payloads, no blob races.
+`page_update_section` compiles one section and upserts it. `page_patch` batches
+related localized changes into one version. Pass `expected_version`.
 
 ## Starting From a Template
 
@@ -2301,12 +2347,12 @@ Search the section library before writing a section from scratch. When you pick
 a template, request editable source:
 
 ```text
-get_section_template({ ids: ["template-id"] })
+lexsis_design({ action: "get_section", args: { ids: ["template-id"] } })
 ```
 
 The response's `source` is one complete source-format section: a delimiter,
 `<lx-island>` markup, and the template CSS/JS. Tailor it, then run
-`compile_page_source`.
+`lexsis_pages` action `compile`.
 
 `format: "compiled_reference"` is renderer output containing
 `data-island` / `data-props`. It is useful for inspection but must never be
@@ -4055,17 +4101,18 @@ The publish validator enforces required tags when hydration mode detected:
 ```
 Need an image or video for a section?
 │
-├─ search_design_library({ query }) → found good match?
+├─ lexsis_asset_library({ action: "search", args: { query, workspace_id } })
+│  → found good match?
 │  ├─ YES → use it (free, on-brand)
 │  └─ NO ↓
 │
 ├─ Product shot needed?
-│  ├─ YES → use real images from list_products (NEVER generate fake products)
+│  ├─ YES → use real images from lexsis_catalog action list/get
 │  └─ NO ↓
 │
 ├─ What type of asset?
 │  ├─ Static image (background, lifestyle, texture, composite)
-│  │  └─ generate_asset (built-in, costs credits; add reference_images to composite or edit)
+│  │  └─ lexsis_drafts action asset_generate
 │  │
 │  ├─ Video (hero, demo, UGC-style)
 │  │  └─ External MCP: HiggsField / Runway / Kling
@@ -4079,7 +4126,7 @@ Need an image or video for a section?
 │  └─ Specialized illustration (custom style beyond built-in)
 │     └─ External MCP: OpenArt
 │
-└─ After sourcing → import_asset({ url, purpose, tags }) to persist in library
+└─ After sourcing → lexsis_asset_upload action import
 ```
 
 ---
@@ -4088,12 +4135,13 @@ Need an image or video for a section?
 
 | Tool | What it does | Cost |
 |------|-------------|------|
-| `search_design_library` | Search existing brand assets | Free |
-| `generate_asset` | AI image generation, compositing, inpainting, or style transfer; add `reference_images` for source-based work | Credits |
-| `view_asset` | Visually verify a generated/edited asset before using | Free |
-| `import_asset` | Bring an external URL (or base64) into the design library for reuse. Call with **no arguments** to open an upload picker so the user can supply their own file — use that when they want to add their own logo/photo and you have no URL for it | Free |
+| `lexsis_asset_library` → `search` | Search workspace assets | Free |
+| `lexsis_drafts` → `asset_generate` | Generate, composite, inpaint, or restyle | Credits |
+| `lexsis_assets` → `view` | Verify an asset | Free |
+| `lexsis_asset_upload` → `import` | Import URL, base64, attachments, or use upload picker | Free |
 
-**Always `search_design_library` first.** Existing assets are free and already brand-consistent.
+Always search first. Pass `workspace_id` explicitly when multiple workspaces
+are available.
 
 See `design-enrichment.md` for detailed prompt patterns, style selection guide, compositing recipes, and HTML placement patterns.
 
@@ -4111,7 +4159,8 @@ web_search_exa({ query: "skincare brand hero photography editorial style" })
 
 Use for: mood boards, competitor visual research, finding reference imagery to brief `generate_asset` more precisely, sourcing real lifestyle photos.
 
-**Flow:** Exa search → find reference URL → `import_asset({ url })` to persist → use in page.
+**Flow:** Exa search → find URL → `lexsis_asset_upload` action `import` → use
+the returned permanent URL.
 
 ### HiggsField / Runway / Kling — Video Generation
 
@@ -4145,7 +4194,10 @@ All external assets MUST be persisted before use:
 
 ```
 1. Source asset via external MCP → get URL
-2. import_asset({ url, purpose: "hero_bg", tags: ["lifestyle", "summer"] })
+2. lexsis_asset_upload({
+     action: "import",
+     args: { url, purpose: "hero_bg", tags: ["lifestyle", "summer"], workspace_id }
+   })
    → returns { asset_id, url, width, height }
 3. Use returned URL in page HTML (same as built-in assets)
 ```
@@ -4166,7 +4218,7 @@ This ensures: the asset is stored in the brand's library, available for reuse, a
 | Bundle | 1 | 1 | 0 | 0 | 2-3 |
 
 **Rules:**
-- Check `get_credits_balance` before any generation
+- Check `lexsis_workspace` action `credits` before generation
 - Use `quality: "medium"` default; `"high"` only for hero images
 - Products have their own Shopify images — never generate product shots
 
@@ -4182,8 +4234,12 @@ This ensures: the asset is stored in the brand's library, available for reuse, a
 
 ### Technical Integration
 ```html
-<!-- Click-to-play video hero (use HeroMedia island) -->
-<div data-island="HeroMedia" data-props='{"media":{"type":"video","src":"VIDEO_URL","poster":"THUMBNAIL_URL","autoplay":false}}'></div>
+<!-- Click-to-play video hero -->
+<lx-island name="HeroMedia">
+  <script type="application/json">
+    { "media": { "type": "video", "src": "VIDEO_URL", "poster": "THUMBNAIL_URL", "autoplay": false } }
+  </script>
+</lx-island>
 
 <!-- Inline video (no island needed for simple playback) -->
 <video class="w-full rounded-xl" poster="THUMBNAIL_URL" controls playsinline>
@@ -4194,7 +4250,7 @@ This ensures: the asset is stored in the brand's library, available for reuse, a
 ### Anti-Patterns
 - NEVER autoplay video (-7% CVR)
 - NEVER use video as only hero content (needs fallback image)
-- NEVER serve uncompressed video (use CDN URL from import_asset)
+- NEVER serve uncompressed video; use the imported CDN URL
 
 ---
 
@@ -4226,10 +4282,10 @@ The generation workflow uses these URLs directly in `<img src="">` and island pr
 
 ## Cost Control
 
-1. `search_design_library` first — always (free)
-2. `get_credits_balance` before expensive operations
+1. `lexsis_asset_library` action `search` first
+2. `lexsis_workspace` action `credits` before expensive operations
 3. Prefer `quality: "medium"` — reserve `"high"` for hero only
-4. External MCP assets → `import_asset` to avoid re-fetching
+4. External MCP assets → `lexsis_asset_upload` action `import`
 5. CSS gradients/solid colors for sections that don't need imagery
 6. Reuse: one hero image can serve as dimmed background for 2-3 sections
 
@@ -4239,15 +4295,16 @@ The generation workflow uses these URLs directly in `<img src="">` and island pr
 
 ## Pre-flight Checklist
 
-1. **Compile and validate source** — call `compile_page_source` with `source`, `head`, `theme_css`, and `scripts`
-2. **Save as draft** — call `create_page_from_source` with `publish: false`
-3. **Check integrity** — call `check_page_integrity` with the page's archetype
+1. **Compile and validate source** — `lexsis_pages` action `compile`
+2. **Save as draft** — `lexsis_page_create` action `create` with `publish:false`
+3. **Check integrity** — `lexsis_pages` action `integrity`
 
 ## Browser QA (if available)
 
 ### Viewports to test:
-- Mobile: 390×844 (iPhone 14)
-- Desktop: 1440×900
+- Mobile: 390px
+- Tablet: 768px
+- Desktop: 1280px
 
 ### Check for:
 - [ ] No horizontal overflow at any viewport
@@ -4269,8 +4326,9 @@ The generation workflow uses these URLs directly in `<img src="">` and island pr
 ## Draft vs Live
 
 - `publish: false` → draft at `/v/{slug}?shop={domain}&preview=1`
-- `publish: true` → live page, edge-cached, visible to shoppers
-- Always draft first, QA, then publish
+- `lexsis_page_create` is draft-only and rejects `publish:true`
+- Publish later with `lexsis_live_ops` action `publish` after explicit approval
+- Draft edits do not replace the public `published_version_id`
 
 ---
 
@@ -4280,54 +4338,58 @@ Manage page publishing, previews, and lifecycle.
 
 ## Publish Flow
 
-1. `compile_page_source` — compile and validate the generated source
-2. `create_page_from_source` — persist the initial draft
-   - `publish: false` → preview URL only (not live on store)
-3. `publish_page` — go live only after explicit approval
+1. `lexsis_pages` action `compile`
+2. `lexsis_page_create` action `create` with `publish:false`
+3. `lexsis_pages` action `integrity`
+4. Host-agent browser QA at 390px, 768px, and 1280px
+5. `lexsis_live_ops` action `publish` after explicit approval
 
 ## Operations
 
 ### Create Draft (New Page)
 ```
-compile_page_source({ source, head, theme_css, scripts })
-create_page_from_source({ source, head, theme_css, scripts, slug, publish: false })
+lexsis_pages({ action: "compile", args: { source, head, theme_css, scripts } })
+lexsis_page_create({ action: "create", args: { source, head, theme_css, scripts, slug, publish: false } })
 ```
 Returns: page_id, page_url, preview_url
 
 ### Preview (Draft)
 ```
-create_page_from_source({ source, head, theme_css, scripts, slug, publish: false })
+lexsis_page_create({ action: "create", args: { source, head, theme_css, scripts, slug, publish: false } })
 ```
 Returns: preview_url (not visible to store visitors)
 
 ### Publish Existing Page
 ```
-publish_page(page_id)
+lexsis_live_ops({ action: "publish", args: { page_id } })
 ```
-Makes a draft page live.
+Promotes the exact reviewed version to `published_version_id`.
 
 ### Unpublish
 ```
-unpublish_page(page_id)
+lexsis_live_ops({ action: "unpublish", args: { page_id } })
 ```
 Takes page offline but preserves it in DB.
 
 ### Duplicate
 ```
-duplicate_page(page_id, { title: "New Title" })
+lexsis_drafts({ action: "page_duplicate", args: { page_id, title: "New Title" } })
 ```
 Creates a copy — useful for A/B test variants.
 
 ### Create Experiment Variant
 ```
-create_page_variation(page_id, { changes: {...} })
+lexsis_drafts({ action: "page_variation", args: { page_id, changes: {...} } })
 ```
 Creates variant for A/B testing.
 
 ## Prerequisites
 
-- Store must be connected (`get_connected_stores`)
-- Brand kit should exist for proper theming
+- Resolve a connected store with `lexsis_workspace` action `stores`
+- Require a valid selected/default theme from `lexsis_brand`
+
+Edits to a published page remain draft-only until publish succeeds. A failed
+republish keeps the prior public version live.
 
 ## Post-Publish
 
@@ -4404,12 +4466,12 @@ Edit existing pages using section-level operations.
 
 ## Edit Flow
 
-1. `find_page` — locate the target page
-2. `get_page_edit_context` — resolve the page's store, workspace, theme, source availability, and current version
-3. `get_page_source` and `inspect_page_sections` — read source and structure
+1. `lexsis_pages` action `find`
+2. `lexsis_pages` action `edit_context`
+3. `lexsis_pages` actions `section_source`, `source`, or `inspect`
 4. Edit exactly one source-format section
-5. `update_section_from_source` — compile, preflight, and save with `expected_version`
-6. `check_page_integrity` — verify the completed page
+5. `lexsis_drafts` action `page_update_section` or `page_patch`
+6. `lexsis_pages` actions `diff` and `integrity`
 
 For existing pages, `page_id` is authoritative. Do not require the user to
 reselect a workspace or pass `store_id`; an optional store ID is only an
@@ -4420,11 +4482,9 @@ assertion. Service-token store/workspace scopes remain authorization boundaries.
 ### Update/Replace a Section
 
 ```
-update_section_from_source({
-  page_id,
-  section_id,
-  source,
-  expected_version
+lexsis_drafts({
+  action: "page_update_section",
+  args: { page_id, section_id, source, expected_version }
 })
 ```
 - Replaces the compiled section from source-format HTML
@@ -4435,11 +4495,9 @@ update_section_from_source({
 ### Add a New Section
 
 ```
-update_section_from_source({
-  page_id,
-  source,
-  position,
-  expected_version
+lexsis_drafts({
+  action: "page_update_section",
+  args: { page_id, source, position, expected_version }
 })
 ```
 - Position: "before:{section_id}" or "after:{section_id}" or index number
@@ -4448,31 +4506,34 @@ update_section_from_source({
 ### Remove a Section
 
 ```
-remove_page_section(page_id, section_id)
+lexsis_drafts({ action: "page_remove_section", args: { page_id, section_id, expected_version } })
 ```
-- Irreversible — confirm with user first
+- Creates a reversible new page version
 - Auto-bumps version
 
 ### Reorder Sections
 
 ```
-move_page_section(page_id, section_id, new_position)
+lexsis_drafts({ action: "page_move_section", args: { page_id, section_id, position, expected_version } })
 ```
 - Position is 0-indexed
 - All other sections shift accordingly
 
 ## Best Practices
 
-- Always call `get_page_edit_context` before a write
+- Always call `lexsis_pages` action `edit_context` before a write
 - Re-read context/source and rebase when an edit returns `version_conflict`
 - Reference section IDs from the page data (don't guess)
-- After editing, run `check_page_integrity` before telling the user it is done
-- For multi-section changes, batch them (each call bumps version)
+- After editing, run `diff` and `integrity`
+- Batch related multi-section changes with `page_patch` so they create one version
 - Preserve existing CSS variables and island configurations
 - Don't break mobile responsiveness when editing desktop layout
 
 Minor edits use this workflow directly. They do not repeat the new-page planning
 workflow; the existing page retains its approved plan.
+
+For published pages, `current_version` can advance while the live renderer
+remains pinned to `published_version_id`. Publish only after QA.
 
 ---
 
