@@ -1,6 +1,6 @@
 # Personalization Variant (Persona-Specific Page Versions)
 
-> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then run `compile_page_source`.
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
 
 Create targeted page variants adapting messaging, imagery, social proof, and CTAs to each audience segment's motivations and objections.
 
@@ -15,9 +15,9 @@ Create targeted page variants adapting messaging, imagery, social proof, and CTA
 ### Step 1 — Context Gathering
 
 ```
-get_workspace_details()          → workspace ID, plan tier
-get_connected_stores()           → store domain, Shopify data
-get_brand_kit()                  → logo, fonts, colors, voice, radius
+lexsis_workspace.get()          → workspace ID, plan tier
+lexsis_workspace.stores()           → store domain, Shopify data
+lexsis_brand(action: "brand_kit", args: {})                  → logo, fonts, colors, voice, radius
 ```
 
 These three calls ALWAYS run first. No exceptions.
@@ -25,14 +25,14 @@ These three calls ALWAYS run first. No exceptions.
 ### Step 2 — Load Personas and Base Page
 
 ```
-list_personas()
+lexsis_campaigns.personas()
 ```
 
 Review available audience segments. If none exist, define inline: name, demographics, pain points, motivations, objections, buying stage, tone preference.
 
 ```
-get_page(page_id)
-get_page_content(page_id)
+lexsis_pages.get(page_id)
+lexsis_pages.content(page_id)
 ```
 
 Understand current structure, copy, and section types. This is the default variant.
@@ -55,19 +55,19 @@ Not everything changes. Keep brand identity (colors, fonts, logo) consistent acr
 
 For each persona:
 ```
-search_design_library({ query: "<persona-relevant imagery>" })
+lexsis_asset_library(action: "search", args: { query: "<persona-relevant imagery>" })
 ```
 
 Find images reflecting the persona's world. Generate if needed:
 ```
-generate_asset({ prompt: "...", demographic: "<persona context>" })
+lexsis_drafts(action: "asset_generate", args: { prompt: "...", demographic: "<persona context>" })
 ```
 
 ### Step 5 — Create Each Variant
 
 For each persona:
 ```
-create_page_variation(page_id, {
+lexsis_drafts.page_variation(page_id, {
   name: "<persona_name> variant",
   changes: {
     sections: [
@@ -90,7 +90,7 @@ Islands remain identical across variants -- only the surrounding copy/imagery ad
 
 For each variant:
 ```
-check_page_integrity({ page_id: variant_page_id, archetype })
+lexsis_pages.integrity({ page_id: variant_page_id, archetype })
 ```
 
 Ensure all render correctly, islands work, mobile intact.
@@ -119,7 +119,7 @@ Checklist (per variant):
 ### Step 8 — (Optional) Set Up Persona-Targeted Experiment
 
 ```
-create_ab_test({
+lexsis_drafts(action: "experiment_create", args: {
   page_id: base_page_id,
   variants: [
     { page_id: variant_a_id, weight: 33, targeting: { persona: "deal-seekers" } },
@@ -148,6 +148,6 @@ Traffic routes to matching persona variant based on UTM/audience signals.
 - CTA language aligns with persona motivation
 - Social proof relevant to persona (industry-matched, use-case-matched)
 - All variants share same `--lx-*` brand identity
-- Each variant passes `check_page_integrity` independently
+- Each variant passes `lexsis_pages.integrity` independently
 - Tone consistent within each variant (headline tone = body copy tone)
 - Structural integrity maintained (no broken sections or islands)

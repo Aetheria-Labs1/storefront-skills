@@ -1,6 +1,6 @@
 # Design Enrichment — AI Image Generation & Compositing
 
-How to use `generate_asset` and `view_asset` tools to create custom images for page sections. Load when a page needs custom imagery beyond what's in the design library.
+How to use `lexsis_drafts` action `asset_generate` and `lexsis_assets.view` tools to create custom images for page sections. Load when a page needs custom imagery beyond what's in the design library.
 
 ---
 
@@ -9,18 +9,18 @@ How to use `generate_asset` and `view_asset` tools to create custom images for p
 ```
 Need an image for a section?
 │
-├─ search_design_library({ query: "hero lifestyle skincare" })
+├─ lexsis_asset_library(action: "search", args: { query: "hero lifestyle skincare" })
 │  ├─ Found good match → USE IT (free, brand-consistent)
 │  └─ No match or poor quality → GENERATE
 │
 ├─ Product shot needed?
-│  ├─ list_products() has product images → USE EXISTING
-│  └─ Need product-on-background composite → generate_asset({ reference_images: [...] })
+│  ├─ lexsis_catalog.list() has product images → USE EXISTING
+│  └─ Need product-on-background composite → lexsis_drafts(action: "asset_generate", args: { reference_images: [...] })
 │
-└─ Custom background/texture/lifestyle → generate_asset()
+└─ Custom background/texture/lifestyle → lexsis_drafts(action: "asset_generate", args: )
 ```
 
-**Rule: Always `search_design_library` first.** Only generate when library has nothing suitable.
+**Rule: Always `lexsis_asset_library` action `search` first.** Only generate when library has nothing suitable.
 
 ---
 
@@ -29,7 +29,7 @@ Need an image for a section?
 ### Step 1: Generate Image (write your own descriptive prompt)
 
 ```
-generate_asset({
+lexsis_drafts(action: "asset_generate", args: {
   prompt: "soft editorial product photography, dewy botanicals with morning light, cream linen backdrop, green and white accent tones, shallow depth of field, natural diffused lighting, 4K commercial quality",
   style: "photography",
   purpose: "hero_bg",
@@ -41,10 +41,10 @@ generate_asset({
 → Returns { asset_id, url, width, height }
 ```
 
-### Step 2: Verify (optional — use view_asset to visually inspect)
+### Step 2: Verify (optional — use lexsis_assets.view to visually inspect)
 
 ```
-view_asset(asset_id) → base64 image you can see directly
+lexsis_assets.view(asset_id) → base64 image you can see directly
 ```
 
 ### Step 3: Use URL in HTML
@@ -78,7 +78,7 @@ view_asset(asset_id) → base64 image you can see directly
 | Hero full-width | `hero_bg` | `landscape` | Wide, dramatic |
 | Hero split (image half) | `product_lifestyle` | `portrait` or `square` | Product in context |
 | Section background | `section_bg` | `landscape` | Subtle, not distracting |
-| Product on background | `product_composite` | `square` | Use `generate_asset` with `reference_images` |
+| Product on background | `product_composite` | `square` | Use `lexsis_drafts` action `asset_generate` with `reference_images` |
 | Card/feature image | `card_bg` | `square` | Small, tight crop |
 | Texture/pattern | `texture_fill` | `square` | Tileable, subtle |
 | Floating decoration | `decorative_element` | `square` | Transparent PNG |
@@ -86,13 +86,13 @@ view_asset(asset_id) → base64 image you can see directly
 
 ---
 
-## Compositing with generate_asset
+## Compositing with lexsis_drafts.asset_generate
 
 ### Product on Lifestyle Background
 
 ```
 // First: generate a background
-generate_asset({
+lexsis_drafts(action: "asset_generate", args: {
   prompt: "Marble countertop with soft morning light, botanical shadows",
   style: "photography",
   purpose: "product_composite",
@@ -101,7 +101,7 @@ generate_asset({
 → bg_url
 
 // Then: composite product onto it
-generate_asset({
+lexsis_drafts(action: "asset_generate", args: {
   reference_images: [product_image_url, bg_url],
   prompt: "Place the product bottle centered on the marble surface, natural shadows, studio lighting",
   style: "photography",
@@ -115,7 +115,7 @@ generate_asset({
 ### Transparent PNG Overlays
 
 ```
-generate_asset({
+lexsis_drafts(action: "asset_generate", args: {
   prompt: "Abstract botanical leaf shapes, minimal line art",
   style: "illustration",
   purpose: "decorative_element",
@@ -132,7 +132,7 @@ Use as decorative overlay:
 ### Texture Overlay
 
 ```
-generate_asset({
+lexsis_drafts(action: "asset_generate", args: {
   prompt: "Subtle paper grain texture, off-white, organic feel",
   style: "texture",
   purpose: "texture_fill",
@@ -244,7 +244,7 @@ Wait — **no external URLs in CSS `url()`**. Use inline style on an element ins
 
 1. **Don't generate when library has it** — waste of cost and time
 2. **Don't use `url()` in section CSS** — blocked by validator. Use `<img>` or inline `style` attribute
-3. **Don't generate product shots** — always use real product images from `list_products`
+3. **Don't generate product shots** — always use real product images from `lexsis_catalog.list`
 4. **Don't over-generate** — 2-4 assets per page max. Use CSS gradients/colors for the rest
 5. **Don't use `quality: "high"` for everything** — reserve for hero/primary images only
 6. **Don't forget alt text** — decorative images get `alt="" aria-hidden="true"`, meaningful ones get descriptive alt

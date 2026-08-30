@@ -1,6 +1,6 @@
 # Campaign / Ad Landing Page Generation
 
-> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then run `compile_page_source`.
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
 
 > Reference: `vibe://docs/generation-guide` | `vibe://skills/generation-protocol`
 > **Workflow:** See `generation-protocol.md` for Phases 1-5 execution (context gathering, HTML generation, validation, publishing). This doc covers page-type-specific patterns only.
@@ -38,10 +38,10 @@ Generate high-converting post-click landing pages. ZERO navigation (+30% CVR fro
 
 After the standard 4 context calls, also fetch:
 ```
-analyze_ad_creative(url)    → extract headline, claims, colors, CTA, tone, product
-match_persona_to_ad(...)    → target persona (demographics, pain points, motivations)
-get_product(product_id)     → product data for BuyBox island
-list_products               → catalog context
+lexsis_campaigns.analyze(url)    → extract headline, claims, colors, CTA, tone, product
+lexsis_campaigns.match_persona(...)    → target persona (demographics, pain points, motivations)
+lexsis_catalog.get(product_id)     → product data for BuyBox island
+lexsis_catalog.list               → catalog context
 ```
 
 ## Traffic Source Calibration

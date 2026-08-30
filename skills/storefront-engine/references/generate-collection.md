@@ -1,6 +1,6 @@
 # Collection / Category Page Generation
 
-> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then run `compile_page_source`.
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
 
 > Reference: `vibe://docs/generation-guide` | `vibe://skills/generation-protocol`
 > **Workflow:** See `generation-protocol.md` for Phases 1-5 execution (context gathering, HTML generation, validation, publishing). This doc covers page-type-specific patterns only.
@@ -28,11 +28,11 @@ Generate browsable product listing pages. Grid-focused with EditorialProductGrid
 
 After the standard 4 context calls, also fetch:
 ```
-get_navigation          → navbar/footer links, collection hierarchy, breadcrumb
-list_products           → all products in target collection (titles, prices, images, variants, tags)
+lexsis_brand.navigation          → navbar/footer links, collection hierarchy, breadcrumb
+lexsis_catalog.list           → all products in target collection (titles, prices, images, variants, tags)
 ```
 
-Critical extractions from `list_products`:
+Critical extractions from `lexsis_catalog.list`:
 - Product count (determines pagination: "Load More" at 12+ products)
 - Available filter dimensions: price range, product type, color, size, tags
 - Variant data per product (for color swatches on cards)
@@ -50,9 +50,9 @@ Critical extractions from `list_products`:
 
 | Island | Placement | Props Source |
 |--------|-----------|-------------|
-| **SiteHeader** (REQUIRED) | Section 1 | `get_navigation` → links[], logo |
-| **EditorialProductGrid** (REQUIRED) | Section 4 | `list_products` → products array |
-| **Footer** (REQUIRED) | Section 8 | `get_navigation` → footer links |
+| **SiteHeader** (REQUIRED) | Section 1 | `lexsis_brand.navigation` → links[], logo |
+| **EditorialProductGrid** (REQUIRED) | Section 4 | `lexsis_catalog.list` → products array |
+| **Footer** (REQUIRED) | Section 8 | `lexsis_brand.navigation` → footer links |
 
 ```html
 <!-- EditorialProductGrid -->

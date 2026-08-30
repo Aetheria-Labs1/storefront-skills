@@ -1,6 +1,6 @@
 # Product Grid & Cards — Custom HTML Pattern
 
-> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then run `compile_page_source`.
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
 
 CSS grid of product cards. Replaces EditorialProductGrid and ProductCard islands.
 No hydration needed for static display. For add-to-cart, place QuickAdd islands inside cards.

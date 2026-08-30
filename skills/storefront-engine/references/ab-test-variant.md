@@ -1,6 +1,6 @@
 # A/B Test Variant (Hypothesis-Driven Experiment)
 
-> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then run `compile_page_source`.
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
 
 Clone an existing page, apply a single focused change based on a clear hypothesis, launch a controlled experiment, and monitor for statistical significance via mSPRT.
 
@@ -15,8 +15,8 @@ Clone an existing page, apply a single focused change based on a clear hypothesi
 ### Step 1 — Context Gathering
 
 ```
-get_workspace_details()          → workspace ID, plan tier
-get_connected_stores()           → store domain, Shopify data
+lexsis_workspace.get()          → workspace ID, plan tier
+lexsis_workspace.stores()           → store domain, Shopify data
 ```
 
 These two calls ALWAYS run first. No exceptions.
@@ -24,8 +24,8 @@ These two calls ALWAYS run first. No exceptions.
 ### Step 2 — Load Current Page and Baseline
 
 ```
-get_page(page_id)
-get_page_analytics(page_id)
+lexsis_pages.get(page_id)
+lexsis_analytics.page(page_id)
 ```
 
 Record baseline performance:
@@ -53,12 +53,12 @@ Common high-impact tests (ordered by typical lift):
 ### Step 4 — Create the Variant
 
 ```
-duplicate_page(page_id)
+lexsis_drafts.page_duplicate(page_id)
 ```
 
 Creates exact copy. Then apply the SINGLE focused change:
 ```
-update_section_from_source({ page_id: variant_page_id, section_id, source })
+lexsis_drafts.page_update_section({ page_id: variant_page_id, section_id, source })
 ```
 
 RULE: ONE change per test. Multiple changes make attribution impossible.
@@ -71,7 +71,7 @@ All styling via `--lx-*` CSS variables. Islands unchanged unless the test specif
 ### Step 5 — Validate Variant
 
 ```
-check_page_integrity({ page_id: variant_page_id, archetype })
+lexsis_pages.integrity({ page_id: variant_page_id, archetype })
 ```
 
 Ensure variant renders correctly, all islands work, mobile intact.
@@ -98,7 +98,7 @@ Checklist:
 ### Step 7 — Launch Experiment
 
 ```
-create_ab_test({
+lexsis_drafts(action: "experiment_create", args: {
   page_id: page_id,
   hypothesis: "Changing [X] will improve [metric] because [reason]",
   variants: [
@@ -115,7 +115,7 @@ create_ab_test({
 ### Step 8 — Monitor Results
 
 ```
-get_experiment_results(experiment_id)
+lexsis_analytics.experiment(experiment_id)
 ```
 
 Returns: CVR per variant with confidence intervals, statistical significance (mSPRT), sample size, winner recommendation, secondary metrics.
@@ -130,7 +130,7 @@ RULES:
 
 Only when `significant: true`:
 ```
-scale_winner(experiment_id, winning_variant_id)
+lexsis_live_ops.scale_winner(experiment_id, winning_variant_id)
 ```
 
 Routes 100% traffic to winner. Marks experiment complete.
@@ -154,7 +154,7 @@ If no winner after 2000+ visitors per variant: the change has no meaningful impa
 - Hypothesis documented BEFORE variant creation
 - Minimum 1000 visitors per variant before evaluating
 - Statistical significance required (mSPRT p<0.05) before declaring winner
-- Both variants pass `check_page_integrity`
+- Both variants pass `lexsis_pages.integrity`
 - Control remains untouched for test duration
 - Secondary metrics monitored alongside primary
 - Learning documented regardless of outcome (losses teach as much as wins)

@@ -1,6 +1,6 @@
 # Quick Section Insert
 
-> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then run `compile_page_source`.
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
 
 Insert common section patterns into existing pages — one section at a time, matched to the page's existing brand style. NOT full page generation.
 
@@ -13,11 +13,11 @@ Insert common section patterns into existing pages — one section at a time, ma
 
 ## Template Search (do this FIRST)
 
-Before building any section from scratch, search the template library. Search returns metadata only (no markup) — fetch markup for the ids you pick with `get_section_template`:
+Before building any section from scratch, search the template library. Search returns metadata only (no markup) — fetch markup for the ids you pick with `lexsis_design.get_section`:
 
 ```
-search_section_templates({ query: "video testimonial carousel with stars", section: "social-proof", mood: "warm" })
-get_section_template({ ids: ["<chosen id from results>"] })
+lexsis_template_library.search_sections({ query: "video testimonial carousel with stars", section: "social-proof", mood: "warm" })
+lexsis_design.get_section({ ids: ["<chosen id from results>"] })
 ```
 
 If a match is found → use the template's returned `source`, swap
@@ -25,9 +25,9 @@ placeholder content with brand-specific copy/images, then compile it. Only
 generate custom HTML when no template matches.
 
 `format: "compiled_reference"` is renderer-only output. Use it for inspection, never as
-input to `compile_page_source` or `update_section_from_source`.
+input to `lexsis_pages` action `compile` or `lexsis_drafts.page_update_section`.
 
-For a whole page instead of one section, check `search_page_kits` first — it returns curated groupings of existing templates (hero + buy-box + reviews + faq, etc.) that already share one palette/vertical, avoiding the mismatched-brand-imagery problem of hand-picking sections one at a time.
+For a whole page instead of one section, check `lexsis_template_library.search_page_kits` first — it returns curated groupings of existing templates (hero + buy-box + reviews + faq, etc.) that already share one palette/vertical, avoiding the mismatched-brand-imagery problem of hand-picking sections one at a time.
 
 ## Prerequisites
 
@@ -40,7 +40,7 @@ For a whole page instead of one section, check `search_page_kits` first — it r
 ### 1. Identify target page
 
 ```
-find_page({ query: "page name or slug" })
+lexsis_pages.find({ query: "page name or slug" })
 ```
 
 Or user specifies page by name/ID directly.
@@ -48,11 +48,11 @@ Or user specifies page by name/ID directly.
 ### 2. Read current page structure + brand context
 
 ```
-get_page({ page_id })
+lexsis_pages.get({ page_id })
 ```
 
 ```
-inspect_page_sections({ page_id })
+lexsis_pages.inspect({ page_id })
 ```
 
 - Note existing section IDs, order, and style patterns
@@ -61,7 +61,7 @@ inspect_page_sections({ page_id })
 ### 3. Read brand kit for style matching
 
 ```
-get_brand_kit
+lexsis_brand.brand_kit
 ```
 
 - Extract colors, fonts, spacing to match new section to existing page
@@ -89,7 +89,7 @@ vibe://schema/island/{IslandName}
 ### 6. Insert section into page
 
 ```
-update_section_from_source({ page_id, source, position })
+lexsis_drafts.page_update_section({ page_id, source, position })
 ```
 
 The tool compiles the section and runs a full-page preflight before saving.
@@ -188,7 +188,7 @@ Key rules for islands:
 
 | Removed | Replacement |
 |---------|-------------|
-| `get_theme_json` | `get_brand_kit` (includes theme data) |
+| `get_theme_json` | `lexsis_brand` action `brand_kit` (includes theme data) |
 | `provision_store` | Handle via Shopify OAuth onboarding, not MCP |
 | `extract_brand_design` / `capture_design_source` / `list_design_sources` | No replacement — design DNA extraction from a reference URL is not currently an MCP tool |
-| `search_section_templates` returning `html`/`css`/`js` inline | Search is metadata-only now; call `get_section_template({ ids, format: "authoring_source" })` for editable source |
+| `lexsis_template_library.search_sections` returning `html`/`css`/`js` inline | Search is metadata-only now; call `lexsis_design.get_section({ ids, format: "authoring_source" })` for editable source |

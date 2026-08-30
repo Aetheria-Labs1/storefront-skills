@@ -1,6 +1,6 @@
 # Reference PDP Remix — Competitor Deconstruction Workflow
 
-> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then run `compile_page_source`.
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
 
 > When to load: User provides a competitor/reference URL and wants to rebuild the same PDP structure for their brand.
 
@@ -54,12 +54,12 @@ For each mapped section:
 
 1. **Swap brand tokens** — Replace competitor colors/fonts with user's brand kit
 2. **Swap product data** — Replace competitor products with user's catalog
-   - Call `list_products` to get real product data (images, prices, handles)
+   - Call `lexsis_catalog.list` to get real product data (images, prices, handles)
 3. **Swap copy tone** — Rewrite headlines/body in user's brand voice
-   - Reference `get_design_md` for tone guidelines
+   - Reference `lexsis_design.guide` for tone guidelines
 4. **Swap imagery** — Replace competitor photos with user's assets
-   - Call `search_design_library` first (prefer existing)
-   - Call `generate_asset` only if library has nothing suitable
+   - Call `lexsis_asset_library` action `search` first (prefer existing)
+   - Call `lexsis_drafts` action `asset_generate` only if library has nothing suitable
 
 ---
 
@@ -68,24 +68,24 @@ For each mapped section:
 Tool sequence:
 
 ```
-┌─ get_workspace_details      → workspace context
-├─ get_brand_kit              → colors, fonts, logo
-├─ get_design_md              → brand voice
-├─ list_products(limit: 10)   → product catalog
-└─ search_design_library      → existing assets
+┌─ lexsis_workspace.get      → workspace context
+├─ lexsis_brand.brand_kit              → colors, fonts, logo
+├─ lexsis_design.guide              → brand voice
+├─ lexsis_catalog.list(limit: 10)   → product catalog
+└─ lexsis_asset_library.search      → existing assets
      ↓
 For each section needing custom imagery:
-  ├─ search_design_library({ query: "..." })
-  └─ generate_asset({ ... })  ← costs credits
+  ├─ lexsis_asset_library(action: "search", args: { query: "..." })
+  └─ lexsis_drafts(action: "asset_generate", args: { ... })  ← costs credits
      ↓
 Assemble source-format HTML:
   - sections delimited by `<!-- section: id -->`
   - `<lx-island>` elements for interactive components
   - `theme_css` passed as a structured tool argument
      ↓
-compile_page_source            ← FREE
+lexsis_pages.compile            ← FREE
      ↓
-create_page_from_source({ source, head, theme_css, scripts, slug, publish: false })  ← costs credits (preview first)
+lexsis_page_create(action: "create", args: { source, head, theme_css, scripts, slug, publish: false })  ← costs credits (preview first)
 ```
 
 ---
@@ -161,7 +161,7 @@ Checklist against reference:
 ## Credit Awareness
 
 Before starting a remix build:
-- Call `get_credits_balance` to check available credits
-- `generate_asset` and `create_page_from_source` cost credits
-- `compile_page_source` and all read tools are FREE
+- Call `lexsis_workspace` action `credits` to check available credits
+- `lexsis_drafts` action `asset_generate` and `lexsis_page_create` action `create` cost credits
+- `lexsis_pages` action `compile` and all read tools are FREE
 - If balance is 0: inform user, suggest using existing library assets only, or upgrading plan

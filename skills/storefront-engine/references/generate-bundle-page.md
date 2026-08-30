@@ -1,6 +1,6 @@
 # Bundle Builder Page Generation
 
-> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then run `compile_page_source`.
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
 
 > References: `vibe://docs/generation-guide`, `vibe://skills/generation-protocol`
 > **Workflow:** See `generation-protocol.md` for Phases 1-5 execution (context gathering, HTML generation, validation, publishing). This doc covers page-type-specific patterns only.
@@ -30,9 +30,9 @@ Generate interactive bundle-builder pages with step-based UX, discount tier visu
 
 After the standard 4 context calls, also fetch:
 ```
-list_products            → bundleable products catalog
-get_navigation           → navbar/footer links
-get_island_schema("BundleBuilder") → props shape, config, slots
+lexsis_catalog.list            → bundleable products catalog
+lexsis_brand.navigation           → navbar/footer links
+lexsis_design.island_schema("BundleBuilder") → props shape, config, slots
 ```
 
 Determine from user input:
@@ -43,10 +43,10 @@ Determine from user input:
 
 ## Asset Discovery
 
-1. `search_design_library` — hero imagery, lifestyle shots showing bundles/boxes
-2. `generate_asset` — hero background if none found (style: `photography`, purpose: `hero_bg`, aspect: `landscape`)
-3. Product images come from `get_product(id)` for each bundleable item
-4. `view_asset` — verify hero asset quality
+1. `lexsis_asset_library` action `search` — hero imagery, lifestyle shots showing bundles/boxes
+2. `lexsis_drafts` action `asset_generate` — hero background if none found (style: `photography`, purpose: `hero_bg`, aspect: `landscape`)
+3. Product images come from `lexsis_catalog.get(id)` for each bundleable item
+4. `lexsis_assets.view` — verify hero asset quality
 
 ## Section Architecture (7 sections)
 
@@ -218,7 +218,7 @@ Replace `data-placeholder="BundleBuilder"` with the hydrated island:
 }'></div>
 ```
 
-Use `get_island_schema("BundleBuilder")` to confirm exact prop shape before mapping.
+Use `lexsis_design.island_schema("BundleBuilder")` to confirm exact prop shape before mapping.
 
 ## Bundle-Specific Validation Checks
 
@@ -226,7 +226,7 @@ Use `get_island_schema("BundleBuilder")` to confirm exact prop shape before mapp
 - Discount tiers are logically sequential (higher qty = higher discount)
 - Sticky elements (progress bar, mobile summary) don't overlap
 - Price displays use consistent currency formatting
-- Island props match schema from `get_island_schema`
+- Island props match schema from `lexsis_design.island_schema`
 
 ## Verification Checklist
 

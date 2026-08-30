@@ -1,6 +1,6 @@
 # SEO Listicle / Comparison Page Generation
 
-> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then run `compile_page_source`.
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
 
 > References: `vibe://docs/generation-guide`, `vibe://skills/generation-protocol`
 > **Workflow:** See `generation-protocol.md` for Phases 1-5 execution (context gathering, HTML generation, validation, publishing). This doc covers page-type-specific patterns only.
@@ -28,8 +28,8 @@ Generate SEO-optimized long-form listicle and comparison pages (>2000 words) wit
 
 After the standard 4 context calls, also fetch:
 ```
-list_products            → full product catalog (select featured items)
-get_navigation           → navbar/footer links for internal linking
+lexsis_catalog.list            → full product catalog (select featured items)
+lexsis_brand.navigation           → navbar/footer links for internal linking
 ```
 
 Determine from user input:
@@ -41,10 +41,10 @@ Determine from user input:
 ## Asset Discovery
 
 For each product in the listicle:
-1. `search_design_library` — find existing product/lifestyle imagery
-2. `get_product(product_id)` — pull product images, price, description
-3. `generate_asset` — only if no suitable imagery exists (style: `photography`, purpose: `product_lifestyle`)
-4. `view_asset` — verify before embedding
+1. `lexsis_asset_library` action `search` — find existing product/lifestyle imagery
+2. `lexsis_catalog.get(product_id)` — pull product images, price, description
+3. `lexsis_drafts` action `asset_generate` — only if no suitable imagery exists (style: `photography`, purpose: `product_lifestyle`)
+4. `lexsis_assets.view` — verify before embedding
 
 Generate one hero asset for the page header (style: `editorial`, purpose: `hero_bg`, aspect: `landscape`).
 
@@ -95,7 +95,7 @@ Write 8-12 sections:
 **Section 3: Introduction + Methodology**
 - h2: "How We Chose the Best [Category]"
 - 150-200 words: selection criteria, testing methodology
-- Internal links to related pages via `get_navigation`
+- Internal links to related pages via `lexsis_brand.navigation`
 - Methodology disclosure builds E-E-A-T trust
 
 **Sections 4-N: Product Entries (one per product)**
@@ -175,7 +175,7 @@ Each product entry gets its own BuyBox island:
 <div data-island="BuyBox" data-props='{"product":{"title":"...","price":"$29.99","variants":[{"id":"...","title":"Default"}]}}'></div>
 ```
 
-Use `get_island_schema("BuyBox")` to confirm exact prop shape.
+Use `lexsis_design.island_schema("BuyBox")` to confirm exact prop shape.
 
 ## SEO Validation Checks
 
@@ -208,4 +208,4 @@ Use `get_island_schema("BuyBox")` to confirm exact prop shape.
 - FAQ includes valid Schema.org FAQPage JSON-LD
 - Winner badge on recommended product (+25% CTR)
 - Author byline + last-updated date (E-E-A-T)
-- Internal linking structure via `get_navigation`
+- Internal linking structure via `lexsis_brand.navigation`

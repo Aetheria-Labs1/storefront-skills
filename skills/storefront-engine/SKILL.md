@@ -10,6 +10,10 @@ publish. Select one owning skill and pass it only the context it needs.
 
 Read `references/workflow-handoffs.md` for optional workflow connections.
 
+Reference files use compact `router.action(...)` notation. Execute that as the
+named consolidated MCP router with `{"action": "action", "args": {...}}`.
+Never call a former one-tool-per-operation name directly.
+
 ## Routing
 
 | User intent | Owning skill |

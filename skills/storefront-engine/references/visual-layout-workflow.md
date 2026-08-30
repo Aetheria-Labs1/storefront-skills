@@ -21,10 +21,10 @@ those.
 
 ## Generate the Layout Reference
 
-Call `generate_asset` to create the visual reference. The workflow is
+Call `lexsis_drafts` action `asset_generate` to create the visual reference. The workflow is
 provider-neutral: do not hardcode a provider or model here.
 
-Call `list_image_capabilities` only when the request needs a deliberate
+Call `lexsis_assets.capabilities` only when the request needs a deliberate
 quality, cost, reference-image, size, output-format, or transparency choice.
 Record the returned asset ID in the working brief, but do not use the layout
 reference as final page media.
@@ -49,7 +49,7 @@ tenant-owned assets, user-supplied assets, or safe visual references.
 
 ## Concept to Source Mapping
 
-After `view_asset`, write a concise layout brief before running `asset-prep`:
+After `lexsis_assets.view`, write a concise layout brief before running `asset-prep`:
 
 | Concept signal | Source-format implementation |
 |---|---|

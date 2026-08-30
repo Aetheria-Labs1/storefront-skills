@@ -1,6 +1,6 @@
 # Brand Homepage Generation
 
-> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then run `compile_page_source`.
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
 
 > Reference: `vibe://docs/generation-guide` | `vibe://skills/generation-protocol`
 > **Workflow:** See `generation-protocol.md` for Phases 1-5 execution (context gathering, HTML generation, validation, publishing). This doc covers page-type-specific patterns only.
@@ -29,11 +29,11 @@ Generate brand-first homepages. Navigation-driven, multi-CTA, storytelling-focus
 
 After the standard 4 context calls, also fetch:
 ```
-get_navigation          → header nav links, footer columns, collection hierarchy
-list_products           → identify bestsellers, new arrivals, featured items
+lexsis_brand.navigation          → header nav links, footer columns, collection hierarchy
+lexsis_catalog.list           → identify bestsellers, new arrivals, featured items
 ```
 
-`get_navigation` is CRITICAL for homepages — it provides the full site structure.
+`lexsis_brand.navigation` is CRITICAL for homepages — it provides the full site structure.
 
 ## Page-Specific Rules
 
@@ -46,9 +46,9 @@ list_products           → identify bestsellers, new arrivals, featured items
 
 | Island | Placement | Props Source |
 |--------|-----------|-------------|
-| **Navbar / SiteHeader** (REQUIRED) | Section 1 | `get_navigation` → links[], logo |
-| **Footer** (REQUIRED) | Section 9 | `get_navigation` → footer links, social |
-| EditorialProductGrid | Section 4 | `list_products` → bestsellers array |
+| **Navbar / SiteHeader** (REQUIRED) | Section 1 | `lexsis_brand.navigation` → links[], logo |
+| **Footer** (REQUIRED) | Section 9 | `lexsis_brand.navigation` → footer links, social |
+| EditorialProductGrid | Section 4 | `lexsis_catalog.list` → bestsellers array |
 | EmailCapture | Section 8 | provider, listId, incentive |
 
 ```html
@@ -102,7 +102,7 @@ Use `vibe://schema/island/SiteHeader` and `vibe://schema/island/Footer` for exac
 
 ## Verification Checklist
 
-- [ ] SiteHeader island renders with navigation links from `get_navigation`
+- [ ] SiteHeader island renders with navigation links from `lexsis_brand.navigation`
 - [ ] Hero communicates brand value prop in 3 seconds (not product-specific)
 - [ ] Multiple CTAs go to DIFFERENT destinations (shop, about, collections)
 - [ ] Category/collection grid links are functional

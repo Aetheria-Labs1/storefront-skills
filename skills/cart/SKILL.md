@@ -23,9 +23,9 @@ Use this workflow for cart profile configuration and page targeting.
 
 Use only these cart tools:
 
-1. `get_cart_profile`
-2. `set_cart_profile`
-3. `edit_cart`
+1. `lexsis_cart.get`
+2. `lexsis_drafts.cart_set`
+3. `lexsis_drafts.cart_edit`
 
 Profile creation, duplication, publishing, rollback, defaults, campaign
 targeting, history, and archival remain in the Lexsis app.
@@ -34,7 +34,7 @@ targeting, history, and archival remain in the Lexsis app.
 
 ### 1. Inspect
 
-Call `get_cart_profile` before making changes.
+Call `lexsis_cart.get` before making changes.
 
 - Pass `page_id` to inspect the effective profile and resolution source.
 - Pass `cart_profile_id` to inspect an editable draft.
@@ -44,14 +44,14 @@ Do not assume that the store default is the page's effective cart.
 
 ### 2. Assign when requested
 
-Call `set_cart_profile` with `page_id` and a published `cart_profile_id`.
+Call `lexsis_drafts.cart_set` with `page_id` and a published `cart_profile_id`.
 
 Pass `cart_profile_id: null` to remove the page assignment. This restores
 campaign, default, or legacy fallback resolution.
 
 ### 3. Edit the draft
 
-Call `edit_cart` with a partial patch. The same tool handles:
+Call `lexsis_drafts.cart_edit` with a partial patch. The same tool handles:
 
 - `cart_mode`
 - `layout_schema`
@@ -86,7 +86,7 @@ Example:
 }
 ```
 
-`edit_cart` never publishes. Tell the merchant to review and publish in the
+`lexsis_drafts.cart_edit` never publishes. Tell the merchant to review and publish in the
 Lexsis app when the response reports unpublished changes.
 
 ## Offers
@@ -136,7 +136,7 @@ unbalanced rules are rejected.
 
 After assignment or editing:
 
-1. Call `get_cart_profile` with the page ID.
+1. Call `lexsis_cart.get` with the page ID.
 2. Confirm `resolution_source` and profile identity.
 3. Preview add-to-cart and header cart triggers.
 4. Check desktop and mobile modes.

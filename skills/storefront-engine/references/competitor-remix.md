@@ -1,6 +1,6 @@
 # Competitor Remix (Rebuild from Reference URL)
 
-> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then run `compile_page_source`.
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
 
 Capture a competitor page, decompose its structure, and rebuild it using the user's own brand identity, copy, and products. NEVER copy content -- only structural inspiration.
 
@@ -15,9 +15,9 @@ Capture a competitor page, decompose its structure, and rebuild it using the use
 ### Step 1 — Context Gathering
 
 ```
-get_workspace_details()          → workspace ID, plan tier
-get_connected_stores()           → store domain, Shopify data
-get_brand_kit()                  → logo, fonts, colors, voice, radius
+lexsis_workspace.get()          → workspace ID, plan tier
+lexsis_workspace.stores()           → store domain, Shopify data
+lexsis_brand(action: "brand_kit", args: {})                  → logo, fonts, colors, voice, radius
 ```
 
 These three calls ALWAYS run first. No exceptions.
@@ -46,24 +46,24 @@ For each: note layout pattern, content type, approximate proportions, interactiv
 ### Step 4 — Map to Lexsis Capabilities
 
 For each competitor section:
-- Island available? Use `get_island_schema(island_name)` for prop shapes
+- Island available? Use `lexsis_design.island_schema(island_name)` for prop shapes
 - Static HTML+Tailwind section? (most common)
 - Requires custom interactivity? Flag for JS sandbox
 
 ### Step 5 — Match Existing Templates + Source Assets
 
 ```
-search_section_templates({ query: "<competitor section description>", section: "<type>", industry: "<vertical>" })
-get_section_template({ ids: ["<chosen id from results>"], format: "authoring_source" })
-search_design_library({ query: "<relevant product/category>" })
-list_products({ limit: 10 })
+lexsis_template_library.search_sections({ query: "<competitor section description>", section: "<type>", industry: "<vertical>" })
+lexsis_design.get_section({ ids: ["<chosen id from results>"], format: "authoring_source" })
+lexsis_asset_library(action: "search", args: { query: "<relevant product/category>" })
+lexsis_catalog.list({ limit: 10 })
 ```
 
-For each competitor section, check if a pre-built template matches the pattern (`search_section_templates` returns metadata only — call `get_section_template` for the ids you want). Templates give you proven HTML/CSS/JS — just swap content.
+For each competitor section, check if a pre-built template matches the pattern (`lexsis_template_library.search_sections` returns metadata only — call `lexsis_design.get_section` for the ids you want). Templates give you proven HTML/CSS/JS — just swap content.
 
 Replace ALL competitor imagery with user's own assets. Generate new if needed:
 ```
-generate_asset({ prompt: "...", style_reference: "brand_kit" })
+lexsis_drafts(action: "asset_generate", args: { prompt: "...", style_reference: "brand_kit" })
 ```
 
 CRITICAL: NEVER reference, hotlink, or reuse competitor images/copy/logos.
@@ -97,8 +97,8 @@ Replace placeholders with hydrated islands:
 ### Step 7 — Validate and Publish Draft
 
 ```
-compile_page_source({ source, head, theme_css, scripts })
-create_page_from_source({ source, head, theme_css, scripts, slug, publish: false })
+lexsis_pages({ action: "compile", args: { source, head, theme_css, scripts } })
+lexsis_page_create({ action: "create", args: { source, head, theme_css, scripts, slug, publish: false } })
 ```
 
 Returns `preview_url`.
@@ -124,7 +124,7 @@ Checklist:
 - [ ] Islands hydrated with user's own product data
 - [ ] Original copy serves user's value proposition
 
-If issues found: `update_section_from_source` to fix, then re-verify.
+If issues found: `lexsis_drafts.page_update_section` to fix, then re-verify.
 
 ## Decision Points
 
@@ -143,4 +143,4 @@ If issues found: `update_section_from_source` to fix, then re-verify.
 - All product references from user's own catalog
 - Copy is original, serving user's value proposition
 - Mobile layout independent (do not assume competitor's responsive approach)
-- Page passes `compile_page_source` with zero errors
+- Page passes `lexsis_pages` action `compile` with zero errors

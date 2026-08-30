@@ -1,6 +1,6 @@
 # Ad Creative to Landing Page
 
-> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then run `compile_page_source`.
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
 
 Generate a high-converting landing page from an ad creative with full scent continuity (headline, palette, CTA, tone match from click to page).
 
@@ -14,9 +14,9 @@ Generate a high-converting landing page from an ad creative with full scent cont
 ### Step 1 — Context Gathering
 
 ```
-get_workspace_details()          → workspace ID, plan tier
-get_connected_stores()           → store domain, Shopify data
-get_brand_kit()                  → logo, fonts, colors, voice, radius
+lexsis_workspace.get()          → workspace ID, plan tier
+lexsis_workspace.stores()           → store domain, Shopify data
+lexsis_brand(action: "brand_kit", args: {})                  → logo, fonts, colors, voice, radius
 ```
 
 These three calls ALWAYS run first. No exceptions.
@@ -24,13 +24,13 @@ These three calls ALWAYS run first. No exceptions.
 ### Step 2 — Identify and Analyze the Ad
 
 ```
-get_ad_creatives({ store_id, status: "active" })
+lexsis_campaigns.creatives({ store_id, status: "active" })
 ```
 
 Present available creatives (thumbnail + headline + spend). User picks one, or use highest-spend active creative.
 
 ```
-analyze_ad_creative({ creative_id })
+lexsis_campaigns.analyze({ creative_id })
 ```
 
 Extracts: headline, subheadline, claims, color_palette, tone, cta_text, target_audience, urgency_signals, imagery_style.
@@ -38,16 +38,16 @@ Extracts: headline, subheadline, claims, color_palette, tone, cta_text, target_a
 ### Step 3 — Match Persona and Source Assets
 
 ```
-match_persona_to_ad({ creative_id })
+lexsis_campaigns.match_persona({ creative_id })
 ```
 
 Maps to persona: demographics, pain points, motivations, objections, buying stage. Determines page tone.
 
 ```
-search_design_library({ query: "<product/topic from ad>" })
+lexsis_asset_library(action: "search", args: { query: "<product/topic from ad>" })
 ```
 
-Find product shots and lifestyle images matching the ad aesthetic. Use `generate_asset` if library insufficient.
+Find product shots and lifestyle images matching the ad aesthetic. Use `lexsis_drafts` action `asset_generate` if library insufficient.
 
 ### Step 4 — Two-Phase Page Generation
 
@@ -73,13 +73,13 @@ Replace placeholders with hydrated islands:
 <div data-island="BuyBox" data-props='{"product":{"title":"...","price":"$29.99","variants":[...]}}'></div>
 ```
 
-Use `get_island_schema` for exact prop shapes.
+Use `lexsis_design.island_schema` for exact prop shapes.
 
 ### Step 5 — Validate and Publish Draft
 
 ```
-compile_page_source({ source, head, theme_css, scripts })
-create_page_from_source({ source, head, theme_css, scripts, slug, publish: false })
+lexsis_pages({ action: "compile", args: { source, head, theme_css, scripts } })
+lexsis_page_create({ action: "create", args: { source, head, theme_css, scripts, slug, publish: false } })
 ```
 
 Always publish as draft first. Returns `preview_url`.
@@ -104,7 +104,7 @@ Checklist:
 - [ ] Islands hydrated (BuyBox shows product data)
 - [ ] Social proof section present
 
-If issues found: `update_section_from_source` to fix, then re-verify.
+If issues found: `lexsis_drafts.page_update_section` to fix, then re-verify.
 
 ## Decision Points
 
@@ -124,4 +124,4 @@ If issues found: `update_section_from_source` to fix, then re-verify.
 - Mobile-first layout (most ad traffic is mobile)
 - No navigation links that leak traffic from conversion
 - Ad urgency signals carried through (countdown, limited stock, etc.)
-- Page passes `compile_page_source` with zero errors
+- Page passes `lexsis_pages` action `compile` with zero errors

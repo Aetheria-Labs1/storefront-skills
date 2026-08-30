@@ -185,7 +185,7 @@ Only after user approves:
 lexsis_live_ops({ action: "publish", args: { page_id } })
 ```
 
-If redesign later hurts metrics: `rollback_page_version(page_id, version_id)` is available.
+If redesign later hurts metrics: `lexsis_live_ops.rollback(page_id, version_id)` is available.
 
 ## Decision Points
 

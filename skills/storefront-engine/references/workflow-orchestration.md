@@ -22,7 +22,7 @@ What did the user provide?
 │  → EDIT FLOW (read page → modify sections → validate → write)
 │
 ├─ Product focus (PDP, collection)
-│  → PRODUCT FLOW (list_products first → build around real product data)
+│  → PRODUCT FLOW (lexsis_catalog.list first → build around real product data)
 │
 └─ Multiple inputs (ad + products + brand)
    → STANDARD FLOW with enriched context
@@ -40,14 +40,14 @@ See `generation-protocol.md` for the full Phases 1-5 execution protocol (context
 
 ```
 Phase 2: Context
-├─ analyze_ad_creative({ image_urls, ad_format })  → visual signals, CTA, headline
+├─ lexsis_campaigns.analyze({ image_urls, ad_format })  → visual signals, CTA, headline
 ├─ get_storefront_skills({ brief from ad analysis, page_type: "landing" })
-└─ list_products()
+└─ lexsis_catalog.list()
 
 Phase 3: Assets
 ├─ Use ad creative images directly where appropriate
-├─ generate_asset for additional sections (testimonial bg, trust section bg)
-└─ generate_asset with reference_images to adapt ad images (crop, extend, composite)
+├─ lexsis_drafts.asset_generate for additional sections (testimonial bg, trust section bg)
+└─ lexsis_drafts.asset_generate with reference_images to adapt ad images (crop, extend, composite)
 
 Phase 4-4: Same as Standard Flow
 ```
@@ -60,7 +60,7 @@ Phase 4-4: Same as Standard Flow
 Phase 2:
 ├─ Agent screenshots URL               → extracted palette, fonts, spacing, tone
 ├─ get_storefront_skills(brief)
-└─ list_products()
+└─ lexsis_catalog.list()
 
 Phase 3: Use extracted tokens as theme_css base
 Phase 4-4: Same as Standard Flow
@@ -71,34 +71,34 @@ Phase 4-4: Same as Standard Flow
 ## Edit Flow (Safe Iteration)
 
 ```
-1. find_page({ query })                              → locate page by handle/title/UUID
-2. get_page_edit_context({ page_id })                 → resolve store/workspace + current version
-3. get_page_source({ page_id })                       → read round-trip source when available
-4. inspect_page_sections({ page_id })                 → inspect current compiled sections
+1. lexsis_pages.find({ query })                              → locate page by handle/title/UUID
+2. lexsis_pages.edit_context({ page_id })                 → resolve store/workspace + current version
+3. lexsis_pages.source({ page_id })                       → read round-trip source when available
+4. lexsis_pages.inspect({ page_id })                 → inspect current compiled sections
 5. Identify which sections to modify
-6. update_section_from_source({ page_id, source, expected_version }) → compile, preflight, commit
-7. check_page_integrity({ page_id, archetype })       → structural QA pass
-8. [Optional] diff_page_versions({ page_id, version_a, version_b })  → review all changes
-9. [If broken] rollback_page_version({ page_id, target_version })    → revert to prior version
+6. lexsis_drafts.page_update_section({ page_id, source, expected_version }) → compile, preflight, commit
+7. lexsis_pages.integrity({ page_id, archetype })       → structural QA pass
+8. [Optional] lexsis_pages.diff({ page_id, version_a, version_b })  → review all changes
+9. [If broken] lexsis_live_ops.rollback({ page_id, target_version })    → revert to prior version
 ```
 
 **Key rules:**
-- `update_section_from_source` compiles and runs the full-page preflight before it writes
+- `lexsis_drafts.page_update_section` compiles and runs the full-page preflight before it writes
 - Existing page writes derive store/workspace from `page_id`; omit redundant `store_id`
 - A `version_conflict` means another write landed first; re-read and rebase
-- Run `check_page_integrity` after all edits complete — catches archetype violations (e.g. PDP without BuyBox)
-- Use `diff_page_versions` to verify your changes look correct before publishing
-- Use `rollback_page_version` if integrity check fails — creates a new forward version, preserves history
+- Run `lexsis_pages.integrity` after all edits complete — catches archetype violations (e.g. PDP without BuyBox)
+- Use `lexsis_pages.diff` to verify your changes look correct before publishing
+- Use `lexsis_live_ops.rollback` if integrity check fails — creates a new forward version, preserves history
 
 ---
 
 ## Duplication Flow (Idempotent)
 
 ```
-1. find_page({ query })                                     → locate source page
-2. duplicate_page({ page_id, handle, idempotency_key })     → safe clone (retries won't create extras)
+1. lexsis_pages.find({ query })                                     → locate source page
+2. lexsis_drafts.page_duplicate({ page_id, handle, idempotency_key })     → safe clone (retries won't create extras)
 3. Edit sections on the duplicate (use Edit Flow above)
-4. check_page_integrity({ page_id, archetype })             → final QA
+4. lexsis_pages.integrity({ page_id, archetype })             → final QA
 ```
 
 **Idempotency key:** Pass a deterministic string (e.g. `"${handle}-v2-from-${source_handle}"`) so that retrying the same operation returns the existing duplicate instead of creating another.
@@ -110,14 +110,14 @@ Phase 4-4: Same as Standard Flow
 | Can parallelize | Cannot parallelize |
 |---|---|
 | All Phase 2 context calls | Phase 3 needs Phase 2 results (brand_colors for asset gen) |
-| Multiple generate_asset calls | validate must complete before write |
+| Multiple lexsis_drafts.asset_generate calls | validate must complete before write |
 | Asset generation for different sections | Reference-based generation needs source image URLs first |
 
 ---
 
 ## Cost Control
 
-- `search_design_library` before `generate_asset` — existing assets are free
+- `lexsis_asset_library` action `search` before `lexsis_drafts` action `asset_generate` — existing assets are free
 - Use `quality: "medium"` for most assets, `"high"` only for hero images
 - One hero image + one lifestyle shot usually enough for a PDP
 - Landing pages: hero + 2-3 section backgrounds max
@@ -151,22 +151,25 @@ collection-header → filters → product-grid → featured-pick → trust-bar �
 
 ## Credit Costs
 
-Always call `get_credits_balance` before expensive operations. If balance is 0, inform the user before proceeding.
+Always call `lexsis_workspace` with action `credits` before expensive
+operations. If balance is 0, inform the user before proceeding.
 
 | Tool | Cost | Notes |
 |------|------|-------|
-| `generate_asset` | credits | AI image generation, editing, and compositing |
-| `create_page_from_source` | credits | Page generation (only on publish, not drafts) |
-| `create_page_variation` | credits | A/B variant creation (requires Pro plan) |
-| `create_ab_test` | credits | Experiment setup (requires Pro plan) |
-| `update_section_from_source` | credits | Section regeneration |
-| `compile_page_source` | FREE | Always validate before publishing |
-| `check_page_integrity` | FREE | Structure/accessibility check |
+| `lexsis_drafts` → `asset_generate` | credits | AI image generation, editing, and compositing |
+| `lexsis_page_create` → `create` | credits | Draft page generation |
+| `lexsis_drafts` → `page_variation` | credits | A/B variant creation (requires Pro plan) |
+| `lexsis_drafts` → `experiment_create` | credits | Experiment setup (requires Pro plan) |
+| `lexsis_drafts` → `page_update_section` | credits | Section regeneration |
+| `lexsis_pages` → `compile` | FREE | Always validate before creating or publishing |
+| `lexsis_pages` → `integrity` | FREE | Structure/accessibility check |
 | All read/list/get tools | FREE | No cost for browsing data |
 
 **Preflight pattern:**
 ```
-get_credits_balance → check cost → warn if insufficient → proceed or abort
+lexsis_workspace(credits) → check cost → warn if insufficient → proceed or abort
 ```
 
-Source-format pages persisted via `create_page_from_source` still cost credits (the write action, not the compiler, bills). Draft previews (`publish: false`) also consume credits.
+Source-format pages persisted through `lexsis_page_create` still cost credits
+(the write action, not the compiler, bills). Draft previews also consume
+credits.

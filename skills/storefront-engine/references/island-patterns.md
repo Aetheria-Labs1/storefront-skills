@@ -1,6 +1,6 @@
 # Island Patterns — Wrapper HTML & Combination Recipes
 
-> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then run `compile_page_source`.
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
 
 How to properly embed, wrap, and combine React islands in vibe-code HTML sections. Load when using commerce or engagement islands.
 
@@ -49,7 +49,7 @@ How to properly embed, wrap, and combine React islands in vibe-code HTML section
 
 ### Cart — V2 is the default (CartDrawer V1 is DEPRECATED)
 
-Set `head.use_cart_v2: true` on every commerce page. The renderer injects the resolved published cart profile separately, so **never author a cart section in the page**. Use `get_cart_profile`, `set_cart_profile`, and `edit_cart` for MCP cart work. Full composition guide: load the `cart-composition` reference.
+Set `head.use_cart_v2: true` on every commerce page. The renderer injects the resolved published cart profile separately, so **never author a cart section in the page**. Use `lexsis_cart.get`, `lexsis_drafts.cart_set`, and `lexsis_drafts.cart_edit` for MCP cart work. Full composition guide: load the `cart-composition` reference.
 
 ```jsonc
 { "head": { "title": "...", "use_cart_v2": true } }   // that's the whole cart setup

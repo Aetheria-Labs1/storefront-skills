@@ -66,5 +66,5 @@
 
 1. One pack per page — mixing packs is the #1 way to make a page look broken.
 2. Scope to a section if two islands need different treatments: `#hero [data-part="cta"] { ... }`.
-3. Packs compose with `compile_theme` output — they reference `--lx-*` variables, never hardcode colors.
-4. Check the island's `schema.json` `parts` array before targeting a part name (`get_island_schema`).
+3. Packs compose with `lexsis_brand.compile_theme` output — they reference `--lx-*` variables, never hardcode colors.
+4. Check the island's `schema.json` `parts` array before targeting a part name (`lexsis_design.island_schema`).

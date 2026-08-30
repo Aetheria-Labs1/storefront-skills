@@ -25,7 +25,7 @@ Route inputs before creating a layout:
 | Input | First action |
 |---|---|
 | Reference URL or screenshot | Load `browser-analyze` or `analyze-page` |
-| Ad creative | `analyze_ad_creative`, then `match_persona_to_ad` |
+| Ad creative | `lexsis_campaigns.analyze`, then `lexsis_campaigns.match_persona` |
 | Product or collection | `lexsis_catalog` action `list` and use real Shopify imagery |
 | Brief only | Run the embedded `plan-page` assessment |
 | Existing page edit | Use the edit flow, not this skill |

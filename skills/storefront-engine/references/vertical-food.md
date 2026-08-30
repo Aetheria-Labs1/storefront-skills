@@ -5,7 +5,7 @@
 > **Compiled runtime reference:** examples later in this legacy reference may show
 > compiled `data-island` markup. New pages must use the source-format contract
 > in `source-format.md`: `<lx-island>` with a JSON script child, compiled by
-> `compile_page_source`.
+> `lexsis_pages` action `compile`.
 
 ## Philosophy
 

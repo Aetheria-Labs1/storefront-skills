@@ -1,6 +1,6 @@
 # Island Design Contract
 
-> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then run `compile_page_source`.
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
 
 Rules every island wrapper MUST follow. Violations = visual clashing between sections.
 
@@ -100,13 +100,13 @@ Layouts use `{{VARIABLE}}` placeholders. Agent replaces before pasting:
 
 | Variable | Source | Example |
 |----------|--------|---------|
-| `{{PRODUCT_ID}}` | `get_product` or `list_products` | `gid://shopify/Product/12345` |
+| `{{PRODUCT_ID}}` | `lexsis_catalog.get` or `lexsis_catalog.list` | `gid://shopify/Product/12345` |
 | `{{PRODUCT_TITLE}}` | product.title | `Hydrating Serum` |
 | `{{PRODUCT_PRICE}}` | product.price | `$29.99` |
-| `{{BRAND_NAME}}` | `get_brand_kit` → name | `Glow Labs` |
+| `{{BRAND_NAME}}` | `lexsis_brand` action `brand_kit` → name | `Glow Labs` |
 | `{{CTA_TEXT}}` | page-type or industry skill | `Add to Cart` |
-| `{{IMAGE_URL}}` | `search_design_library` or `generate_asset` | `https://cdn...` |
-| `{{STORE_DOMAIN}}` | `get_connected_stores` | `mystore.myshopify.com` |
+| `{{IMAGE_URL}}` | `lexsis_asset_library` action `search` or `lexsis_drafts` action `asset_generate` | `https://cdn...` |
+| `{{STORE_DOMAIN}}` | `lexsis_workspace.stores` | `mystore.myshopify.com` |
 
 ## Custom Styling via `data-part`
 
@@ -195,5 +195,5 @@ Every island renders internal elements with `data-part="name"` attributes. You t
 ### Finding available parts
 
 1. Check `reference/islands/{name}/schema.json` → `"parts"` array
-2. Or read `vibe://schema/island/{name}` / use `get_island_schema` → returns parts list and source-format markup
+2. Or read `vibe://schema/island/{name}` / use `lexsis_design.island_schema` → returns parts list and source-format markup
 3. Each part name describes the element's role, not its HTML tag

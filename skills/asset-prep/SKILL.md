@@ -89,7 +89,7 @@ Use when: TikTok traffic source, fashion/luxury vertical, product demo needed, b
 
 **Flow:**
 1. Generate video via external MCP (short clip, 3-8 seconds)
-2. `extract_video_frames` → pull best frame as thumbnail
+2. `lexsis_campaigns.frames` → pull best frame as thumbnail
 3. Use video URL in HeroMedia island or `<video>` tag
 4. Set click-to-play (NEVER autoplay — costs 7% CVR)
 

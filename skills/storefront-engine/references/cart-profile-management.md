@@ -3,7 +3,7 @@
 The Storefront MCP exposes three cart-profile operations. Keep lifecycle
 management in the app.
 
-## `get_cart_profile`
+## `lexsis_cart.get`
 
 Inspect the effective cart for a page or one editable profile.
 
@@ -19,7 +19,7 @@ Pass `page_id` to get the published snapshot a shopper receives and its
 
 Always call this tool before assigning or editing.
 
-## `set_cart_profile`
+## `lexsis_drafts.cart_set`
 
 Assign a published profile to a page:
 
@@ -42,7 +42,7 @@ Remove the page assignment and restore fallback resolution:
 The page and profile must belong to the same store. Draft and archived profiles
 cannot be assigned.
 
-## `edit_cart`
+## `lexsis_drafts.cart_edit`
 
 Apply a partial patch to a profile draft:
 
@@ -98,6 +98,6 @@ Use the Lexsis app to:
 
 ## Verification
 
-After a mutation, resolve the page again with `get_cart_profile`. Confirm the
+After a mutation, resolve the page again with `lexsis_cart.get`. Confirm the
 profile ID, version, and resolution source before telling the merchant the
 targeting is correct.

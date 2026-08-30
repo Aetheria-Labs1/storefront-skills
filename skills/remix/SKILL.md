@@ -17,7 +17,7 @@ assets, drafts, or live pages. `visual-page` owns the new-page workflow.
 ## Workflow
 
 1. Capture the source with `browser-analyze` when a URL is available.
-2. For ads, call `analyze_ad_creative` and `match_persona_to_ad`.
+2. For ads, call `lexsis_campaigns.analyze` and `lexsis_campaigns.match_persona`.
 3. Extract only reusable design signals:
    - page type and section order
    - hierarchy, grids, proportions, whitespace, and motion

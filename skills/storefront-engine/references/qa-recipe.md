@@ -27,7 +27,8 @@
 |---------|-------|-----|
 | Gray product cards | Missing `image`/`media` in product data | Add image URLs or use `productIds` for auto-fetch |
 | FAQ items don't toggle | Missing island hydration script | Ensure page includes island runtime |
-| 401 on publish | Using API key auth | Endpoint supports X-API-Key — ensure key is valid |
+| 401 on publish | OAuth session expired or revoked | Reconnect the MCP and complete browser OAuth |
+| Insufficient scope on publish | Connection has Read or Build access | Reauthorize with Publish access after user approval |
 | Images too large/slow | Using original Shopify CDN URLs | Append `&width=800` to resize |
 
 ## Draft vs Live

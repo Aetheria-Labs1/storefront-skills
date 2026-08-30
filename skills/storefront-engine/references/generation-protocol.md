@@ -12,7 +12,7 @@
 
 ```
 1. lexsis_workspace → get/stores
-2. lexsis_brand → brand_kit/list_themes/get_theme
+2. lexsis_brand → brand_kit/lexsis_brand.list_themes/lexsis_brand.get_theme
 3. lexsis_design → guide
 4. [page-type routers] → catalog, navigation, campaigns, assets
 5. Require a valid selected/default theme in the chosen workspace
@@ -43,7 +43,7 @@ Generate the FULL page as source-format HTML first:
 - Plain HTML + Tailwind, sections delimited by `<!-- section: id -->`
 - Focus on layout, visual hierarchy, spacing, typography
 - Write all copy naturally — apostrophes/quotes need no escaping
-- Set all colors via `--lx-*` CSS variables (from `compile_theme`)
+- Set all colors via `--lx-*` CSS variables (from `lexsis_brand.compile_theme`)
 - Mobile-first responsive; shared keyframes or `data-behavior="gsap-*"` presets for animation
 - Islands go in directly as `<lx-island name="BuyBox">` with a JSON `<script>` child — use `lexsis_design` action `island_schema` for exact prop shapes
 
@@ -85,7 +85,7 @@ Run `lexsis_pages` action `compile`:
 ### Rules
 - **Tailwind CSS** in HTML class attributes. The compiler emits one
   deterministic `compiled_page_css`; there is no runtime Tailwind CDN.
-- **CSS Variables** (`--lx-*`) for all brand colors/fonts — set in `theme_css` (generate with `compile_theme`)
+- **CSS Variables** (`--lx-*`) for all brand colors/fonts — set in `theme_css` (generate with `lexsis_brand.compile_theme`)
 - **Islands** compile to `data-island="Name"` + `data-props='JSON'` attributes (in source format, write `<lx-island>` instead)
 - **Section IDs** must be unique, kebab-case: "hero", "social-proof", "faq"
 - **Section JS** is sandboxed — no fetch/XHR/eval/localStorage. Only DOM manipulation + IntersectionObserver. Runs after immediate islands mount; `lx:hydrated` / `lx:islands-ready` events signal island readiness
@@ -166,7 +166,7 @@ Islands are React components that hydrate client-side. They handle interactive c
 - Product data → `lexsis_catalog` action `get` or `list`
 - Navigation → `lexsis_brand` action `navigation`
 - Reviews → configured in store (no manual data needed)
-- Brand tokens → `lexsis_brand` action `brand_kit` or `get_theme`
+- Brand tokens → `lexsis_brand` action `brand_kit` or `lexsis_brand.get_theme`
 
 ---
 
@@ -176,12 +176,12 @@ These tools appeared in older skill versions but are no longer available:
 
 | Removed | Replacement |
 |---------|-------------|
-| `get_theme_json` | `get_brand_kit` (includes theme data) |
+| `get_theme_json` | `lexsis_brand` action `brand_kit` (includes theme data) |
 | `provision_store` | Handle via onboarding flow, not page generation |
 | `extract_brand_design` / `capture_design_source` / `list_design_sources` | No replacement — no MCP tool for reference-URL design extraction currently exists |
-| `search_section_templates` returning `html`/`css`/`js` inline | Search is metadata-only now; call `get_section_template({ ids })` for compile-ready source |
+| `lexsis_template_library.search_sections` returning `html`/`css`/`js` inline | Search is metadata-only now; call `lexsis_design.get_section({ ids })` for compile-ready source |
 
-`get_island_catalog` and `get_island_schema` remain active tools — use them for island discovery and schema lookups, alongside the `vibe://catalog/islands` resource.
+`lexsis_design.islands` and `lexsis_design.island_schema` remain active tools — use them for island discovery and schema lookups, alongside the `vibe://catalog/islands` resource.
 
 ---
 

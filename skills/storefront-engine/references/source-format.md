@@ -53,7 +53,7 @@ The old path (VibePage JSON with HTML in strings and JSON inside `data-props='..
 4. **Section CSS** goes in a top-level `<style>` block; **section JS** in a top-level `<script>` block (multiple blocks are concatenated). `application/json` / `ld+json` scripts stay in the HTML.
 5. **External libraries** do not go in section HTML—pass them through `scripts`.
 6. **`head`, `theme_css`, `scripts`** are structured tool arguments. Prefer
-   `theme_css` from `lexsis_brand` action `get_theme`.
+   `theme_css` from `lexsis_brand` action `lexsis_brand.get_theme`.
 7. Tailwind classes compile into one `compiled_page_css` artifact. Fix every
    missing candidate; do not add Tailwind CDN or a separate generated sheet.
 

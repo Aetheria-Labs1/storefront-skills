@@ -1,6 +1,6 @@
 # Meta Ads → Landing Page — Storefront Design Intelligence
 
-> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then run `compile_page_source`.
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
 
 > **When to load**: Page generated from Meta (Facebook/Instagram) ad creative.  
 > **Auto-loads as**: `vibe://skills/traffic-source-meta`

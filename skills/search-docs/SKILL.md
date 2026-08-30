@@ -18,7 +18,7 @@ Search documentation, skill knowledge, island patterns, and industry guidance vi
 
 ## Workflow
 
-1. Call `search_docs` with the user's query (or your own lookup query)
+1. Call `lexsis_support` with action `search_docs` and the user's query (or your own lookup query)
 2. If results include a resource URI, read that exact URI for full content.
 3. If results reference an island, read `vibe://catalog/islands/{name}` for selection guidance. Once selected, read `vibe://schema/island/{name}` for exact props and source-format markup.
 4. Synthesize relevant findings — don't dump raw results, extract what's actionable
@@ -27,7 +27,13 @@ Search documentation, skill knowledge, island patterns, and industry guidance vi
 
 ### Primary search
 ```json
-{ "name": "search_docs", "arguments": { "query": "<search terms>", "limit": 5 } }
+{
+  "name": "lexsis_support",
+  "arguments": {
+    "action": "search_docs",
+    "args": { "query": "<search terms>", "limit": 5 }
+  }
+}
 ```
 
 ### Narrow by category
@@ -43,7 +49,7 @@ Use `category` to focus results:
 - `resources` — MCP resources reference
 
 ### Deep-read a result
-Use only a resource URI returned by `search_docs`. Do not invent a resource
+Use only a resource URI returned by `lexsis_support` action `search_docs`. Do not invent a resource
 name or rely on a hard-coded catalog: the search result is the authoritative
 availability check.
 
@@ -57,11 +63,11 @@ Returns selection guidance, variants, behavior, and styling surface. Then read
 
 | User asks | Search call | Follow-up |
 |-----------|------------|-----------|
-| "How does BuyBox work?" | `search_docs({ query: "BuyBox", category: "islands" })` | Read `vibe://catalog/islands/BuyBox` |
-| "Beauty landing page patterns" | `search_docs({ query: "beauty landing page", category: "verticals" })` | Read the returned resource URI |
-| "Countdown urgency techniques" | `search_docs({ query: "countdown urgency scarcity" })` | — |
-| "Publishing workflow" | `search_docs({ query: "publish page workflow", category: "recipes" })` | Read the returned resource URI |
-| "What islands handle reviews?" | `search_docs({ query: "reviews testimonials", category: "islands" })` | Read `vibe://catalog/islands/ReviewCarousel` |
+| "How does BuyBox work?" | `lexsis_support.search_docs({ query: "BuyBox", category: "islands" })` | Read `vibe://catalog/islands/BuyBox` |
+| "Beauty landing page patterns" | `lexsis_support.search_docs({ query: "beauty landing page", category: "verticals" })` | Read the returned resource URI |
+| "Countdown urgency techniques" | `lexsis_support.search_docs({ query: "countdown urgency scarcity" })` | — |
+| "Publishing workflow" | `lexsis_support.search_docs({ query: "publish page workflow", category: "recipes" })` | Read the returned resource URI |
+| "What islands handle reviews?" | `lexsis_support.search_docs({ query: "reviews testimonials", category: "islands" })` | Read `vibe://catalog/islands/ReviewCarousel` |
 
 ## Tips
 

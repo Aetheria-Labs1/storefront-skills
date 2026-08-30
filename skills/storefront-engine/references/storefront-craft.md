@@ -1,6 +1,6 @@
 # Storefront Craft Guide — Start Here
 
-> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then run `compile_page_source`.
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
 
 Load this skill first on any storefront page generation task.
 
@@ -59,13 +59,13 @@ Pages are **raw HTML + Tailwind CSS + CSS custom properties + React islands**. N
 ## Generation Flow (Overview)
 
 ```
-1. get_storefront_skills({ brief, page_type }) → system prompt, island catalog, schema
-2. [Optional] search_design_library() → find existing brand assets
-3. [Optional] generate_asset(prompt, style, purpose) → get image URLs
+1. lexsis_discover({ query: "page creation" }) → authoritative action schemas
+2. [Optional] lexsis_asset_library({ action: "search", args: {...} }) → find existing brand assets
+3. [Optional] lexsis_drafts({ action: "asset_generate", args: {...} }) → get image URLs
 4. Agent authors source-format HTML with `<lx-island>` components
-5. compile_page_source({ source, head, theme_css, scripts }) → compile + validation
-6. create_page_from_source({ source, head, theme_css, scripts, slug, publish: false }) → persist as draft, returns preview URL
-7. publish_page({ page_id }) → go live (ONLY after the user explicitly approves)
+5. lexsis_pages({ action: "compile", args: { source, head, theme_css, scripts } }) → compile + validation
+6. lexsis_page_create({ action: "create", args: { source, head, theme_css, scripts, slug, publish: false } }) → persist as draft, returns preview URL
+7. lexsis_live_ops({ action: "publish", args: { page_id } }) → go live (ONLY after the user explicitly approves)
 ```
 
 ---
@@ -134,7 +134,7 @@ Use descriptive kebab-case: `hero`, `product-gallery`, `social-proof`, `ingredie
 ## Island Rules
 
 - `data-props` must be valid JSON in single-quoted attribute
-- Only use valid island names (26 total — call `get_island_catalog` to see them)
+- Only use valid island names (26 total — call `lexsis_design.islands` to see them)
 - One `BuyBox` per page (multiple breaks cart state)
 - Cart: `head.use_cart_v2: true` on every commerce page (`CartDrawer` V1 deprecated — never author a cart section)
 - `StickyBar` needs `triggerOffset` — distance in px before it appears
@@ -154,10 +154,10 @@ Use descriptive kebab-case: `hero`, `product-gallery`, `social-proof`, `ingredie
 
 ## Image Strategy
 
-1. **Always check `search_design_library` first** — brand's uploaded assets are free and on-brand
-2. **Use `list_products` for product images** — never generate fake product shots
-3. **`generate_asset` for custom imagery** — hero backgrounds, lifestyle contexts, textures
-4. **`generate_asset` with `reference_images` for composites** — product-on-background, texture overlays
+1. **Always check `lexsis_asset_library` action `search` first** — brand's uploaded assets are free and on-brand
+2. **Use `lexsis_catalog.list` for product images** — never generate fake product shots
+3. **`lexsis_drafts` action `asset_generate` for custom imagery** — hero backgrounds, lifestyle contexts, textures
+4. **`lexsis_drafts` action `asset_generate` with `reference_images` for composites** — product-on-background, texture overlays
 5. **Place URLs directly in HTML** — `<img src="${url}" />` or inline `style="background-image: url(...)"`
 6. **Load `design-enrichment` skill** for full asset generation pipeline details
 7. **For video, reference imagery, or external AI tools** → see `asset-pipeline.md` for multi-source strategy

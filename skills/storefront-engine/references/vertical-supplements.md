@@ -1,6 +1,6 @@
 # Supplements & Performance DTC — Storefront Design Intelligence
 
-> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then run `compile_page_source`.
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
 
 > **When to load:** Product vertical is supplements, vitamins, protein, nootropics, fitness nutrition, biohacking, wellness, performance enhancers, adaptogens, pre-workout, recovery formulas.
 

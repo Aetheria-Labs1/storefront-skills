@@ -8,13 +8,13 @@ Always follow this order — never generate when existing assets work:
 
 ### 1. Search First
 ```
-search_design_library({ query: "lifestyle woman skincare" })
+lexsis_asset_library(action: "search", args: { query: "lifestyle woman skincare" })
 ```
 Returns existing brand assets (product shots, lifestyle, textures, SVGs).
 
 ### 2. Generate If Needed
 ```
-generate_asset({
+lexsis_drafts(action: "asset_generate", args: {
   prompt: "Minimalist skincare flatlay on marble surface, soft morning light",
   style: "photography",        // photography | illustration | 3d_render | editorial | abstract
   purpose: "hero_bg",          // hero_bg | product_lifestyle | card_bg | section_bg | icon | texture
@@ -26,7 +26,7 @@ generate_asset({
 
 ### 3. Composite With References
 ```
-generate_asset({
+lexsis_drafts(action: "asset_generate", args: {
   reference_images: ["https://cdn.example.com/asset_123.png", "https://cdn.example.com/asset_456.png"],
   prompt: "Place product bottle on the lifestyle background, natural lighting match",
   style: "photography",
@@ -37,7 +37,7 @@ generate_asset({
 
 ### 4. Verify
 ```
-view_asset(asset_id)
+lexsis_assets.view(asset_id)
 ```
 Visual verification before using in page.
 
@@ -66,19 +66,19 @@ Visual verification before using in page.
 
 ### Read Brand Identity
 ```
-get_brand_kit()
+lexsis_brand(action: "brand_kit", args: {})
 ```
 Returns: logo, fonts (heading/body), colors (primary/secondary/accent), border radius, spacing scale, brand voice.
 
 ### List Available Themes
 ```
-list_themes()
+lexsis_brand.list_themes()
 ```
 Returns: theme IDs, names, which is default.
 
 ### Update Theme
 ```
-update_theme(theme_id, {
+lexsis_drafts.theme_update(theme_id, {
   fonts: { heading: "Inter", body: "Inter" },
   colors: { primary: "#000", accent: "#ff6b00" },
   border_radius: "8px"
@@ -95,4 +95,4 @@ To extract design tokens from a reference URL, the agent should screenshot the s
 - `medium` quality: default — use for most section images
 - `high` quality: expensive — use only for hero images and key product shots
 - Budget: ~3-5 generated assets per page maximum
-- Always `search_design_library` first to avoid unnecessary generation
+- Always `lexsis_asset_library` action `search` first to avoid unnecessary generation

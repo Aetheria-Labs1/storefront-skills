@@ -1,6 +1,6 @@
 # Product Detail Page (PDP) Generation
 
-> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then run `compile_page_source`.
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
 
 > Reference: `vibe://docs/generation-guide` | `vibe://skills/generation-protocol`
 > **Workflow:** See `generation-protocol.md` for Phases 1-5 execution (context gathering, HTML generation, validation, publishing). This doc covers page-type-specific patterns only.
@@ -29,18 +29,18 @@ Generate high-converting product detail pages. BuyBox island is REQUIRED. Sticky
 
 After the standard 4 context calls, also fetch:
 ```
-get_product(product_id) → title, variants, images, price, metafields
-get_navigation          → navbar/footer links
-list_products           → related products for cross-sell
+lexsis_catalog.get(product_id) → title, variants, images, price, metafields
+lexsis_brand.navigation          → navbar/footer links
+lexsis_catalog.list           → related products for cross-sell
 ```
 
 ## Required Islands
 
 | Island | Placement | Props Source |
 |--------|-----------|-------------|
-| **BuyBox** (REQUIRED) | Section 3 | `get_product` → variants, price, images |
-| ProductGallery | Section 2 | `get_product` → images array |
-| VariantSwatches | Section 3 | `get_product` → variant options |
+| **BuyBox** (REQUIRED) | Section 3 | `lexsis_catalog.get` → variants, price, images |
+| ProductGallery | Section 2 | `lexsis_catalog.get` → images array |
+| VariantSwatches | Section 3 | `lexsis_catalog.get` → variant options |
 | StickyCart | Section 9 | product title + price |
 | ReviewCarousel | Section 6 | provider + productId |
 | FAQ | Section 8 | items[{question, answer}] |

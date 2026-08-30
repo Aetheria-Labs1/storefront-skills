@@ -30,9 +30,10 @@ sh /tmp/lexsis-mcp-install.sh cursor-global
 sh /tmp/lexsis-mcp-install.sh --dry-run auto
 ```
 
-The installer never stores an API key. Restart the client and complete the
-Lexsis OAuth prompt when it first connects. Use `--skip-skills` for an
-MCP-only setup.
+The installer never stores a user credential. Restart the client and complete
+the Lexsis OAuth prompt when it first connects. Select the workspaces and
+minimum Read, Build, or Publish access needed for the task. Use `--skip-skills`
+for an MCP-only setup.
 
 ## Install (Claude Code)
 
@@ -71,7 +72,7 @@ Both files are **generated** from the canonical skills by `scripts/build-distrib
 - **14 independently runnable skills** — one directory per workflow under `skills/`, spec-compliant SKILL.md each
 - **2 agents** (cro-analyzer, page-builder) for Claude Code
 - **54 reference docs** (CRO patterns, verticals, traffic sources, workflows) under `skills/storefront-engine/references/`
-- **49 island schemas** with layouts under `references/islands/`
+- **54 island schemas** with layouts under `references/islands/`
 - Vertical expertise: beauty, supplements, fashion, food, luxury, home
 - Traffic-source patterns: Meta, Google, TikTok
 
@@ -114,8 +115,9 @@ Each step is independent — start anywhere. `/plan-page` → `/generate` skips 
 
 ## MCP Server
 
-- **Codex:** complete OAuth when prompted; no manual config.
-- **Claude Code:** get an API key at [app.trylexsis.com/settings/api-key](https://app.trylexsis.com/settings/api-key), then add it to the `lexsis-ai` MCP server's `Authorization` header.
+- **Codex and Claude Code:** connect the hosted `lexsis-ai` HTTP server and
+  complete browser OAuth when prompted. User API keys and manually configured
+  `Authorization` headers are not supported.
 
 ## External MCPs (Optional)
 

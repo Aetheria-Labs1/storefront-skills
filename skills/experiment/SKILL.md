@@ -67,7 +67,7 @@ Scales winning variant to 100% traffic, marks experiment complete.
 - Wait for statistical significance before scaling winner
 - Minimum ~1000 visitors per variant for reliable results
 - Check device split — a variant may win on mobile but lose on desktop
-- Use `get_attribution` to understand which traffic sources convert best
+- Use `lexsis_analytics.attribution` to understand which traffic sources convert best
 - Compare page analytics before/after changes to measure impact
 
 

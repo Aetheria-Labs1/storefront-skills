@@ -1,6 +1,6 @@
 # Editorial / Magazine-Style Page Generation
 
-> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then run `compile_page_source`.
+> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
 
 > References: `vibe://docs/generation-guide`, `vibe://skills/generation-protocol`
 > **Workflow:** See `generation-protocol.md` for Phases 1-5 execution (context gathering, HTML generation, validation, publishing). This doc covers page-type-specific patterns only.
@@ -43,16 +43,16 @@ Generate long-form editorial pages with cinematic visuals, magazine layout patte
 
 After the standard 4 context calls, also fetch:
 ```
-list_products            → products to weave into narrative (select 2-5)
-get_navigation           → navbar/footer links
+lexsis_catalog.list            → products to weave into narrative (select 2-5)
+lexsis_brand.navigation           → navbar/footer links
 ```
 
 Heavy use of design library (editorial = existing brand photography, not AI-generated):
 ```
-search_design_library({ query: "editorial lifestyle brand" })
-search_design_library({ query: "behind the scenes studio process" })
-search_design_library({ query: "texture detail closeup material" })
-search_design_library({ query: "portrait founder team" })
+lexsis_asset_library(action: "search", args: { query: "editorial lifestyle brand" })
+lexsis_asset_library(action: "search", args: { query: "behind the scenes studio process" })
+lexsis_asset_library(action: "search", args: { query: "texture detail closeup material" })
+lexsis_asset_library(action: "search", args: { query: "portrait founder team" })
 ```
 
 Determine from user input:
@@ -65,12 +65,12 @@ Determine from user input:
 
 Editorial pages require 6-10 high-quality images. ALWAYS prioritize existing brand photography over generation:
 
-1. `search_design_library` — run 4-6 queries covering hero, lifestyle, texture, behind-scenes, portraits
-2. `generate_asset` — ONLY for gaps after exhausting library:
+1. `lexsis_asset_library` action `search` — run 4-6 queries covering hero, lifestyle, texture, behind-scenes, portraits
+2. `lexsis_drafts` action `asset_generate` — ONLY for gaps after exhausting library:
    - Hero: style `editorial`, purpose `hero_bg`, aspect `landscape`, quality `high`
    - Look images: style `photography`, purpose `product_lifestyle`, aspect `portrait`, quality `high`
    - Interlude textures: style `photography`, purpose `section_bg`, aspect `landscape`
-3. `view_asset` — verify EVERY image (editorial quality demands visual review)
+3. `lexsis_assets.view` — verify EVERY image (editorial quality demands visual review)
 
 Budget: up to 6-8 assets for editorial. Always prefer library over generation.
 
@@ -225,7 +225,7 @@ Write with generous whitespace (section padding 80-120px vertical). Total narrat
 - Subtle CTA: "Discover more" linking to collection
 
 **Section 10: Footer**
-- Standard brand footer via `get_navigation`
+- Standard brand footer via `lexsis_brand.navigation`
 
 ## Required Islands
 
@@ -242,7 +242,7 @@ Replace `data-placeholder="EditorialProductGrid"` with hydrated islands. Maximum
 }'></div>
 ```
 
-Use `get_island_schema("EditorialProductGrid")` to confirm exact prop shape.
+Use `lexsis_design.island_schema("EditorialProductGrid")` to confirm exact prop shape.
 
 ## Verification Checklist
 
@@ -269,7 +269,7 @@ Use `get_island_schema("EditorialProductGrid")` to confirm exact prop shape.
 - >800 words total narrative content
 - Generous whitespace: section padding 80-120px vertical
 - Large body text (text-xl+) with relaxed line-height for comfortable reading
-- All images via `search_design_library` first (editorial = real photography, not AI)
+- All images via `lexsis_asset_library` action `search` first (editorial = real photography, not AI)
 - Asymmetric/editorial grid layouts (not uniform boxes)
 - Pull quotes: large italic font, generous padding, visual separation
 - Contextual alt text on all images (narrative, not just product names)
