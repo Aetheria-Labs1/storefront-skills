@@ -23,6 +23,11 @@ Search documentation, skill knowledge, island patterns, and industry guidance vi
 3. If results reference an island, read `vibe://catalog/islands/{name}` for selection guidance. Once selected, read `vibe://schema/island/{name}` for exact props and source-format markup.
 4. Synthesize relevant findings — don't dump raw results, extract what's actionable
 
+Live MCP resources are authoritative. For island contracts, use
+`vibe://schema/island/{name}` first, bundled
+`storefront-engine/references/islands/{slug}/schema.json` second, and prose
+examples last.
+
 ## Tool Usage
 
 ### Primary search

@@ -1,6 +1,6 @@
 {
   "id": "subscription-toggle-inline",
-  "html": "<div class=\"flex items-center gap-4 py-3 border-b\" style=\"border-color: var(--lx-border-color)\"><div data-island=\"SubscriptionToggle\" data-props='{\"plans\":{{PLANS_ARRAY}},\"benefits\":{{BENEFITS_ARRAY}},\"savingsPercent\":{{SAVINGS_PERCENT}},\"frequency\":\"monthly\"}'></div><span class=\"text-xs\" style=\"color: var(--lx-text-muted)\">Subscribe & save {{SAVINGS_PERCENT}}%</span></div>",
+  "html": "<div class=\"flex items-center gap-4 py-3 border-b\" style=\"border-color: var(--lx-border-color)\"><div data-island=\"SubscriptionToggle\" data-props='{\"plans\":{{PLANS_ARRAY}},\"benefits\":{{BENEFITS_ARRAY}},\"oneTimePrice\":\"{{ONE_TIME_PRICE}}\"}'></div><span class=\"text-xs\" style=\"color: var(--lx-text-muted)\">Subscribe & save {{SAVINGS_PERCENT}}%</span></div>",
   "css": "",
   "js": ""
 }

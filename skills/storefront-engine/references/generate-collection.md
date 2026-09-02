@@ -51,15 +51,15 @@ Critical extractions from `lexsis_catalog.list`:
 | Island | Placement | Props Source |
 |--------|-----------|-------------|
 | **SiteHeader** (REQUIRED) | Section 1 | `lexsis_brand.navigation` → links[], logo |
-| **EditorialProductGrid** (REQUIRED) | Section 4 | `lexsis_catalog.list` → products array |
+| **ProductCarousel** (REQUIRED) | Section 4 | `lexsis_catalog.list` → products array |
 | **Footer** (REQUIRED) | Section 8 | `lexsis_brand.navigation` → footer links |
 
 ```html
-<!-- EditorialProductGrid -->
-<div data-island="EditorialProductGrid" data-props='{"products":[{"id":"p1","title":"...","price":"$29.99","compareAtPrice":"$39.99","image":"...","secondImage":"...","variants":[{"color":"Black","swatch":"#000"},{"color":"White","swatch":"#fff"}],"badge":"Sale","quickAdd":true}],"columns":{"mobile":2,"tablet":3,"desktop":4},"quickAddEnabled":true,"promoCard":{"position":7,"title":"Buy 2, Get 1 Free","image":"...","href":"/collections/bundles"}}'></div>
+<!-- ProductCarousel -->
+<div data-island="ProductCarousel" data-props='{"products":[{"id":"p1","title":"Product name","price":"$29.99","compareAtPrice":"$39.99","image":"PRODUCT_IMAGE_URL","href":"/products/product-name"}],"columns":4,"showQuickAdd":true,"showWishlist":true}'></div>
 ```
 
-Use `vibe://schema/island/EditorialProductGrid` for exact prop shape.
+Use `vibe://schema/island/ProductCarousel` for the exact prop shape.
 
 ## Responsive Grid Columns
 

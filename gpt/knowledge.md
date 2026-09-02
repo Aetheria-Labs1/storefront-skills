@@ -1,5 +1,5 @@
 <!-- GENERATED from skills/ by scripts/build-distributions.py — DO NOT EDIT.
-     storefront-skills v5.4.0 · 14 skills · 54 island schemas -->
+     storefront-skills v5.4.1 · 14 skills · 47 active islands -->
 
 # Lexsis Storefront Skills — Knowledge Base
 
@@ -218,7 +218,7 @@ This ensures: the asset is stored in the brand's library, available for reuse, a
 <!-- Click-to-play video hero (use HeroMedia island) -->
 <lx-island name="HeroMedia">
   <script type="application/json">
-    { "media": { "type": "video", "src": "VIDEO_URL", "poster": "THUMBNAIL_URL", "autoplay": false } }
+    { "type": "video", "videoSrc": "VIDEO_URL", "poster": "THUMBNAIL_URL", "autoplay": false }
   </script>
 </lx-island>
 
@@ -1697,6 +1697,11 @@ Search documentation, skill knowledge, island patterns, and industry guidance vi
 3. If results reference an island, read `vibe://catalog/islands/{name}` for selection guidance. Once selected, read `vibe://schema/island/{name}` for exact props and source-format markup.
 4. Synthesize relevant findings — don't dump raw results, extract what's actionable
 
+Live MCP resources are authoritative. For island contracts, use
+`vibe://schema/island/{name}` first, bundled
+`storefront-engine/references/islands/{slug}/schema.json` second, and prose
+examples last.
+
 ## Tool Usage
 
 ### Primary search
@@ -2106,6 +2111,12 @@ Steps 1-4 are ALWAYS run first. They establish context. Steps 5+ vary by skill.
 
 > **Brand kit ↔ design.md precedence**: when the two disagree, **exact tokens (colors, fonts, radius, spacing values) come from the brand kit**; **style philosophy, component guidance, and explicit don'ts come from design.md**. Conflict on a token → use the kit's value, applied within design.md's don'ts. Don't stall trying to reconcile them.
 
+> **Documentation precedence**: live MCP contracts win over bundled docs. For
+> islands, use `vibe://schema/island/{name}` (or `lexsis_design` action
+> `island_schema`) first, bundled
+> `references/islands/{slug}/schema.json` second, and prose/layout examples
+> last. Never merge prop shapes from different versions.
+
 > **Authoring format**: write pages in the HTML-native **source format** (`source-format.md`) — plain HTML sections delimited by `<!-- section: id -->`, islands as `<lx-island name>` with a JSON `<script>` child. The compiler produces VibePage JSON and does all escaping.
 
 > **Templates**: search before drafting. Retrieve templates you intend to edit
@@ -2245,8 +2256,17 @@ Islands are React components that hydrate client-side. They handle interactive c
 ### Prop Data Sources
 - Product data → `lexsis_catalog` action `get` or `list`
 - Navigation → `lexsis_brand` action `navigation`
-- Reviews → configured in store (no manual data needed)
+- Reviews → configured review source or public reviews endpoint; never invent
+  reviewers, ratings, locations, or counts
 - Brand tokens → `lexsis_brand` action `brand_kit` or `lexsis_brand.get_theme`
+
+### Locale and Market Rules
+
+- Derive currency, tax language, shipping promises, and payment methods from
+  the selected store. Do not default every page to USD or to India.
+- For India storefronts, format INR with `₹`, use pincode-aware delivery
+  language, and mention GST, COD, or UPI only when store data confirms them.
+- Localize names, units, dates, and cities without fabricating regional proof.
 
 ---
 
@@ -2299,7 +2319,7 @@ The old path (VibePage JSON with HTML in strings and JSON inside `data-props='..
 
   <lx-island name="CountdownTimer" hydrate="visible">
     <script type="application/json">
-      { "endDate": "2026-09-01T00:00:00Z", "variant": "flip" }
+      { "endDate": "2026-09-15T00:00:00Z", "style": "flip" }
     </script>
   </lx-island>
 </section>
@@ -2316,11 +2336,10 @@ The old path (VibePage JSON with HTML in strings and JSON inside `data-props='..
 
 <!-- section: faq -->
 <section class="py-12">
-  <lx-island name="FAQ">
-    <script type="application/json">
-      { "items": [{ "q": "Can't I return it?", "a": "Yes — 30 days, no questions asked." }] }
-    </script>
-  </lx-island>
+  <details>
+    <summary>Can I return it?</summary>
+    <p>Yes — 30 days, no questions asked.</p>
+  </details>
 </section>
 ```
 
@@ -3484,7 +3503,7 @@ How to properly embed, wrap, and combine React islands in vibe-code HTML section
 <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-16">
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
     <!-- Left: Gallery -->
-    <div data-island="ProductGallery" data-props='{"productId":"gid://shopify/Product/123","layout":"grid","enableZoom":true}'></div>
+    <div data-island="ProductGallery" data-props='{"productId":"gid://shopify/Product/123","layout":"grid","enableLightbox":true}'></div>
     <!-- Right: BuyBox -->
     <div class="lg:sticky lg:top-24 lg:self-start">
       <div data-island="BuyBox" data-props='{"productId":"gid://shopify/Product/123","ctaText":"Add to Cart"}'></div>
@@ -3507,11 +3526,13 @@ Legacy note: `CartDrawer` (V1) exists only on old pages that predate cart profil
 
 ```html
 <section>
-  <div data-island="StickyBar" data-props='{"productId":"gid://shopify/Product/123","showPrice":true,"triggerOffset":600}'></div>
+  <div data-island="StickyBar" data-props='{"productId":"gid://shopify/Product/123","cta":"Add to Cart","showAfter":"#primary-buy-box"}'></div>
 </section>
 ```
 
-`triggerOffset`: px from top before bar appears. Set to ~height of hero + BuyBox section.
+`showAfter` is a CSS selector. Give the primary BuyBox wrapper a stable ID and
+use that selector so the bar appears only after the primary purchase UI leaves
+the viewport.
 
 ### QuantityBreaks — Volume Discounts
 
@@ -3520,7 +3541,7 @@ Place directly below or beside BuyBox:
 ```html
 <section class="px-4 sm:px-6 lg:px-8 pb-6">
   <div class="max-w-2xl mx-auto">
-    <div data-island="QuantityBreaks" data-props='{"productId":"gid://shopify/Product/123","tiers":[{"qty":2,"discount":10,"label":"Buy 2 Save 10%"},{"qty":3,"discount":15,"label":"Buy 3 Save 15%"},{"qty":5,"discount":20,"label":"Buy 5 Save 20%"}]}'></div>
+    <div data-island="QuantityBreaks" data-props='{"productId":"gid://shopify/Product/123","tierQuantities":[2,3,5],"variant":"cards"}'></div>
   </div>
 </section>
 ```
@@ -3541,7 +3562,7 @@ Place directly below or beside BuyBox:
 ### ProductGallery — Image Gallery with Zoom
 
 ```html
-<div data-island="ProductGallery" data-props='{"productId":"gid://shopify/Product/123","layout":"grid","enableZoom":true}'></div>
+<div data-island="ProductGallery" data-props='{"productId":"gid://shopify/Product/123","layout":"grid","enableLightbox":true}'></div>
 ```
 
 Layout options: `"grid"` (thumbnails below), `"stack"` (vertical scroll), `"carousel"` (swipe).
@@ -3559,9 +3580,9 @@ Layout options: `"grid"` (thumbnails below), `"stack"` (vertical scroll), `"caro
   <div class="max-w-6xl mx-auto">
     <div class="text-center mb-10">
       <p class="text-xs uppercase tracking-[0.2em] mb-2" style="color:var(--lx-accent-color)">Testimonials</p>
-      <h2 class="font-bold" style="font-family:var(--lx-font-heading);font-size:clamp(1.5rem,3vw,2.25rem)">Loved by Thousands</h2>
+      <h2 class="font-bold" style="font-family:var(--lx-font-heading);font-size:clamp(1.5rem,3vw,2.25rem)">What Customers Say</h2>
     </div>
-    <div data-island="ReviewCarousel" data-props='{"reviews":[{"author":"Priya M.","rating":5,"text":"Amazing results in just one week!","date":"2026-05-01"},{"author":"Ananya R.","rating":5,"text":"Best serum I have ever used.","date":"2026-04-15"},{"author":"Kavita S.","rating":4,"text":"Great for sensitive skin.","date":"2026-03-20"}],"autoPlay":true}'></div>
+    <div data-island="ReviewCarousel" data-props='{"reviews":[{"author":"Priya M.","rating":5,"body":"Amazing results in just one week!","date":"2026-05-01"},{"author":"Ananya R.","rating":5,"body":"Best serum I have ever used.","date":"2026-04-15"},{"author":"Kavita S.","rating":4,"body":"Great for sensitive skin.","date":"2026-03-20"}],"autoplay":true}'></div>
   </div>
 </section>
 ```
@@ -3569,18 +3590,26 @@ Layout options: `"grid"` (thumbnails below), `"stack"` (vertical scroll), `"caro
 **With Shopify product reviews (auto-fetch):**
 
 ```html
-<div data-island="ReviewCarousel" data-props='{"productId":"gid://shopify/Product/123","autoPlay":true}'></div>
+<div data-island="ReviewCarousel" data-props='{"reviewsEndpoint":"/api/v1/storefront/public/reviews/PAGE_SHORT_ID","productIds":["gid://shopify/Product/123"],"autoplay":true}'></div>
 ```
 
-### TrustBadgeBar — Trust Signals
+Use the carousel only with 3 or more real reviews. For 1-2 verified reviews,
+render static testimonial cards. If there are no reviews, use product proof,
+certifications, guarantees, or verified press instead. Never fabricate names,
+ratings, locations, or review counts.
+
+### Trust Signals — Static HTML
 
 ```html
 <section class="py-4 border-y" style="border-color:var(--lx-border-color)">
-  <div data-island="TrustBadgeBar" data-props='{"badges":[{"icon":"shield","label":"Secure Checkout"},{"icon":"truck","label":"Free Shipping"},{"icon":"refresh","label":"Easy Returns"},{"icon":"award","label":"Premium Quality"}]}'></div>
+  <ul class="grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
+    <li>Secure checkout</li>
+    <li>Free shipping</li>
+    <li>Easy returns</li>
+    <li>Quality guarantee</li>
+  </ul>
 </section>
 ```
-
-Available icons: `shield`, `truck`, `refresh`, `award`, `check`, `lock`, `heart`, `star`, `clock`, `leaf`.
 
 ### SocialProofPopup — Recent Activity Toasts
 
@@ -3588,15 +3617,20 @@ Place once (invisible section):
 
 ```html
 <section class="hidden">
-  <div data-island="SocialProofPopup" data-props='{"messages":[{"text":"Sarah from Mumbai just purchased","delay":3000},{"text":"Rohit from Delhi added to cart","delay":5000},{"text":"12 people viewing this now","delay":8000}],"position":"bottom-left","interval":8000}'></div>
+  <div data-island="SocialProofPopup" data-props='{"events":[{"name":"Priya","product":"Daily Face Serum","location":"Mumbai","time":"2 minutes ago"},{"name":"Rohit","product":"Daily Face Serum","location":"Delhi","time":"5 minutes ago"}],"position":"bottom-left","interval":8000}'></div>
 </section>
 ```
 
+Use localized names, currency, tax/shipping language, and city references only
+when the selected store market supports them. For an India storefront, prefer
+INR (`₹`), pincode-aware delivery language, and COD/UPI claims only when those
+payment methods are actually configured.
+
 ---
 
-## Content Islands
+## Content Patterns
 
-### FAQ — Accordion Questions
+### FAQ — Native Accordion
 
 ```html
 <section class="py-12 lg:py-20 px-4">
@@ -3604,22 +3638,25 @@ Place once (invisible section):
     <h2 class="text-center font-bold mb-10" style="font-family:var(--lx-font-heading);font-size:clamp(1.5rem,3vw,2.25rem)">
       Frequently Asked Questions
     </h2>
-    <div data-island="FAQ" data-props='{"items":[{"question":"How do I use this product?","answer":"Apply 2-3 drops to clean skin morning and night."},{"question":"Is it suitable for sensitive skin?","answer":"Yes, dermatologist tested and hypoallergenic."},{"question":"When will I see results?","answer":"Most customers see improvement within 1-2 weeks."},{"question":"What is your return policy?","answer":"30-day hassle-free returns, no questions asked."}],"style":"accordion","openFirst":true}'></div>
+    <div class="space-y-3">
+      <details><summary>How do I use this product?</summary><p>Apply 2-3 drops to clean skin morning and night.</p></details>
+      <details><summary>Is it suitable for sensitive skin?</summary><p>Use only verified product guidance here.</p></details>
+    </div>
   </div>
 </section>
 ```
 
-### Tabs — Tabbed Content
+### Tabbed Content — Native Disclosure
 
 ```html
 <section class="py-12 px-4">
   <div class="max-w-4xl mx-auto">
-    <div data-island="Tabs" data-props='{"tabs":[{"label":"Details","content":"<p>Full product details and specifications.</p>"},{"label":"Ingredients","content":"<ul><li>Hyaluronic Acid</li><li>Niacinamide 5%</li><li>Ceramides</li></ul>"},{"label":"How to Use","content":"<ol><li>Cleanse face</li><li>Apply 2-3 drops</li><li>Follow with moisturizer</li></ol>"}],"style":"underline"}'></div>
+    <details open><summary>Details</summary><p>Full product details and specifications.</p></details>
+    <details><summary>Ingredients</summary><p>Use verified ingredient data.</p></details>
+    <details><summary>How to Use</summary><p>Use verified usage instructions.</p></details>
   </div>
 </section>
 ```
-
-Style options: `"underline"`, `"pills"`, `"bordered"`.
 
 ### BeforeAfter — Comparison Slider
 
@@ -3647,12 +3684,12 @@ Style options: `"underline"`, `"pills"`, `"bordered"`.
       <p class="text-xs uppercase tracking-[0.2em] mb-2" style="color:var(--lx-accent-color)">Transparency</p>
       <h2 class="font-bold" style="font-family:var(--lx-font-heading);font-size:clamp(1.5rem,3vw,2.25rem)">What's Inside</h2>
     </div>
-    <div data-island="IngredientExplorer" data-props='{"ingredients":[{"name":"Hyaluronic Acid","description":"Multi-molecular weight complex","benefit":"Deep multi-layer hydration"},{"name":"Niacinamide 5%","description":"Vitamin B3 derivative","benefit":"Minimizes pores, evens tone"},{"name":"Ceramide Complex","description":"Skin-identical lipids","benefit":"Repairs moisture barrier"}],"layout":"interactive"}'></div>
+    <div data-island="IngredientExplorer" data-props='{"ingredients":[{"name":"Hyaluronic Acid","description":"Multi-molecular weight complex","benefit":"Deep multi-layer hydration"},{"name":"Niacinamide 5%","description":"Vitamin B3 derivative","benefit":"Minimizes pores, evens tone"},{"name":"Ceramide Complex","description":"Skin-identical lipids","benefit":"Repairs moisture barrier"}],"layout":"grid"}'></div>
   </div>
 </section>
 ```
 
-### CompareTable — Product Comparison
+### Product Comparison — Static Table
 
 ```html
 <section class="py-12 lg:py-20 px-4">
@@ -3660,7 +3697,10 @@ Style options: `"underline"`, `"pills"`, `"bordered"`.
     <h2 class="text-center font-bold mb-10" style="font-family:var(--lx-font-heading);font-size:clamp(1.5rem,3vw,2.25rem)">
       Why We're Different
     </h2>
-    <div data-island="CompareTable" data-props='{"products":[{"name":"Our Serum","features":{"Clean Ingredients":true,"Dermat Tested":true,"No Parabens":true,"Under ₹1500":true}},{"name":"Brand X","features":{"Clean Ingredients":false,"Dermat Tested":true,"No Parabens":false,"Under ₹1500":false}},{"name":"Brand Y","features":{"Clean Ingredients":true,"Dermat Tested":false,"No Parabens":true,"Under ₹1500":true}}],"features":["Clean Ingredients","Dermat Tested","No Parabens","Under ₹1500"],"highlightIndex":0}'></div>
+    <table class="w-full text-left">
+      <thead><tr><th>Feature</th><th>Our product</th><th>Alternative</th></tr></thead>
+      <tbody><tr><td>Clean ingredients</td><td>Yes</td><td>Check source</td></tr></tbody>
+    </table>
   </div>
 </section>
 ```
@@ -3672,18 +3712,18 @@ Style options: `"underline"`, `"pills"`, `"bordered"`.
   <div class="max-w-xl mx-auto text-center">
     <h2 class="text-white text-2xl font-bold mb-2" style="font-family:var(--lx-font-heading)">Join the Club</h2>
     <p class="text-white/70 text-sm mb-6">Get 10% off your first order + early access to new launches.</p>
-    <div data-island="EmailCapture" data-props='{"placeholder":"Enter your email","buttonText":"Get 10% Off","incentive":"10% off your first order","style":"inline"}'></div>
+    <div data-island="EmailCapture" data-props='{"placeholder":"Enter your email","buttonText":"Get 10% Off","discount":"10% off your first order","variant":"compact"}'></div>
   </div>
 </section>
 ```
 
-### ExitIntent — Last-Chance Popup
+### Modal — Exit-Intent Offer
 
 Place once (invisible):
 
 ```html
 <section class="hidden">
-  <div data-island="ExitIntent" data-props='{"headline":"Wait! Don't leave empty-handed","body":"Use code EXIT15 for 15% off your first order","ctaText":"Claim My Discount","showOnMobile":true}'></div>
+  <div data-island="Modal" data-props='{"trigger":"exit_intent","headline":"Wait! Don't leave empty-handed","body":"Use code EXIT15 for 15% off your first order","triggerLabel":"Claim My Discount","position":"center"}'></div>
 </section>
 ```
 
@@ -3695,8 +3735,8 @@ Place once (invisible):
 
 ```
 1. ProductGallery + BuyBox (side-by-side on desktop)
-2. TrustBadgeBar (immediately below)
-3. Tabs (details/ingredients/usage)
+2. Static trust row (immediately below)
+3. Native details/ingredient disclosures
 4. ReviewCarousel
 5. StickyBar (scroll-triggered)
 6. head.use_cart_v2: true (cart injected — no section needed)
@@ -3706,13 +3746,13 @@ Place once (invisible):
 
 ```
 1. Hero section (HTML, no island)
-2. TrustBadgeBar
+2. Static trust row
 3. Benefits section (HTML grid)
 4. BeforeAfter or IngredientExplorer
 5. ReviewCarousel
 6. EmailCapture or BuyBox
-7. FAQ
-8. ExitIntent (hidden)
+7. Native FAQ details
+8. Modal with exit-intent trigger (hidden)
 ```
 
 ### Collection Page
@@ -3849,26 +3889,26 @@ Premium split-hero for PDPs. Media pane on one side, BuyBox on the other.
 **Layout options:** `splitLeft` (media left 60%), `splitRight`, `fullHeight`, `stacked`
 **ALWAYS PAIR WITH:** BuyBox in the adjacent grid cell. Use CSS grid in the containing HTML section to create the split.
 
-### EditorialProductGrid — Related Products + Bundle
+### ProductCarousel — Related Products
 
 Mixed-type grid with center feature card for bundles or highlighted products.
 
 ```html
-<div data-island="EditorialProductGrid" data-props='{"products":[{"id":"123","title":"Product A","price":"$29","image":"/a.jpg"},{"id":"456","title":"Product B","price":"$35","image":"/b.jpg"}],"featureCard":{"title":"Save 20%","subtitle":"Bundle & save","type":"bundle","cta":"Add Bundle"},"layout":"tripleCenter","showQuickAdd":true}'></div>
+<div data-island="ProductCarousel" data-props='{"products":[{"id":"123","title":"Product A","price":"$29","image":"/a.jpg"},{"id":"456","title":"Product B","price":"$35","image":"/b.jpg"}],"columns":2,"showQuickAdd":true}'></div>
 ```
 
-**Layout options:** `tripleCenter` (product | feature | product), `dualSide`, `quad`
-
-### PDPInfoCards — Product Detail Cards
+### Product Detail Cards — Static HTML
 
 Information cards for product specs, taste profiles, pairings, certifications.
 
 ```html
-<div data-island="PDPInfoCards" data-props='{"cards":[{"title":"Taste Profile","icon":"palette","items":["Bright citrus","Smooth finish","Medium body"]},{"title":"Pairs With","icon":"wine","items":["Dark chocolate","Aged cheese","Fresh berries"]}],"variant":"dashed","columns":2,"badgeRow":[{"icon":"leaf","label":"Organic"},{"icon":"shield","label":"Lab Tested"}]}'></div>
+<div class="grid gap-4 md:grid-cols-2">
+  <article><h3>Taste Profile</h3><p>Bright citrus · Smooth finish · Medium body</p></article>
+  <article><h3>Pairs With</h3><p>Dark chocolate · Aged cheese · Fresh berries</p></article>
+</div>
 ```
 
-**Variant options:** `bordered`, `dashed`, `filled`, `minimal`
-**ALWAYS PAIR WITH:** Place below ProductHero/BuyBox section, above reviews.
+Place below the ProductHero/BuyBox section and above reviews.
 
 ---
 
@@ -3949,7 +3989,7 @@ Navigation islands (Navbar, Footer, SiteHeader) support **hydration mode**: you 
 **Optional tags:** `newsletter-form`, `newsletter-input`, `newsletter-success`, `year`
 
 ```html
-<div data-island="Footer" data-props='{"newsletterEndpoint":"https://api.example.com/subscribe"}'>
+<div data-island="Footer" data-props='{"links":[]}'>
   <footer data-lx-footer="root" class="bg-gray-950 text-gray-300 py-16 px-6">
     <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
       <div>
@@ -3983,7 +4023,7 @@ Combines announcement + navbar. Uses BOTH `data-lx-header` and `data-lx-nav` tag
 **Required tags:** `data-lx-header="root"` + same nav tags as Navbar
 
 ```html
-<div data-island="SiteHeader" data-props='{"sticky":true,"cartMode":"drawer","messages":["Free shipping over $75","New summer collection"],"dismissible":true}'>
+<div data-island="SiteHeader" data-props='{"sticky":true,"announcement":{"messages":["Free shipping over $75","New summer collection"],"dismissible":true},"navbar":{"logo":{"src":"BRAND_LOGO_URL"},"links":[]}}'>
   <header data-lx-header="root" class="fixed top-0 w-full z-50">
     <div data-lx-header="announcement" class="bg-black text-white text-center py-2 text-xs relative">
       <span data-lx-header="announcement-text">Free shipping over $75</span>
@@ -4250,7 +4290,7 @@ This ensures: the asset is stored in the brand's library, available for reuse, a
 <!-- Click-to-play video hero -->
 <lx-island name="HeroMedia">
   <script type="application/json">
-    { "media": { "type": "video", "src": "VIDEO_URL", "poster": "THUMBNAIL_URL", "autoplay": false } }
+    { "type": "video", "videoSrc": "VIDEO_URL", "poster": "THUMBNAIL_URL", "autoplay": false }
   </script>
 </lx-island>
 

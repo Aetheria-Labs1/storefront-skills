@@ -87,7 +87,7 @@
     "examples": [
       {
         "label": "Hydration mode with rotating announcements",
-        "source": "<lx-island name=\"SiteHeader\">\n  <script type=\"application/json\">{\"sticky\":true,\"cartMode\":\"drawer\",\"messages\":[\"Free shipping over $50\",\"New arrivals daily\",\"20% off first order\"],\"rotateInterval\":5000,\"dismissible\":true}</script>\n  <header data-lx-header=\"root\"><div data-lx-header=\"announcement\"><span data-lx-header=\"announcement-text\"></span><button data-lx-header=\"announcement-dismiss\">×</button></div><nav data-lx-nav=\"root\">...</nav></header>\n</lx-island>"
+        "source": "<lx-island name=\"SiteHeader\">\n  <script type=\"application/json\">{\"sticky\":true,\"announcement\":{\"messages\":[\"Free shipping over $50\",\"New arrivals daily\",\"20% off first order\"],\"speed\":5000,\"dismissible\":true},\"navbar\":{\"logo\":{\"src\":\"/logo.svg\"},\"links\":[]}}</script>\n  <header data-lx-header=\"root\"><div data-lx-header=\"announcement\"><span data-lx-header=\"announcement-text\"></span><button data-lx-header=\"announcement-dismiss\">×</button></div><nav data-lx-nav=\"root\">...</nav></header>\n</lx-island>"
       },
       {
         "label": "Legacy mode with single announcement",

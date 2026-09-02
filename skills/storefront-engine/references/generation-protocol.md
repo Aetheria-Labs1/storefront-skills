@@ -26,6 +26,12 @@ Steps 1-4 are ALWAYS run first. They establish context. Steps 5+ vary by skill.
 
 > **Brand kit ↔ design.md precedence**: when the two disagree, **exact tokens (colors, fonts, radius, spacing values) come from the brand kit**; **style philosophy, component guidance, and explicit don'ts come from design.md**. Conflict on a token → use the kit's value, applied within design.md's don'ts. Don't stall trying to reconcile them.
 
+> **Documentation precedence**: live MCP contracts win over bundled docs. For
+> islands, use `vibe://schema/island/{name}` (or `lexsis_design` action
+> `island_schema`) first, bundled
+> `references/islands/{slug}/schema.json` second, and prose/layout examples
+> last. Never merge prop shapes from different versions.
+
 > **Authoring format**: write pages in the HTML-native **source format** (`source-format.md`) — plain HTML sections delimited by `<!-- section: id -->`, islands as `<lx-island name>` with a JSON `<script>` child. The compiler produces VibePage JSON and does all escaping.
 
 > **Templates**: search before drafting. Retrieve templates you intend to edit
@@ -165,8 +171,17 @@ Islands are React components that hydrate client-side. They handle interactive c
 ### Prop Data Sources
 - Product data → `lexsis_catalog` action `get` or `list`
 - Navigation → `lexsis_brand` action `navigation`
-- Reviews → configured in store (no manual data needed)
+- Reviews → configured review source or public reviews endpoint; never invent
+  reviewers, ratings, locations, or counts
 - Brand tokens → `lexsis_brand` action `brand_kit` or `lexsis_brand.get_theme`
+
+### Locale and Market Rules
+
+- Derive currency, tax language, shipping promises, and payment methods from
+  the selected store. Do not default every page to USD or to India.
+- For India storefronts, format INR with `₹`, use pincode-aware delivery
+  language, and mention GST, COD, or UPI only when store data confirms them.
+- Localize names, units, dates, and cities without fabricating regional proof.
 
 ---
 

@@ -22,7 +22,8 @@ JSON compatible with the Lexsis renderer.
 
 ## Output Format
 
-The output MUST match this exact structure (same as `reference/islands/{name}/layouts/*.json`):
+The output MUST match this exact structure (same as
+`storefront-engine/references/islands/{name}/layouts/*.json`):
 
 ```json
 {
@@ -43,18 +44,13 @@ These rules are NON-NEGOTIABLE. Violating any produces broken output:
    - `var(--lx-text-color)`, `var(--lx-text-muted)`, `var(--lx-border-color)`
    - `var(--lx-radius)`, `var(--lx-shadow)`
 
-2. **Compiled `data-island` markers must reference a REAL island** from our
-   47-island catalog:
-   - Commerce: `BuyBox`, `QuickAdd`, `ProductCard`, `ProductCarousel`, `ProductHero`, `ProductGallery`, `CartDrawer`, `DrawerShell`, `CartLines`, `CartCheckoutButton`, `CartSummary`, `CartProgressBar`, `CartDiscountInput`, `CartCrossSell`, `ProceedToCart`, `QuantityBreaks`, `SubscriptionToggle`
-   - Navigation: `Navbar`, `MobileMenu`, `Footer`, `SiteHeader`, `AnnouncementBar`
-   - Engagement: `FAQ`, `ReviewCarousel`, `CountdownTimer`, `SocialProofPopup`, `Tabs`, `EmailCapture`, `BackToTop`, `WishlistButton`
-   - Media: `HeroMedia`, `ProductGallery`, `VideoPlayer`, `ImageZoom`, `BeforeAfter`, `MediaCarousel`
-   - Layout: `Modal`, `StickyBar`, `CompareTable`, `BundleBuilder`, `EditorialProductGrid`
-   - Info: `DeliveryEstimate`, `InventoryIndicator`, `PaymentOptions`, `PDPInfoCards`, `SizeGuide`, `TrustBadgeBar`, `VariantSwatches`, `IngredientExplorer`, `OptionResolver`
+2. **Compiled `data-island` markers must reference a REAL active island** from
+   the 47-island catalog. Read the schema directory; do not copy a hardcoded
+   name list from prose.
 
 3. **Compiled `data-props` must match the island's schema** — read
-   `reference/islands/{name}/schema.json` for valid props, types, and required
-   fields. Never invent props that don't exist.
+   `storefront-engine/references/islands/{name}/schema.json` for valid props,
+   types, and required fields. Never invent props that don't exist.
 
 4. **`{{PLACEHOLDER}}` for content slots** — dynamic content uses double-brace placeholders:
    - `{{PRODUCT_ID}}`, `{{HEADLINE}}`, `{{CTA_TEXT}}`, `{{IMAGE_SRC}}`

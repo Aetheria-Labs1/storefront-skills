@@ -1,7 +1,7 @@
 {
   "name": "lexsis-storefront-skills",
-  "description": "AI-powered Shopify storefront builder. 14 independently runnable skills, 2 agents, and 54 island schemas.",
-  "version": "5.4.0",
+  "description": "AI-powered Shopify storefront builder. 14 independently runnable skills, 2 agents, and 47 active island contracts.",
+  "version": "5.4.1",
   "author": {
     "name": "Aetheria Labs",
     "email": "hello@trylexsis.com"

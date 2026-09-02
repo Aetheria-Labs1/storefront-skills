@@ -34,6 +34,10 @@ Generate high-converting post-click landing pages. ZERO navigation (+30% CVR fro
 10. Final CTA         — restate offer + guarantee + urgency
 ```
 
+With fewer than 3 real reviews, use 1-2 verified static testimonials or replace
+the section with guarantees, certifications, product evidence, or verified
+press. Never fabricate review content or totals.
+
 ## Page-Specific Context Calls
 
 After the standard 4 context calls, also fetch:

@@ -1,6 +1,6 @@
 {
   "id": "inline-card",
-  "html": "<section class=\"max-w-3xl mx-auto px-4 py-12 md:py-16 lg:py-20\"><div class=\"border border-[var(--lx-border-color)] rounded-xl overflow-hidden shadow-sm\"><div class=\"relative aspect-video\"><div data-island=\"VideoPlayer\" data-props='{\"src\":\"{{VIDEO_SRC}}\",\"poster\":\"{{POSTER_URL}}\",\"autoplay\":false,\"muted\":false,\"controls\":true,\"aspectRatio\":\"16/9\"}'></div></div><div class=\"p-4 bg-[var(--lx-surface-alt)]\"><p class=\"text-sm text-[var(--lx-text-muted)] font-medium\">{{VIDEO_CAPTION}}</p></div></div></section>",
+  "html": "<section class=\"max-w-3xl mx-auto px-4 py-12 md:py-16 lg:py-20\"><div class=\"border border-[var(--lx-border-color)] rounded-xl overflow-hidden shadow-sm\"><div class=\"relative aspect-video\"><div data-island=\"VideoPlayer\" data-props='{\"src\":\"{{VIDEO_SRC}}\",\"poster\":\"{{POSTER_URL}}\",\"autoplay\":false,\"muted\":false,\"aspectRatio\":\"16/9\"}'></div></div><div class=\"p-4 bg-[var(--lx-surface-alt)]\"><p class=\"text-sm text-[var(--lx-text-muted)] font-medium\">{{VIDEO_CAPTION}}</p></div></div></section>",
   "css": "",
   "js": ""
 }

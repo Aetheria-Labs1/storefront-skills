@@ -41,16 +41,16 @@ lexsis_catalog.list           → related products for cross-sell
 | **BuyBox** (REQUIRED) | Section 3 | `lexsis_catalog.get` → variants, price, images |
 | ProductGallery | Section 2 | `lexsis_catalog.get` → images array |
 | VariantSwatches | Section 3 | `lexsis_catalog.get` → variant options |
-| StickyCart | Section 9 | product title + price |
+| StickyBar | Section 9 | product title + price + variant ID |
 | ReviewCarousel | Section 6 | provider + productId |
-| FAQ | Section 8 | items[{question, answer}] |
+| Native `<details>` | Section 8 | verified product and policy answers |
 
 ```html
 <!-- BuyBox (REQUIRED) -->
-<div data-island="BuyBox" data-props='{"product":{"title":"...","price":"$29.99","variants":[{"id":"v1","title":"30ml","price":"$29.99"},{"id":"v2","title":"60ml","price":"$49.99"}],"images":["url1","url2"]}}'></div>
+<div id="primary-buy-box" data-island="BuyBox" data-props='{"product":{"title":"Serum","price":"$29.99","variants":[{"id":"v1","title":"30ml","price":"$29.99","available":true},{"id":"v2","title":"60ml","price":"$49.99","available":true}]}}'></div>
 
-<!-- StickyCart -->
-<div data-island="StickyCart" data-props='{"product":{"title":"...","price":"$29.99"},"threshold":600}'></div>
+<!-- StickyBar appears after the primary purchase UI leaves the viewport -->
+<div data-island="StickyBar" data-props='{"product":{"title":"Serum","price":"$29.99","variantId":"v1"},"cta":"Add to Cart","showAfter":"#primary-buy-box"}'></div>
 ```
 
 ## Page-Specific Rules
@@ -58,6 +58,10 @@ lexsis_catalog.list           → related products for cross-sell
 - Price MUST be visible without scrolling
 - Single h1 (product title), h2 per section
 - Hero height: 420-550px (Seton.de data: -11% bounce, +19% engagement)
+- Use ReviewCarousel only when at least 3 real reviews are available. With
+  1-2 verified reviews, render static testimonial cards; with none, replace the
+  section with product proof, guarantees, certifications, or verified press.
+  Never invent reviewers, ratings, or counts.
 
 ## Niche Variants
 

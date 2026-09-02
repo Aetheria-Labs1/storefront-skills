@@ -1,6 +1,6 @@
 {
   "id": "product-gallery",
-  "html": "<section class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20\"><div class=\"grid grid-cols-1 lg:grid-cols-2 gap-4\"><div class=\"lg:col-span-2\"><div data-island=\"ProductGallery\" data-props='{\"productId\":\"{{PRODUCT_ID}}\",\"layout\":\"grid\",\"enableZoom\":true,\"aspectRatio\":\"1/1\",\"showThumbnails\":false}'></div></div></div></section>",
+  "html": "<section class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20\"><div class=\"grid grid-cols-1 lg:grid-cols-2 gap-4\"><div class=\"lg:col-span-2\"><div data-island=\"ProductGallery\" data-props='{\"productId\":\"{{PRODUCT_ID}}\",\"layout\":\"grid\"}'></div></div></div></section>",
   "css": "",
   "js": ""
 }

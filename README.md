@@ -72,7 +72,8 @@ Both files are **generated** from the canonical skills by `scripts/build-distrib
 - **14 independently runnable skills** — one directory per workflow under `skills/`, spec-compliant SKILL.md each
 - **2 agents** (cro-analyzer, page-builder) for Claude Code
 - **54 reference docs** (CRO patterns, verticals, traffic sources, workflows) under `skills/storefront-engine/references/`
-- **54 island schemas** with layouts under `references/islands/`
+- **47 active islands** plus 7 deprecated compatibility contracts under
+  `skills/storefront-engine/references/islands/`
 - Vertical expertise: beauty, supplements, fashion, food, luxury, home
 - Traffic-source patterns: Meta, Google, TikTok
 

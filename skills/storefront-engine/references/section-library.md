@@ -116,7 +116,7 @@ Navigate to the page preview URL and verify:
 | Hero (before/after) | BeforeAfter | first | centered text top + card with 2× BeforeAfter sliders + numbered features list |
 | Hero (curved ribbon) | none (SVG) | first | SVG `<textPath>` on Bezier curves + `<animate>` for flowing text ribbons at bottom |
 | Hero (deck slider) | none (JS) | first | nth-child positioned cards. Active=full bg, 3-5=thumbnails. JS rotates DOM order on click |
-| Hero (organic blob) | none (SVG) | first | SVG `<clipPath clipPathUnits="objectBoundingBox">` organic shape mask. See `reference/blob-shapes.md` |
+| Hero (organic blob) | none (SVG) | first | SVG `<clipPath clipPathUnits="objectBoundingBox">` organic shape mask. See `blob-shapes.md` |
 | Hero (wavy edge) | none (SVG) | first | full-bleed bg + SVG wave top/bottom dividers. `preserveAspectRatio="none"` |
 | Product Showcase | ProductGallery + BuyBox | after hero | split layout, gallery left, buy right |
 | Testimonials/Reviews | ReviewCarousel | mid-page | card carousel, star ratings |
@@ -160,7 +160,7 @@ Navigate to the page preview URL and verify:
 ```html
 <section class="py-16 md:py-24 px-4" style="background-color: var(--lx-bg-color)">
   <div class="max-w-6xl mx-auto">
-    <div data-island="ReviewCarousel" data-props='{"provider":"shopify","productId":"gid://shopify/Product/123","layout":"cards","columns":3}'></div>
+    <div data-island="ReviewCarousel" data-props='{"reviewsEndpoint":"/api/v1/storefront/public/reviews/PAGE_SHORT_ID","productIds":["gid://shopify/Product/123"],"variant":"grid","pageSize":6}'></div>
   </div>
 </section>
 ```

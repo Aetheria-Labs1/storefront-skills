@@ -126,7 +126,7 @@ Place a QuickAdd island inside the card. Use `render:"icon"` for a floating cart
   <div style="flex:1; text-align:center">
     <div style="font-size:1.25rem; font-weight:700">$79</div>
     <div style="font-size:0.75rem; color:#10b981">Save $20</div>
-    <div data-island="QuickAdd" data-props='{"variantId":"gid://shopify/ProductVariant/bundle123","label":"Add Both"}'></div>
+    <div data-island="QuickAdd" data-props='{"product":{"title":"Bundle","variants":[{"id":"gid://shopify/ProductVariant/bundle123","title":"Default","price":"$79.00","available":true}]},"render":"minimal"}'></div>
   </div>
 </div>
 ```

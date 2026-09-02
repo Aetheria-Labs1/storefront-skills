@@ -149,7 +149,7 @@ This ensures: the asset is stored in the brand's library, available for reuse, a
 <!-- Click-to-play video hero -->
 <lx-island name="HeroMedia">
   <script type="application/json">
-    { "media": { "type": "video", "src": "VIDEO_URL", "poster": "THUMBNAIL_URL", "autoplay": false } }
+    { "type": "video", "videoSrc": "VIDEO_URL", "poster": "THUMBNAIL_URL", "autoplay": false }
   </script>
 </lx-island>
 

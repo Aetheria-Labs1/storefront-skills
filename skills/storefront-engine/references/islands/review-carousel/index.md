@@ -44,6 +44,13 @@ Pass endpoint + optional product filter. Island fetches at mount time, shows loa
 
 **Resolution rule**: if `reviews[]` is present and non-empty → used directly (no fetch). Otherwise if `reviewsEndpoint` is present → fetch mode activates.
 
+## Low-review fallback
+
+- 3+ real reviews: use ReviewCarousel.
+- 1-2 verified reviews: render static testimonial cards.
+- 0 reviews: use product proof, guarantees, certifications, or verified press.
+- Never manufacture reviewers, ratings, locations, or review counts.
+
 ## Composition
 
 - Place mid-page or after product details (never first section)

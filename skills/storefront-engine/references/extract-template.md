@@ -13,7 +13,9 @@ Analyze a live webpage and decompose it into reusable section templates for the 
 ## Prerequisites
 
 - Playwright MCP must be available (for page loading and screenshots)
-- Island schemas at `storefront-skills/reference/islands/` (for component mapping)
+- Island schemas at
+  `storefront-skills/skills/storefront-engine/references/islands/` (for
+  component mapping)
 - Template registry at `services/storefront-renderer/public/templates/registry.json`
 
 ## Workflow
@@ -37,7 +39,9 @@ For each identified section, determine:
 - **Content**: Extract actual text, images, prices, product data from the section
 - **Layout**: Grid structure, alignment, responsive hints
 
-Reference island schemas at `storefront-skills/reference/islands/{name}/schema.json` to understand what each island supports.
+Reference island schemas at
+`storefront-skills/skills/storefront-engine/references/islands/{name}/schema.json`
+to understand what each island supports.
 
 ### Phase 5: Template Generation
 

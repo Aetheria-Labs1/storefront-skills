@@ -356,4 +356,4 @@ prev.onclick = () => track.prepend(track.lastElementChild);
 </div>
 ```
 
-See `reference/blob-shapes.md` for 6 preset shapes categorized by mood.
+See `blob-shapes.md` for 6 preset shapes categorized by mood.

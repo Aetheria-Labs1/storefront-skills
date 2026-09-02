@@ -194,6 +194,7 @@ Every island renders internal elements with `data-part="name"` attributes. You t
 
 ### Finding available parts
 
-1. Check `reference/islands/{name}/schema.json` → `"parts"` array
+1. Check `skills/storefront-engine/references/islands/{name}/schema.json` →
+   `"parts"` array
 2. Or read `vibe://schema/island/{name}` / use `lexsis_design.island_schema` → returns parts list and source-format markup
 3. Each part name describes the element's role, not its HTML tag

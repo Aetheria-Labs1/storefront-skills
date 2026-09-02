@@ -130,7 +130,7 @@
     "examples": [
       {
         "label": "Hydration mode with newsletter form",
-        "source": "<lx-island name=\"Footer\">\n  <script type=\"application/json\">{\"successMessage\":\"Thanks!\"}</script>\n  <footer data-lx-footer=\"root\"><form data-lx-footer=\"newsletter-form\"><input data-lx-footer=\"newsletter-input\" type=\"email\"/><button>Subscribe</button></form><div data-lx-footer=\"newsletter-success\" style=\"display:none;\"></div><p>&copy; <span data-lx-footer=\"year\"></span> All rights reserved.</p></footer>\n</lx-island>"
+        "source": "<lx-island name=\"Footer\">\n  <script type=\"application/json\">{\"links\":[]}</script>\n  <footer data-lx-footer=\"root\"><form data-lx-footer=\"newsletter-form\"><input data-lx-footer=\"newsletter-input\" type=\"email\"/><button>Subscribe</button></form><div data-lx-footer=\"newsletter-success\" style=\"display:none;\">Thanks!</div><p>&copy; <span data-lx-footer=\"year\"></span> All rights reserved.</p></footer>\n</lx-island>"
       },
       {
         "label": "Legacy simple layout",

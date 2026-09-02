@@ -1,1 +1,6 @@
-{"id":"cart-cta","html":"<div class=\"w-full\"><div data-island=\"ProceedToCart\" data-props='{\"variant\":\"primary\",\"text\":\"View Cart\"}'></div></div>","css":"","js":""}
+{
+  "id": "cart-cta",
+  "html": "<div class=\"w-full\"><div data-island=\"ProceedToCart\" data-props='{\"variant\":\"primary\",\"label\":\"View Cart\"}'></div></div>",
+  "css": "",
+  "js": ""
+}

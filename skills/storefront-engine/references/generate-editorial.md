@@ -229,20 +229,18 @@ Write with generous whitespace (section padding 80-120px vertical). Total narrat
 
 ## Required Islands
 
-Replace `data-placeholder="EditorialProductGrid"` with hydrated islands. Maximum 2-3 commerce islands total (editorial restraint):
+Replace product placeholders with hydrated islands. Maximum 2-3 commerce islands total (editorial restraint):
 
 ```html
-<div data-island="EditorialProductGrid" data-props='{
+<div data-island="ProductCarousel" data-props='{
   "products": [{"id":"gid://shopify/Product/1","title":"...","price":"$89.00","image":"..."}],
-  "columns": {"mobile": 1, "desktop": 2},
-  "variant": "editorial",
-  "showPrice": true,
+  "columns": 2,
   "showQuickAdd": true,
-  "ctaText": "Discover"
+  "showLearnMore": true
 }'></div>
 ```
 
-Use `lexsis_design.island_schema("EditorialProductGrid")` to confirm exact prop shape.
+Use `lexsis_design.island_schema("ProductCarousel")` to confirm the exact prop shape.
 
 ## Verification Checklist
 

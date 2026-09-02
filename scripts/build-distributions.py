@@ -100,6 +100,15 @@ def plugin_version() -> str:
 def validate() -> list[str]:
     errors: list[str] = []
 
+    codex_version = json.loads(
+        (ROOT / "codex/.codex-plugin/plugin.json").read_text()
+    ).get("version")
+    if codex_version != plugin_version():
+        errors.append(
+            f"plugin version drift: Claude={plugin_version()!r}, "
+            f"Codex={codex_version!r}"
+        )
+
     for skill_dir in sorted(SKILLS.iterdir()):
         if not skill_dir.is_dir():
             continue
@@ -171,10 +180,17 @@ def validate() -> list[str]:
 
 def derived_counts() -> dict[str, int]:
     islands_dir = REFERENCES / "islands"
+    schemas = [
+        json.loads(path.read_text())
+        for path in islands_dir.glob("*/schema.json")
+    ]
     return {
         "skills": len([d for d in SKILLS.iterdir() if d.is_dir() and (d / "SKILL.md").exists()]),
         "references": len(list(REFERENCES.glob("*.md"))),
-        "island_schemas": len(list(islands_dir.glob("*/schema.json"))),
+        "island_schemas": len(schemas),
+        "active_islands": sum(
+            not schema.get("deprecated", False) for schema in schemas
+        ),
     }
 
 
@@ -184,7 +200,7 @@ def build_gpt() -> dict[str, str]:
     banner = (
         f"<!-- GENERATED from skills/ by scripts/build-distributions.py — DO NOT EDIT.\n"
         f"     storefront-skills v{version} · {counts['skills']} skills · "
-        f"{counts['island_schemas']} island schemas -->\n\n"
+        f"{counts['active_islands']} active islands -->\n\n"
     )
 
     parts: list[str] = [banner, "# Lexsis Storefront Skills — Knowledge Base\n"]

@@ -20,7 +20,7 @@ The old path (VibePage JSON with HTML in strings and JSON inside `data-props='..
 
   <lx-island name="CountdownTimer" hydrate="visible">
     <script type="application/json">
-      { "endDate": "2026-09-01T00:00:00Z", "variant": "flip" }
+      { "endDate": "2026-09-15T00:00:00Z", "style": "flip" }
     </script>
   </lx-island>
 </section>
@@ -37,11 +37,10 @@ The old path (VibePage JSON with HTML in strings and JSON inside `data-props='..
 
 <!-- section: faq -->
 <section class="py-12">
-  <lx-island name="FAQ">
-    <script type="application/json">
-      { "items": [{ "q": "Can't I return it?", "a": "Yes — 30 days, no questions asked." }] }
-    </script>
-  </lx-island>
+  <details>
+    <summary>Can I return it?</summary>
+    <p>Yes — 30 days, no questions asked.</p>
+  </details>
 </section>
 ```
 

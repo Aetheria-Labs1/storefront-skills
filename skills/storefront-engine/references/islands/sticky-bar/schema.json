@@ -83,8 +83,8 @@
         "source": "<lx-island name=\"StickyBar\">\n  <script type=\"application/json\">{\"product\":{\"title\":\"Watch\",\"price\":\"$249.00\",\"variantId\":\"v1\"},\"cta\":\"Buy Now\",\"showAfter\":\"#product-details\"}</script>\n</lx-island>"
       },
       {
-        "label": "Sticky bar revealed after 800px of scroll",
-        "source": "<lx-island name=\"StickyBar\">\n  <script type=\"application/json\">{\"product\":{\"title\":\"Watch\",\"price\":\"$249.00\",\"variantId\":\"v1\"},\"cta\":\"Buy Now\",\"showAfter\":800}</script>\n</lx-island>"
+        "label": "Sticky bar revealed after the offer section",
+        "source": "<lx-island name=\"StickyBar\">\n  <script type=\"application/json\">{\"product\":{\"title\":\"Watch\",\"price\":\"$249.00\",\"variantId\":\"v1\"},\"cta\":\"Buy Now\",\"showAfter\":\"#primary-offer\"}</script>\n</lx-island>"
       },
       {
         "label": "Sticky bar without animations",
