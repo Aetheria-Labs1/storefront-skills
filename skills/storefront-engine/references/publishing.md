@@ -4,11 +4,15 @@ Manage page publishing, previews, and lifecycle.
 
 ## Publish Flow
 
-1. `lexsis_pages` action `compile`
-2. `lexsis_page_create` action `create` with `publish:false`
-3. `lexsis_pages` action `integrity`
-4. Host-agent browser QA at 390px, 768px, and 1280px
-5. `lexsis_live_ops` action `publish` after explicit approval
+1. Require local artifacts from `source-artifact-workflow.md`
+2. Confirm the page's saved store/theme binding
+3. `lexsis_pages` action `compile`
+4. `lexsis_page_create` action `create` with `publish:false`
+5. Record page ID, version, preview URL, and synchronized source hashes
+6. `lexsis_pages` action `integrity`
+7. Host-agent browser and commerce QA at 390px, 768px, and 1280px
+8. Recheck remote version and local synchronization
+9. `lexsis_live_ops` action `publish` after explicit approval
 
 ## Operations
 
@@ -37,22 +41,15 @@ lexsis_live_ops({ action: "unpublish", args: { page_id } })
 ```
 Takes page offline but preserves it in DB.
 
-### Duplicate
-```
-lexsis_drafts({ action: "page_duplicate", args: { page_id, title: "New Title" } })
-```
-Creates a copy — useful for A/B test variants.
-
-### Create Experiment Variant
-```
-lexsis_drafts({ action: "page_variation", args: { page_id, changes: {...} } })
-```
-Creates variant for A/B testing.
+Use the experiment workflow for duplication and variants so each remote page
+has its own local source and manifest first.
 
 ## Prerequisites
 
-- Resolve a connected store with `lexsis_workspace` action `stores`
-- Require a valid selected/default theme from `lexsis_brand`
+- The manifest's store and theme exist in the saved one-time setup
+- Current permissions and store entitlement are read live
+- Require `qa-report.md` with no blocking failures
+- Require local source hash and remote version to match the manifest baseline
 
 Edits to a published page remain draft-only until publish succeeds. A failed
 republish keeps the prior public version live.

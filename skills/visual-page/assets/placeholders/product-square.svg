@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 1200" role="img" aria-labelledby="title desc">
+  <title id="title">Square product preview placeholder</title>
+  <desc id="desc">Neutral square image used only during storefront visual planning.</desc>
+  <rect width="1200" height="1200" fill="#eeeae4"/>
+  <rect x="390" y="230" width="420" height="650" rx="70" fill="#b8afa5"/>
+  <rect x="450" y="160" width="300" height="130" rx="44" fill="#847a71"/>
+  <ellipse cx="600" cy="950" rx="320" ry="70" fill="#4d4742" opacity=".15"/>
+  <text x="70" y="1110" fill="#3f3934" font-family="system-ui, sans-serif" font-size="32" font-weight="700">PREVIEW PLACEHOLDER · 1:1</text>
+</svg>

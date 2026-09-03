@@ -1,86 +1,39 @@
 ---
 name: publish
-description: QA a storefront page, create a draft preview, and publish live only after explicit user approval.
+description: Publish a synchronized and QA-passed Lexsis storefront draft. Use only when the user explicitly asks to release a specific page version.
 ---
 
-# Publish Storefront Page
+# Publish a Page
 
-QA a storefront page, validate structure and rendering, create a draft preview, and publish live only after explicit user approval.
+Publishing is a separate, explicit action. Do not rebuild the page here.
 
-## Context
+## Gate
 
-- **qa-recipe**: compile source, create a draft, run integrity checks, then verify in a browser
+1. Read the page manifest and QA report.
+2. Confirm the saved store/theme binding still exists.
+3. Confirm the current local bundle and section hashes match the synchronized
+   values in the manifest.
+4. Read `lexsis_pages` action `edit_context`.
+5. Confirm the remote version equals `remote.lastKnownVersion`.
+6. Confirm responsive, commerce, copy, claims, assets, and integrity checks
+   passed against that same version and local bundle.
+7. Confirm the store has the required entitlement.
+8. Ask for explicit approval naming the page and version.
 
-## Workflow
+Only then call:
 
-# Storefront Publishing & Lifecycle
-
-Manage page publishing, previews, and lifecycle.
-
-## Publish Flow
-
-1. Require a `DRAFT_READY` page from `generate` or a validated update from
-   `optimize`.
-2. Read `lexsis_pages` action `edit_context` and confirm
-   `has_unpublished_changes` when promoting an edited published page.
-3. Confirm the preview has passed QA at 390px, 768px, and 1280px using the host
-   agent's browser capability.
-4. Confirm the user explicitly wants a live release.
-
-## Operations
-
-### Ready Draft Requirement
-
-`generate` creates and validates draft previews. Do not recreate source or
-compile it here. Require the page ID, preview URL, and completed visual QA
-before release.
-
-### Publish Live (Explicit Approval Required)
-```json
-{
-  "name": "lexsis_live_ops",
-  "arguments": {
-    "action": "publish",
-    "args": { "page_id": "page-uuid" }
-  }
-}
+```text
+lexsis_live_ops({ action: "publish", args: { page_id } })
 ```
-Only call this after explicit approval. A successful publish promotes the
-reviewed current version to the immutable public `published_version_id`.
-Failure preserves the previous live version.
 
-### Unpublish
-```
-lexsis_live_ops({ action: "unpublish", args: { page_id } })
-```
-Takes page offline but preserves it in DB.
+Do not treat draft creation or a preview request as publishing approval.
 
-### Duplicate
-```
-lexsis_drafts({ action: "page_duplicate", args: { page_id, title: "New Title" } })
-```
-Creates a copy — useful for A/B test variants.
+## Other Lifecycle Actions
 
-### Create Experiment Variant
-```
-lexsis_drafts({ action: "page_variation", args: { page_id, changes: {...} } })
-```
-Creates variant for A/B testing.
+Use `lexsis_live_ops` for unpublish or rollback only when the user explicitly
+requests that action and the target page/version is clear.
 
-## Prerequisites
+## Return
 
-- Resolve the store with `lexsis_workspace` action `stores`
-- `lexsis_brand` action `list_themes` must return a valid selected/default theme
-- Run `lexsis_pages` action `integrity` before publishing
-
-## Post-Publish
-
-After publishing, the page is served via:
-- Shopify store (native page)
-- pages.lexsis.app (standalone via edge worker)
-- Custom domain (if tracking domain configured)
-
-## Optional Follow-Up
-
-This skill ends after release. Later, `experiment` can test a focused variant
-or `optimize` can address performance evidence when the user requests it.
+Report the published page, version, public URL, and whether the previous live
+version remains available for rollback.

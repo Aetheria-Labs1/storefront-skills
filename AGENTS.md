@@ -10,9 +10,9 @@ https://agentskills.io) and are also exposed at `.agents/skills/` for agents
 that discover that path natively. Invoke by name, or let your agent select from
 each skill's description.
 
-The workflow sequence is Phase 1 Plan → Phase 2 Context → Phase 3 Assets →
-Phase 4 Build → Phase 5 Ship. Planning (Phase 1) is mandatory before any
-generation — see `skills/storefront-engine/SKILL.md`.
+The normal customer workflow is Setup → Plan → Visual → Assets → Generate →
+Publish. The ten public commands remain independently invokable; explicit
+skips are recorded in the page manifest.
 
 ## Rules for agents working IN this repo
 
@@ -22,8 +22,6 @@ generation — see `skills/storefront-engine/SKILL.md`.
   `python3 scripts/build-distributions.py` and commit the regenerated output.
 - Skill frontmatter must satisfy the Agent Skills spec: `name` equals the
   directory name (≤64 chars, kebab-case); `description` ≤500 chars.
-- Reference docs live in `skills/storefront-engine/references/`; island schemas
-  in `references/islands/<name>/schema.json`. Do not invent island names or
-  props — read the schema.
-- `extract-island` is a maintainer tool (`disable-model-invocation: true`);
-  do not select it implicitly.
+- Shared reference docs live in `skills/storefront-engine/references/`; the
+  `storefront-engine` directory is not a public skill. Island schemas live in
+  `references/islands/<name>/schema.json`. Do not invent island names or props.

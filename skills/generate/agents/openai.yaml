@@ -1,7 +1,7 @@
 interface:
   display_name: "Generate Storefront Page"
   short_description: "Generate and validate a Shopify storefront page."
-  default_prompt: "Generate a conversion-focused Shopify landing page."
+  default_prompt: "Use $generate to turn my approved page files into a Lexsis draft."
 dependencies:
   tools:
     - type: "mcp"

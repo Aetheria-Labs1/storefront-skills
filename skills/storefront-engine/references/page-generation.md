@@ -2,6 +2,10 @@
 
 > **Full workflow:** See `generation-protocol.md` for Phases 1-5 execution (context gathering, HTML generation, validation, publishing, visual verification).
 
+Use `source-artifact-workflow.md` for the local working directory, static
+visual-reference placeholders, readable canonical source, synchronization, and
+section-patch policy.
+
 This file covers quick-reference patterns for generation.
 
 ---

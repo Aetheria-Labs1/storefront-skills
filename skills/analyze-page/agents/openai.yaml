@@ -1,7 +1,7 @@
 interface:
   display_name: "Analyze Page"
-  short_description: "Create a reproducible storefront design brief from a URL."
-  default_prompt: "Analyze this page as storefront design inspiration."
+  short_description: "Analyze a page, screenshot, or ad into a safe brief."
+  default_prompt: "Use $analyze-page to analyze this reference for my storefront."
 dependencies:
   tools:
     - type: "mcp"

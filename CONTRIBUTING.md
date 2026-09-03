@@ -1,176 +1,88 @@
 # Contributing to Lexsis Storefront Skills
 
-Thanks for your interest in contributing! This repo contains AI skill packs that teach coding agents (Claude Code, OpenAI Codex, Cursor, GPTs) how to build high-converting Shopify landing pages.
+The canonical source is `skills/`. Claude, Codex, Cursor, and GPT
+distributions are derived from that tree.
 
-## Types of Contributions
+## Public Commands
 
-| Type | What it is | Example |
-|------|-----------|---------|
-| **Vertical plugin** | Industry-specific expertise | `lexsis-pets-skills` |
-| **Core skill** | Reference knowledge for page generation | `animation-system.md` |
-| **Command** | Slash command workflow | `/generate-quiz` |
-| **Bug fix** | Fix incorrect instructions or broken skills | Typo in island props |
+Each public command lives at:
 
-## Skill File Structure
+```text
+skills/<command>/
+├── SKILL.md
+├── agents/openai.yaml
+├── references/        optional
+├── scripts/           optional
+└── assets/            optional
+```
 
-All skills are markdown files with YAML frontmatter:
+`SKILL.md` uses Agent Skills frontmatter:
 
-```markdown
+```yaml
 ---
-description: One-line description of what this skill does
-allowed-tools: mcp__lexsis-ai__*
+name: command-name
+description: Clear description of what the command owns and when to use it.
 ---
-
-# Skill Title
-
-Content goes here...
 ```
 
-### Required frontmatter fields
+Keep entrypoints concise. Put conditional procedures in `references/`,
+deterministic repeated work in `scripts/`, and reusable output files in
+`assets/`.
 
-| Field | Purpose |
-|-------|---------|
-| `description` | Shown in skill listings and used for auto-triggering |
-| `allowed-tools` | MCP tools this skill can invoke (usually `mcp__lexsis-ai__*`) |
+## Shared Storefront Resources
 
-## Directory Structure
+Shared references and island contracts live in:
 
-```
-plugins/lexsis-storefront-skills/
-├── .claude-plugin/
-│   └── plugin.json          ← Plugin metadata (name, version, author)
-├── commands/                ← Slash commands (/generate, /optimize, etc.)
-│   ├── generate.md
-│   ├── optimize.md
-│   └── ...
-├── skills/
-│   └── storefront-engine/
-│       ├── SKILL.md         ← Main orchestrator (auto-loaded)
-│       └── reference/       ← Knowledge skills (loaded on demand)
-│           ├── craft-guide.md
-│           ├── island-patterns.md
-│           ├── islands/     ← Island-specific docs + layout JSONs
-│           └── ...
-└── agents/                  ← Agent definitions
+```text
+skills/storefront-engine/
+└── references/
+    └── islands/
 ```
 
-## Adding a Vertical Plugin
+`storefront-engine` is a resource directory, not a public slash command.
+Public skills may use these resources because the Lexsis pack is installed as
+one unit.
 
-1. Create directory: `plugins/lexsis-{name}-skills/`
-2. Add plugin config:
+Command-specific validators and preview builders live under the owning skill's
+`scripts/` directory.
 
-```
-plugins/lexsis-{name}-skills/
-├── .claude-plugin/
-│   └── plugin.json
-└── skills/
-    └── storefront-engine/
-        ├── SKILL.md
-        └── reference/
-            └── {name}-expertise.md
-```
+Do not invent island names or props. Update the generated schema contract or
+read the current Lexsis schema before changing examples.
 
-3. Create `plugin.json`:
+## Generated Files
 
-```json
-{
-  "name": "lexsis-{name}-skills",
-  "description": "Your description here",
-  "version": "1.0.0",
-  "author": { "name": "Your Name" },
-  "license": "MIT"
-}
-```
+Do not edit `gpt/instructions.md` or `gpt/knowledge.md` directly.
 
-4. Register in `.claude-plugin/marketplace.json` at repo root
-5. Submit PR
-
-## Adding a Command
-
-1. Create `plugins/lexsis-storefront-skills/commands/{name}.md`
-2. Structure:
-
-```markdown
----
-description: What the command does in one line
-allowed-tools: mcp__lexsis-ai__*
----
-
-# /{name}
-
-## When to Use
-- Trigger conditions...
-
-## Workflow
-1. Step one...
-2. Step two...
-
-## Tool Usage
-\`\`\`json
-{ "name": "tool_name", "arguments": { ... } }
-\`\`\`
-```
-
-3. Register in `manifest.json` under `commands[]`
-
-## Adding a Knowledge Skill
-
-1. Create `plugins/lexsis-storefront-skills/skills/storefront-engine/reference/{name}.md`
-2. Add frontmatter with `description`
-3. Write the knowledge content (patterns, techniques, examples)
-4. Reference it from `SKILL.md` if it should auto-load
-
-## PR Process
-
-1. **Fork** this repo
-2. **Branch** from `main` — use `feat/`, `fix/`, or `docs/` prefix
-3. **Commit** with conventional commits: `feat: add pets vertical`, `fix: correct BuyBox props`
-4. **Push** and open a PR
-5. CI validates your JSON and frontmatter automatically
-6. A maintainer will review — we aim for 48hr turnaround
-
-## Local Testing
+After changing a skill or shared reference, run:
 
 ```bash
-# Validate JSON
-python3 -c "import json; json.load(open('plugins/lexsis-storefront-skills/.claude-plugin/plugin.json'))"
-
-# Run validation scripts
-python3 scripts/validate-plugins.py
-python3 scripts/validate-frontmatter.py
-
-# Install locally in Claude Code (test your changes)
-/plugin install ./plugins/lexsis-storefront-skills
-
-# Test a command
-/your-new-command
+python3 scripts/build-distributions.py
 ```
 
-## Reference Files (Single Source of Truth)
+## Validation
 
-All reference `.md` files live in `reference/` at the repo root. Distribution packages (codex, vertical plugins) contain copies for standalone installation.
+Before opening a pull request:
 
-**Editing reference content:**
-1. Edit in `reference/` only
-2. Run `scripts/sync-reference.sh`
-3. Commit both the source and synced copies
+```bash
+python3 scripts/build-distributions.py --check
+python3 scripts/validate-island-contracts.py
+python3 -m unittest discover -s tests -p 'test_*.py'
+```
 
-**CI enforces this**: `scripts/check-sync.py` fails the build if copies diverge.
+Also run the skill validator for each new or substantially changed command:
 
-**Do NOT:**
-- Create `cursor/rules/reference/` (cursor reads root directly via relative paths)
-- Edit files in `codex/skills/storefront-engine/reference/` directly
-- Edit vertical plugin `*-expertise.md` files directly
+```bash
+python3 /path/to/skill-creator/scripts/quick_validate.py skills/<command>
+```
 
-## Style Guide
+## Pull Requests
 
-- Use ATX headings (`#`, `##`, not underlines)
-- End files with a newline
-- Use fenced code blocks with language identifiers
-- Keep lines readable (no strict wrap limit for prose)
-- Use tables for structured data (props, options, variants)
-- Prefer concrete examples over abstract descriptions
+- Keep one concern per commit.
+- Use conventional commits such as `feat:`, `fix:`, or `docs:`.
+- Preserve explicit approval boundaries for paid generation, remote writes,
+  experiments, and publishing.
+- Distinguish verified behavior from expected behavior.
+- Include generated distribution changes.
 
-## Questions?
-
-Open a [Discussion](https://github.com/Aetheria-Labs1/storefront-skills/discussions) or file an issue using the templates.
+CI validates JSON, skill frontmatter, island contracts, generated-file drift,
+public command inventory, visual-preview assets, and page workspace rules.

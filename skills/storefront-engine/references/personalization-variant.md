@@ -1,6 +1,7 @@
 # Personalization Variant (Persona-Specific Page Versions)
 
-> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
+Read `source-artifact-workflow.md`. Every persona variant has its own readable
+local source, manifest, synchronized remote version, and QA record.
 
 Create targeted page variants adapting messaging, imagery, social proof, and CTAs to each audience segment's motivations and objections.
 
@@ -14,13 +15,9 @@ Create targeted page variants adapting messaging, imagery, social proof, and CTA
 
 ### Step 1 — Context Gathering
 
-```
-lexsis_workspace.get()          → workspace ID, plan tier
-lexsis_workspace.stores()           → store domain, Shopify data
-lexsis_brand(action: "brand_kit", args: {})                  → logo, fonts, colors, voice, radius
-```
-
-These three calls ALWAYS run first. No exceptions.
+Confirm the base page's saved store/theme binding and synchronized local
+source. Read current access, personas, products, assets, analytics, and remote
+version live.
 
 ### Step 2 — Load Personas and Base Page
 
@@ -55,35 +52,46 @@ Not everything changes. Keep brand identity (colors, fonts, logo) consistent acr
 
 For each persona:
 ```
-lexsis_asset_library(action: "search", args: { query: "<persona-relevant imagery>" })
+lexsis_asset_library({ action: "search", args: { query: "<persona-relevant imagery>", workspace_id, theme_id } })
 ```
 
 Find images reflecting the persona's world. Generate if needed:
 ```
-lexsis_drafts(action: "asset_generate", args: { prompt: "...", demographic: "<persona context>" })
+lexsis_drafts({ action: "asset_generate", args: { prompt: "...", demographic: "<persona context>", workspace_id, theme_id } })
 ```
 
 ### Step 5 — Create Each Variant
 
-For each persona:
+For each persona, first create
+`work/visual-pages/<base-handle>--<persona-key>/`, copy the synchronized base
+files, make the persona changes in local source, run the source gate, and
+compile the complete variant. Derive the remote change set from that local
+diff, then:
+
 ```
-lexsis_drafts.page_variation(page_id, {
-  name: "<persona_name> variant",
-  changes: {
-    sections: [
-      { section_id: "hero", html: "...", css: "..." },
-      { section_id: "social-proof", html: "..." },
-      { section_id: "cta-block", html: "..." }
-    ]
+lexsis_drafts({
+  action: "page_variation",
+  args: {
+    page_id,
+    name: "<persona_name> variant",
+    changes
   }
 })
 ```
 
+Record the returned page ID/version and verify the remote result matches the
+local variant bundle.
+
 All variants use the same `--lx-*` CSS variables (brand stays consistent). Only content, imagery, and tone change.
 
-Islands remain identical across variants -- only the surrounding copy/imagery adapts:
+Islands remain identical across variants unless the experiment specifically
+tests props:
 ```html
-<div data-island="BuyBox" data-props='{"product":{"title":"...","price":"$29.99","variants":[...]}}'></div>
+<lx-island name="BuyBox">
+  <script type="application/json">
+    { "product": { "title": "...", "price": "$29.99", "variants": [] } }
+  </script>
+</lx-island>
 ```
 
 ### Step 6 — Validate All Variants

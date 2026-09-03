@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920" viewBox="0 0 1080 1920" role="img" aria-labelledby="title desc">
+  <title id="title">Vertical video preview placeholder</title>
+  <desc id="desc">Neutral vertical poster used only during storefront visual planning.</desc>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#b7afa7"/>
+      <stop offset="1" stop-color="#6f675f"/>
+    </linearGradient>
+  </defs>
+  <rect width="1080" height="1920" fill="url(#g)"/>
+  <circle cx="540" cy="900" r="150" fill="#fff" opacity=".78"/>
+  <path d="m505 820 150 80-150 80Z" fill="#4b443e"/>
+  <text x="62" y="1825" fill="#fff" font-family="system-ui, sans-serif" font-size="31" font-weight="700">PREVIEW PLACEHOLDER · 9:16</text>
+</svg>

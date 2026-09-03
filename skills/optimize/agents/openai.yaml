@@ -1,7 +1,7 @@
 interface:
   display_name: "Optimize Storefront Page"
-  short_description: "Improve an existing storefront page for conversion."
-  default_prompt: "Optimize this storefront page for conversion."
+  short_description: "Improve a page for one measurable business outcome."
+  default_prompt: "Use $optimize to improve this page for my chosen outcome."
 dependencies:
   tools:
     - type: "mcp"

@@ -55,17 +55,30 @@ Key rule: NEVER redesign sections that are converting well. Analytics data overr
 
 ### Step 4 — Apply Section-by-Section Updates
 
-For each section to change:
+Open the existing local workspace. If the page predates local artifacts, create
+them from the current remote page and record a synchronized baseline. Confirm
+that the page's store and theme match a saved setup choice. Modify
+`lexsis-source.html`, run the source gate, compile the complete source, and
+compare section hashes with the saved baseline.
+
+For one changed section:
 ```
-lexsis_drafts.page_update_section({ page_id, section_id, source })
+lexsis_drafts({
+  action: "page_update_section",
+  args: { page_id, section_id, source, expected_version }
+})
 ```
 
-For reordering (if scroll-depth data suggests better flow):
+For related sections, use one `page_patch`. For reordering:
 ```
-lexsis_drafts.page_move_section(page_id, section_id, new_position)
+lexsis_drafts({
+  action: "page_move_section",
+  args: { page_id, section_id, position, expected_version }
+})
 ```
 
-All updated sections must use `--lx-*` CSS variables from current brand kit. No hardcoded colors or fonts.
+Update manifest version and source hashes only after success. All updated
+sections must use `--lx-*` CSS variables from the current theme.
 
 ### Step 5 — Validate
 
@@ -110,7 +123,8 @@ Checklist:
 - [ ] Section spacing consistent
 - [ ] No horizontal scroll on mobile
 
-If issues found: `lexsis_drafts.page_update_section` to fix, then re-verify.
+If issues are found, update local source, compile, patch changed sections with
+`expected_version`, update the manifest, then re-verify.
 
 ### Step 8 — Go Live (User Confirms)
 

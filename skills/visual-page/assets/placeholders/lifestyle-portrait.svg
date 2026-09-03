@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1500" viewBox="0 0 1200 1500" role="img" aria-labelledby="title desc">
+  <title id="title">Portrait lifestyle preview placeholder</title>
+  <desc id="desc">Neutral portrait image used only during storefront visual planning.</desc>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d9d4cb"/>
+      <stop offset="1" stop-color="#a9a097"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="1500" fill="url(#g)"/>
+  <circle cx="600" cy="480" r="210" fill="#f4f0ea" opacity=".65"/>
+  <path d="M230 1340c35-365 180-575 370-575s335 210 370 575Z" fill="#70675f" opacity=".35"/>
+  <text x="70" y="1420" fill="#352f2b" font-family="system-ui, sans-serif" font-size="32" font-weight="700">PREVIEW PLACEHOLDER · 4:5</text>
+</svg>

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lexsis Visual Preview</title>
+    <link
+      rel="stylesheet"
+      href="https://storefront.trylexsis.com/islands/storefront.css"
+    >
+    <style data-lx-preview-theme>
+      {{THEME_CSS}}
+    </style>
+    <style data-lx-preview-sections>
+      {{COMPILED_SECTION_CSS}}
+    </style>
+    <style>
+      [data-lx-preview-banner] {
+        position: fixed;
+        z-index: 2147483647;
+        right: 12px;
+        bottom: 12px;
+        padding: 8px 12px;
+        border: 1px solid rgba(0, 0, 0, 0.14);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.94);
+        color: #222;
+        font: 600 12px/1.2 system-ui, sans-serif;
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+        backdrop-filter: blur(10px);
+      }
+    </style>
+  </head>
+  <body data-lx-visual-preview>
+    <main data-lx-preview-root>
+      {{COMPILED_SECTION_MARKUP}}
+    </main>
+
+    <div data-lx-preview-banner>Visual preview · test commerce on the hosted draft</div>
+
+    <script src="https://storefront.trylexsis.com/islands/islands.js"></script>
+    <script>
+      const sections = {{SECTIONS_JSON}};
+      const testCartData = {{TEST_CART_DATA_JSON}};
+      const commerceConfig = {{COMMERCE_CONFIG_JSON}};
+      const productBinding = {{PRODUCT_BINDING_JSON}};
+
+      if (window.LexsisIslands?.hydrateIslands) {
+        window.LexsisIslands.hydrateIslands(
+          sections,
+          null,
+          null,
+          testCartData,
+          commerceConfig,
+          productBinding
+        );
+      } else {
+        document
+          .querySelector("[data-lx-preview-banner]")
+          ?.append(" · runtime unavailable, showing fallbacks");
+      }
+    </script>
+  </body>
+</html>

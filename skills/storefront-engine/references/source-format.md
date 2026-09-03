@@ -5,6 +5,11 @@
 > `lexsis_page_create` action `create` compile it deterministically. Never
 > hand-write `data-island` / `data-props` or escape HTML into JSON strings.
 
+For durable page work, store this format in `lexsis-source.html` and follow
+`source-artifact-workflow.md`. The visual workflow uses the same readable
+authoring syntax in `visual-source.html`, dry-run compiles it, and hydrates the
+compiled result through the exported island preview runtime.
+
 ## Why this format exists
 
 The old path (VibePage JSON with HTML in strings and JSON inside `data-props='...'` attributes) forced triple escaping and caused the top agent failure classes: entity-escaped markup rendering as literal text, apostrophes in copy breaking props, giant-blob page updates. In source format those failures are impossible by construction.

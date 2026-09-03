@@ -124,7 +124,9 @@ Checklist:
 - [ ] Islands hydrated with user's own product data
 - [ ] Original copy serves user's value proposition
 
-If issues found: `lexsis_drafts.page_update_section` to fix, then re-verify.
+If issues are found, update `lexsis-source.html`, compile the complete page,
+patch changed sections with `expected_version`, update the manifest, then
+re-verify.
 
 ## Decision Points
 

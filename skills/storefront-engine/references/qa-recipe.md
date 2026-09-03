@@ -2,9 +2,11 @@
 
 ## Pre-flight Checklist
 
-1. **Compile and validate source** — `lexsis_pages` action `compile`
-2. **Save as draft** — `lexsis_page_create` action `create` with `publish:false`
-3. **Check integrity** — `lexsis_pages` action `integrity`
+1. **Validate local artifacts** — run the shared page workspace validator
+2. **Compile complete source** — `lexsis_pages` action `compile`
+3. **Save as draft** — `lexsis_page_create` action `create` with `publish:false`
+4. **Record page ID/version/hashes** — update `page-manifest.json`
+5. **Check integrity** — `lexsis_pages` action `integrity`
 
 ## Browser QA (if available)
 
@@ -19,7 +21,14 @@
 - [ ] Hero section visible above fold on both viewports
 - [ ] Text readable without zooming on mobile
 - [ ] Interactive islands respond to clicks (FAQ accordion, BuyBox variant selection)
+- [ ] Expected Shopify variant enters the cart
+- [ ] Cart opens and quantity/subtotal update
+- [ ] Inherited header and footer are correct
+- [ ] Production composition still matches `visual-preview.html`
 - [ ] No console errors blocking render
+
+Write the result to `qa-report.md`, including source hash, remote version, copy
+lint, claims review, asset verification, blockers, and publish readiness.
 
 ## Common Issues
 

@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "lexsis-storefront-skills",
-      "description": "AI storefront generation for Shopify \u2014 14 skills (plan, asset-prep, generate, optimize, remix, experiment, cart, publish + more), 2 agents, 47 active island contracts, full reference corpus.",
+      "description": "AI storefront generation for Shopify \u2014 10 focused commands, 2 agents, 47 active island contracts, and a full reference corpus.",
       "author": {
         "name": "Aetheria Labs"
       },

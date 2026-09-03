@@ -1,7 +1,7 @@
 interface:
-  display_name: "Lexsis Storefront Engine"
-  short_description: "Route storefront generation and lifecycle workflows."
-  default_prompt: "Plan and build a conversion-focused Shopify storefront."
+  display_name: "Set Up Storefront"
+  short_description: "Save reusable store and theme design settings."
+  default_prompt: "Use $setup to save the Lexsis stores and themes I want to work with."
 dependencies:
   tools:
     - type: "mcp"

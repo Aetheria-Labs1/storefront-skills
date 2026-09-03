@@ -11,18 +11,18 @@
 ## MCP Workflow (Correct Order)
 
 ```
-1. lexsis_workspace → get/stores
-2. lexsis_brand → brand_kit/lexsis_brand.list_themes/lexsis_brand.get_theme
-3. lexsis_design → guide
-4. [page-type routers] → catalog, navigation, campaigns, assets
-5. Require a valid selected/default theme in the chosen workspace
-7. Generate page (two-phase, SOURCE FORMAT — see source-format.md)
-8. lexsis_pages → compile
-9. lexsis_page_create → create draft
-10. Host-agent visual verification
+1. Read the selected store/theme from `work/storefront/setup/setup.json`
+2. Read its saved brand design and exact theme CSS
+3. Read current products, variants, assets, permissions, and island schemas
+4. Require a valid page plan and verified assets, or record explicit skips
+5. Author complete production source
+6. lexsis_pages → compile
+7. lexsis_page_create → create draft
+8. Host-agent responsive and commerce verification
 ```
 
-Steps 1-4 are ALWAYS run first. They establish context. Steps 5+ vary by skill.
+Setup provides slow-changing design context. Commerce, assets, schemas,
+permissions, analytics, and remote versions are always read live.
 
 > **Brand kit ↔ design.md precedence**: when the two disagree, **exact tokens (colors, fonts, radius, spacing values) come from the brand kit**; **style philosophy, component guidance, and explicit don'ts come from design.md**. Conflict on a token → use the kit's value, applied within design.md's don'ts. Don't stall trying to reconcile them.
 
@@ -33,6 +33,11 @@ Steps 1-4 are ALWAYS run first. They establish context. Steps 5+ vary by skill.
 > last. Never merge prop shapes from different versions.
 
 > **Authoring format**: write pages in the HTML-native **source format** (`source-format.md`) — plain HTML sections delimited by `<!-- section: id -->`, islands as `<lx-island name>` with a JSON `<script>` child. The compiler produces VibePage JSON and does all escaping.
+
+> **Local source**: follow `source-artifact-workflow.md`.
+> `lexsis-source.html` is the canonical editable production artifact.
+> `visual-source.html` is separately dry-run compiled into an interactive local
+> preview and may contain temporary design-stage values.
 
 > **Templates**: search before drafting. Retrieve templates you intend to edit
 > with `lexsis_design` action `get_section`. Each returned `source` is ready for
@@ -63,7 +68,7 @@ Run `lexsis_pages` action `compile`:
   source later with `lexsis_pages` action `source`
 
 ### Why Two-Phase?
-- Source HTML renders in any browser preview — fast visual feedback
+- Compiled visual source runs in the reusable local island preview shell
 - Compile is instant and deterministic — validation before anything persists
 - Separates design decisions from data-wiring decisions
 - Escaping failures are impossible: the compiler, not the model, writes `data-props`
@@ -207,5 +212,5 @@ These tools appeared in older skill versions but are no longer available:
 3. Host-agent visual verification
 
 If compile fails, fix source and retry. If integrity warns, assess and fix.
-If visual QA fails, use `lexsis_drafts` action `page_update_section` or
-`page_patch`, then repeat QA.
+If visual QA fails, update local source, compile the complete page, patch only
+changed sections with `expected_version`, update the manifest, then repeat QA.

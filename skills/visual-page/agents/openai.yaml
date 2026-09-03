@@ -1,7 +1,7 @@
 interface:
-  display_name: "Extract Storefront Island"
-  short_description: "Turn a webpage component into a reusable Lexsis island layout."
-  default_prompt: "Extract this page's hero into a reusable island layout."
+  display_name: "Create Visual Page"
+  short_description: "Create a responsive mockup with live island previews."
+  default_prompt: "Use $visual-page to turn my approved plan into a visual mockup."
 dependencies:
   tools:
     - type: "mcp"

@@ -1,0 +1,12 @@
+{
+  "page": {
+    "sections": [
+      {
+        "id": "video",
+        "html": "<section id=\"video\" style=\"max-width: 1100px; margin: 0 auto; padding: 48px 24px;\"><h1 style=\"font: 700 40px/1.1 system-ui; margin-bottom: 24px;\">Shoppable video preview</h1><div data-island=\"ShoppableVideoFeed\" data-props='{\"variant\":\"rail\",\"productPresentation\":\"hidden\",\"playbackMode\":\"active\",\"navigationMode\":\"none\",\"mobileNavigationMode\":\"swipe\",\"items\":[{\"id\":\"demo-1\",\"src\":\"https://mdn.github.io/shared-assets/videos/flower.mp4\",\"poster\":\"https://pcx-assets.trylexsis.com/pcx/global/template-assets/pdp-aperitif-editorial-ghia/f3f24caaa48c4b0bb523c482b504ac5c.webp\",\"alt\":\"Flowers moving in the wind\",\"products\":[]}]}'><div data-lx-island-fallback style=\"min-height: 420px; display: grid; place-items: center; border-radius: 24px; background: #ece7df; color: #3f3934; font: 600 18px system-ui;\">Loading the Lexsis video island…</div></div></section>",
+        "css": "#video { color: var(--lx-text-color, #171717); }",
+        "js": ""
+      }
+    ]
+  }
+}

@@ -69,9 +69,9 @@ Both files are **generated** from the canonical skills by `scripts/build-distrib
 
 ## What's Included
 
-- **14 independently runnable skills** — one directory per workflow under `skills/`, spec-compliant SKILL.md each
+- **10 focused storefront commands** — six core workflow commands and four optional operations
 - **2 agents** (cro-analyzer, page-builder) for Claude Code
-- **54 reference docs** (CRO patterns, verticals, traffic sources, workflows) under `skills/storefront-engine/references/`
+- Shared CRO, vertical, traffic-source, workflow, and island references under `skills/storefront-engine/references/`
 - **47 active islands** plus 7 deprecated compatibility contracts under
   `skills/storefront-engine/references/islands/`
 - Vertical expertise: beauty, supplements, fashion, food, luxury, home
@@ -83,36 +83,55 @@ Invoke as `/name` (Claude Code) or `$name` (Codex); most also trigger automatica
 
 | Skill | What it does |
 |-------|--------------|
-| `plan-page` | Discover requirements, design section layout, get plan approval |
-| `asset-prep` | Source images/video — brand library first, then generation, import, external MCPs |
-| `generate` | Generate a Shopify page — auto-detects type (PDP, landing, collection, homepage, editorial, listicle, bundle) |
-| `optimize` | CRO-optimize an existing page — CTAs, trust signals, mobile UX |
-| `remix` | Rebuild a competitor page or ad creative adapted to your brand |
-| `experiment` | A/B tests, personalization variants, results monitoring |
-| `cart` | Cart profiles — upsells, progress bars, conditional rules |
-| `publish` | QA, draft preview, and go-live (only after explicit approval) |
-| `analyze-page` | Turn a reference URL into a reproducible design + CRO brief |
-| `browser-analyze` | Deep URL analysis via a browser tool when available |
-| `search-docs` | Search Lexsis docs — islands, workflows, troubleshooting |
-| `storefront-engine` | Orchestrator for broad multi-step requests; owns the reference corpus |
-| `extract-island` | Maintainer tool — convert a live component into a reusable island layout (explicit invocation only) |
+| `setup` | Save reusable brand and theme context for one or more stores |
+| `plan-page` | Turn campaign requirements into an approved page plan |
+| `visual-page` | Build a responsive mockup with interactive Lexsis island previews |
+| `asset-prep` | Replace temporary media with verified production assets |
+| `generate` | Write readable source, compile, create a draft, and run hosted QA |
+| `publish` | Release a synchronized draft only after explicit approval |
+| `analyze-page` | Analyze a URL, screenshot, ad, or existing page |
+| `optimize` | Improve an existing page for a chosen business outcome |
+| `experiment` | Create and evaluate focused storefront experiments |
+| `cart` | Inspect, assign, and edit cart profiles |
 
 ## Workflow Sequence
 
-Every page moves through one contiguous sequence — **Phase 1 Plan → Phase 2 Context → Phase 3 Assets → Phase 4 Build → Phase 5 Ship**:
+Run setup once for the stores and themes you use:
 
+```text
+/setup
 ```
-/plan-page → /asset-prep → /generate → /optimize
+
+The normal page workflow is:
+
+```text
+/setup
+  → /plan-page
+  → /visual-page
+  → /asset-prep
+  → /generate
+  → /publish (separate approval)
 ```
 
 | Step | Output |
 |------|--------|
-| `/plan-page` | Approved page plan (Phase 1 — mandatory gate) |
-| `/asset-prep` | Asset manifest |
-| `/generate` | Draft page + preview URL (Phases 2-5) |
-| `/optimize` | CRO fixes applied section-by-section |
+| `/setup` | Saved store brand reference and theme CSS, indexed by store and theme |
+| `/plan-page` | Approved campaign, content, and section plan |
+| `/visual-page` | Readable visual source plus an interactive local preview |
+| `/asset-prep` | Verified final asset manifest and updated mockup |
+| `/generate` | Readable source, synchronized draft, preview URL, and QA report |
+| `/publish` | Explicit release of the reviewed page version |
 
-Each step is independent — start anywhere. `/plan-page` → `/generate` skips asset-prep when the brand library has everything.
+When several saved stores or themes are available, every page records the
+selected `storeId` and `themeId`; it never silently switches themes. Commands
+remain independently invokable, and explicitly skipped steps are recorded in
+the page manifest.
+
+`visual-page` authors readable `<lx-island>` source, dry-run compiles it, and
+loads Lexsis's exported island runtime in a safe local preview. Complex
+components such as shoppable video can therefore be reviewed before draft
+creation. Cart and checkout writes remain disabled locally and are certified
+on the hosted draft created by `generate`.
 
 ## MCP Server
 
@@ -135,9 +154,10 @@ Each step is independent — start anywhere. `/plan-page` → `/generate` skips 
 
 ```
 storefront-skills/
-├── skills/                          ← CANONICAL — one dir per skill (Agent Skills spec)
-│   └── storefront-engine/
-│       └── references/              ← shared reference corpus + island schemas
+├── skills/                          ← CANONICAL public Agent Skills
+│   ├── visual-page/assets/          ← preview shell + neutral placeholders
+│   └── storefront-engine/           ← shared resources, not a public command
+│       └── references/              ← workflow guidance + island schemas
 ├── .agents/skills → skills/         ← Codex + Cursor native discovery (symlink)
 ├── plugins/lexsis-storefront-skills/← Claude Code plugin (skills → symlink, agents, MCP config)
 ├── codex/                           ← Codex plugin manifest + MCP config

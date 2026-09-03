@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Avatar preview placeholder</title>
+  <desc id="desc">Neutral avatar used only during storefront visual planning.</desc>
+  <rect width="512" height="512" rx="256" fill="#ddd7cf"/>
+  <circle cx="256" cy="200" r="92" fill="#938980"/>
+  <path d="M88 478c18-132 78-204 168-204s150 72 168 204Z" fill="#766d65"/>
+  <text x="256" y="494" text-anchor="middle" fill="#fff" font-family="system-ui, sans-serif" font-size="20" font-weight="700">PREVIEW</text>
+</svg>

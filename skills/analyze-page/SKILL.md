@@ -1,45 +1,60 @@
 ---
 name: analyze-page
-description: Analyze a reference webpage into a brand-safe structural brief. Use for competitor or inspiration URLs before visual-page; do not generate page source or production assets here.
+description: Analyze a URL, screenshot, or ad into a safe storefront brief. Use for inspiration, message-match, or existing-page diagnosis; this skill does not generate page source.
 ---
 
-# Analyze Storefront Page
+# Analyze a Page or Creative
 
-Own structural analysis of a reference page. Do not write replacement HTML,
-generate assets, create a page, or publish. `visual-page` owns the new-page
-workflow after this brief is ready.
+Choose one mode:
 
-## Workflow
+- **Inspiration:** extract reusable layout and interaction patterns.
+- **Own-page review:** identify design and conversion weaknesses.
+- **Message-match:** compare an ad or screenshot with the intended landing
+  page.
 
-1. Capture the URL with `browser-analyze` when Browser is available.
-2. Classify the page: PDP, landing, homepage, collection, editorial, or other.
-3. Extract:
-   - global design tokens and visual rhythm
-   - section order, proportions, and responsive behavior
-   - CTA, trust, urgency, and social-proof placement
-   - interaction patterns and candidate Lexsis islands
-4. Separate reusable structure from protected source material.
-5. Output `VISUAL_PAGE_INPUT`:
+## Capture
+
+When a URL is available, use the host browser capability to inspect desktop
+and mobile views, headings, sections, CTAs, media, and interactions. If browser
+access is unavailable, use supplied screenshots and state what could not be
+verified.
+
+For ads, use `lexsis_campaigns` analysis actions when available.
+
+## Analyze
+
+Record:
+
+- page type and audience
+- section order and visual rhythm
+- desktop/mobile behavior
+- CTA and trust placement
+- useful interaction patterns and candidate Lexsis islands
+- message-match strengths or gaps
+- accessibility or usability issues visible in the evidence
+
+Do not use unsupported benchmark percentages or generic lift claims.
+
+## Brand Safety
+
+Carry forward structure and design intent only. Exclude competitor copy,
+logos, product imagery, pricing, claims, reviews, testimonials, and protected
+brand elements.
+
+## Return
+
+Return `PAGE_ANALYSIS`:
 
 ```text
-Source URL: [...]
+Mode: [inspiration | own-page | message-match]
+Source: [...]
 Page type: [...]
-Design direction: [...]
-Section map: [...]
+Reusable structure: [...]
 Responsive behavior: [...]
-Conversion patterns: [...]
+Conversion observations: [...]
 Candidate islands: [...]
-Do not carry forward: [copy, logos, product imagery, claims, testimonials]
+Avoid copying: [...]
+Evidence limits: [...]
 ```
 
-## Safety
-
-- Use the source only for hierarchy, composition, and interaction patterns.
-- Do not copy text, logos, images, product claims, pricing, reviews, or brand
-  marks.
-- Do not write source-format HTML in this skill.
-
-## Optional Follow-Up
-
-This skill can end after producing `VISUAL_PAGE_INPUT`. When the user wants a
-new brand-owned page from that brief, `visual-page` can use it as input.
+This can inform `/plan-page` for a new page or `/optimize` for an existing one.

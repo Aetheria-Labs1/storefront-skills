@@ -1,0 +1,10 @@
+:root {
+  --lx-text-color: #171717;
+  --lx-bg-color: #f7f4ef;
+  --lx-accent-color: #73513d;
+}
+
+body {
+  margin: 0;
+  background: var(--lx-bg-color);
+}

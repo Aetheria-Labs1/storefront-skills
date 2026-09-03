@@ -1,8 +1,9 @@
 # Quick Section Insert
 
-> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
-
 Insert common section patterns into existing pages — one section at a time, matched to the page's existing brand style. NOT full page generation.
+
+Read `source-artifact-workflow.md` and `page-editing.md`. Every insertion begins
+in canonical local source.
 
 ## When to Use
 
@@ -13,11 +14,12 @@ Insert common section patterns into existing pages — one section at a time, ma
 
 ## Template Search (do this FIRST)
 
-Before building any section from scratch, search the template library. Search returns metadata only (no markup) — fetch markup for the ids you pick with `lexsis_design.get_section`:
+Before building any section from scratch, search the template library. Search
+returns metadata only; fetch authoring source for selected IDs:
 
 ```
-lexsis_template_library.search_sections({ query: "video testimonial carousel with stars", section: "social-proof", mood: "warm" })
-lexsis_design.get_section({ ids: ["<chosen id from results>"] })
+lexsis_template_library({ action: "search_sections", args: { query, section, mood } })
+lexsis_design({ action: "get_section", args: { ids, format: "authoring_source" } })
 ```
 
 If a match is found → use the template's returned `source`, swap
@@ -31,8 +33,9 @@ For a whole page instead of one section, check `lexsis_template_library.search_p
 
 ## Prerequisites
 
-- Target page must already exist (use `page-generation` skill for new pages)
-- Brand kit should be configured (read it to match styles)
+- Target page must already exist
+- Local page files must exist or be adopted before editing
+- The page's store/theme pair must exist in the one-time setup
 - Know the desired position (before/after which section, or index)
 
 ## Flow
@@ -40,7 +43,7 @@ For a whole page instead of one section, check `lexsis_template_library.search_p
 ### 1. Identify target page
 
 ```
-lexsis_pages.find({ query: "page name or slug" })
+lexsis_pages({ action: "find", args: { query: "page name or slug" } })
 ```
 
 Or user specifies page by name/ID directly.
@@ -48,34 +51,28 @@ Or user specifies page by name/ID directly.
 ### 2. Read current page structure + brand context
 
 ```
-lexsis_pages.get({ page_id })
-```
-
-```
-lexsis_pages.inspect({ page_id })
+lexsis_pages({ action: "edit_context", args: { page_id } })
+lexsis_pages({ action: "inspect", args: { page_id } })
 ```
 
 - Note existing section IDs, order, and style patterns
 - Identify where new section fits in the narrative flow
 
-### 3. Read brand kit for style matching
+### 3. Read saved style context
 
-```
-lexsis_brand.brand_kit
-```
-
-- Extract colors, fonts, spacing to match new section to existing page
-- All generated CSS must use `--lx-*` variables, never hardcoded hex values
+Read the manifest's `brandDesignPath` and `themeCssPath`. Confirm its theme ID
+matches the remote page. Use the saved colors, fonts, spacing, and `--lx-*`
+variables; never silently use another saved theme.
 
 ### 4. Select section type from reference table (below)
 
 If the section uses an island component, read its schema:
 
 ```
-vibe://schema/island/{IslandName}
+lexsis_design({ action: "island_schema", args: { name: IslandName } })
 ```
 
-- Get required props, variants, and configuration options
+- Confirm lifecycle status, current version, required props, and native variants
 - Ensure props match the island's expected shape exactly
 
 ### 5. Generate section HTML (single section, not full page)
@@ -83,19 +80,28 @@ vibe://schema/island/{IslandName}
 - Match existing page's color usage, font sizes, spacing
 - Use `--lx-*` CSS custom properties from brand kit (not hardcoded values)
 - Include responsive breakpoints (mobile-first: 320px, 768px, 1024px, 1440px)
-- For islands: use `data-island="Name" data-props='JSON'` pattern
+- Include `<!-- section: id -->` and one matching `<section id="id">`
+- For islands: use `<lx-island>` with an `application/json` script child
 - For plain HTML: use Tailwind classes + inline style with CSS variables
 
-### 6. Insert section into page
+### 6. Change local source and compile
+
+Insert the section in `lexsis-source.html`, update manifest order and island
+records, run the shared validator, and compile the complete local page. Compare
+the current remote version with the manifest before writing.
+
+### 7. Insert section remotely
 
 ```
-lexsis_drafts.page_update_section({ page_id, source, position })
+lexsis_drafts({
+  action: "page_update_section",
+  args: { page_id, source, position: { "after": "hero" }, expected_version }
+})
 ```
 
-The tool compiles the section and runs a full-page preflight before saving.
-
-- `null` section_id = "add new" (not update existing)
-- Position formats: `"before:{section_id}"`, `"after:{section_id}"`, or numeric index
+Use `{ "before": "section-id" }`, `{ "after": "section-id" }`, or a numeric
+index. Update the manifest's remote version, hashes, and
+`lastChangedSections` only after success.
 
 ### 8. Visual verify updated page
 
@@ -115,7 +121,7 @@ Navigate to the page preview URL and verify:
 | Hero (scrolling images) | none (CSS anim) | first | infinite horizontal scroll bg images + overlay text. CSS `translateX(-50%)` on duplicated slides |
 | Hero (before/after) | BeforeAfter | first | centered text top + card with 2× BeforeAfter sliders + numbered features list |
 | Hero (curved ribbon) | none (SVG) | first | SVG `<textPath>` on Bezier curves + `<animate>` for flowing text ribbons at bottom |
-| Hero (deck slider) | none (JS) | first | nth-child positioned cards. Active=full bg, 3-5=thumbnails. JS rotates DOM order on click |
+| Hero (deck slider) | MediaCarousel | first | Use a supported island variant; do not add custom slider JavaScript |
 | Hero (organic blob) | none (SVG) | first | SVG `<clipPath clipPathUnits="objectBoundingBox">` organic shape mask. See `blob-shapes.md` |
 | Hero (wavy edge) | none (SVG) | first | full-bleed bg + SVG wave top/bottom dividers. `preserveAspectRatio="none"` |
 | Product Showcase | ProductGallery + BuyBox | after hero | split layout, gallery left, buy right |
@@ -145,7 +151,8 @@ Navigate to the page preview URL and verify:
 ## HTML Template Pattern (for non-island sections)
 
 ```html
-<section class="py-16 md:py-24 px-4" style="background-color: var(--lx-bg-color)">
+<!-- section: feature-grid -->
+<section id="feature-grid" class="py-16 md:py-24 px-4" style="background-color: var(--lx-bg-color)">
   <div class="max-w-6xl mx-auto">
     <h2 class="text-3xl md:text-4xl font-bold text-center mb-12" style="font-family: var(--lx-font-heading); color: var(--lx-text-color)">
       Section Title
@@ -158,18 +165,28 @@ Navigate to the page preview URL and verify:
 ## Island Section Pattern
 
 ```html
-<section class="py-16 md:py-24 px-4" style="background-color: var(--lx-bg-color)">
+<!-- section: reviews -->
+<section id="reviews" class="py-16 md:py-24 px-4" style="background-color: var(--lx-bg-color)">
   <div class="max-w-6xl mx-auto">
-    <div data-island="ReviewCarousel" data-props='{"reviewsEndpoint":"/api/v1/storefront/public/reviews/PAGE_SHORT_ID","productIds":["gid://shopify/Product/123"],"variant":"grid","pageSize":6}'></div>
+    <lx-island name="ReviewCarousel" hydrate="visible">
+      <script type="application/json">
+        {
+          "productIds": ["gid://shopify/Product/123"],
+          "variant": "grid",
+          "pageSize": 6
+        }
+      </script>
+    </lx-island>
   </div>
 </section>
 ```
 
 Key rules for islands:
-- Always use `data-island="Name"` attribute (exact casing from catalog)
-- Always use `data-props='JSON'` with single quotes wrapping valid JSON
-- Read `vibe://schema/island/{name}` before generating to get correct prop shape
-- Never nest islands inside each other
+- Use exact catalog casing and the current active schema
+- Keep JSON valid and readable
+- Supply every required prop with real IDs
+- Prefer native variants over custom headless markup
+- Never replace a commerce island with a plain button
 
 ## Quality Bar
 

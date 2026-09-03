@@ -13,7 +13,7 @@
 ```
 Need an image or video for a section?
 │
-├─ lexsis_asset_library({ action: "search", args: { query, workspace_id } })
+├─ lexsis_asset_library({ action: "search", args: { query, workspace_id, theme_id } })
 │  → found good match?
 │  ├─ YES → use it (free, on-brand)
 │  └─ NO ↓
@@ -53,7 +53,8 @@ Need an image or video for a section?
 | `lexsis_asset_upload` → `import` | Import URL, base64, attachments, or use upload picker | Free |
 
 Always search first. Pass `workspace_id` explicitly when multiple workspaces
-are available.
+are available and the selected `theme_id` whenever the discovered action
+schema supports it.
 
 See `design-enrichment.md` for detailed prompt patterns, style selection guide, compositing recipes, and HTML placement patterns.
 
@@ -108,7 +109,7 @@ All external assets MUST be persisted before use:
 1. Source asset via external MCP → get URL
 2. lexsis_asset_upload({
      action: "import",
-     args: { url, purpose: "hero_bg", tags: ["lifestyle", "summer"], workspace_id }
+     args: { url, purpose: "hero_bg", tags: ["lifestyle", "summer"], workspace_id, theme_id }
    })
    → returns { asset_id, url, width, height }
 3. Use returned URL in page HTML (same as built-in assets)
@@ -168,27 +169,30 @@ This ensures: the asset is stored in the brand's library, available for reuse, a
 
 ## Asset Manifest (Output Format)
 
-After sourcing all assets, produce this manifest to hand to `/generate`:
+After sourcing, update `page-manifest.json` and return:
 
-```
-Section: hero
-  - URL: https://cdn.trylexsis.com/assets/abc123.jpg
-  - Purpose: hero_bg
-  - Source: generated (quality: high)
-
-Section: social-proof
-  - URL: https://cdn.trylexsis.com/assets/def456.mp4
-  - Purpose: testimonial_video
-  - Source: external (HiggsField)
-  - Thumbnail: https://cdn.trylexsis.com/assets/def456-thumb.jpg
-
-Section: benefits
-  - URL: https://cdn.trylexsis.com/assets/ghi789.jpg
-  - Purpose: lifestyle_shot
-  - Source: library (existing)
+```json
+{
+  "role": "hero",
+  "sectionId": "hero",
+  "sourceType": "lexsis",
+  "assetId": "asset-uuid",
+  "url": "https://cdn.trylexsis.com/assets/abc123.jpg",
+  "width": 1600,
+  "height": 1200,
+  "desktopCrop": "center",
+  "mobileCrop": "center top",
+  "altTextIntent": "Product pouch beside a glass",
+  "verificationStatus": "verified"
+}
 ```
 
-The generation workflow uses these URLs directly in `<img src="">` and island props.
+Shopify catalog media uses `sourceType: "shopify"` with `productId` and
+`mediaId` instead of `assetId`. Never require a Lexsis asset ID for a Shopify
+image.
+
+Asset names alone do not establish identity. Visually inspect product, creator,
+and endorsement imagery. Generation uses only permanent verified URLs.
 
 ---
 

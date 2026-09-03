@@ -104,7 +104,9 @@ Checklist:
 - [ ] Islands hydrated (BuyBox shows product data)
 - [ ] Social proof section present
 
-If issues found: `lexsis_drafts.page_update_section` to fix, then re-verify.
+If issues are found, update `lexsis-source.html`, compile the complete page,
+patch changed sections with `expected_version`, update the manifest, then
+re-verify.
 
 ## Decision Points
 

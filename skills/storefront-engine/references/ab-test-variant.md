@@ -1,6 +1,7 @@
 # A/B Test Variant (Hypothesis-Driven Experiment)
 
-> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
+Read `source-artifact-workflow.md`. The base page and every variant require
+separate readable local source, manifest, synchronized version, and QA record.
 
 Clone an existing page, apply a single focused change based on a clear hypothesis, launch a controlled experiment, and monitor for statistical significance via mSPRT.
 
@@ -14,12 +15,8 @@ Clone an existing page, apply a single focused change based on a clear hypothesi
 
 ### Step 1 — Context Gathering
 
-```
-lexsis_workspace.get()          → workspace ID, plan tier
-lexsis_workspace.stores()           → store domain, Shopify data
-```
-
-These two calls ALWAYS run first. No exceptions.
+Confirm the base page's saved store/theme binding, synchronized local source,
+current remote version, current access, and current analytics.
 
 ### Step 2 — Load Current Page and Baseline
 
@@ -52,41 +49,47 @@ Common high-impact tests (ordered by typical lift):
 
 ### Step 4 — Create the Variant
 
+Create `work/visual-pages/<base-handle>--<variant-key>/`, copy the synchronized
+base files, make the one change in local `lexsis-source.html`, run the source
+gate, and compile the complete variant first.
+
 ```
-lexsis_drafts.page_duplicate(page_id)
+lexsis_drafts({ action: "page_duplicate", args: { page_id, idempotency_key } })
 ```
 
-Creates exact copy. Then apply the SINGLE focused change:
+Store the returned duplicate ID and version in the variant manifest. Then apply
+the already-authored single section:
 ```
-lexsis_drafts.page_update_section({ page_id: variant_page_id, section_id, source })
+lexsis_drafts({
+  action: "page_update_section",
+  args: { page_id: variant_page_id, section_id, source, expected_version }
+})
 ```
 
 RULE: ONE change per test. Multiple changes make attribution impossible.
 
-All styling via `--lx-*` CSS variables. Islands unchanged unless the test specifically targets island props:
+All styling uses the selected theme's `--lx-*` CSS variables. Islands remain
+unchanged unless the test specifically targets island props:
 ```html
-<div data-island="BuyBox" data-props='{"product":{"title":"...","price":"$29.99","variants":[...]}}'></div>
+<lx-island name="BuyBox">
+  <script type="application/json">
+    { "product": { "title": "...", "price": "$29.99", "variants": [] } }
+  </script>
+</lx-island>
 ```
 
 ### Step 5 — Validate Variant
 
 ```
-lexsis_pages.integrity({ page_id: variant_page_id, archetype })
+lexsis_pages({ action: "integrity", args: { page_id: variant_page_id, archetype } })
 ```
 
 Ensure variant renders correctly, all islands work, mobile intact.
 
 ### Step 6 — Visual Verification
 
-**Claude Code (Playwright MCP):**
-```
-browser_navigate({ url: variant_preview_url })
-browser_take_screenshot()
-```
-
-**Codex:** Use built-in browser to open variant preview.
-
-**Other IDEs:** Provide URL: "Variant preview: {url} -- verify change is visible."
+Use the host agent's browser capability at 390px, 768px, and 1280px. If it is
+unavailable, return the preview URL and state that visual QA remains.
 
 Checklist:
 - [ ] The ONE change is clearly visible
@@ -98,15 +101,15 @@ Checklist:
 ### Step 7 — Launch Experiment
 
 ```
-lexsis_drafts(action: "experiment_create", args: {
-  page_id: page_id,
-  hypothesis: "Changing [X] will improve [metric] because [reason]",
-  variants: [
-    { page_id: page_id, weight: 50, name: "Control (A)" },
-    { page_id: variant_page_id, weight: 50, name: "Variant (B)" }
-  ],
-  primary_metric: "conversion_rate",
-  minimum_sample: 1000
+lexsis_drafts({
+  action: "experiment_create",
+  args: {
+    page_id,
+    hypothesis,
+    variants,
+    primary_metric: "conversion_rate",
+    minimum_sample: 1000
+  }
 })
 ```
 
@@ -115,7 +118,7 @@ lexsis_drafts(action: "experiment_create", args: {
 ### Step 8 — Monitor Results
 
 ```
-lexsis_analytics.experiment(experiment_id)
+lexsis_analytics({ action: "experiment", args: { experiment_id } })
 ```
 
 Returns: CVR per variant with confidence intervals, statistical significance (mSPRT), sample size, winner recommendation, secondary metrics.
@@ -130,7 +133,7 @@ RULES:
 
 Only when `significant: true`:
 ```
-lexsis_live_ops.scale_winner(experiment_id, winning_variant_id)
+lexsis_live_ops({ action: "scale_winner", args: { experiment_id, variant_id: winning_variant_id } })
 ```
 
 Routes 100% traffic to winner. Marks experiment complete.
@@ -152,6 +155,8 @@ If no winner after 2000+ visitors per variant: the change has no meaningful impa
 
 - ONE change per test (scientific rigor -- isolate the variable)
 - Hypothesis documented BEFORE variant creation
+- Variant local source exists and compiles before remote content changes
+- Variant page ID, version, bundle hash, and section hashes are synchronized
 - Minimum 1000 visitors per variant before evaluating
 - Statistical significance required (mSPRT p<0.05) before declaring winner
 - Both variants pass `lexsis_pages.integrity`

@@ -1,7 +1,7 @@
 interface:
   display_name: "Publish Storefront Page"
-  short_description: "Validate, preview, and publish a storefront page."
-  default_prompt: "Validate this storefront page and prepare a draft preview."
+  short_description: "Publish an approved, synchronized storefront draft."
+  default_prompt: "Use $publish to release this approved Lexsis page version."
 dependencies:
   tools:
     - type: "mcp"

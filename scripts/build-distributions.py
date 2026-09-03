@@ -2,7 +2,7 @@
 """Build generated distributions from the canonical skills/ tree.
 
 Canonical source of truth: skills/<name>/SKILL.md (Agent Skills spec,
-agentskills.io) with the shared reference corpus at
+agentskills.io) with shared resources at
 skills/storefront-engine/references/.
 
 Everything else is DERIVED:
@@ -35,6 +35,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 SKILLS = ROOT / "skills"
 REFERENCES = SKILLS / "storefront-engine" / "references"
+SHARED_RESOURCE_DIRS = {"storefront-engine"}
 
 RETIRED_TOOLS = [
     "write_vibe_page",
@@ -50,13 +51,8 @@ RETIRED_TOOLS = [
 ]
 
 REFERENCE_PATH_RE = re.compile(
-    r"(?:storefront-engine/)?references/([A-Za-z0-9_./-]+\.md)"
+    r"((?:storefront-engine/)?references/[A-Za-z0-9_./-]+\.md)"
 )
-
-# Page-authoring skills must emit source-format <lx-island> elements. The
-# maintainer-only extract-island skill intentionally produces compiled layout
-# JSON for the renderer and is explicitly documented as such.
-COMPILED_MARKUP_SKILL_EXCEPTIONS = {"extract-island"}
 
 # References worth shipping to a custom GPT (knowledge budget is finite;
 # schemas and vertical deep-dives stay out — the GPT can't call tools to
@@ -74,6 +70,8 @@ GPT_REFERENCE_ALLOWLIST = [
     "publishing",
     "page-generation",
     "page-editing",
+    "source-artifact-workflow",
+    "island-preview",
     "visual-layout-workflow",
     "workflow-handoffs",
 ]
@@ -114,6 +112,8 @@ def validate() -> list[str]:
             continue
         sk = skill_dir / "SKILL.md"
         if not sk.exists():
+            if skill_dir.name in SHARED_RESOURCE_DIRS:
+                continue
             errors.append(f"{skill_dir.name}: no SKILL.md")
             continue
         try:
@@ -135,16 +135,20 @@ def validate() -> list[str]:
             if tool in body:
                 errors.append(f"{skill_dir.name}: references retired tool {tool}")
         for reference in REFERENCE_PATH_RE.findall(body):
-            reference_path = REFERENCES / reference
-            if not reference_path.is_file():
+            if reference.startswith("storefront-engine/"):
+                candidates = [
+                    ROOT / "skills" / reference,
+                ]
+            else:
+                candidates = [
+                    skill_dir / reference,
+                    REFERENCES / reference.removeprefix("references/"),
+                ]
+            if not any(path.is_file() for path in candidates):
                 errors.append(
-                    f"{skill_dir.name}: references missing canonical document "
-                    f"storefront-engine/references/{reference}"
+                    f"{skill_dir.name}: references missing document {reference}"
                 )
-        if (
-            skill_dir.name not in COMPILED_MARKUP_SKILL_EXCEPTIONS
-            and re.search(r"<[^>]+data-island=|data-props=['\"]", body)
-        ):
+        if re.search(r"<[^>]+data-island=|data-props=['\"]", body):
             errors.append(
                 f"{skill_dir.name}: raw compiled island markup in an authoring skill; "
                 "use <lx-island> source format instead"
@@ -214,6 +218,13 @@ def build_gpt() -> dict[str, str]:
         if fm.get("disable-model-invocation") == "true":
             continue  # maintainer tools stay out of the GPT
         parts.append(f"\n---\n\n# Skill: {fm['name']}\n\n> {fm['description']}\n\n{body.strip()}\n")
+        local_references = skill_dir / "references"
+        if local_references.is_dir():
+            for reference in sorted(local_references.glob("*.md")):
+                parts.append(
+                    f"\n### {fm['name']} reference: {reference.stem}\n\n"
+                    f"{reference.read_text().strip()}\n"
+                )
 
     parts.append("\n---\n\n## Reference Knowledge\n")
     for name in GPT_REFERENCE_ALLOWLIST:
@@ -230,11 +241,12 @@ HTML (see source-format reference; plain HTML with <lx-island> elements) the
 merchant can apply via the consolidated lexsis_pages compile and
 lexsis_page_create create actions.
 
-Follow the workflows in your knowledge file exactly — especially the mandatory
-Phase 1 planning gate before any generation, and the Phase 1-5 sequence
-(Plan → Context → Assets → Build → Ship). Author pages in source format, never
-hand-written data-island/data-props JSON. Never invent island names or props;
-they must come from the island schema reference. Never use retired tools.
+Use the normal workflow when building a page:
+setup → plan-page → visual-page → asset-prep → generate → publish.
+Each command remains independently invokable, and explicit skips are recorded.
+Author pages in source format, never hand-written data-island/data-props JSON.
+Never invent island names or props; resolve the current schema first. Never use
+retired tools.
 """
     return {"gpt/knowledge.md": knowledge, "gpt/instructions.md": instructions}
 

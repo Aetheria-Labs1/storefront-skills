@@ -1,7 +1,7 @@
 interface:
   display_name: "Run Experiment"
   short_description: "Set up and evaluate storefront experiments."
-  default_prompt: "Set up a hypothesis-driven storefront A/B test."
+  default_prompt: "Use $experiment to create a focused storefront test from this hypothesis."
 dependencies:
   tools:
     - type: "mcp"

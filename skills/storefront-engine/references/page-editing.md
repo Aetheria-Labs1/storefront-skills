@@ -1,15 +1,20 @@
 # Storefront Page Editing
 
-Edit existing pages using section-level operations.
+Edit existing pages through canonical local source and section-level remote
+operations. Read `source-artifact-workflow.md` first.
 
 ## Edit Flow
 
-1. `lexsis_pages` action `find`
+1. Open the local working directory. If an older page has no local files,
+   create them from the current remote page once and record the synchronized
+   baseline before editing.
 2. `lexsis_pages` action `edit_context`
-3. `lexsis_pages` actions `section_source`, `source`, or `inspect`
-4. Edit exactly one source-format section
-5. `lexsis_drafts` action `page_update_section` or `page_patch`
-6. `lexsis_pages` actions `diff` and `integrity`
+3. Compare its version with `manifest.remote.lastKnownVersion`; stop on drift.
+4. Edit `lexsis-source.html`.
+5. Run the local source gate and compile the complete source.
+6. Compare current section hashes with the synchronized baseline.
+7. Patch only changed sections with `expected_version`.
+8. Update manifest version/hashes after success, then run `diff` and `integrity`.
 
 For existing pages, `page_id` is authoritative. Do not require the user to
 reselect a workspace or pass `store_id`; an optional store ID is only an
@@ -38,7 +43,8 @@ lexsis_drafts({
   args: { page_id, source, position, expected_version }
 })
 ```
-- Position: "before:{section_id}" or "after:{section_id}" or index number
+- Position: `{ "before": "section-id" }`, `{ "after": "section-id" }`, or an
+  index number
 - Must include full section HTML
 
 ### Remove a Section
@@ -59,16 +65,20 @@ lexsis_drafts({ action: "page_move_section", args: { page_id, section_id, positi
 
 ## Best Practices
 
+- Never make the remote page the only copy of an intentional change
 - Always call `lexsis_pages` action `edit_context` before a write
-- Re-read context/source and rebase when an edit returns `version_conflict`
+- Stop on unexpected version drift
+- Re-read source and reconcile locally when an edit returns `version_conflict`
 - Reference section IDs from the page data (don't guess)
+- Compile the complete local source before section patching
 - After editing, run `diff` and `integrity`
 - Batch related multi-section changes with `page_patch` so they create one version
 - Preserve existing CSS variables and island configurations
 - Don't break mobile responsiveness when editing desktop layout
 
-Minor edits use this workflow directly. They do not repeat the new-page planning
-workflow; the existing page retains its approved plan.
+Minor edits do not repeat planning, but they still require a local source
+workspace and a matching saved store/theme setup. Adoption creates page files;
+it does not rerun `setup`.
 
 For published pages, `current_version` can advance while the live renderer
 remains pinned to `published_version_id`. Publish only after QA.

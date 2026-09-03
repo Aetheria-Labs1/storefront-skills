@@ -1,7 +1,7 @@
 {
   "name": "lexsis-storefront-skills",
-  "version": "5.4.1",
-  "description": "AI-powered Shopify storefront builder \u2014 14 independently runnable skills for visual planning, asset prep, generation, CRO, experimentation, and publishing.",
+  "version": "6.0.0",
+  "description": "AI-powered Shopify storefront builder with 10 focused commands for setup, planning, visual previews, assets, generation, CRO, experiments, carts, and publishing.",
   "author": {
     "name": "Aetheria Labs",
     "email": "hello@trylexsis.com"
