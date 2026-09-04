@@ -8,8 +8,20 @@ description: Replace visual-page placeholders with verified production images an
 Use the approved plan and visual mockup to finalize media. Do not author the
 production page or create a draft.
 
+Before reading live assets or changing the page workspace, confirm
+`lexsis_discover` is available and discover the exact asset, catalogue,
+generation, upload, and inspection actions needed by this run. If discovery
+fails, return `BLOCKED_LEXSIS_MCP` without changing page artifacts.
+
+The full skill pack includes optional deeper design guidance at
+`storefront-engine/references/lexsis-design-capabilities.md`.
+
 Read the page's saved store/theme binding. Stop if it does not match
 `work/storefront/setup/setup.json`; never run setup automatically.
+
+Read the selected template section sources and island schemas. Derive media
+roles, aspect ratios, and crop guidance from those sources and the approved
+layout; do not assume template search returns a separate media-slot schema.
 
 ## Source Order
 
@@ -66,5 +78,5 @@ Before completion, confirm:
 ## Return
 
 Update `page-manifest.json` and return `ASSETS_READY` with the verified roles,
-IDs, URLs, dimensions, crops, and alt-text intent. The next normal command is
-`/generate`.
+IDs, URLs, dimensions, crops, alt-text intent, template evidence, and MCP
+evidence. The next normal command is `/generate`.

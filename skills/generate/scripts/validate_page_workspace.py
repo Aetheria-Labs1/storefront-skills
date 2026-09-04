@@ -175,6 +175,52 @@ def validate_workspace(
         if not isinstance(source_sync, dict) or not isinstance(source_sync.get("lastChangedSections"), list):
             errors.append(finding("manifest_sync", "Manifest sourceSync requires lastChangedSections array", manifest_path.name))
 
+        mcp = manifest.get("mcp")
+        if not isinstance(mcp, dict) or mcp.get("status") != "connected":
+            errors.append(finding("mcp_status", "Standard page workflows require a successful Lexsis MCP preflight", manifest_path.name))
+        elif not mcp.get("checkedAt") or not mcp.get("surfaceVersion"):
+            errors.append(finding("mcp_evidence", "Manifest MCP evidence requires checkedAt and surfaceVersion", manifest_path.name))
+        else:
+            capabilities = mcp.get("capabilities")
+            if not isinstance(capabilities, list) or not capabilities:
+                errors.append(finding("mcp_capabilities", "Manifest MCP evidence requires discovered capabilities", manifest_path.name))
+            elif any(
+                not isinstance(item, dict)
+                or not item.get("router")
+                or not isinstance(item.get("actions"), list)
+                or not item.get("actions")
+                for item in capabilities
+            ):
+                errors.append(finding("mcp_capabilities", "Every MCP capability requires a router and actions", manifest_path.name))
+
+        template = manifest.get("template")
+        if not isinstance(template, dict) or template.get("mode") not in {"page-kit", "sections", "custom"}:
+            errors.append(finding("template_mode", "Manifest template mode must be page-kit, sections, or custom", manifest_path.name))
+        else:
+            if not isinstance(template.get("evaluatedTemplates"), list):
+                errors.append(finding("template_evidence", "Template selection requires evaluatedTemplates", manifest_path.name))
+            if not template.get("selectionReason") or not template.get("selectedAt"):
+                errors.append(finding("template_evidence", "Template selection requires selectionReason and selectedAt", manifest_path.name))
+            if template.get("mode") == "page-kit" and not template.get("pageKitId"):
+                errors.append(finding("template_page_kit", "Page-kit mode requires pageKitId", manifest_path.name))
+            if template.get("mode") in {"page-kit", "sections"}:
+                section_template_ids = template.get("sectionTemplateIds")
+                if not isinstance(section_template_ids, list) or not section_template_ids:
+                    errors.append(finding("template_sections", "Selected templates require sectionTemplateIds", manifest_path.name))
+
+        design = manifest.get("design")
+        if not isinstance(design, dict):
+            errors.append(finding("design_evidence", "Manifest requires a design record", manifest_path.name))
+        else:
+            if design.get("themeId") != manifest.get("themeId"):
+                errors.append(finding("design_theme", "Design themeId must match the page themeId", manifest_path.name))
+            if not design.get("themeSource"):
+                errors.append(finding("design_source", "Design record requires themeSource", manifest_path.name))
+            if phase in {"visual", "precompile", "adopted", "publish"} and not design.get("stylePack"):
+                errors.append(finding("design_style", "Visual and production phases require one coherent stylePack", manifest_path.name))
+            if phase == "publish" and not isinstance(design.get("compiledStyleManifest"), dict):
+                errors.append(finding("design_compile", "Publish requires the compiler style manifest", manifest_path.name))
+
         setup_path = resolve_workspace_path(directory, manifest.get("setupPath", ""))
         if not setup_path.is_file():
             errors.append(finding("setup_missing", "Saved setup file does not exist", str(setup_path)))
@@ -381,6 +427,35 @@ def validate_workspace(
         errors.append(finding("manifest_sections", "Manifest section order does not match production source", manifest_path.name))
 
     manifest_islands = manifest.get("islands", []) if manifest else []
+    if phase in {"visual", "precompile", "adopted", "publish"}:
+        for island in manifest_islands:
+            if not isinstance(island, dict):
+                continue
+            schema = island.get("schema")
+            if (
+                not isinstance(schema, dict)
+                or not schema.get("version")
+                or schema.get("lifecycleStatus") != "active"
+                or not schema.get("resolvedAt")
+            ):
+                errors.append(
+                    finding(
+                        "island_schema_evidence",
+                        f"Island {island.get('name', '<unknown>')!r} requires an active resolved schema",
+                        manifest_path.name,
+                    )
+                )
+            if (
+                phase in {"precompile", "adopted", "publish"}
+                and island.get("productionMode") not in {"native", "headless"}
+            ):
+                errors.append(
+                    finding(
+                        "island_production_mode",
+                        f"Island {island.get('name', '<unknown>')!r} requires native or headless productionMode",
+                        manifest_path.name,
+                    )
+                )
     expected_islands = [
         {"sectionId": item.get("sectionId"), "name": item.get("name")}
         for item in manifest_islands

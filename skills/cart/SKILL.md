@@ -7,6 +7,10 @@ description: Inspect, assign, or edit Lexsis cart profiles for a storefront page
 
 Cart profiles are managed separately from page section HTML.
 
+Confirm `lexsis_discover` is available and discover the exact cart read/write
+actions needed by this request. If discovery fails, return
+`BLOCKED_LEXSIS_MCP`; do not infer the effective cart profile from page HTML.
+
 Resolve the target store from a page binding, an explicit saved choice, or the
 unambiguous default in `work/storefront/setup/setup.json`. If it is not saved,
 stop and ask the user to run `/setup`; never invoke setup automatically.
@@ -44,4 +48,5 @@ script escapes, and unbalanced rules are not allowed.
 ## Return
 
 Report the effective profile, resolution source, draft changes, page
-assignment, and which actions still require review or publication in Lexsis.
+assignment, MCP evidence, and which actions still require review or
+publication in Lexsis.

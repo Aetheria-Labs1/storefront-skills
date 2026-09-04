@@ -22,9 +22,10 @@ lexsis_template_library({ action: "search_sections", args: { query, section, moo
 lexsis_design({ action: "get_section", args: { ids, format: "authoring_source" } })
 ```
 
-If a match is found → use the template's returned `source`, swap
-placeholder content with brand-specific copy/images, then compile it. Only
-generate custom HTML when no template matches.
+If a match is found → fetch it with `lexsis_design` action `get_section`, use
+the returned `source`, swap placeholder content with brand-specific
+copy/images, then compile it. Only generate custom HTML when no template
+matches.
 
 `format: "compiled_reference"` is renderer-only output. Use it for inspection, never as
 input to `lexsis_pages` action `compile` or `lexsis_drafts.page_update_section`.

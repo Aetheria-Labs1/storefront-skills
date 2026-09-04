@@ -19,7 +19,7 @@ lexsis_template_library.search_sections({ query: "hero with video background for
 lexsis_design.get_section({ ids: ["<chosen id from results>"] })
 ```
 
-- If a matching template is found (score > 0.7): USE IT. Its returned `source`
+- If a suitable template is found: fetch and use it. The fetched `source`
   contains the section markup, CSS, and JS ready to tailor with brand-specific
   copy/images, then pass to
   `lexsis_pages` action `compile`.

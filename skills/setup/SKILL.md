@@ -8,10 +8,14 @@ description: Connect a Lexsis storefront workspace and save reusable brand and t
 Run this once after installing the Lexsis MCP and skills. It saves the
 slow-changing context that page skills reuse; it does not create or edit pages.
 
+A successful `lexsis_discover` call is required; MCP configuration alone is
+not a connection check. If discovery fails, return `BLOCKED_LEXSIS_MCP`
+without writing setup files.
+
 ## What to Save
 
-1. Use `lexsis_discover` for unfamiliar setup actions and their current
-   arguments.
+1. Use `lexsis_discover` for the exact workspace, store, brand, theme, design,
+   and navigation actions required by this run.
 2. Resolve the authorized workspace and connected stores.
 3. When several stores or themes exist, ask the user which ones to save and
    which store/theme should be the default. Show names, not raw IDs.
@@ -71,5 +75,6 @@ Never save credentials, cookies, authorization headers, or tokens.
 
 ## Return
 
-Return the setup path, saved store/theme names, and default selection. Other
-skills read this setup independently and never invoke `/setup` automatically.
+Return the setup path, saved store/theme names, default selection, MCP status,
+discovered capabilities, actions called, fallbacks, and blockers. Other skills
+read this setup independently and never invoke `/setup` automatically.

@@ -7,6 +7,10 @@ description: Create or evaluate a focused Lexsis storefront experiment from a cl
 
 Use this for a measurable comparison, not ordinary page editing.
 
+Confirm `lexsis_discover` is available and discover the exact page, analytics,
+experiment, and draft actions needed by this request. If discovery fails,
+return `BLOCKED_LEXSIS_MCP` without creating local or remote variants.
+
 Confirm the base page's store/theme binding exists in
 `work/storefront/setup/setup.json`. If it is missing, stop and ask the user to
 run `/setup`; never invoke setup automatically.
@@ -60,4 +64,4 @@ Do not call a winner from directional movement alone.
 ## Return
 
 Return the hypothesis, local variant paths, remote page/version IDs, experiment
-ID, launch state, and current decision.
+ID, launch state, current decision, and MCP evidence.

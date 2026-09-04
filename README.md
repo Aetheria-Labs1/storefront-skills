@@ -168,6 +168,11 @@ storefront-skills/
 
 One source of truth: edit `skills/`, run `python3 scripts/build-distributions.py`, commit. CI fails on drift.
 
+The full Claude/Codex plugins and GPT distribution package the shared
+`storefront-engine/references/` corpus. Public skill entrypoints remain
+self-contained so clients that install only selected skill folders do not
+depend on a missing shared directory.
+
 > **Windows note:** the fan-out uses symlinks — clone with `git config core.symlinks true`.
 
 ## Contributing

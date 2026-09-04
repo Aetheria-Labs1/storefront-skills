@@ -17,6 +17,17 @@ Start the manifest with:
   "schemaVersion": 1,
   "status": "planned",
   "workflow": { "skippedSkills": [] },
+  "mcp": {
+    "status": "connected",
+    "checkedAt": "2026-09-04T12:00:00Z",
+    "surfaceVersion": "3.0",
+    "capabilities": [
+      {
+        "router": "lexsis_catalog",
+        "actions": ["get"]
+      }
+    ]
+  },
   "page": {
     "title": "...",
     "handle": "...",
@@ -25,6 +36,20 @@ Start the manifest with:
   "workspaceId": "...",
   "storeId": "...",
   "themeId": "...",
+  "template": {
+    "mode": "page-kit",
+    "pageKitId": "...",
+    "sectionTemplateIds": ["..."],
+    "evaluatedTemplates": [],
+    "selectionReason": "...",
+    "selectedAt": "2026-09-04T12:00:00Z"
+  },
+  "design": {
+    "themeId": "...",
+    "themeSource": "saved-and-verified",
+    "stylePack": null,
+    "compiledStyleManifest": null
+  },
   "setupPath": "work/storefront/setup/setup.json",
   "brandDesignPath": "...",
   "themeCssPath": "...",
@@ -68,4 +93,7 @@ Start the manifest with:
 ```
 
 The page binds one saved store/theme pair. Do not write visual or production
-source during planning.
+source during planning. `template.mode` is `page-kit`, `sections`, or `custom`.
+Custom composition requires recorded template evaluation and a
+`selectionReason`. Do not invent a template version when Lexsis does not
+return one.

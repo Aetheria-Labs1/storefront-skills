@@ -100,10 +100,33 @@ class WorkspaceValidatorTests(unittest.TestCase):
             "schemaVersion": 1,
             "status": "qa_passed",
             "workflow": {"skippedSkills": skipped},
+            "mcp": {
+                "status": "connected",
+                "checkedAt": "2026-09-04T12:00:00Z",
+                "surfaceVersion": "3.0",
+                "capabilities": [
+                    {"router": "lexsis_pages", "actions": ["compile"]}
+                ],
+            },
             "page": {"title": "Creatine", "handle": "creatine", "archetype": "landing"},
             "workspaceId": "workspace",
             "storeId": "store",
             "themeId": "theme",
+            "template": {
+                "mode": "custom",
+                "evaluatedTemplates": [],
+                "selectionReason": "No suitable template matched the test fixture",
+                "selectedAt": "2026-09-04T12:00:00Z",
+            },
+            "design": {
+                "themeId": "theme",
+                "themeSource": "saved-and-verified",
+                "stylePack": "minimal",
+                "compiledStyleManifest": {
+                    "engine": "tailwindcss",
+                    "compiler_version": "4.3.0",
+                },
+            },
             "setupPath": str(setup_path),
             "brandDesignPath": str(brand_path),
             "themeCssPath": str(theme_path),
@@ -114,7 +137,12 @@ class WorkspaceValidatorTests(unittest.TestCase):
             "islands": [{
                 "sectionId": "hero",
                 "name": "BuyBox",
-                "version": "5.0.0",
+                "schema": {
+                    "version": "5.0.0",
+                    "lifecycleStatus": "active",
+                    "resolvedAt": "2026-09-04T12:00:00Z",
+                },
+                "productionMode": "native",
                 "previewMode": "hydrated",
                 "previewData": True,
             }],
@@ -210,6 +238,44 @@ class WorkspaceValidatorTests(unittest.TestCase):
         del manifest["themeCssPath"]
         self.write_manifest(root, manifest)
         self.assertIn("manifest_binding", self.codes(root, "precompile"))
+
+    def test_manifest_requires_successful_mcp_preflight(self) -> None:
+        root = self.make_workspace()
+        manifest = self.manifest(root)
+        manifest["mcp"]["status"] = "blocked"
+        self.write_manifest(root, manifest)
+        self.assertIn("mcp_status", self.codes(root, "precompile"))
+
+    def test_template_selection_requires_evidence(self) -> None:
+        root = self.make_workspace()
+        manifest = self.manifest(root)
+        manifest["template"] = {"mode": "page-kit", "evaluatedTemplates": []}
+        self.write_manifest(root, manifest)
+        codes = self.codes(root, "precompile")
+        self.assertIn("template_evidence", codes)
+        self.assertIn("template_page_kit", codes)
+        self.assertIn("template_sections", codes)
+
+    def test_design_theme_must_match_page_theme(self) -> None:
+        root = self.make_workspace()
+        manifest = self.manifest(root)
+        manifest["design"]["themeId"] = "other-theme"
+        self.write_manifest(root, manifest)
+        self.assertIn("design_theme", self.codes(root, "visual"))
+
+    def test_island_requires_active_schema_evidence(self) -> None:
+        root = self.make_workspace()
+        manifest = self.manifest(root)
+        manifest["islands"][0]["schema"]["lifecycleStatus"] = "deprecated"
+        self.write_manifest(root, manifest)
+        self.assertIn("island_schema_evidence", self.codes(root, "precompile"))
+
+    def test_publish_requires_compiler_style_manifest(self) -> None:
+        root = self.make_workspace()
+        manifest = self.manifest(root)
+        manifest["design"]["compiledStyleManifest"] = None
+        self.write_manifest(root, manifest)
+        self.assertIn("design_compile", self.codes(root, "publish"))
 
     def test_missing_setup_and_theme_files_fail(self) -> None:
         root = self.make_workspace()

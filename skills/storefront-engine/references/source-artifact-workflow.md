@@ -58,6 +58,17 @@ Use `schemaVersion: 1`:
   "workflow": {
     "skippedSkills": []
   },
+  "mcp": {
+    "status": "connected",
+    "checkedAt": "2026-09-04T12:00:00Z",
+    "surfaceVersion": "3.0",
+    "capabilities": [
+      {
+        "router": "lexsis_pages",
+        "actions": ["compile"]
+      }
+    ]
+  },
   "page": {
     "title": "SuperYou Pro Creatine",
     "handle": "superyou-pro-creatine",
@@ -66,6 +77,20 @@ Use `schemaVersion: 1`:
   "workspaceId": "...",
   "storeId": "...",
   "themeId": "...",
+  "template": {
+    "mode": "page-kit",
+    "pageKitId": "kit-slug",
+    "sectionTemplateIds": ["hero-slug", "buy-box-slug"],
+    "evaluatedTemplates": [],
+    "selectionReason": "Matches the approved PDP structure",
+    "selectedAt": "2026-09-04T12:00:00Z"
+  },
+  "design": {
+    "themeId": "...",
+    "themeSource": "saved-and-verified",
+    "stylePack": "editorial",
+    "compiledStyleManifest": null
+  },
   "setupPath": "work/storefront/setup/setup.json",
   "brandDesignPath": "work/storefront/setup/stores/<store-id>/brand-design.md",
   "themeCssPath": "work/storefront/setup/stores/<store-id>/themes/<theme-id>.css",
@@ -81,7 +106,12 @@ Use `schemaVersion: 1`:
     {
       "sectionId": "hero",
       "name": "BuyBox",
-      "version": "5.0.0",
+      "schema": {
+        "version": "5.0.0",
+        "lifecycleStatus": "active",
+        "resolvedAt": "2026-09-04T12:00:00Z"
+      },
+      "productionMode": "native",
       "previewMode": "hydrated",
       "previewData": true
     }
@@ -118,6 +148,14 @@ Use `schemaVersion: 1`:
 
 `previewMode` is `hydrated` when the real exported island runs locally and
 `fallback` when the mockup shows static fallback HTML.
+
+`template.mode` is `page-kit`, `sections`, or `custom`. A custom composition
+records evaluated templates and why they were rejected. The current template
+API does not guarantee a version field, so preserve selected IDs rather than
+inventing one.
+
+After a successful production compile, save the compiler's returned
+`style_manifest` under `design.compiledStyleManifest`.
 
 ## Skill Skips
 
@@ -179,6 +217,13 @@ Remote content must never be the only copy of an intentional change.
 ```markdown
 # QA Report
 
+- MCP status: connected/blocked
+- MCP surface version: <version>
+- Capabilities used: <routers/actions>
+- Lexsis actions called: <ordered summary>
+- Template: <kit/sections/custom reason>
+- Live bindings: <products/assets>
+- Fallbacks: none or list
 - Compilation: pass/fail
 - Source bundle: <hash>
 - Remote version: <version>

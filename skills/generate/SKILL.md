@@ -10,6 +10,17 @@ Do not publish.
 
 Read `references/source-and-sync.md`.
 
+Complete a fresh MCP preflight before reading live data or changing production
+artifacts. Do not trust an earlier skill's connection as proof that MCP is
+available in this session. Discover the exact catalogue, template, brand,
+island, compile, page-create, and edit actions needed by this run. If discovery
+fails, return `BLOCKED_LEXSIS_MCP` without changing production artifacts.
+
+When the full Lexsis skill pack is installed, also read
+`storefront-engine/references/lexsis-design-capabilities.md` for the detailed
+LX token, Tailwind, template, and island styling contract. The production
+rules below remain complete when that shared reference is unavailable.
+
 ## Inputs
 
 Use the page workspace created by earlier commands. If the user explicitly
@@ -24,14 +35,20 @@ schemas, and remote versions live.
 ## Author the Source
 
 1. Treat the approved plan and visual composition as the design contract.
-2. Replace preview values and temporary media with verified live bindings.
-3. Resolve every island's current active schema again.
-4. Write complete, readable `lexsis-source.html` before compiling.
-5. Use one `<!-- section: id -->` followed by `<section id="id">` per section.
-6. Keep island JSON readable where practical.
-7. Use native commerce islands; never replace BuyBox or another commerce
+2. Reuse the selected page kit or section-template source. When earlier skills
+   were explicitly skipped, search and fetch templates before custom
+   composition.
+3. Replace preview values and temporary media with verified live bindings.
+4. Resolve every island's current active schema again. Prefer native variants
+   and validated styling parts; use headless mode only with complete hooks.
+5. Write complete, readable `lexsis-source.html` before compiling.
+6. Use one `<!-- section: id -->` followed by `<section id="id">` per section.
+7. Keep island JSON readable where practical.
+8. Use LX tokens for brand values and Tailwind utilities for layout. Do not
+   depend on a runtime Tailwind CDN.
+9. Use native commerce islands; never replace BuyBox or another commerce
    interaction with a custom button.
-8. Keep production comments to section delimiters and exclude inline handlers,
+10. Keep production comments to section delimiters and exclude inline handlers,
    unsupported scripts, local paths, placeholders, and complete-page images.
 
 Run:
@@ -46,11 +63,12 @@ Fix all blocking source, copy, claim, price, and asset findings.
 ## Compile and Create
 
 Dry-run the complete source with `lexsis_pages` action `compile`. Fix all
-compiler errors before calling `lexsis_page_create` action `create` with
-`publish: false`.
+compiler errors, including every missing Tailwind candidate, before calling
+`lexsis_page_create` action `create` with `publish: false`.
 
 Store the returned page ID, version, and preview URL in the manifest. Record
 the source bundle hash and section hashes as the synchronized baseline.
+Store the compiler style manifest under `design.compiledStyleManifest`.
 `lexsis-source.html` remains the editable source of truth.
 
 ## Hosted QA
@@ -91,3 +109,4 @@ qa_report_path
 ```
 
 Return `DRAFT_READY` only when synchronization and blocking QA checks pass.
+Include the required MCP, template, binding, fallback, and blocker evidence.

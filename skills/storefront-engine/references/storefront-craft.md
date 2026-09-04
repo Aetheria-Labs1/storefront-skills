@@ -8,23 +8,29 @@ Load this skill first on any storefront page generation task.
 
 ## Architecture: Vibe-Code
 
-Pages are **raw HTML + Tailwind CSS + CSS custom properties + React islands**. No component JSON. No blueprint system. The AI generates HTML directly.
+Pages are **source-format HTML + compiled Tailwind CSS + CSS custom properties
++ React islands**. No component JSON. The AI generates readable HTML directly
+and Lexsis compiles it.
 
-**VibePage schema:**
-```json
-{
-  "head": { "title": "Page Title", "fonts": ["https://fonts.googleapis.com/..."] },
-  "theme_css": ":root { --lx-accent-color: #4F46E5; ... }",
-  "sections": [
-    { "id": "hero", "html": "<section class='...'>...</section>", "css": ".custom { ... }", "js": "// vanilla JS" }
-  ]
-}
-```
-
-**Islands** = interactive React components hydrated at `data-island` markers in HTML:
+**Authoring source:**
 ```html
-<div data-island="BuyBox" data-props='{"productId":"gid://shopify/Product/123","ctaText":"Add to Cart"}'></div>
+<!-- section: hero -->
+<section id="hero">
+  <lx-island name="BuyBox">
+    <script type="application/json">
+      {
+        "product": {
+          "title": "Product name",
+          "variants": []
+        }
+      }
+    </script>
+  </lx-island>
+</section>
 ```
+
+The compiler produces VibePage storage JSON and hydrated `data-island`
+markers. Do not write that compiled representation by hand.
 
 ---
 
@@ -133,8 +139,11 @@ Use descriptive kebab-case: `hero`, `product-gallery`, `social-proof`, `ingredie
 
 ## Island Rules
 
-- `data-props` must be valid JSON in single-quoted attribute
-- Only use valid island names (26 total — call `lexsis_design.islands` to see them)
+- Author props in the `<lx-island>` JSON script child; the compiler writes
+  `data-props`
+- Use the live island catalogue and exact selected schema; do not rely on a
+  fixed island count
+- Follow lifecycle replacement guidance for deprecated or superseded islands
 - One `BuyBox` per page (multiple breaks cart state)
 - Cart: `head.use_cart_v2: true` on every commerce page (`CartDrawer` V1 deprecated — never author a cart section)
 - `StickyBar` needs `triggerOffset` — distance in px before it appears
@@ -144,7 +153,8 @@ Use descriptive kebab-case: `hero`, `product-gallery`, `social-proof`, `ingredie
 
 ## Tailwind Usage
 
-- CDN included in renderer — all utility classes available
+- Lexsis compiles referenced utilities into one immutable page CSS artifact;
+  there is no runtime Tailwind CDN
 - Use responsive prefixes: `sm:`, `md:`, `lg:`, `xl:`
 - Prefer utilities over custom CSS (only use section `css` for keyframes/animations)
 - Use `clamp()` for fluid typography: `text-[clamp(2rem,5vw,4rem)]`

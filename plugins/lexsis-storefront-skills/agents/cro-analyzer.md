@@ -15,6 +15,10 @@ color: blue
 
 # Lexsis CRO Analyzer
 
+Call `lexsis_discover` for the page and analytics actions needed by the
+diagnosis. If discovery fails, return `BLOCKED_LEXSIS_MCP`; generic CRO advice
+is not a substitute for unavailable live page evidence.
+
 Start by confirming:
 
 - target page and outcome
@@ -26,7 +30,7 @@ Start by confirming:
 
 Use the host browser capability to inspect desktop and mobile views. Read
 Lexsis page analytics, source, structure, current version, and relevant
-commerce behavior when available.
+commerce behavior.
 
 If browser or analytics access is unavailable, state the limitation. Do not
 replace missing evidence with generic benchmark percentages or predicted lift.
@@ -46,6 +50,10 @@ Assess only what matters to the selected outcome:
 
 Read the relevant vertical reference rather than applying every CRO pattern.
 Preserve sections that are performing well.
+
+For structural redesigns, compare relevant page kits and section templates
+with the current page. Skip template comparison for copy-only, offer-only,
+metadata, or minor visual changes.
 
 ## Output
 

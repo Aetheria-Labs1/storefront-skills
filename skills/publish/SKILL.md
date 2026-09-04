@@ -7,6 +7,11 @@ description: Publish a synchronized and QA-passed Lexsis storefront draft. Use o
 
 Publishing is a separate, explicit action. Do not rebuild the page here.
 
+Complete a fresh MCP preflight and discover the exact page-context,
+entitlement, and publish actions required by this run. If discovery fails,
+return `BLOCKED_LEXSIS_MCP`; a local QA report cannot authorize or substitute
+for a live publish action.
+
 ## Gate
 
 1. Read the page manifest and QA report.
@@ -36,4 +41,5 @@ requests that action and the target page/version is clear.
 ## Return
 
 Report the published page, version, public URL, and whether the previous live
-version remains available for rollback.
+version remains available for rollback. Include the MCP capability and action
+evidence.

@@ -24,6 +24,13 @@ Use the public commands as distinct stages:
 
 `/publish` remains a separate explicit action.
 
+## MCP Gate
+
+Call `lexsis_discover` for the exact actions needed by each stage. MCP
+configuration is not proof of availability. If discovery fails, stop with
+`BLOCKED_LEXSIS_MCP`; do not replace the Lexsis workflow with static HTML
+unless the user explicitly requests a separate offline prototype.
+
 ## Setup
 
 Read `work/storefront/setup/setup.json` and select one saved store/theme pair.
@@ -35,17 +42,21 @@ live.
 ## Plan
 
 Create or consume the approved `page-plan.md`. Ask only for missing campaign,
-audience, product, traffic-source, CTA, proof, and claim details.
+audience, product, traffic-source, CTA, proof, and claim details. Search page
+kits and section templates before approving a custom composition.
 
 ## Visual
 
-Write `visual-source.html` using ordinary HTML and schema-validated
-`<lx-island>` elements. Dry-run compile it and place the compiler output in the
-provided island preview shell as `visual-preview.html`.
+Load the exact selected theme, adapt fetched template source, use LX design
+tokens and compile-time Tailwind utilities, and write `visual-source.html`
+using ordinary HTML and schema-validated `<lx-island>` elements. Dry-run
+compile it and place the compiler output in the provided island preview shell
+as `visual-preview.html`.
 
 Use existing assets first and bundled placeholders only for missing design
-media. Local preview commerce writes are disabled; real cart behavior is
-verified on the hosted draft.
+media. Use a static fallback only for an isolated island that lacks valid
+preview data or cannot compile. Real cart behavior is verified on the hosted
+draft.
 
 ## Assets
 

@@ -1,5 +1,5 @@
 <!-- GENERATED from skills/ by scripts/build-distributions.py — DO NOT EDIT.
-     storefront-skills v6.0.0 · 10 skills · 47 active islands -->
+     storefront-skills v7.0.0 · 10 skills · 47 active islands -->
 
 # Lexsis Storefront Skills — Knowledge Base
 
@@ -19,6 +19,13 @@ Choose one mode:
 - **Own-page review:** identify design and conversion weaknesses.
 - **Message-match:** compare an ad or screenshot with the intended landing
   page.
+
+Generic URL or screenshot analysis can use the host browser without Lexsis and
+reports `MCP status: not-required`. Any request that reads a Lexsis campaign,
+catalogue, page, asset, or stored analysis requires the normal MCP preflight.
+Confirm `lexsis_discover` is available and discover the exact actions needed.
+If that preflight fails, return `BLOCKED_LEXSIS_MCP` rather than replacing
+missing live data with assumptions.
 
 ## Capture
 
@@ -65,7 +72,9 @@ Avoid copying: [...]
 Evidence limits: [...]
 ```
 
-This can inform `/plan-page` for a new page or `/optimize` for an existing one.
+Include MCP status, discovered capabilities, actions, fallbacks, and blockers
+when Lexsis was used. This can inform `/plan-page` for a new page or
+`/optimize` for an existing one.
 
 ---
 
@@ -78,8 +87,20 @@ This can inform `/plan-page` for a new page or `/optimize` for an existing one.
 Use the approved plan and visual mockup to finalize media. Do not author the
 production page or create a draft.
 
+Before reading live assets or changing the page workspace, confirm
+`lexsis_discover` is available and discover the exact asset, catalogue,
+generation, upload, and inspection actions needed by this run. If discovery
+fails, return `BLOCKED_LEXSIS_MCP` without changing page artifacts.
+
+The full skill pack includes optional deeper design guidance at
+`storefront-engine/references/lexsis-design-capabilities.md`.
+
 Read the page's saved store/theme binding. Stop if it does not match
 `work/storefront/setup/setup.json`; never run setup automatically.
+
+Read the selected template section sources and island schemas. Derive media
+roles, aspect ratios, and crop guidance from those sources and the approved
+layout; do not assume template search returns a separate media-slot schema.
 
 ## Source Order
 
@@ -136,8 +157,8 @@ Before completion, confirm:
 ## Return
 
 Update `page-manifest.json` and return `ASSETS_READY` with the verified roles,
-IDs, URLs, dimensions, crops, and alt-text intent. The next normal command is
-`/generate`.
+IDs, URLs, dimensions, crops, alt-text intent, template evidence, and MCP
+evidence. The next normal command is `/generate`.
 
 ---
 
@@ -148,6 +169,10 @@ IDs, URLs, dimensions, crops, and alt-text intent. The next normal command is
 # Configure a Cart
 
 Cart profiles are managed separately from page section HTML.
+
+Confirm `lexsis_discover` is available and discover the exact cart read/write
+actions needed by this request. If discovery fails, return
+`BLOCKED_LEXSIS_MCP`; do not infer the effective cart profile from page HTML.
 
 Resolve the target store from a page binding, an explicit saved choice, or the
 unambiguous default in `work/storefront/setup/setup.json`. If it is not saved,
@@ -186,7 +211,8 @@ script escapes, and unbalanced rules are not allowed.
 ## Return
 
 Report the effective profile, resolution source, draft changes, page
-assignment, and which actions still require review or publication in Lexsis.
+assignment, MCP evidence, and which actions still require review or
+publication in Lexsis.
 
 ---
 
@@ -197,6 +223,10 @@ assignment, and which actions still require review or publication in Lexsis.
 # Run a Storefront Experiment
 
 Use this for a measurable comparison, not ordinary page editing.
+
+Confirm `lexsis_discover` is available and discover the exact page, analytics,
+experiment, and draft actions needed by this request. If discovery fails,
+return `BLOCKED_LEXSIS_MCP` without creating local or remote variants.
 
 Confirm the base page's store/theme binding exists in
 `work/storefront/setup/setup.json`. If it is missing, stop and ask the user to
@@ -251,7 +281,7 @@ Do not call a winner from directional movement alone.
 ## Return
 
 Return the hypothesis, local variant paths, remote page/version IDs, experiment
-ID, launch state, and current decision.
+ID, launch state, current decision, and MCP evidence.
 
 ---
 
@@ -265,6 +295,17 @@ Own production source, compilation, draft creation, and hosted interaction QA.
 Do not publish.
 
 Read `references/source-and-sync.md`.
+
+Complete a fresh MCP preflight before reading live data or changing production
+artifacts. Do not trust an earlier skill's connection as proof that MCP is
+available in this session. Discover the exact catalogue, template, brand,
+island, compile, page-create, and edit actions needed by this run. If discovery
+fails, return `BLOCKED_LEXSIS_MCP` without changing production artifacts.
+
+When the full Lexsis skill pack is installed, also read
+`storefront-engine/references/lexsis-design-capabilities.md` for the detailed
+LX token, Tailwind, template, and island styling contract. The production
+rules below remain complete when that shared reference is unavailable.
 
 ## Inputs
 
@@ -280,14 +321,20 @@ schemas, and remote versions live.
 ## Author the Source
 
 1. Treat the approved plan and visual composition as the design contract.
-2. Replace preview values and temporary media with verified live bindings.
-3. Resolve every island's current active schema again.
-4. Write complete, readable `lexsis-source.html` before compiling.
-5. Use one `<!-- section: id -->` followed by `<section id="id">` per section.
-6. Keep island JSON readable where practical.
-7. Use native commerce islands; never replace BuyBox or another commerce
+2. Reuse the selected page kit or section-template source. When earlier skills
+   were explicitly skipped, search and fetch templates before custom
+   composition.
+3. Replace preview values and temporary media with verified live bindings.
+4. Resolve every island's current active schema again. Prefer native variants
+   and validated styling parts; use headless mode only with complete hooks.
+5. Write complete, readable `lexsis-source.html` before compiling.
+6. Use one `<!-- section: id -->` followed by `<section id="id">` per section.
+7. Keep island JSON readable where practical.
+8. Use LX tokens for brand values and Tailwind utilities for layout. Do not
+   depend on a runtime Tailwind CDN.
+9. Use native commerce islands; never replace BuyBox or another commerce
    interaction with a custom button.
-8. Keep production comments to section delimiters and exclude inline handlers,
+10. Keep production comments to section delimiters and exclude inline handlers,
    unsupported scripts, local paths, placeholders, and complete-page images.
 
 Run:
@@ -302,11 +349,12 @@ Fix all blocking source, copy, claim, price, and asset findings.
 ## Compile and Create
 
 Dry-run the complete source with `lexsis_pages` action `compile`. Fix all
-compiler errors before calling `lexsis_page_create` action `create` with
-`publish: false`.
+compiler errors, including every missing Tailwind candidate, before calling
+`lexsis_page_create` action `create` with `publish: false`.
 
 Store the returned page ID, version, and preview URL in the manifest. Record
 the source bundle hash and section hashes as the synchronized baseline.
+Store the compiler style manifest under `design.compiledStyleManifest`.
 `lexsis-source.html` remains the editable source of truth.
 
 ## Hosted QA
@@ -347,6 +395,7 @@ qa_report_path
 ```
 
 Return `DRAFT_READY` only when synchronization and blocking QA checks pass.
+Include the required MCP, template, binding, fallback, and blocker evidence.
 
 ### generate reference: source-and-sync
 
@@ -399,10 +448,24 @@ use headless variants only when their required hooks are fully implemented.
 ## Compile and Create
 
 Validate locally, compile the complete source without saving, fix every
-blocking issue, then create with `publish:false`.
+blocking issue including missing Tailwind candidates, then create with
+`publish:false`.
 
 Save the returned page ID, version, preview URL, bundle hash, and per-section
-hashes. The bundle hash covers source, head, theme CSS, and page scripts.
+hashes. Save the returned style manifest under
+`design.compiledStyleManifest`. The bundle hash covers source, head, theme
+CSS, and page scripts.
+
+### Creation Example
+
+1. Discover the exact `lexsis_pages.compile` and
+   `lexsis_page_create.create` schemas.
+2. Compile the complete local source with the selected head, theme CSS, theme
+   ID, scripts, and product binding.
+3. Fix every blocking issue without saving remotely.
+4. Create the page as a draft with `publish:false`.
+5. Save the returned page ID, version, preview URL, bundle hash, section
+   hashes, and style manifest.
 
 ## Edits
 
@@ -416,11 +479,25 @@ hashes. The bundle hash covers source, head, theme CSS, and page scripts.
 
 Remote content must never be the only copy of an intentional change.
 
+### One-Section Edit Example
+
+For a hero-only change:
+
+1. Fetch the current remote version and stop if it differs from the manifest.
+2. Edit only the hero block in `lexsis-source.html`.
+3. Compile the complete local page.
+4. Confirm the validator reports only `hero` in `changedSections`.
+5. Patch the hero source with the discovered section-update action and
+   `expected_version`.
+6. Save the returned version and new hashes only after the patch succeeds.
+7. Repeat responsive, asset, copy, and affected interaction checks.
+
 ## QA
 
-Record compilation, local bundle, remote version, 390px/768px/1280px results,
-commerce interaction, copy, claims, assets, integrity, blockers, and publish
-readiness in `qa-report.md`.
+Record MCP status, capabilities, actions, template decision, live bindings,
+fallbacks, compilation, local bundle, remote version, 390px/768px/1280px
+results, commerce interaction, copy, claims, assets, integrity, blockers, and
+publish readiness in `qa-report.md`.
 
 ---
 
@@ -429,6 +506,19 @@ readiness in `qa-report.md`.
 > Diagnose and improve an existing Lexsis storefront page for a specific business outcome. Starts with a focused optimization brief before making local-first section edits.
 
 # Optimize a Page
+
+Read:
+
+- `references/evidence-led-cro.md`
+
+Before reading the Lexsis page, analytics, or remote version, confirm
+`lexsis_discover` is available and discover the exact page, analytics,
+template, compile, and edit actions required by this run. If discovery fails,
+return `BLOCKED_LEXSIS_MCP`; generic CRO guidance is not a substitute for
+unavailable live page data.
+
+The full skill pack includes optional deeper design guidance at
+`storefront-engine/references/lexsis-design-capabilities.md`.
 
 Start by confirming:
 
@@ -446,8 +536,7 @@ Confirm the page's store/theme binding exists in
 
 ## Use Relevant Guidance Only
 
-Read `references/evidence-led-cro.md`, then read only the matching section of
-`references/industry-cro.md`.
+Read only the matching section of `references/industry-cro.md`.
 
 Use general guidance when no industry fits. Treat analytics and observed user
 behavior as stronger evidence than generic patterns.
@@ -459,8 +548,11 @@ behavior as stronger evidence than generic patterns.
 2. Open its local page workspace. If missing, adopt the remote source into the
    standard local files before editing.
 3. Compare the remote version with the manifest and stop on unexpected drift.
-4. Classify proposed changes as keep, improve, replace, remove, or test.
-5. Present an optimization brief:
+4. For a structural redesign, search relevant page kits and sections and
+   compare them with the current structure. Do not force template comparison
+   for copy-only, offer-only, metadata, or minor visual changes.
+5. Classify proposed changes as keep, improve, replace, remove, or test.
+6. Present an optimization brief:
 
 ```text
 Outcome:
@@ -493,7 +585,8 @@ as proven.
 ## Return
 
 Return the approved objective, evidence, changed sections, page version,
-verification results, and whether an experiment is recommended.
+verification results, template comparison when applicable, MCP evidence, and
+whether an experiment is recommended.
 
 ### optimize reference: evidence-led-cro
 
@@ -594,6 +687,19 @@ uplifts.
 
 Create the strategy and section blueprint for one storefront page.
 
+Read:
+
+- `references/page-files.md`
+
+Before creating or changing the page workspace, confirm `lexsis_discover` is
+available and discover the exact catalogue and template actions required by
+this run. Configuration alone is not proof of connection. If discovery fails,
+return `BLOCKED_LEXSIS_MCP` without changing page artifacts.
+
+When the full Lexsis skill pack is installed, the optional detailed contracts
+are under `storefront-engine/references/lexsis-mcp-contract.md` and
+`storefront-engine/references/lexsis-design-capabilities.md`.
+
 Read `work/storefront/setup/setup.json`, select one saved store/theme pair, and
 read its brand design and theme CSS. Prefer an explicit selection, then an
 existing page binding, then an unambiguous default. If the selection is not
@@ -615,6 +721,16 @@ prices, and availability from `lexsis_catalog`; do not rely on setup for them.
 If a URL, screenshot, or ad is important, use the compact output from
 `/analyze-page`.
 
+## Select a Template Direction
+
+Discover the current template actions, then search page kits using the page
+type, archetype, objective, industry, and mood. A kit is a coherent list of
+section-template IDs, not a page-instantiation action.
+
+If no suitable kit exists, search individual sections. In a host with an
+interactive template picker, wait for the user's selection. Record evaluated
+results, the selected kit/sections, or the reason for a custom composition.
+
 ## Produce `page-plan.md`
 
 Include:
@@ -626,9 +742,11 @@ Include:
 - asset roles
 - required islands
 - claims requiring evidence
+- selected template direction and adaptation intent
 
-Start `page-manifest.json` using `references/page-files.md`. Create the page
-working directory and `assets/`, but do not write visual or production HTML.
+Start `page-manifest.json` using `references/page-files.md`, including the MCP,
+template, and design records. Create the page working directory and `assets/`,
+but do not write visual or production HTML.
 
 ## Approval
 
@@ -649,8 +767,9 @@ Wait for approval and update the plan when requested.
 ## Return
 
 Return `working_directory`, `page_plan_path`, `page_manifest_path`, and
-`PLAN_APPROVED`. The next normal command is `/visual-page`, but this skill is
-complete after the plan is approved.
+`PLAN_APPROVED`, plus the required MCP and template evidence. The next normal
+command is `/visual-page`, but this skill is complete after the plan is
+approved.
 
 ### plan-page reference: page-files
 
@@ -673,6 +792,17 @@ Start the manifest with:
   "schemaVersion": 1,
   "status": "planned",
   "workflow": { "skippedSkills": [] },
+  "mcp": {
+    "status": "connected",
+    "checkedAt": "2026-09-04T12:00:00Z",
+    "surfaceVersion": "3.0",
+    "capabilities": [
+      {
+        "router": "lexsis_catalog",
+        "actions": ["get"]
+      }
+    ]
+  },
   "page": {
     "title": "...",
     "handle": "...",
@@ -681,6 +811,20 @@ Start the manifest with:
   "workspaceId": "...",
   "storeId": "...",
   "themeId": "...",
+  "template": {
+    "mode": "page-kit",
+    "pageKitId": "...",
+    "sectionTemplateIds": ["..."],
+    "evaluatedTemplates": [],
+    "selectionReason": "...",
+    "selectedAt": "2026-09-04T12:00:00Z"
+  },
+  "design": {
+    "themeId": "...",
+    "themeSource": "saved-and-verified",
+    "stylePack": null,
+    "compiledStyleManifest": null
+  },
   "setupPath": "work/storefront/setup/setup.json",
   "brandDesignPath": "...",
   "themeCssPath": "...",
@@ -724,7 +868,10 @@ Start the manifest with:
 ```
 
 The page binds one saved store/theme pair. Do not write visual or production
-source during planning.
+source during planning. `template.mode` is `page-kit`, `sections`, or `custom`.
+Custom composition requires recorded template evaluation and a
+`selectionReason`. Do not invent a template version when Lexsis does not
+return one.
 
 ---
 
@@ -735,6 +882,11 @@ source during planning.
 # Publish a Page
 
 Publishing is a separate, explicit action. Do not rebuild the page here.
+
+Complete a fresh MCP preflight and discover the exact page-context,
+entitlement, and publish actions required by this run. If discovery fails,
+return `BLOCKED_LEXSIS_MCP`; a local QA report cannot authorize or substitute
+for a live publish action.
 
 ## Gate
 
@@ -765,7 +917,8 @@ requests that action and the target page/version is clear.
 ## Return
 
 Report the published page, version, public URL, and whether the previous live
-version remains available for rollback.
+version remains available for rollback. Include the MCP capability and action
+evidence.
 
 ---
 
@@ -778,10 +931,14 @@ version remains available for rollback.
 Run this once after installing the Lexsis MCP and skills. It saves the
 slow-changing context that page skills reuse; it does not create or edit pages.
 
+A successful `lexsis_discover` call is required; MCP configuration alone is
+not a connection check. If discovery fails, return `BLOCKED_LEXSIS_MCP`
+without writing setup files.
+
 ## What to Save
 
-1. Use `lexsis_discover` for unfamiliar setup actions and their current
-   arguments.
+1. Use `lexsis_discover` for the exact workspace, store, brand, theme, design,
+   and navigation actions required by this run.
 2. Resolve the authorized workspace and connected stores.
 3. When several stores or themes exist, ask the user which ones to save and
    which store/theme should be the default. Show names, not raw IDs.
@@ -841,14 +998,15 @@ Never save credentials, cookies, authorization headers, or tokens.
 
 ## Return
 
-Return the setup path, saved store/theme names, and default selection. Other
-skills read this setup independently and never invoke `/setup` automatically.
+Return the setup path, saved store/theme names, default selection, MCP status,
+discovered capabilities, actions called, fallbacks, and blockers. Other skills
+read this setup independently and never invoke `/setup` automatically.
 
 ---
 
 # Skill: visual-page
 
-> Turn an approved storefront plan into a responsive visual mockup. Uses real Lexsis islands in a safe local preview when possible and placeholders only when data or runtime support is unavailable.
+> Turn an approved storefront plan into a responsive, theme-aware mockup using compiled Lexsis templates and islands. Static fallbacks are limited to isolated preview failures.
 
 # Create the Visual Page
 
@@ -860,6 +1018,16 @@ Read:
 - `references/visual-layout.md`
 - `references/island-preview.md`
 
+Complete the MCP preflight before reading or changing standard page artifacts.
+MCP unavailable means `BLOCKED_LEXSIS_MCP`, not a silent static replacement.
+Discover the exact brand, template, design, island, and compile actions needed
+by this run.
+
+When the full Lexsis skill pack is installed, also read
+`storefront-engine/references/lexsis-design-capabilities.md` for the detailed
+LX token, Tailwind, template, and island styling contract. The workflow below
+remains complete when that shared reference is unavailable.
+
 ## Inputs
 
 Use an approved `page-plan.md` and its saved store/theme binding. If the user
@@ -870,20 +1038,37 @@ Use existing Lexsis or Shopify media first. When an image is still missing,
 copy an appropriate neutral file from `assets/placeholders/` into the page
 workspace. Placeholders are for design approval only.
 
+## Load the Design System
+
+1. Read the saved brand design and exact selected theme CSS.
+2. Refresh the complete theme with the discovered `lexsis_brand` action when
+   the binding is stale or the task needs current theme configuration.
+3. Search page kits before custom composition.
+4. Fetch the selected section-template source in batches of at most three.
+5. Choose one coherent style treatment for the page.
+6. Use LX theme tokens for brand values and Tailwind utilities for responsive
+   layout.
+
 ## Build the Mockup
 
 1. Write readable `visual-source.html` with stable section delimiters.
 2. Use ordinary HTML for static content.
-3. Before adding an interactive component, resolve its current active schema
-   with `lexsis_design` action `island_schema`.
-4. Author supported interactions as `<lx-island>` with schema-valid preview
+3. Discover candidate islands, then resolve each selected island's current
+   schema, lifecycle, native variants, required props, styling parts, and
+   headless hooks.
+4. Prefer a native variant and schema-supported `data-part` styling. Use
+   headless mode only when the native variants cannot satisfy the approved
+   design and all required hooks are implemented.
+5. Author supported interactions as `<lx-island>` with schema-valid preview
    props and a readable `[data-lx-island-fallback]` child.
-5. Dry-run `lexsis_pages` action `compile` on the complete visual source.
-6. Save the compile response and run
+6. Dry-run `lexsis_pages` action `compile` on the complete visual source. Fix
+   missing Tailwind candidates and all blocking compiler errors.
+7. Save the compile response and run
    `scripts/build_visual_preview.py <compile-response.json>
    <page-workspace>/visual-preview.html`, passing the selected theme CSS and
    optional preview data files.
-7. Load the preview at 390px, 768px, and 1280px.
+8. Save the returned style manifest in `design.compiledStyleManifest`.
+9. Load the preview at 390px, 768px, and 1280px.
 
 The preview shell loads Lexsis's exported island runtime without changing
 normal browser behavior. Keep visual-stage props presentation-focused and do
@@ -892,13 +1077,16 @@ The preview may demonstrate selection, video, carousel, and other client
 interactions; commerce behavior is tested on the hosted draft.
 
 For an island that cannot compile or lacks safe preview data, use static
-fallback HTML and record `previewMode: "fallback"` in the manifest. Never
-invent island names or props.
+fallback HTML only for that island and record `previewMode: "fallback"` in the
+manifest. State that the island remains a production blocker until its live
+schema and production compile succeed. Never invent island names or props.
 
 ## Complex Islands
 
-Shoppable video, galleries, before/after, accordions, and similar islands
-should use the real island runtime whenever valid media and props exist.
+Shoppable video, galleries, before/after, and other active islands should use
+the real island runtime whenever valid media and props exist. Follow lifecycle
+replacement guidance when an interaction is deprecated; for example, use
+supported native markup when the schema recommends it.
 BuyBox and other commerce islands may render with preview data, but real
 variant/cart behavior is tested later on the hosted draft.
 
@@ -921,8 +1109,8 @@ the preview after changes.
 ## Return
 
 Return `visual_source_path`, `visual_preview_path`, the approved section list,
-island preview modes, and `VISUAL_APPROVED`. The next normal command is
-`/asset-prep`.
+island preview modes, template evidence, MCP evidence, and `VISUAL_APPROVED`.
+The next normal command is `/asset-prep`.
 
 ### visual-page reference: island-preview
 
@@ -934,11 +1122,15 @@ The browser runtime hydrates compiled `data-island` markers, not raw
 ## Build
 
 1. Resolve the live island schema.
-2. Add readable `<lx-island>` source with preview props.
-3. Include a direct `data-lx-island-fallback` child.
-4. Dry-run compile the complete visual source.
-5. Save the compile response as JSON.
-6. Run:
+2. Confirm active lifecycle status, required props, native variants, styling
+   parts, and any headless hooks.
+3. Prefer native mode and style only schema-listed parts.
+4. Add readable `<lx-island>` source with preview props.
+5. Include a direct `data-lx-island-fallback` child.
+6. Dry-run compile the complete visual source.
+7. Require no missing Tailwind candidates.
+8. Save the compile response as JSON.
+9. Run:
 
 ```bash
 python3 skills/visual-page/scripts/build_visual_preview.py \
@@ -955,6 +1147,9 @@ the compiled section markup. Never hand-author `data-island` or `data-props`.
 Prefer real read-only product and media data. Use direct poster/video sources
 and complete product objects when supported. If valid safe data is unavailable,
 leave the fallback visible and record `previewMode: "fallback"`.
+
+An island fallback is local to that island. It never authorizes replacing the
+production island with custom controls.
 
 ShoppableVideoFeed can run with real media while using a presentation mode
 that does not navigate or write. Commerce and navigation islands should use
@@ -986,6 +1181,11 @@ Use ordinary HTML for static content and active Lexsis islands only for useful
 interaction previews. A supporting composition image may guide art direction,
 but it must never become the page.
 
+Start from the selected page kit or section templates. Use the selected
+theme's `--lx-*` tokens and Tailwind utilities rather than rebuilding the
+brand system inside each section. Record one coherent style treatment in the
+manifest.
+
 Search existing store and product assets first. When media is still missing,
 copy a bundled placeholder into the page workspace and record it as
 `sourceType: "preview-placeholder"`.
@@ -1009,23 +1209,29 @@ Load this skill first on any storefront page generation task.
 
 ## Architecture: Vibe-Code
 
-Pages are **raw HTML + Tailwind CSS + CSS custom properties + React islands**. No component JSON. No blueprint system. The AI generates HTML directly.
+Pages are **source-format HTML + compiled Tailwind CSS + CSS custom properties
++ React islands**. No component JSON. The AI generates readable HTML directly
+and Lexsis compiles it.
 
-**VibePage schema:**
-```json
-{
-  "head": { "title": "Page Title", "fonts": ["https://fonts.googleapis.com/..."] },
-  "theme_css": ":root { --lx-accent-color: #4F46E5; ... }",
-  "sections": [
-    { "id": "hero", "html": "<section class='...'>...</section>", "css": ".custom { ... }", "js": "// vanilla JS" }
-  ]
-}
-```
-
-**Islands** = interactive React components hydrated at `data-island` markers in HTML:
+**Authoring source:**
 ```html
-<div data-island="BuyBox" data-props='{"productId":"gid://shopify/Product/123","ctaText":"Add to Cart"}'></div>
+<!-- section: hero -->
+<section id="hero">
+  <lx-island name="BuyBox">
+    <script type="application/json">
+      {
+        "product": {
+          "title": "Product name",
+          "variants": []
+        }
+      }
+    </script>
+  </lx-island>
+</section>
 ```
+
+The compiler produces VibePage storage JSON and hydrated `data-island`
+markers. Do not write that compiled representation by hand.
 
 ---
 
@@ -1134,8 +1340,11 @@ Use descriptive kebab-case: `hero`, `product-gallery`, `social-proof`, `ingredie
 
 ## Island Rules
 
-- `data-props` must be valid JSON in single-quoted attribute
-- Only use valid island names (26 total — call `lexsis_design.islands` to see them)
+- Author props in the `<lx-island>` JSON script child; the compiler writes
+  `data-props`
+- Use the live island catalogue and exact selected schema; do not rely on a
+  fixed island count
+- Follow lifecycle replacement guidance for deprecated or superseded islands
 - One `BuyBox` per page (multiple breaks cart state)
 - Cart: `head.use_cart_v2: true` on every commerce page (`CartDrawer` V1 deprecated — never author a cart section)
 - `StickyBar` needs `triggerOffset` — distance in px before it appears
@@ -1145,7 +1354,8 @@ Use descriptive kebab-case: `hero`, `product-gallery`, `social-proof`, `ingredie
 
 ## Tailwind Usage
 
-- CDN included in renderer — all utility classes available
+- Lexsis compiles referenced utilities into one immutable page CSS artifact;
+  there is no runtime Tailwind CDN
 - Use responsive prefixes: `sm:`, `md:`, `lg:`, `xl:`
 - Prefer utilities over custom CSS (only use section `css` for keyframes/animations)
 - Use `clamp()` for fluid typography: `text-[clamp(2rem,5vw,4rem)]`
@@ -3444,7 +3654,7 @@ lexsis_template_library.search_sections({ query: "hero with video background for
 lexsis_design.get_section({ ids: ["<chosen id from results>"] })
 ```
 
-- If a matching template is found (score > 0.7): USE IT. Its returned `source`
+- If a suitable template is found: fetch and use it. The fetched `source`
   contains the section markup, CSS, and JS ready to tailor with brand-specific
   copy/images, then pass to
   `lexsis_pages` action `compile`.
@@ -3634,6 +3844,17 @@ Use `schemaVersion: 1`:
   "workflow": {
     "skippedSkills": []
   },
+  "mcp": {
+    "status": "connected",
+    "checkedAt": "2026-09-04T12:00:00Z",
+    "surfaceVersion": "3.0",
+    "capabilities": [
+      {
+        "router": "lexsis_pages",
+        "actions": ["compile"]
+      }
+    ]
+  },
   "page": {
     "title": "SuperYou Pro Creatine",
     "handle": "superyou-pro-creatine",
@@ -3642,6 +3863,20 @@ Use `schemaVersion: 1`:
   "workspaceId": "...",
   "storeId": "...",
   "themeId": "...",
+  "template": {
+    "mode": "page-kit",
+    "pageKitId": "kit-slug",
+    "sectionTemplateIds": ["hero-slug", "buy-box-slug"],
+    "evaluatedTemplates": [],
+    "selectionReason": "Matches the approved PDP structure",
+    "selectedAt": "2026-09-04T12:00:00Z"
+  },
+  "design": {
+    "themeId": "...",
+    "themeSource": "saved-and-verified",
+    "stylePack": "editorial",
+    "compiledStyleManifest": null
+  },
   "setupPath": "work/storefront/setup/setup.json",
   "brandDesignPath": "work/storefront/setup/stores/<store-id>/brand-design.md",
   "themeCssPath": "work/storefront/setup/stores/<store-id>/themes/<theme-id>.css",
@@ -3657,7 +3892,12 @@ Use `schemaVersion: 1`:
     {
       "sectionId": "hero",
       "name": "BuyBox",
-      "version": "5.0.0",
+      "schema": {
+        "version": "5.0.0",
+        "lifecycleStatus": "active",
+        "resolvedAt": "2026-09-04T12:00:00Z"
+      },
+      "productionMode": "native",
       "previewMode": "hydrated",
       "previewData": true
     }
@@ -3694,6 +3934,14 @@ Use `schemaVersion: 1`:
 
 `previewMode` is `hydrated` when the real exported island runs locally and
 `fallback` when the mockup shows static fallback HTML.
+
+`template.mode` is `page-kit`, `sections`, or `custom`. A custom composition
+records evaluated templates and why they were rejected. The current template
+API does not guarantee a version field, so preserve selected IDs rather than
+inventing one.
+
+After a successful production compile, save the compiler's returned
+`style_manifest` under `design.compiledStyleManifest`.
 
 ## Skill Skips
 
@@ -3755,6 +4003,13 @@ Remote content must never be the only copy of an intentional change.
 ```markdown
 # QA Report
 
+- MCP status: connected/blocked
+- MCP surface version: <version>
+- Capabilities used: <routers/actions>
+- Lexsis actions called: <ordered summary>
+- Template: <kit/sections/custom reason>
+- Live bindings: <products/assets>
+- Fallbacks: none or list
 - Compilation: pass/fail
 - Source bundle: <hash>
 - Remote version: <version>
@@ -3933,3 +4188,276 @@ Four optional commands support the workflow:
 4. Every page binds one saved store/theme pair.
 5. `lexsis-source.html` is the production source of truth.
 6. Draft creation is not publishing approval.
+
+---
+
+# Lexsis MCP Contract
+
+Lexsis MCP is the system of record for templates, catalogue data, assets,
+island schemas, compilation, drafts, remote versions, analytics, carts,
+experiments, and publishing.
+
+MCP dependency metadata and an `.mcp.json` entry describe configuration. They
+do not prove that the server or its tools are available in the current
+session.
+
+## Required Preflight
+
+Before reading live Lexsis data or creating, reading, or changing standard
+page artifacts:
+
+1. Confirm that the `lexsis-ai` MCP server exposes `lexsis_discover`.
+2. Call `lexsis_discover` for each router/action needed by the current skill.
+   Use the returned schema as authoritative; never guess arguments from memory.
+3. Record the successful discovery in `page-manifest.json` when a page
+   workspace exists.
+4. Use live Lexsis reads for changing data such as products, variants, prices,
+   availability, assets, island schemas, permissions, analytics, and remote
+   versions.
+
+Discover only the capabilities required for the current task. Do not load the
+entire action catalogue when a small targeted query is enough.
+
+## Failure Policy
+
+### MCP unavailable
+
+If `lexsis_discover` is absent, fails, or cannot return the required action
+schemas:
+
+- stop with `BLOCKED_LEXSIS_MCP`
+- name the unavailable capabilities
+- do not create or modify standard page artifacts
+- do not present static HTML, cached catalogue data, or custom commerce
+  controls as an equivalent Lexsis result
+
+### Explicit offline prototype
+
+Continue without MCP only when the user explicitly requests an offline
+prototype. Write it under an `offline-prototype/` directory, label it
+non-production, and do not:
+
+- mark planning, visual approval, asset readiness, draft readiness, QA, or
+  publish readiness as complete
+- claim live prices, inventory, variants, assets, commerce, or island behavior
+- create or patch a Lexsis page
+
+An offline prototype does not update the normal page manifest or replace the
+standard Lexsis workflow.
+
+### Individual capability unavailable
+
+Continue only when the current skill defines a safe equivalent. Record the
+capability, fallback, and limitation.
+
+Examples:
+
+- No suitable template result: custom composition is allowed after recording
+  the searches and rejection reason.
+- One island lacks safe preview data: static fallback is allowed for that
+  island during visual review.
+- Island schema or production compilation fails: do not mark the page
+  production-ready.
+
+## Manifest Evidence
+
+Record the latest successful preflight:
+
+```json
+{
+  "mcp": {
+    "status": "connected",
+    "checkedAt": "2026-09-04T12:00:00Z",
+    "surfaceVersion": "3.0",
+    "capabilities": [
+      {
+        "router": "lexsis_template_library",
+        "actions": ["search_page_kits", "search_sections"]
+      }
+    ]
+  }
+}
+```
+
+Store capability names, not full schemas or credentials. Update this record
+when another skill performs a new preflight.
+
+## Result Evidence
+
+Every Lexsis-dependent result reports:
+
+- MCP connection status
+- discovered capabilities used
+- Lexsis router actions called
+- selected template or reason for custom composition
+- live product and asset bindings used
+- fallbacks used
+- blocking limitations
+
+`setup` has no page manifest, so it returns this evidence directly with its
+saved setup paths.
+
+---
+
+# Lexsis Page Design Capabilities
+
+Use this contract when planning, visualizing, preparing assets, generating, or
+structurally optimizing a Lexsis page.
+
+## Theme and Brand Context
+
+Select exactly one saved store/theme pair for a page.
+
+- Use the saved `brand-design.md` for voice, art direction, component guidance,
+  and explicit design don'ts.
+- Use `lexsis_brand` action `get_theme` for the current complete theme when a
+  live refresh is required.
+- Use `lexsis_brand` action `compile_theme` when theme CSS must be derived from
+  brand inputs.
+- Exact theme tokens win over prose when values conflict.
+- Never combine design files or CSS from multiple themes on one page.
+
+The theme compiler provides WCAG-checked `--lx-*` variables including:
+
+- `--lx-accent-color`
+- `--lx-accent-color-hover`
+- `--lx-accent-soft`
+- `--lx-bg-color`
+- `--lx-bg-surface`
+- `--lx-surface-alt`
+- `--lx-text-color`
+- `--lx-text-muted`
+- `--lx-border-color`
+- optional `--lx-font-heading`, `--lx-font-body`, and `--lx-radius`
+
+Use tokens for brand colors, typography, surfaces, borders, and radii. Avoid
+hard-coded brand values inside sections.
+
+## Tailwind and CSS
+
+Lexsis compiles page classes with Tailwind at compile time. There is no runtime
+Tailwind CDN.
+
+- Use Tailwind utilities for layout, spacing, sizing, and responsive behavior.
+- Work mobile-first, then enhance with responsive prefixes.
+- Missing Tailwind utilities are blocking compiler errors unless the class is
+  explicitly defined in theme or section CSS.
+- Use section CSS only for intentional, scoped components or behavior.
+- Do not recreate the page layout as a second CSS system.
+
+Compiled CSS order is:
+
+1. theme CSS
+2. generated Tailwind utilities
+3. section CSS in page order
+
+Section CSS can override earlier rules at equal specificity. Keep global
+tokens and page-wide rules in theme CSS, and scope section overrides by
+section ID.
+
+The renderer already supplies its reset, base typography, smooth scrolling,
+and shared keyframes:
+
+`fadeUp`, `fadeIn`, `scaleIn`, `slideInLeft`, `slideInRight`, `marquee`,
+`float`, `shimmer`, `wordFade`, and `pulseRing`.
+
+## Template-First Composition
+
+Before custom composition:
+
+1. Discover `lexsis_template_library` actions `search_page_kits` and
+   `search_sections`.
+2. Search page kits using page type, archetype, objective, industry, and mood.
+3. Treat a page kit as a coherent list of section-template IDs. There is no
+   single page-kit instantiation action.
+4. Fetch selected section source through `lexsis_design` action `get_section`,
+   at most three IDs per call.
+5. Adapt the returned source to the selected theme, plan, products, copy, and
+   assets.
+
+Template search returns metadata, not editable markup. `get_section` returns
+authoring source with section delimiters, `<lx-island>` markup, and section
+CSS/JS.
+
+If the host renders an interactive template picker, wait for the user's
+selection. Custom composition is allowed only after recording the evaluated
+templates and why none fit.
+
+## Islands
+
+For every interactive element:
+
+1. Discover `lexsis_design` actions `islands` and `island_schema`.
+2. Use `islands` for selection guidance.
+3. Resolve the exact selected schema.
+4. Confirm lifecycle status is active.
+5. Use the current required props and a supported native variant.
+6. Style supported `data-part` hooks listed by the schema.
+7. Use headless mode only when native variants cannot satisfy the approved
+   design and every required hook is implemented.
+
+Author islands as `<lx-island>` with one readable `application/json` child.
+Never hand-author compiled `data-island` or `data-props` markup.
+
+If the catalogue marks an island deprecated or superseded, follow its
+replacement guidance. The replacement may be another island or supported
+native HTML/CSS such as `<details>`; do not force a deprecated island into the
+page.
+
+Do not replace BuyBox or another commerce island with a custom button.
+
+## Visual Preview
+
+The design-stage source is compiled without saving. The local preview uses the
+compiled markup and exported Lexsis island runtime.
+
+- Use real compiled islands when schema-valid preview data exists.
+- Shoppable video, galleries, accordions, and similar islands should run in
+  the preview when their media and props are valid.
+- A static fallback is permitted only for the affected island when it cannot
+  compile or lacks safe preview data.
+- Local interaction demonstrates presentation; hosted-draft QA certifies real
+  product resolution, cart behavior, checkout-related behavior, and remote
+  integrations.
+
+Inspect 390px, 768px, and 1280px layouts.
+
+## Asset Roles
+
+Template results do not expose a separate media-slot schema. Derive required
+roles, aspect ratios, and crop guidance from the selected section source,
+approved layout, and island schema.
+
+Use live Shopify media for product identity. Visually verify creator and
+product imagery. Temporary placeholders are visual-stage inputs only.
+
+## Manifest Evidence
+
+Record the design decision:
+
+```json
+{
+  "template": {
+    "mode": "page-kit",
+    "pageKitId": "kit-slug",
+    "sectionTemplateIds": ["hero-slug", "buy-box-slug"],
+    "evaluatedTemplates": [],
+    "selectionReason": "Matches the approved PDP structure",
+    "selectedAt": "2026-09-04T12:00:00Z"
+  },
+  "design": {
+    "themeId": "theme-id",
+    "themeSource": "saved-and-verified",
+    "stylePack": "editorial",
+    "compiledStyleManifest": null
+  }
+}
+```
+
+`template.mode` is `page-kit`, `sections`, or `custom`. Do not invent a
+template version when the live result does not expose one. After compilation,
+store the returned style manifest under `design.compiledStyleManifest`.
+
+`stylePack` is the selected named pack, `custom` for an intentional scoped
+treatment, or `existing-page` when adopting and preserving a remote page's
+current design.

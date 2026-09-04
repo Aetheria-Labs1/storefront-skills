@@ -13,6 +13,11 @@ Use ordinary HTML for static content and active Lexsis islands only for useful
 interaction previews. A supporting composition image may guide art direction,
 but it must never become the page.
 
+Start from the selected page kit or section templates. Use the selected
+theme's `--lx-*` tokens and Tailwind utilities rather than rebuilding the
+brand system inside each section. Record one coherent style treatment in the
+manifest.
+
 Search existing store and product assets first. When media is still missing,
 copy a bundled placeholder into the page workspace and record it as
 `sourceType: "preview-placeholder"`.

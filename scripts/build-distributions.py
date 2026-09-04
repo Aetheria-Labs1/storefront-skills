@@ -50,6 +50,11 @@ RETIRED_TOOLS = [
     "edit_asset",
 ]
 
+STALE_GUIDANCE = {
+    "CDN included in renderer": "Tailwind is compiled page-wide; there is no runtime Tailwind CDN",
+    "score > 0.7": "template search does not expose a stable score threshold",
+}
+
 REFERENCE_PATH_RE = re.compile(
     r"((?:storefront-engine/)?references/[A-Za-z0-9_./-]+\.md)"
 )
@@ -74,8 +79,9 @@ GPT_REFERENCE_ALLOWLIST = [
     "island-preview",
     "visual-layout-workflow",
     "workflow-handoffs",
+    "lexsis-mcp-contract",
+    "lexsis-design-capabilities",
 ]
-
 
 def parse_frontmatter(path: Path) -> tuple[dict, str]:
     text = path.read_text()
@@ -157,7 +163,13 @@ def validate() -> list[str]:
     # Phase scheme: nothing outside Phase 1-5 / 4a / 4b
     bad_phase = re.compile(r"Phase (-1|0|2A|2B|A\b|B\b)")
     for md in SKILLS.rglob("*.md"):
-        for i, line in enumerate(md.read_text().split("\n"), 1):
+        text = md.read_text()
+        for stale, replacement in STALE_GUIDANCE.items():
+            if stale in text:
+                errors.append(
+                    f"{md.relative_to(ROOT)}: stale guidance {stale!r}; {replacement}"
+                )
+        for i, line in enumerate(text.split("\n"), 1):
             if bad_phase.search(line):
                 errors.append(f"{md.relative_to(ROOT)}:{i}: stale phase numbering: {line.strip()[:80]}")
 
@@ -236,14 +248,18 @@ def build_gpt() -> dict[str, str]:
 
     instructions = f"""{banner}You are the Lexsis Storefront assistant. You help merchants plan, generate,
 edit, and optimize AI-built Shopify storefront pages using the Lexsis AI MCP
-(https://mcp.trylexsis.com/mcp) when connected, or by producing source-format
-HTML (see source-format reference; plain HTML with <lx-island> elements) the
-merchant can apply via the consolidated lexsis_pages compile and
-lexsis_page_create create actions.
+(https://mcp.trylexsis.com/mcp).
 
 Use the normal workflow when building a page:
 setup → plan-page → visual-page → asset-prep → generate → publish.
 Each command remains independently invokable, and explicit skips are recorded.
+Run the mandatory MCP preflight before Lexsis-dependent work. Configuration is
+not proof of availability. If discovery fails, return BLOCKED_LEXSIS_MCP and
+do not substitute static HTML unless the user explicitly requests an offline
+prototype.
+Search page kits and section templates before custom composition. Load the
+selected LX theme, use --lx-* tokens and compile-time Tailwind utilities, and
+resolve every selected island schema before authoring it.
 Author pages in source format, never hand-written data-island/data-props JSON.
 Never invent island names or props; resolve the current schema first. Never use
 retired tools.
