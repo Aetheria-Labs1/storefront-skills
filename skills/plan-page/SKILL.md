@@ -134,7 +134,9 @@ Template to copy into `page-plan.md`:
 | lifestyle photo [A2] | copy       |  | lifestyle [A2]   |
 +-----------------------------------+  +------------------+
 
-**Icons.** `none` or `one inline SVG set: <name>, <stroke>px, <size>px, currentColor`. Never emoji.
+**Icons.** `none` or `one inline SVG set: <name>, <stroke>px, <size>px, currentColor`. Never emoji as icons; if no set fits, generate a monochrome SVG icon set.
+
+**Emoji in copy.** `none` (default) or `allowed: "<the user's exact request>"`. Only when the user explicitly insists, only inside running text, never as an icon or separator.
 
 **Background rule.** One page background `<hex>` from navbar to footer. Full-bleed exception: `none` or `<section id>` (this must be the bold moment).
 
@@ -177,8 +179,10 @@ List every slot the wireframe names, for any page type:
 
 `Role/purpose` uses the generation purposes where they apply (`hero_bg`,
 `product_lifestyle`, `section_bg`, `product_composite`, `texture_fill`,
-`decorative_element`) plus `product_media`, `logo`, and `proof`. `Status` is
-`verified` or `planned`. Interface icons are never slots.
+`decorative_element`) plus `product_media`, `logo`, `proof`, and `icon_set` (only
+when the Icons decision says a set must be generated). `Status` is `verified`
+or `planned`. Ordinary interface icons come from one inline SVG set and are
+not slots; emoji are never an icon fallback.
 
 Resolve every slot before approval:
 

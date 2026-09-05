@@ -68,8 +68,11 @@ The plan already resolved the asset slots. Read `assets[]` from the manifest:
    identity-sensitive imagery with `lexsis_assets.view`, and set
    `status: verified` on each resolved slot.
 
-Use Lexsis icons, supported SVG, or CSS for ordinary interface icons; image
-generation is for imagery, banners, and illustrations only.
+Use Lexsis icons, supported SVG, or CSS for ordinary interface icons. When the
+plan's Icons decision names a set to generate, generate one monochrome SVG set
+(one stroke, one size) and import it. Never fall back to emoji as icons; emoji
+appear only where the plan's "Emoji in copy" line allows them, inside running
+text. Image generation is otherwise for imagery, banners, and illustrations.
 
 Placeholders are allowed only in the local preview and cannot pass
 `/generate`. When a store has no usable logo image, use an accessible text

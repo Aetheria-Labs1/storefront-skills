@@ -109,7 +109,7 @@ Use via `style="color: var(--lx-accent-color)"` or `style="font-family: var(--lx
 - Proper heading hierarchy (h1 → h2 → h3)
 - Islands for all interactive commerce (BuyBox, Cart, Reviews)
 - Generated/library images — no broken placeholder URLs in production
-- Zero emoji, one page background, one icon set, one bold moment
+- No emoji as icons, one page background, one icon set, one bold moment
 - Trust signals near purchase points
 - Sticky add-to-cart on PDP
 
