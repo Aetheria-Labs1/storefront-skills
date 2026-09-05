@@ -5,7 +5,7 @@
 1. **Validate local artifacts** — run the shared page workspace validator
 2. **Compile complete source** — `lexsis_pages` action `compile`
 3. **Save as draft** — `lexsis_page_create` action `create` with `publish:false`
-4. **Record page ID/version/hashes** — update `page-manifest.json`
+4. **Fetch and compare persisted source/content** — reject hash drift
 5. **Check integrity** — `lexsis_pages` action `integrity`
 
 ## Browser QA (if available)
@@ -24,7 +24,10 @@
 - [ ] Expected Shopify variant enters the cart
 - [ ] Cart opens and quantity/subtotal update
 - [ ] Inherited header and footer are correct
-- [ ] Production composition still matches `visual-preview.html`
+- [ ] Full-page hosted screenshots match `visual-preview.html` at all three
+      viewports
+- [ ] Dynamic island regions preserve the approved container geometry and
+      placement
 - [ ] No console errors blocking render
 
 Write the result to `qa-report.md`, including source hash, remote version, copy

@@ -32,24 +32,35 @@ Confirm the manifest's store/theme pair is saved in setup. Read current
 products, variants, prices, availability, permissions, credits, assets, island
 schemas, and remote versions live.
 
-## Author the Source
+## Promote the Approved Source
 
-1. Treat the approved plan and visual composition as the design contract.
+1. Treat `lexsis-source.html` and `page-theme.css` as the approved design
+   contract. Do not recreate, simplify, or reinterpret them.
 2. Reuse the selected page kit or section-template source. When earlier skills
    were explicitly skipped, search and fetch templates before custom
    composition.
-3. Replace preview values and temporary media with verified live bindings.
-4. Resolve every island's current active schema again. Prefer native variants
+3. If `/visual-page` was explicitly skipped, author the canonical source and
+   page theme once, record the skip, and continue without claiming visual
+   fidelity approval.
+4. Require `/asset-prep` to have replaced temporary media. If asset preparation
+   was explicitly skipped, verify and update assets locally before compiling.
+5. Resolve every island's current active schema again. Prefer native variants
    and validated styling parts; use headless mode only with complete hooks.
-5. Write complete, readable `lexsis-source.html` before compiling.
 6. Use one `<!-- section: id -->` followed by `<section id="id">` per section.
 7. Keep island JSON readable where practical.
-8. Use LX tokens for brand values and Tailwind utilities for layout. Do not
+8. Keep global design CSS in `page-theme.css` and section-specific CSS beside
+   its section in `lexsis-source.html`.
+9. Use LX tokens for brand values and Tailwind utilities for layout. Do not
    depend on a runtime Tailwind CDN.
-9. Use native commerce islands; never replace BuyBox or another commerce
+10. Use native commerce islands; never replace BuyBox or another commerce
    interaction with a custom button.
-10. Keep production comments to section delimiters and exclude inline handlers,
+11. Keep production comments to section delimiters and exclude inline handlers,
    unsupported scripts, local paths, placeholders, and complete-page images.
+
+When a visual is approved, generation may update live binding records in the
+manifest or compiler arguments, but it must not change source, copy, classes,
+section order, island placement, or CSS. A visible source or asset change
+returns the visual to `changes-pending-approval`.
 
 Run:
 
@@ -62,12 +73,20 @@ Fix all blocking source, copy, claim, price, and asset findings.
 
 ## Compile and Create
 
-Dry-run the complete source with `lexsis_pages` action `compile`. Fix all
-compiler errors, including every missing Tailwind candidate, before calling
-`lexsis_page_create` action `create` with `publish: false`.
+Dry-run the exact approved bundle with `lexsis_pages` action `compile`. Confirm
+its source, theme, configuration, structure, and bundle hashes match the
+approved visual before calling `lexsis_page_create` action `create` with
+`publish: false`.
+
+If discovery exposes compile-artifact creation, create from the returned
+`compile_id` and pass its expected bundle hash. Otherwise submit the exact
+compiled source, CSS, head, and scripts bytes to page creation, then fetch the
+persisted remote source and content immediately. A hash mismatch is blocking;
+never accept a draft created from different input.
 
 Store the returned page ID, version, and preview URL in the manifest. Record
-the source bundle hash and section hashes as the synchronized baseline.
+the local, compiled, persisted-source, remote-bundle, and section hashes as the
+synchronized baseline.
 Store the compiler style manifest under `design.compiledStyleManifest`.
 `lexsis-source.html` remains the editable source of truth.
 
@@ -76,6 +95,8 @@ Store the compiler style manifest under `design.compiledStyleManifest`.
 At 390px, 768px, and 1280px verify:
 
 - composition matches the approved mockup
+- full-page screenshots of the generated preview and hosted draft match in
+  geometry, typography, color, spacing, and media
 - no overflow, clipping, broken media, or wrong theme
 - islands hydrate
 - primary CTA adds the expected Shopify variant
@@ -83,6 +104,14 @@ At 390px, 768px, and 1280px verify:
 - copy, claims, assets, header, footer, and integrity pass
 
 Write `qa-report.md` and update the manifest's QA fields.
+Record `qa.visualRegression: true` only after the three viewport comparisons
+pass. Review dynamic island regions manually while comparing their container
+geometry and placement.
+
+Run the validator with `--phase draft` after hosted QA. Return `DRAFT_READY`
+only when fidelity, synchronization, hydration, responsive checks, and
+commerce checks pass. Pass the source and bundle hashes fetched live from the
+remote draft to `--remote-source-hash` and `--remote-bundle-hash`.
 
 ## Later Edits
 
@@ -98,9 +127,10 @@ Return:
 working_directory
 page_plan_path
 page_manifest_path
-visual_source_path
-visual_preview_path
 source_html_path
+page_theme_path
+visual_preview_path
+compile_artifact_path
 compile_result
 page_id
 page_version

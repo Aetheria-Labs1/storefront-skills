@@ -20,10 +20,11 @@ escaping remains correct.
 ## Build the Preview
 
 1. Resolve the island's live schema.
-2. Add `<lx-island>` to `visual-source.html`.
+2. Add `<lx-island>` to `lexsis-source.html`.
 3. Include a static direct child marked `data-lx-island-fallback`.
-4. Compile the full visual source.
-5. Save the compile response as JSON.
+4. Compile the full canonical source with `page-theme.css`.
+5. Save the compile response and exact input hashes in
+   `compile-artifact.json`.
 6. Run `visual-page/scripts/build_visual_preview.py` to fill the reusable shell
    with:
    - selected theme CSS
@@ -31,6 +32,8 @@ escaping remains correct.
    - the compiled section array
    - optional test cart data, commerce config, and product binding
 7. Save the result as `visual-preview.html`.
+8. Require the preview hydration status to report `passed` before visual
+   approval.
 
 The shell loads:
 
@@ -49,6 +52,8 @@ Then it calls `window.LexsisIslands.hydrateIslands(...)`.
 - Never invent unsupported props.
 - If valid data is unavailable, leave the fallback visible and record
   `previewMode: "fallback"`.
+
+A required production island in fallback mode blocks visual approval.
 
 ShoppableVideoFeed can use the real island with direct poster/video sources.
 Use an action mode that does not claim a successful cart write during visual

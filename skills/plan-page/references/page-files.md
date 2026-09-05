@@ -14,7 +14,7 @@ Start the manifest with:
 
 ```json
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "status": "planned",
   "workflow": { "skippedSkills": [] },
   "mcp": {
@@ -53,10 +53,14 @@ Start the manifest with:
   "setupPath": "work/storefront/setup/setup.json",
   "brandDesignPath": "...",
   "themeCssPath": "...",
+  "pageThemeCssPath": "page-theme.css",
   "pageConfig": {
     "head": {},
-    "themeCss": "",
     "scripts": []
+  },
+  "compileInputs": {
+    "productBinding": {},
+    "commerceConfig": {}
   },
   "productBindings": [],
   "assets": [],
@@ -64,8 +68,26 @@ Start the manifest with:
   "islands": [],
   "visual": {
     "status": "pending",
-    "sourcePath": "visual-source.html",
-    "previewPath": "visual-preview.html"
+    "sourcePath": "lexsis-source.html",
+    "themeCssPath": "page-theme.css",
+    "previewPath": "visual-preview.html",
+    "compileArtifactPath": "compile-artifact.json",
+    "approvedSourceHash": null,
+    "approvedThemeCssHash": null,
+    "approvedConfigHash": null,
+    "approvedStructureHash": null,
+    "approvedBundleHash": null,
+    "approvedCompileBundleHash": null,
+    "hydrationStatus": "pending",
+    "hydrationEvidence": null
+  },
+  "fidelity": {
+    "status": "pending",
+    "productionBundleHash": null,
+    "remoteSourceHash": null,
+    "remoteBundleHash": null,
+    "changedBindingPaths": [],
+    "approvedExceptions": []
   },
   "sourceSync": {
     "lastCompiledBundleHash": null,
@@ -78,6 +100,7 @@ Start the manifest with:
     "checkedVersion": null,
     "checkedBundleHash": null,
     "responsive": false,
+    "visualRegression": false,
     "commerce": false,
     "copy": false,
     "claims": false,
@@ -97,3 +120,11 @@ source during planning. `template.mode` is `page-kit`, `sections`, or `custom`.
 Custom composition requires recorded template evaluation and a
 `selectionReason`. Do not invent a template version when Lexsis does not
 return one.
+
+`themeCssPath` points to the reusable theme saved by `/setup`.
+`pageThemeCssPath` points to the page-local `page-theme.css` passed as
+`theme_css` to the compiler. `/visual-page` creates that page-local file from
+the selected theme and any approved page-wide additions.
+
+`compileInputs` stores every non-file value passed to compilation or page
+creation. It is included in approval and synchronization hashes.

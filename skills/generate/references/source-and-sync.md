@@ -7,15 +7,22 @@ The page workspace contains:
 ```text
 page-plan.md
 page-manifest.json
-visual-source.html
-visual-preview.html
 lexsis-source.html
+page-theme.css
+compile-artifact.json
+visual-preview.html
 qa-report.md
 assets/
 ```
 
-Visual files may be absent only when the user explicitly skipped the visual
-stage.
+`lexsis-source.html` and `page-theme.css` are the only editable visual and
+production inputs. `compile-artifact.json` and `visual-preview.html` are
+generated from them.
+
+For a schema-v1 workspace, run
+`scripts/migrate_page_workspace_v2.py <working-directory>`. The migration
+stops when the old visual and production source differ; those workspaces need
+an explicit source choice and renewed visual approval.
 
 ## Source Format
 
@@ -50,21 +57,25 @@ Validate locally, compile the complete source without saving, fix every
 blocking issue including missing Tailwind candidates, then create with
 `publish:false`.
 
-Save the returned page ID, version, preview URL, bundle hash, and per-section
-hashes. Save the returned style manifest under
-`design.compiledStyleManifest`. The bundle hash covers source, head, theme
-CSS, and page scripts.
+Save the returned page ID, version, preview URL, bundle hash, persisted source
+hash, remote bundle hash, and per-section hashes. Save the returned style
+manifest under `design.compiledStyleManifest`. The bundle hash covers
+`lexsis-source.html`, `page-theme.css`, head, page scripts, and every
+non-file compiler value recorded in `compileInputs`.
 
 ### Creation Example
 
 1. Discover the exact `lexsis_pages.compile` and
    `lexsis_page_create.create` schemas.
-2. Compile the complete local source with the selected head, theme CSS, theme
-   ID, scripts, and product binding.
+2. Compile the complete local source with `page-theme.css`, selected head,
+   theme ID, scripts, and product binding.
 3. Fix every blocking issue without saving remotely.
-4. Create the page as a draft with `publish:false`.
-5. Save the returned page ID, version, preview URL, bundle hash, section
-   hashes, and style manifest.
+4. Create the page as a draft with `publish:false`. Use a discovered
+   `compile_id` when supported; otherwise resubmit the exact compiled bytes.
+5. Fetch the persisted source and page content and reject any source or bundle
+   hash mismatch.
+6. Save the returned page ID, version, preview URL, hashes, section hashes,
+   and style manifest.
 
 ## Edits
 
@@ -95,5 +106,5 @@ For a hero-only change:
 
 Record MCP status, capabilities, actions, template decision, live bindings,
 fallbacks, compilation, local bundle, remote version, 390px/768px/1280px
-results, commerce interaction, copy, claims, assets, integrity, blockers, and
-publish readiness in `qa-report.md`.
+results, local-versus-hosted visual regression, commerce interaction, copy,
+claims, assets, integrity, blockers, and publish readiness in `qa-report.md`.

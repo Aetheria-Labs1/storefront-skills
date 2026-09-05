@@ -9,18 +9,20 @@ The browser runtime hydrates compiled `data-island` markers, not raw
 2. Confirm active lifecycle status, required props, native variants, styling
    parts, and any headless hooks.
 3. Prefer native mode and style only schema-listed parts.
-4. Add readable `<lx-island>` source with preview props.
+4. Add readable `<lx-island>` source with preview props to
+   `lexsis-source.html`.
 5. Include a direct `data-lx-island-fallback` child.
-6. Dry-run compile the complete visual source.
+6. Dry-run compile the complete canonical source with `page-theme.css`.
 7. Require no missing Tailwind candidates.
-8. Save the compile response as JSON.
+8. Save the compile response and exact input hashes in
+   `compile-artifact.json`.
 9. Run:
 
 ```bash
 python3 skills/visual-page/scripts/build_visual_preview.py \
-  compile-response.json \
+  compile-artifact.json \
   work/visual-pages/<page-handle>/visual-preview.html \
-  --theme-css work/storefront/setup/stores/<store-id>/themes/<theme-id>.css
+  --theme-css work/visual-pages/<page-handle>/page-theme.css
 ```
 
 The builder uses the bundled shell, the exported Lexsis island runtime, and
@@ -31,6 +33,11 @@ the compiled section markup. Never hand-author `data-island` or `data-props`.
 Prefer real read-only product and media data. Use direct poster/video sources
 and complete product objects when supported. If valid safe data is unavailable,
 leave the fallback visible and record `previewMode: "fallback"`.
+
+After opening the preview, require `data-lx-hydration-status="passed"` and
+`window.__LEXSIS_PREVIEW_STATUS__.state === "passed"`. Fallback mode is useful
+while iterating, but a required production island in fallback mode blocks
+visual approval.
 
 An island fallback is local to that island. It never authorizes replacing the
 production island with custom controls.

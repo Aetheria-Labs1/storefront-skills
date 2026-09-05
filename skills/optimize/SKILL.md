@@ -67,9 +67,11 @@ Obtain approval before making material changes.
 ## Apply Approved Changes
 
 Modify `lexsis-source.html` first. Validate and compile the complete local
-source, compare section hashes, and patch only changed sections with
-`expected_version`. Update the manifest only after the remote write succeeds.
-Then run `diff`, `integrity`, responsive checks, and affected commerce checks.
+source with `page-theme.css`, compare section hashes, and patch only changed
+sections with `expected_version`. A visible source or CSS change requires a
+new compiled preview and visual approval before the remote patch. Update the
+manifest only after the remote write succeeds. Then run `diff`, `integrity`,
+responsive checks, and affected commerce checks.
 
 Never make an intentional remote-only edit. Preserve the URL and SEO fields
 unless the user approved changing them.

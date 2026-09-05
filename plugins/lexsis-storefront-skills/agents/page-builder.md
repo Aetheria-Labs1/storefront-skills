@@ -48,10 +48,10 @@ kits and section templates before approving a custom composition.
 ## Visual
 
 Load the exact selected theme, adapt fetched template source, use LX design
-tokens and compile-time Tailwind utilities, and write `visual-source.html`
-using ordinary HTML and schema-validated `<lx-island>` elements. Dry-run
-compile it and place the compiler output in the provided island preview shell
-as `visual-preview.html`.
+tokens and compile-time Tailwind utilities, and write `lexsis-source.html`
+using ordinary HTML and schema-validated `<lx-island>` elements. Keep global
+page CSS in `page-theme.css`. Dry-run compile that exact bundle and place the
+compiler output in the provided island preview shell as `visual-preview.html`.
 
 Use existing assets first and bundled placeholders only for missing design
 media. Use a static fallback only for an isolated island that lacks valid
@@ -66,9 +66,9 @@ manifest.
 
 ## Generate
 
-Write readable `lexsis-source.html`, resolve live island schemas again, run the
-workspace validator, compile the complete source, and create with
-`publish:false`.
+Promote the approved `lexsis-source.html` and `page-theme.css`, resolve live
+island schemas again, run the workspace validator, compile the exact bundle,
+and create with `publish:false`.
 
 Record page ID, version, preview URL, bundle hash, and section hashes. Verify
 390px, 768px, and 1280px layouts plus the expected variant, cart opening,

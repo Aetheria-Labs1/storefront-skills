@@ -6,9 +6,9 @@
 > hand-write `data-island` / `data-props` or escape HTML into JSON strings.
 
 For durable page work, store this format in `lexsis-source.html` and follow
-`source-artifact-workflow.md`. The visual workflow uses the same readable
-authoring syntax in `visual-source.html`, dry-run compiles it, and hydrates the
-compiled result through the exported island preview runtime.
+`source-artifact-workflow.md`. The visual workflow authors that same file,
+dry-run compiles it with `page-theme.css`, and hydrates the compiled result
+through the exported island preview runtime.
 
 ## Why this format exists
 
@@ -56,8 +56,9 @@ The old path (VibePage JSON with HTML in strings and JSON inside `data-props='..
 3. **`<lx-island>` attributes**: `name` (required), `hydrate` (`immediate|visible|idle|interaction`), `headless` (headless mode — see below), plus `class`/`id`/`style` which pass through to the compiled element.
 4. **Section CSS** goes in a top-level `<style>` block; **section JS** in a top-level `<script>` block (multiple blocks are concatenated). `application/json` / `ld+json` scripts stay in the HTML.
 5. **External libraries** do not go in section HTML—pass them through `scripts`.
-6. **`head`, `theme_css`, `scripts`** are structured tool arguments. Prefer
-   `theme_css` from `lexsis_brand` action `lexsis_brand.get_theme`.
+6. **`head`, `theme_css`, `scripts`** are structured tool arguments. Save the
+   selected theme and approved page-wide additions in `page-theme.css`, then
+   pass that file's exact contents as `theme_css`.
 7. Tailwind classes compile into one `compiled_page_css` artifact. Fix every
    missing candidate; do not add Tailwind CDN or a separate generated sheet.
 

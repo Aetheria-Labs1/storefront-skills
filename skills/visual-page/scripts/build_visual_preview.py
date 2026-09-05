@@ -18,6 +18,8 @@ def script_json(value: Any) -> str:
 
 
 def compiled_sections(payload: dict[str, Any]) -> list[dict[str, Any]]:
+    if isinstance(payload.get("response"), dict):
+        payload = payload["response"]
     candidates = [
         payload.get("sections"),
         payload.get("page", {}).get("sections")

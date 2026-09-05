@@ -21,8 +21,10 @@ support art direction, but it must never become the page itself.
 
 Write:
 
-- `visual-source.html` — readable authoring source
-- `visual-preview.html` — compiled local browser preview
+- `lexsis-source.html` — canonical readable authoring source
+- `page-theme.css` — global page CSS passed to the compiler
+- `compile-artifact.json` — compile response plus exact input hashes
+- `visual-preview.html` — generated local browser preview
 
 Static content stays ordinary HTML. Supported interactions use
 schema-validated `<lx-island>` source and a static
@@ -38,5 +40,6 @@ one as `sourceType: "preview-placeholder"` so `/asset-prep` can replace it.
 Review at 390px, 768px, and 1280px. Show which islands are hydrated, which use
 fallback HTML, and which assets are temporary.
 
-After approval, preserve the composition. `/asset-prep` replaces temporary
-media, and `/generate` converts preview bindings into production bindings.
+After approval, preserve the source and CSS exactly. `/asset-prep` replaces
+temporary media in the canonical source and requires reapproval of visible
+changes. `/generate` promotes the approved bundle instead of rebuilding it.

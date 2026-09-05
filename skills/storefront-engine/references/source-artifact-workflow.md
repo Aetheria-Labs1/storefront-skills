@@ -5,24 +5,10 @@ requiring one command to invoke another.
 
 ## Setup Context
 
-`/setup` creates:
-
-```text
-work/storefront/setup/
-├── setup.json
-└── stores/
-    └── <store-id>/
-        ├── brand-design.md
-        └── themes/
-            └── <theme-id>.css
-```
-
-A page binds exactly one saved store and theme. Several themes may be saved,
-but a page must not mix their design files.
-
-Setup is reused for slow-changing design context. Products, prices, variants,
-assets, island schemas, permissions, analytics, and page versions remain live
-reads.
+`/setup` saves reusable brand design and one or more theme files under
+`work/storefront/setup/`. A page binds exactly one saved store and theme.
+Products, prices, variants, assets, island schemas, permissions, analytics,
+and remote page versions remain live reads.
 
 ## Page Workspace
 
@@ -30,214 +16,166 @@ reads.
 work/visual-pages/<page-handle>/
 ├── page-plan.md
 ├── page-manifest.json
-├── visual-source.html
-├── visual-preview.html
 ├── lexsis-source.html
+├── page-theme.css
+├── compile-artifact.json
+├── visual-preview.html
 ├── qa-report.md
 └── assets/
 ```
 
-- `page-plan.md` is the approved strategy and section blueprint.
-- `visual-source.html` is readable design-stage HTML and may use preview data.
-- `visual-preview.html` is generated from a dry-run compile and the Lexsis
-  island preview shell.
-- `lexsis-source.html` is the canonical editable production source.
-- `qa-report.md` records draft and interaction verification.
-
-Visual files are optional only when the user explicitly skips `/visual-page`.
-Production source is never optional once a draft exists.
+- `lexsis-source.html` is the only editable HTML source from visual design
+  through publishing.
+- Section-specific CSS stays in top-level `<style>` blocks beside its section.
+- `page-theme.css` contains global tokens and page-wide custom CSS and is
+  passed as the compiler's `theme_css`.
+- `compile-artifact.json` stores the exact compile response and input hashes.
+- `visual-preview.html` is generated from that compile response and is never
+  edited or submitted as source.
 
 ## Manifest
 
-Use `schemaVersion: 1`:
+Use `schemaVersion: 2`. Keep the normal MCP, template, setup, design, binding,
+asset, section, island, QA, and remote records, plus:
 
 ```json
 {
-  "schemaVersion": 1,
-  "status": "planned",
-  "workflow": {
-    "skippedSkills": []
-  },
-  "mcp": {
-    "status": "connected",
-    "checkedAt": "2026-09-04T12:00:00Z",
-    "surfaceVersion": "3.0",
-    "capabilities": [
-      {
-        "router": "lexsis_pages",
-        "actions": ["compile"]
-      }
-    ]
-  },
-  "page": {
-    "title": "SuperYou Pro Creatine",
-    "handle": "superyou-pro-creatine",
-    "archetype": "landing"
-  },
-  "workspaceId": "...",
-  "storeId": "...",
-  "themeId": "...",
-  "template": {
-    "mode": "page-kit",
-    "pageKitId": "kit-slug",
-    "sectionTemplateIds": ["hero-slug", "buy-box-slug"],
-    "evaluatedTemplates": [],
-    "selectionReason": "Matches the approved PDP structure",
-    "selectedAt": "2026-09-04T12:00:00Z"
-  },
-  "design": {
-    "themeId": "...",
-    "themeSource": "saved-and-verified",
-    "stylePack": "editorial",
-    "compiledStyleManifest": null
-  },
-  "setupPath": "work/storefront/setup/setup.json",
-  "brandDesignPath": "work/storefront/setup/stores/<store-id>/brand-design.md",
+  "schemaVersion": 2,
   "themeCssPath": "work/storefront/setup/stores/<store-id>/themes/<theme-id>.css",
+  "pageThemeCssPath": "page-theme.css",
   "pageConfig": {
     "head": {},
-    "themeCss": "",
     "scripts": []
   },
-  "productBindings": [],
-  "assets": [],
-  "sections": ["announcement", "hero", "benefits", "faq"],
-  "islands": [
-    {
-      "sectionId": "hero",
-      "name": "BuyBox",
-      "schema": {
-        "version": "5.0.0",
-        "lifecycleStatus": "active",
-        "resolvedAt": "2026-09-04T12:00:00Z"
-      },
-      "productionMode": "native",
-      "previewMode": "hydrated",
-      "previewData": true
-    }
-  ],
+  "compileInputs": {
+    "productBinding": {},
+    "commerceConfig": {}
+  },
   "visual": {
     "status": "pending",
-    "sourcePath": "visual-source.html",
-    "previewPath": "visual-preview.html"
+    "sourcePath": "lexsis-source.html",
+    "themeCssPath": "page-theme.css",
+    "previewPath": "visual-preview.html",
+    "compileArtifactPath": "compile-artifact.json",
+    "approvedSourceHash": null,
+    "approvedThemeCssHash": null,
+    "approvedConfigHash": null,
+    "approvedStructureHash": null,
+    "approvedBundleHash": null,
+    "approvedCompileBundleHash": null,
+    "hydrationStatus": "pending",
+    "hydrationEvidence": null
+  },
+  "fidelity": {
+    "status": "pending",
+    "productionBundleHash": null,
+    "remoteSourceHash": null,
+    "remoteBundleHash": null,
+    "changedBindingPaths": [],
+    "approvedExceptions": []
   },
   "sourceSync": {
     "lastCompiledBundleHash": null,
     "lastSyncedBundleHash": null,
     "lastSyncedSectionHashes": {},
     "lastChangedSections": []
-  },
-  "qa": {
-    "status": "pending",
-    "checkedVersion": null,
-    "checkedBundleHash": null,
-    "responsive": false,
-    "commerce": false,
-    "copy": false,
-    "claims": false,
-    "assets": false,
-    "integrity": false
-  },
-  "remote": {
-    "pageId": null,
-    "lastKnownVersion": null,
-    "previewUrl": null
   }
 }
 ```
 
-`previewMode` is `hydrated` when the real exported island runs locally and
-`fallback` when the mockup shows static fallback HTML.
+`themeCssPath` is the reusable `/setup` source. `pageThemeCssPath` is the
+page-local compile input. Do not duplicate the full CSS inside the manifest.
 
-`template.mode` is `page-kit`, `sections`, or `custom`. A custom composition
-records evaluated templates and why they were rejected. The current template
-API does not guarantee a version field, so preserve selected IDs rather than
-inventing one.
+`visual.status` is `pending`, `changes-pending-approval`, `approved`,
+`skipped`, or `not-used`. `not-used` is reserved for adopting an existing page.
+An approved visual cannot be relabelled `not-used` to bypass fidelity checks.
 
-After a successful production compile, save the compiler's returned
-`style_manifest` under `design.compiledStyleManifest`.
+## Compile Artifact
 
-## Skill Skips
+Write:
 
-Commands are independently invokable and never run another command
-automatically.
-
-- Skipping planning requires a short replacement `page-plan.md`.
-- Skipping visual design sets `visual.status: "skipped"`.
-- Skipping asset preparation requires `/generate` to create the same verified
-  asset records.
-
-Record each explicit skip in `workflow.skippedSkills`.
-
-## Source Rules
-
-Both visual and production source use stable boundaries:
-
-```html
-<!-- section: hero -->
-<section id="hero">
-  ...
-</section>
+```json
+{
+  "schemaVersion": 1,
+  "sourceHash": "...",
+  "themeCssHash": "...",
+  "configHash": "...",
+  "structureHash": "...",
+  "bundleHash": "...",
+  "compiledBundleHash": "...",
+  "compiledAt": "2026-09-05T12:00:00Z",
+  "response": {}
+}
 ```
 
-Section delimiters and IDs match, IDs are unique, JSON is valid, and source is
-normally formatted.
+`response` is the unmodified Lexsis compile result used to generate the
+preview. `compiledBundleHash` is derived from that response. The local bundle
+hash covers `lexsis-source.html`, `page-theme.css`, `pageConfig.head`,
+`pageConfig.scripts`, and every value in `compileInputs`.
 
-Visual source may use preview copy, bundled assets, and schema-valid island
-preview data. Production source may not contain any preview placeholder,
-temporary URL, local path, unsupported script, internal note, or unverified
-asset.
+## Visual Approval and Assets
 
-## Synchronization
+`/visual-page` creates the canonical source and page theme, compiles them, and
+generates the preview from `compile-artifact.json`. Approval records all
+visual hashes and requires every production island instance to hydrate. Record
+the browser-observed expected and hydrated instance keys, check time, and
+approved bundle hash in `visual.hydrationEvidence`.
 
-The production bundle hash covers `lexsis-source.html` plus page head, theme
-CSS, and scripts.
+`/asset-prep` replaces temporary media in the canonical source. Any visible
+asset or crop change sets `visual.status` to `changes-pending-approval`, then
+recompiles and regenerates the preview. Approval hashes are refreshed only
+after the final-media preview is approved.
+
+If the user explicitly skips `/visual-page`, record the skip and let
+`/generate` create the canonical source once. Do not claim visual fidelity
+approval for a skipped stage.
+
+## Generation and Synchronization
+
+`/generate` promotes the approved source. It must not change layout, classes,
+copy, section order, island placement, or CSS. Prefer live product bindings in
+compiler arguments or manifest records instead of rewriting visible source.
 
 For creation:
 
-1. Validate local files.
-2. Compile the complete source without saving.
-3. Create the draft with `publish: false`.
-4. Save page ID, version, preview URL, bundle hash, and section hashes.
+1. Validate the local workspace.
+2. Compile the exact local bundle without saving.
+3. Confirm it matches the approved hashes.
+4. Create with `publish: false`, using a discovered `compile_id` when
+   supported or the exact compiled input bytes otherwise.
+5. Fetch the persisted remote source and page content and calculate their
+   hashes independently.
+6. Reject source or bundle hash drift.
+7. Save page ID, version, preview URL, local and remote hashes, and section
+   hashes.
+
+Run the `draft` validator with the live remote source and bundle hashes.
+Manifest values alone are not sufficient remote evidence.
 
 For editing:
 
-1. Fetch the current remote version.
-2. Stop when it differs from `remote.lastKnownVersion`.
-3. Change local source first.
-4. Validate and compile the complete source.
-5. Compare section hashes.
-6. Patch only changed sections with `expected_version`.
-7. Update the manifest only after a successful write.
+1. Fetch the current remote version and stop on drift.
+2. Change local source or page theme first.
+3. Recompile the complete bundle.
+4. Require renewed visual approval for visible changes.
+5. Compare section hashes and patch only changed sections with
+   `expected_version`.
+6. Update local versions and hashes only after a successful write.
 
 Remote content must never be the only copy of an intentional change.
 
-## QA Report
+## Completion Gate
 
-```markdown
-# QA Report
+`DRAFT_READY` requires:
 
-- MCP status: connected/blocked
-- MCP surface version: <version>
-- Capabilities used: <routers/actions>
-- Lexsis actions called: <ordered summary>
-- Template: <kit/sections/custom reason>
-- Live bindings: <products/assets>
-- Fallbacks: none or list
-- Compilation: pass/fail
-- Source bundle: <hash>
-- Remote version: <version>
-- Desktop 1280px: pass/fail
-- Tablet 768px: pass/fail
-- Mobile 390px: pass/fail
-- Commerce: pass/fail
-- Copy: pass/fail
-- Claims: pass/fail
-- Assets: pass/fail
-- Integrity: pass/fail
-- Blockers: none or list
-- Publish readiness: ready/not ready
-```
+- approved source hashes still match, unless visual design was explicitly
+  skipped
+- preview hydration passed
+- compile and persisted remote hashes match
+- remote version is recorded
+- responsive QA passed at 390px, 768px, and 1280px
+- local preview and hosted draft visual regression passed
+- commerce, copy, claims, assets, and integrity checks passed
 
-Publishing requires matching local and remote versions, current passing QA,
-the required entitlement, and explicit approval.
+Publishing additionally requires the current entitlement and explicit user
+approval for the synchronized page version.

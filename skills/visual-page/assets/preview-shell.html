@@ -31,7 +31,7 @@
       }
     </style>
   </head>
-  <body data-lx-visual-preview>
+  <body data-lx-visual-preview data-lx-hydration-status="pending">
     <main data-lx-preview-root>
       {{COMPILED_SECTION_MARKUP}}
     </main>
@@ -44,21 +44,105 @@
       const testCartData = {{TEST_CART_DATA_JSON}};
       const commerceConfig = {{COMMERCE_CONFIG_JSON}};
       const productBinding = {{PRODUCT_BINDING_JSON}};
+      const previewRoot = document.querySelector("[data-lx-preview-root]");
+      const previewBody = document.body;
+      const expectedIslandElements = Array.from(
+        previewRoot.querySelectorAll("[data-island]")
+      );
+      const expectedIslands = expectedIslandElements.map(
+        (element, index) => `${index}:${element.getAttribute("data-island")}`
+      );
+      const hydratedIslandElements = new Set();
+      const hydratedIslands = [];
+
+      window.__LEXSIS_PREVIEW_STATUS__ = {
+        state: expectedIslands.length ? "hydrating" : "passed",
+        expectedIslands,
+        hydratedIslands,
+        error: null,
+      };
+
+      const setHydrationState = (state, error = null) => {
+        window.__LEXSIS_PREVIEW_STATUS__.state = state;
+        window.__LEXSIS_PREVIEW_STATUS__.error = error;
+        previewBody.dataset.lxHydrationStatus = state;
+      };
+
+      if (!expectedIslands.length) {
+        setHydrationState("passed");
+      }
+
+      document.addEventListener("lx:hydrated", (event) => {
+        let element =
+          event.target?.matches?.("[data-island]")
+            ? event.target
+            : event.target?.closest?.("[data-island]");
+        const reportedName = event.detail?.island;
+        if (!element && reportedName) {
+          element = expectedIslandElements.find(
+            (candidate) =>
+              !hydratedIslandElements.has(candidate) &&
+              candidate.getAttribute("data-island") === reportedName
+          );
+        }
+        if (element && expectedIslandElements.includes(element)) {
+          hydratedIslandElements.add(element);
+          const index = expectedIslandElements.indexOf(element);
+          const island = `${index}:${element.getAttribute("data-island")}`;
+          if (!hydratedIslands.includes(island)) {
+            hydratedIslands.push(island);
+          }
+        }
+      });
+
+      document.addEventListener(
+        "lx:islands-ready",
+        () => {
+          window.setTimeout(() => {
+            if (hydratedIslandElements.size === expectedIslandElements.length) {
+              setHydrationState("passed");
+              return;
+            }
+            const missing = expectedIslands.filter(
+              (_, index) => !hydratedIslandElements.has(expectedIslandElements[index])
+            );
+            setHydrationState(
+              "failed",
+              `Islands did not hydrate: ${missing.join(", ")}`
+            );
+          }, 0);
+        },
+        { once: true }
+      );
 
       if (window.LexsisIslands?.hydrateIslands) {
-        window.LexsisIslands.hydrateIslands(
-          sections,
-          null,
-          null,
-          testCartData,
-          commerceConfig,
-          productBinding
-        );
+        try {
+          window.LexsisIslands.hydrateIslands(
+            sections,
+            null,
+            null,
+            testCartData,
+            commerceConfig,
+            productBinding
+          );
+        } catch (error) {
+          setHydrationState("failed", String(error));
+        }
       } else {
+        setHydrationState("failed", "Lexsis island runtime unavailable");
         document
           .querySelector("[data-lx-preview-banner]")
           ?.append(" · runtime unavailable, showing fallbacks");
       }
+
+      window.setTimeout(() => {
+        if (window.__LEXSIS_PREVIEW_STATUS__.state === "hydrating") {
+          setHydrationState("failed", "Island hydration timed out");
+          document
+            .querySelector("[data-lx-preview-banner]")
+            ?.append(" · hydration timed out");
+        }
+      }, 10000);
     </script>
   </body>
 </html>

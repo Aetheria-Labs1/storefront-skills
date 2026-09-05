@@ -5,8 +5,8 @@ description: Replace visual-page placeholders with verified production images an
 
 # Prepare Page Assets
 
-Use the approved plan and visual mockup to finalize media. Do not author the
-production page or create a draft.
+Use the approved plan and canonical page source to finalize media. Do not
+create a draft.
 
 Before reading live assets or changing the page workspace, confirm
 `lexsis_discover` is available and discover the exact asset, catalogue,
@@ -41,9 +41,11 @@ name. Creator and product imagery must be visually verified.
 
 ## Update the Mockup
 
-Replace every `preview-placeholder` asset in the page workspace and manifest
-with a permanent Lexsis or Shopify asset. Regenerate `visual-preview.html` so
-the approved composition can be checked with final media.
+Replace every `preview-placeholder` asset in `lexsis-source.html` and the
+manifest with a permanent Lexsis or Shopify asset. Never create a second HTML
+source. Recompile the complete source and `page-theme.css`, update
+`compile-artifact.json`, and regenerate `visual-preview.html` so the
+composition can be checked with final media.
 
 Every manifest asset records:
 
@@ -74,6 +76,10 @@ Before completion, confirm:
 - desktop and mobile crops work
 - identity-sensitive media was visually verified
 - generated media does not make unsupported product claims
+
+Asset or crop changes after approval set `visual.status` to
+`changes-pending-approval`. Refresh all visual approval hashes only after the
+user approves the final-media preview.
 
 ## Return
 

@@ -8,9 +8,10 @@ Manage page publishing, previews, and lifecycle.
 2. Confirm the page's saved store/theme binding
 3. `lexsis_pages` action `compile`
 4. `lexsis_page_create` action `create` with `publish:false`
-5. Record page ID, version, preview URL, and synchronized source hashes
+5. Fetch persisted source/content and record matching local and remote hashes
 6. `lexsis_pages` action `integrity`
-7. Host-agent browser and commerce QA at 390px, 768px, and 1280px
+7. Compare the compiled local preview and hosted draft at 390px, 768px, and
+   1280px, then run commerce QA
 8. Recheck remote version and local synchronization
 9. `lexsis_live_ops` action `publish` after explicit approval
 
@@ -49,7 +50,8 @@ has its own local source and manifest first.
 - The manifest's store and theme exist in the saved one-time setup
 - Current permissions and store entitlement are read live
 - Require `qa-report.md` with no blocking failures
-- Require local source hash and remote version to match the manifest baseline
+- Require local source, page theme, remote bundle, and remote version to match
+  the manifest baseline
 
 Edits to a published page remain draft-only until publish succeeds. A failed
 republish keeps the prior public version live.

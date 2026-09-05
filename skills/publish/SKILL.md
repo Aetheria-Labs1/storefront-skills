@@ -20,10 +20,13 @@ for a live publish action.
    values in the manifest.
 4. Read `lexsis_pages` action `edit_context`.
 5. Confirm the remote version equals `remote.lastKnownVersion`.
-6. Confirm responsive, commerce, copy, claims, assets, and integrity checks
-   passed against that same version and local bundle.
-7. Confirm the store has the required entitlement.
-8. Ask for explicit approval naming the page and version.
+6. Confirm responsive, local-versus-hosted visual regression, commerce, copy,
+   claims, assets, and integrity checks passed against that same version and
+   local bundle.
+7. Run the workspace validator with `--phase publish`, the live remote version,
+   and source and bundle hashes fetched from that draft.
+8. Confirm the store has the required entitlement.
+9. Ask for explicit approval naming the page and version.
 
 Only then call:
 

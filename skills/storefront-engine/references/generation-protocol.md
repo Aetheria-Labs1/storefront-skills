@@ -35,9 +35,9 @@ permissions, analytics, and remote versions are always read live.
 > **Authoring format**: write pages in the HTML-native **source format** (`source-format.md`) — plain HTML sections delimited by `<!-- section: id -->`, islands as `<lx-island name>` with a JSON `<script>` child. The compiler produces VibePage JSON and does all escaping.
 
 > **Local source**: follow `source-artifact-workflow.md`.
-> `lexsis-source.html` is the canonical editable production artifact.
-> `visual-source.html` is separately dry-run compiled into an interactive local
-> preview and may contain temporary design-stage values.
+> `lexsis-source.html` is the canonical editable visual and production
+> artifact. It is dry-run compiled into an interactive local preview during
+> `/visual-page`, then promoted unchanged by `/generate`.
 
 > **Templates**: search before drafting. Retrieve templates you intend to edit
 > with `lexsis_design` action `get_section`. Each returned `source` is ready for

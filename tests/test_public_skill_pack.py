@@ -55,6 +55,8 @@ class PublicSkillPackTests(unittest.TestCase):
         ):
             self.assertIn(token, shell)
         self.assertIn("LexsisIslands.hydrateIslands", shell)
+        self.assertIn("__LEXSIS_PREVIEW_STATUS__", shell)
+        self.assertIn("data-lx-hydration-status", shell)
         self.assertNotIn("Content-Security-Policy", shell)
         self.assertNotIn("window.fetch =", shell)
         self.assertNotIn("XMLHttpRequest.prototype.open", shell)
@@ -85,19 +87,21 @@ class PublicSkillPackTests(unittest.TestCase):
 
         preview = module.build_preview(
             {
-                "page": {
-                    "sections": [
-                        {
-                            "id": "video",
-                            "html": (
-                                '<section id="video">'
-                                '<div data-island="ShoppableVideoFeed" '
-                                'data-props="{}"></div></section>'
-                            ),
-                            "css": "#video { min-height: 80vh; }",
-                            "js": "",
-                        }
-                    ]
+                "response": {
+                    "page": {
+                        "sections": [
+                            {
+                                "id": "video",
+                                "html": (
+                                    '<section id="video">'
+                                    '<div data-island="ShoppableVideoFeed" '
+                                    'data-props="{}"></div></section>'
+                                ),
+                                "css": "#video { min-height: 80vh; }",
+                                "js": "",
+                            }
+                        ]
+                    }
                 }
             },
             theme_css=":root { --lx-accent-color: #111; }",
@@ -120,6 +124,10 @@ class PublicSkillPackTests(unittest.TestCase):
                     / "source-artifact-workflow.md"
                 ).is_file()
             )
+
+    def test_active_skill_docs_use_one_html_source(self) -> None:
+        for path in SKILLS.rglob("*.md"):
+            self.assertNotIn("visual-source.html", path.read_text(encoding="utf-8"), path)
 
 
 if __name__ == "__main__":
