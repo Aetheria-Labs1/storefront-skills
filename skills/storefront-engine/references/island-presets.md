@@ -181,7 +181,7 @@ Gotchas: social icons are the island's own glyphs; `socialLinks[].icon` accepts 
 
 ### 2.10 ReviewCarousel
 
-Rotating or grid review showcase with stars, verified flag, avatars, optional media. Category social_proof. Hydrate `visible`. Headless: no. Two data modes: static `reviews[]` (wins if non-empty) or fetch (`reviewsEndpoint` + filters). Mid-page or after product details, never first. Needs 3+ real reviews; never fabricate.
+Rotating or grid review showcase with stars, verified flag, avatars, optional media. Category social_proof. Hydrate `visible`. Headless: no. Two data modes: static `reviews[]` (wins if non-empty) or fetch (`collectionId` or `productIds` + filters; the page supplies the endpoint at runtime, never write `reviewsEndpoint`). Mid-page or after product details, never first. Needs 3+ real reviews; never fabricate.
 
 UI-controlling props:
 
@@ -192,7 +192,7 @@ UI-controlling props:
 | `interval` | number | 5000, keep >= 4000 | - |
 | `pageSize` | number | 10, max 20 | fetch mode count |
 
-Data props: `reviews[{id?, author, rating, title?, body, date?, verified?, avatar?, helpful_count?, media[]?}]`, `reviewsEndpoint`, `productIds[]`, `collectionId`, `reviewSnapshotId`, `minRating`, `sort` (`recent|highest|most_helpful`).
+Data props: `reviews[{id?, author, rating, title?, body, date?, verified?, avatar?, helpful_count?, media[]?}]` (static, only real reviews from `lexsis_catalog.reviews`), or fetch mode `collectionId` (an active collection from the plan's Proof sources line) or `productIds[]`, plus `reviewSnapshotId`, `minRating`, `sort` (`recent|highest|most_helpful`). Omit `reviewsEndpoint`.
 CSS vars: `--lx-accent-color` (avatar bg, active dot), `--lx-text-color` (author). Parts: `root, card, avatar, author, body, title, date, verified, media-preview, nav-prev, nav-next, dots, dot, load-more`.
 Fallback: 3 static blockquotes with author lines.
 Gotchas: stars and the verified check are island glyphs (not controllable); acceptable as the page's single icon set only if the rest of the page uses no other icons, otherwise hide `[data-part="verified"]` and rely on the "Verified" text. `index.md` mentions `card-grid` on `--lx-surface-alt` backgrounds; house rules forbid that, so cards sit on the page background with a hairline border. `card` default may carry a shadow; flatten via `[data-part="card"]{box-shadow:none;border:1px solid var(--lx-border-color)}`.
@@ -466,17 +466,17 @@ Shared flat card CSS:
 
 **reviewcarousel/grid-flat** - all reviews visible, no motion. Default when 3-6 reviews.
 ```json
-{"props":{"reviews":"{{reviews.top}}","variant":"grid","autoplay":false}}
+{"props":{"collectionId":"{{reviews.collection_id}}","minRating":4,"pageSize":8,"variant":"grid","autoplay":false}}
 ```
 
 **reviewcarousel/single-quiet** - one card at a time, manual arrows, no autoplay. Use when review bodies are long.
 ```json
-{"props":{"reviews":"{{reviews.top}}","variant":"default","autoplay":false,"interval":6000}}
+{"props":{"collectionId":"{{reviews.collection_id}}","minRating":4,"pageSize":6,"variant":"default","autoplay":false,"interval":6000}}
 ```
 
 **reviewcarousel/strip-compact** - short strip of one-line reviews with slow rotation. Use near the BuyBox as a proof line, bodies under 60 chars.
 ```json
-{"props":{"reviews":"{{reviews.short}}","variant":"compact","autoplay":true,"interval":6000}}
+{"props":{"collectionId":"{{reviews.collection_id}}","minRating":4,"pageSize":6,"variant":"compact","autoplay":true,"interval":6000}}
 ```
 ```css
 #{{id}} [data-part="verified"]{display:none}

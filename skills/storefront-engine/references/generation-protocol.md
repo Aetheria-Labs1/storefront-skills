@@ -188,7 +188,9 @@ Islands are React components that hydrate client-side. They handle interactive c
 ### Prop Data Sources
 - Product data → `lexsis_catalog` action `get` or `list`
 - Navigation → `lexsis_brand` action `navigation`
-- Reviews → configured review source or public reviews endpoint; never invent
+- Reviews → `lexsis_catalog` actions `reviews_status`, `review_collections`,
+  `reviews` (the plan's Proof sources line); island props `collectionId` or
+  `productIds` plus `minRating`, never `reviewsEndpoint`; never invent
   reviewers, ratings, locations, or counts
 - Brand tokens → `lexsis_brand` action `brand_kit` or `lexsis_brand.get_theme`
 
