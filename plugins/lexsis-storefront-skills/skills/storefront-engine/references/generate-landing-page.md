@@ -36,7 +36,8 @@ Generate high-converting post-click landing pages. ZERO navigation (+30% CVR fro
 
 With fewer than 3 real reviews, use 1-2 verified static testimonials or replace
 the section with guarantees, certifications, product evidence, or verified
-press. Never fabricate review content or totals.
+press. Never fabricate review content or totals; the source is the plan's
+Proof sources line (`lexsis_catalog` action `reviews` / `review_collections`).
 
 ## Page-Specific Context Calls
 

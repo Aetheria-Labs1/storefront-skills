@@ -30,7 +30,10 @@ placeholder, or replacement roles. Do not redesign unrelated sections.
 
 For each role:
 
-1. Search existing Lexsis assets.
+1. Ask whether the user wants to pick from the library first
+   (`lexsis_asset_library.search` with `query: ""`, the `theme_id`, and
+   `mode: "tags"` for a category such as `banner` or `logo`; wait for the
+   `Design asset selection:` message). Otherwise search existing Lexsis assets.
 2. Use real Shopify product media for product identity.
 3. Ask before spending generation credits.
 4. Prefer Lexsis generation. If another image-generation tool is available,

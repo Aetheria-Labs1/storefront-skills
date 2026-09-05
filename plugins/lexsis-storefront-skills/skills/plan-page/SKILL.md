@@ -18,10 +18,13 @@ Read:
 
 Use `lexsis_catalog.list`, `lexsis_catalog.get`,
 `lexsis_template_library.search_page_kits`,
-`lexsis_template_library.search_sections`, `lexsis_asset_library.search`,
-`lexsis_assets.view`, `lexsis_asset_upload.import`,
-`lexsis_drafts.asset_generate`, and `lexsis_workspace.credits`. Resolve an
-unfamiliar schema with exact router/action discovery.
+`lexsis_template_library.search_sections`, `lexsis_template_library.get_kit`,
+`lexsis_asset_library.search`, `lexsis_assets.view`,
+`lexsis_asset_upload.import`, `lexsis_drafts.asset_generate`,
+`lexsis_workspace.credits`, `lexsis_catalog.reviews_status`,
+`lexsis_catalog.review_collections`, `lexsis_catalog.reviews`, and
+`lexsis_catalog.reviews_search`. Resolve an unfamiliar schema with exact
+router/action discovery.
 
 Read `work/storefront/setup/setup.json`, select one saved store/theme pair, and
 read its brand design. If the selection is not saved, stop with
@@ -41,10 +44,36 @@ Collect:
 Ask no more than four questions at once. Read current products, variants,
 prices, and availability from Lexsis.
 
+When the first answers arrive, ask a second round of three questions together.
+The user picks first; the skill searches only where the user declines:
+
+7. Templates: pick a page kit or sections yourself, or should I search and
+   propose?
+8. Assets: pick from your library (banners, lifestyle photos, proof, logo), or
+   should I search and propose?
+9. Reviews: which review collection should the page use (list the active ones
+   with their counts), product reviews, or none?
+
 ## Choose a Direction
 
-Search page kits using the page type, objective, industry, and mood. If no kit
-fits, inspect the returned status before deciding why:
+Ask first, search second. The catalog is small (about 30 page kits, about 200
+section templates, only a few kits per page type); a person scans it faster
+than a query ranks it.
+
+**User picks (question 7).** Call `lexsis_template_library.search_page_kits`
+with `query: ""`, the `page_type`, `industry` and `mood` filters, and
+`limit: 20`. When the host shows the Template Gallery, wait for the
+`Design template selection:` message and record its `kind` and `slug` or `id`.
+If no kit fits, browse `search_sections` with `query: ""` for the section that
+matters most. Without a picker, give the public gallery
+`https://storefront.trylexsis.com/templates?view=kits&page_type=<type>&industry=<vertical>&mood=<mood>`
+and accept a pasted kit URL, template URL, slug, or id. Resolve kit slugs and
+URLs with `lexsis_template_library.get_kit`; pass template URLs on unchanged,
+`/design-page` resolves them.
+
+**Skill searches (user declined).** Search page kits using the page type,
+objective, industry, and mood. If no kit fits, inspect the returned status
+before deciding why:
 
 - A successful catalog response with zero results means that shelf is empty.
   Continue with section search or a custom direction; do not make an unrelated
@@ -52,9 +81,13 @@ fits, inspect the returned status before deciding why:
 - A failed request is a tool error, not an empty shelf. Report it and use only
   an explicitly documented fallback.
 
-Search sections for useful structural references when no page kit fits. Record
-only the selected kit or section IDs in the manifest; put the short selection
-rationale in the plan.
+Search sections for useful structural references when no page kit fits.
+Present at most three candidates, one line each, and ask the user to confirm
+one or decline all.
+
+Record only the selected kit or section IDs in the manifest (`template.mode`
+is `page-kit`, `sections`, or `custom`); put the short selection rationale in
+the plan. Custom composition names the evaluated ids and why none fit.
 
 Template selection at this stage is directional. `/design-page` owns fetching
 source, adapting layouts, selecting islands, and resolving schemas.
@@ -74,14 +107,16 @@ their output; otherwise run the same three blocks sequentially in this order.
 
 1. Hierarchy and wireframe: section order, buy-box position, media share, the
    ASCII wireframe at 1280 and 390 with a slot id on every media box.
-2. Imagery, background plan and asset slots: search the asset library and
-   catalog media for every slot; propose the treatment per imagery section.
+2. Imagery, background plan, asset slots and proof sources: search the asset
+   library and catalog media only for slots the user did not pick; read
+   `lexsis_catalog.reviews_status` and `lexsis_catalog.review_collections`;
+   propose the treatment per imagery section.
 3. Palette, type, motion and icon decisions from the saved brand design and
    theme tokens, with the overrides list.
 
 Each lane returns only its block. The parent merges them into `page-plan.md`,
 runs the generic-default check, resolves conflicts by the house rules, and asks
-the single asset question below. Lanes never write files or spend credits.
+the second-round questions. Lanes never write files or spend credits.
 
 ## Write a One-Page Plan
 
@@ -134,7 +169,9 @@ Template to copy into `page-plan.md`:
 | lifestyle photo [A2] | copy       |  | lifestyle [A2]   |
 +-----------------------------------+  +------------------+
 
-**Icons.** `none` or `one inline SVG set: <name>, <stroke>px, <size>px, currentColor`. Never emoji.
+**Icons.** `none` or `one inline SVG set: <name>, <stroke>px, <size>px, currentColor`. Never emoji as icons; if no set fits, generate a monochrome SVG icon set.
+
+**Emoji in copy.** `none` (default) or `allowed: "<the user's exact request>"`. Only when the user explicitly insists, only inside running text, never as an icon or separator.
 
 **Background rule.** One page background `<hex>` from navbar to footer. Full-bleed exception: `none` or `<section id>` (this must be the bold moment).
 
@@ -177,27 +214,57 @@ List every slot the wireframe names, for any page type:
 
 `Role/purpose` uses the generation purposes where they apply (`hero_bg`,
 `product_lifestyle`, `section_bg`, `product_composite`, `texture_fill`,
-`decorative_element`) plus `product_media`, `logo`, and `proof`. `Status` is
-`verified` or `planned`. Interface icons are never slots.
+`decorative_element`) plus `product_media`, `logo`, `proof`, and `icon_set` (only
+when the Icons decision says a set must be generated). `Status` is `verified`
+or `planned`. Ordinary interface icons come from one inline SVG set and are
+not slots; emoji are never an icon fallback.
 
-Resolve every slot before approval:
+Resolve every slot before approval. The user picks first (question 8); the
+skill searches only for what the user did not pick.
 
-1. For each slot, search `lexsis_asset_library.search` (semantic, then tags)
-   and the product's Shopify media through `lexsis_catalog.get`.
-2. Present the table with the best candidate per slot, then ask once:
-   - **You pick.** Use the asset picker if one appeared in this host; otherwise
-     name asset ids or filenames from the web asset library (Storefront →
-     Design library → Assets) and the skill searches by filename.
-   - **I pick.** Use the best library or catalog match for every slot.
-   - **Generate the gaps.** Check `lexsis_workspace.credits`, then
-     `lexsis_drafts.asset_generate` per unresolved slot with the slot's
-     purpose and aspect, and import externally supplied files with
-     `lexsis_asset_upload.import`.
-3. Apply the answer to all slots. Verify identity-sensitive picks with
-   `lexsis_assets.view`. Record the provider and asset id for generated slots.
+1. **User picks.** Call `lexsis_asset_library.search` once per slot group
+   (`query: ""`, `kind: "image"` or `"svg"` for the logo, `mode: "tags"` with
+   `banner`, `lifestyle`, `social-proof`, `logo`, `product-shot` or `hero` when
+   the group is clear, `theme_id` from `setup.json` (required), `limit: 48`).
+   The asset picker multi-selects across pages; wait for the
+   `Design asset selection:` message and map its `assets[]` to slot ids in
+   `selection_order` (A1, A2, …). Confirm the mapping in one line or take a
+   one-line remap. Without a picker: Storefront → Design library → Assets;
+   accept filenames or URLs and look them up with `mode: "filename"`. Files
+   not yet in the library go through `lexsis_asset_upload.import` with no
+   source; the upload panel's message carries the new asset id.
+2. **Skill fills the gaps.** For every slot still unresolved, search
+   `lexsis_asset_library.search` (semantic, then tags) and the product's
+   Shopify media through `lexsis_catalog.get`. Present the table with the best
+   candidate per slot, then ask once: **I pick** (use the best match for every
+   remaining slot) or **Generate the gaps** (check `lexsis_workspace.credits`,
+   then `lexsis_drafts.asset_generate` per slot with its purpose and aspect).
+3. Verify identity-sensitive picks with `lexsis_assets.view`. Record the
+   provider and asset id for generated slots.
 4. Write the final table into the plan and one `assets[]` entry per slot into
    the manifest. A slot the user postpones stays `planned`; `/design-page`
    confirms only those.
+
+### Proof sources
+
+Before planning any reviews or testimonials section, call
+`lexsis_catalog.reviews_status` and `lexsis_catalog.review_collections` with
+`collection_status: "active"`. Ask question 9 with the active collections and
+their `item_count`. Write one line in the plan:
+
+```text
+reviews → collection:<id> "<name>" (<n> items)
+        | products:<gid, …> (min rating <r>, <n> available via lexsis_catalog.reviews)
+        | none → guarantees, certifications, product evidence instead
+```
+
+`connected: false` with an empty library means `none`; do not plan the
+section. Every count comes from the API and is listed under "Claims to
+confirm". The plan never activates a collection. To propose a shortlist, run
+`lexsis_catalog.reviews_search` and, only when the user asks,
+`lexsis_drafts.review_collection_create` (draft); the merchant activates it in
+Storefront → Reviews → Collections. If the host returns `UNKNOWN_ACTION` for
+these actions, ask the user to pick a collection there and paste its id.
 
 Verify facts that control the page's urgency or trust before treating them as
 copy. This includes occasion dates, delivery cutoffs, prices, availability,
@@ -217,7 +284,8 @@ Do not include:
 
 Create the page directory, `assets/`, and a compact schema-v3
 `page-manifest.json` using `references/page-files.md`, including one
-`assets[]` entry per slot. Do not create source, preview, compile, or QA files.
+`assets[]` entry per slot and the `reviews` block. Do not create source,
+preview, compile, or QA files.
 
 ## Approval
 
@@ -234,6 +302,7 @@ Overrides:
 Sections:
 Asset slots: <n verified / m planned>
 Planned slots (unresolved):
+Proof sources:
 Claims to confirm:
 ```
 

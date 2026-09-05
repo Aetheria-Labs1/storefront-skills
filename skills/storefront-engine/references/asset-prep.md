@@ -51,9 +51,9 @@ Need an image or video for a section?
 | `lexsis_asset_library` → `search` | Search workspace assets | Free |
 | `lexsis_drafts` → `asset_generate` | Generate, composite, inpaint, or restyle | Credits |
 | `lexsis_assets` → `view` | Verify an asset | Free |
-| `lexsis_asset_upload` → `import` | Import URL, base64, attachments, or use upload picker | Free |
+| `lexsis_asset_upload` → `import` | Import URL, base64, attachments; with no source it opens the upload panel and the resulting asset id arrives in a user message | Free |
 
-Always search first. Pass `workspace_id` explicitly when multiple workspaces
+Ask the user whether they want to pick from the library before searching; an empty `query` browses and opens the asset picker (`Design asset selection:` carries `asset_ids` and `selection_order`). Pass `workspace_id` explicitly when multiple workspaces
 are available and the selected `theme_id` whenever the discovered action
 schema supports it.
 

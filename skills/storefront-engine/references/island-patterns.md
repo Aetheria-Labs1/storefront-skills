@@ -117,21 +117,20 @@ Layout options: `"grid"` (thumbnails below), `"stack"` (vertical scroll), `"caro
       <p class="text-xs uppercase tracking-[0.2em] mb-2" style="color:var(--lx-accent-color)">Testimonials</p>
       <h2 class="font-bold" style="font-family:var(--lx-font-heading);font-size:clamp(1.5rem,3vw,2.25rem)">What Customers Say</h2>
     </div>
-    <div data-island="ReviewCarousel" data-props='{"reviews":[{"author":"Priya M.","rating":5,"body":"Amazing results in just one week!","date":"2026-05-01"},{"author":"Ananya R.","rating":5,"body":"Best serum I have ever used.","date":"2026-04-15"},{"author":"Kavita S.","rating":4,"body":"Great for sensitive skin.","date":"2026-03-20"}],"autoplay":true}'></div>
+    <div data-island="ReviewCarousel" data-props='{"collectionId":"<review collection uuid from the plan>","minRating":4,"pageSize":8,"variant":"grid"}'></div>
   </div>
 </section>
 ```
 
-**With Shopify product reviews (auto-fetch):**
-
-```html
-<div data-island="ReviewCarousel" data-props='{"reviewsEndpoint":"/api/v1/storefront/public/reviews/PAGE_SHORT_ID","productIds":["gid://shopify/Product/123"],"autoplay":true}'></div>
-```
-
-Use the carousel only with 3 or more real reviews. For 1-2 verified reviews,
-render static testimonial cards. If there are no reviews, use product proof,
-certifications, guarantees, or verified press instead. Never fabricate names,
-ratings, locations, or review counts.
+**Data source.** Reviews come from the merchant's imported library
+(`lexsis_catalog` actions `reviews_status`, `review_collections`, `reviews`,
+`reviews_search`) as recorded in the plan's Proof sources line. Pass
+`collectionId` (an active collection) or `productIds`; omit
+`reviewsEndpoint`, the page supplies it at runtime. Use the carousel only with
+3 or more real reviews. For 1-2 verified reviews, render static testimonial
+cards quoting them. If there are no reviews, use product proof, certifications,
+guarantees, or verified press instead. Never fabricate names, ratings,
+locations, or review counts.
 
 ### Trust Signals — Static HTML
 

@@ -84,7 +84,7 @@ Invoke as `/name` (Claude Code) or `$name` (Codex); most also trigger automatica
 | Skill | What it does |
 |-------|--------------|
 | `setup` | Save reusable brand and theme context for one or more stores |
-| `plan-page` | Produce a one-page plan: design direction, wireframe with asset slots, imagery plan, resolved assets |
+| `plan-page` | Produce a one-page plan: design direction, wireframe with asset slots, imagery plan; the user picks templates, assets and review sources first |
 | `design-page` | Build the real source and preview under the house rules, with a self-critique gate |
 | `asset-prep` | Independently search, generate, import, or replace media |
 | `generate` | Write readable source, compile, create a draft, and run hosted QA |

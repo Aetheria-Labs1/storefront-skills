@@ -175,7 +175,7 @@
 </section>
 ```
 
-**Screenshot aesthetic:** Phone UI chrome visible, Instagram/TikTok comment format, engagement numbers, casual language. No emoji (house rule N1); energy comes from copy rhythm and imagery.
+**Screenshot aesthetic:** Phone UI chrome visible, Instagram/TikTok comment format, engagement numbers, casual language. No emoji by default (house rule N1: only in copy when the merchant insists, never as icons); energy comes from copy rhythm and imagery.
 
 ## Video Integration
 
@@ -234,7 +234,7 @@
 **Content format:**
 - Short punchy fragments, not sentences
 - Line breaks for emphasis
-- No emoji (house rule N1); energy comes from copy rhythm and imagery
+- No emoji by default (house rule N1: only in copy when the merchant insists, never as icons); energy comes from copy rhythm and imagery
 - ALL CAPS for urgency elements (sparingly)
 
 **Imagery:**
@@ -298,7 +298,7 @@
 </section>
 ```
 
-**Copy rules:** Lowercase, casual punctuation, no formal language, no emoji (house rule N1). "this actually works" > "I'm very satisfied with this product."
+**Copy rules:** Lowercase, casual punctuation, no formal language, no emoji by default (house rule N1: only in copy when the merchant insists, never as icons). "this actually works" > "I'm very satisfied with this product."
 
 ### Pattern 2: Star Rating with Huge Count
 
@@ -307,13 +307,13 @@
   <div class="max-w-md mx-auto flex flex-col gap-6">
     <!-- Large star rating -->
     <div class="text-center">
-      <div class="text-6xl font-black text-black mb-2">4.9</div>
-      <div class="text-sm font-medium text-neutral-600">14,847 reviews</div>
+      <div class="text-6xl font-black text-black mb-2">{{average_rating}}</div>
+      <div class="text-sm font-medium text-neutral-600">{{review_total}} reviews</div>
     </div>
     
     <!-- Orders stat -->
     <div class="text-center border-t border-neutral-200 pt-6">
-      <div class="text-4xl font-black text-black mb-1">127K+</div>
+      <div class="text-4xl font-black text-black mb-1">{{orders_this_month}}</div>
       <div class="text-base font-semibold text-neutral-800">Orders This Month</div>
       <div class="text-sm text-neutral-500">As seen on TikTok</div>
     </div>
@@ -534,7 +534,7 @@ Not: `<h1>Transform Your Skin In Just 7 Days</h1>`
 
 **Why it kills:** Cognitive dissonance. They came from casual UGC, landed on corporate marketing. Feels like bait-and-switch.
 
-**Fix:** Write like a creator, not a brand. Casual language, fragments, lowercase, authenticity over polish. No emoji (house rule N1).
+**Fix:** Write like a creator, not a brand. Casual language, fragments, lowercase, authenticity over polish. No emoji by default (house rule N1: only in copy when the merchant insists, never as icons).
 
 ### 3. Desktop-First Design
 
@@ -594,7 +594,7 @@ Not: `<h1>Transform Your Skin In Just 7 Days</h1>`
 
 **Why it kills:** Trust is the barrier. They don't know your brand. Without immediate social proof, they assume it's a scam.
 
-**Fix:** Star rating + count in hero section. "4.9 from 14,847 reviews" or "127K orders this month" above fold.
+**Fix:** Star rating + count in hero section. "{{average_rating}} from {{review_total}} reviews" (numbers from `lexsis_catalog` action `reviews`, never typed) or "{{orders_this_month}} orders this month" above fold.
 
 ## Complete Blueprint
 
@@ -617,7 +617,7 @@ Not: `<h1>Transform Your Skin In Just 7 Days</h1>`
     },
     {
       "id": "social-proof",
-      "html": "<section class=\"py-8 px-4 bg-neutral-50\"><div class=\"max-w-md mx-auto flex flex-col gap-6\"><div class=\"text-center\"><div class=\"text-6xl font-black text-black mb-2\">4.9</div><div class=\"text-sm font-medium text-neutral-600\">14,847 reviews</div></div><div class=\"text-center border-t border-neutral-200 pt-6\"><div class=\"text-4xl font-black text-black mb-1\">2.4M</div><div class=\"text-base font-semibold text-neutral-800\">TikTok Views</div><div class=\"text-sm text-neutral-500\">This Week</div></div></div></section>",
+      "html": "<section class=\"py-8 px-4 bg-neutral-50\"><div class=\"max-w-md mx-auto flex flex-col gap-6\"><div class=\"text-center\"><div class=\"text-6xl font-black text-black mb-2\">4.9</div><div class=\"text-sm font-medium text-neutral-600\">{{review_total}} reviews</div></div><div class=\"text-center border-t border-neutral-200 pt-6\"><div class=\"text-4xl font-black text-black mb-1\">2.4M</div><div class=\"text-base font-semibold text-neutral-800\">TikTok Views</div><div class=\"text-sm text-neutral-500\">This Week</div></div></div></section>",
       "css": "",
       "js": ""
     },

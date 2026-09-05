@@ -31,11 +31,11 @@ Format per rule: imperative sentence; rationale; a check the agent can run. Chec
 
 ### 2.1 NEVER
 
-N1. Never use emoji anywhere: copy, tickers, trust strips, badges, buttons, alt text, island JSON props, CSS `content`.
+N1. Never use emoji by default, and never as icons: not in tickers, trust strips, badges, buttons, alt text, island JSON props or CSS `content`. Emoji may appear in copy only when the user explicitly insists; record it in `page-plan.md` under "Design direction › Emoji in copy" with the merchant's wording, and keep every occurrence inside running text. When the page needs icons and no inline SVG set fits, generate a monochrome SVG icon set (one stroke, one size); never substitute emoji.
 Rationale: glyphs render differently per OS vendor, ignore `currentColor` and stroke weight, are announced by Unicode name to screen readers, and are the most recognised marker of AI-generated pages (Miller et al. 2018; uxskill).
 Check:
 ```bash
-perl -CSD -ne 'while(/([\x{1F000}-\x{1FAFF}\x{2600}-\x{27BF}\x{2B00}-\x{2BFF}\x{2300}-\x{23FF}\x{1F1E6}-\x{1F1FF}\x{FE0F}\x{200D}\x{203C}\x{2049}])/g){print "$ARGV:$.: $1\n"}' $W/lexsis-source.html $W/page-theme.css | wc -l   # must be 0
+perl -CSD -ne 'while(/([\x{1F000}-\x{1FAFF}\x{2600}-\x{27BF}\x{2B00}-\x{2BFF}\x{2300}-\x{23FF}\x{1F1E6}-\x{1F1FF}\x{FE0F}\x{200D}\x{203C}\x{2049}])/g){print "$ARGV:$.: $1\n"}' $W/lexsis-source.html $W/page-theme.css | wc -l   # 0, unless page-plan.md records "Emoji in copy: allowed"; then every hit must be inside copy, none as an icon
 ```
 
 N2. Never change the background from section to section. The page has one background, `--lx-bg-color`, from below the navbar to above the footer. Allowed exceptions, exhaustively: the announcement bar, the navbar, the footer, and at most one full-bleed moment that `page-plan.md` names under "Design direction › Bold moment". A `<section>` or any full-width wrapper painted `--lx-bg-surface`, `--lx-surface-alt` or `--lx-secondary-color` is a band and fails, even if it is white.

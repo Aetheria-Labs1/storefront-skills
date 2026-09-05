@@ -9,24 +9,42 @@ Reference material for Phase 1 planning. Load when generating a page plan.
 
 ---
 
-## Template Search (ALWAYS do this first)
+## Template Search (ask first, then browse)
 
-Before planning custom sections, search the template library for pre-built sections. Search returns metadata only (no markup) — fetch it separately for the ids you pick:
+Ask the user whether they want to pick a page kit or sections themselves before
+searching. The catalog is small (about 30 page kits, about 200 section
+templates), so browsing beats ranking. An empty `query` browses the catalog and
+opens the Template Gallery in hosts with inline UI; wait for the
+`Design template selection:` message before choosing yourself. Search returns
+metadata only (no markup); fetch source separately for the ids you pick:
 
 ```
-lexsis_template_library.search_sections({ query: "<describe what you need>", section: "<type>", industry: "<vertical>", mood: "<mood>", page_type: "<page_type>" })
+lexsis_template_library.search_page_kits({ query: "", page_type: "<page_type>", industry: "<vertical>", mood: "<mood>", limit: 20 })
+lexsis_template_library.search_sections({ query: "", section: "<type>", industry: "<vertical>", mood: "<mood>", page_type: "<page_type>" })
+lexsis_template_library.get_kit({ kit: "<slug or pasted https://storefront.trylexsis.com/templates/kits/<slug>>" })
 lexsis_design.get_section({ ids: ["<chosen id from results>"], format: "authoring_source" })
 ```
 
-For a whole page instead of one section at a time, search curated page-kits first — coherent multi-section groupings (hero + buy-box + reviews + faq, etc.) that already share one palette/vertical:
+When the user declines to pick, search with a description instead and present
+at most three candidates for confirmation. Page kits are coherent
+multi-section groupings (hero + buy-box + reviews + faq) that already share one
+palette and vertical; a kit is a list of section-template slugs, hydrated one
+to three at a time.
 
-```
-lexsis_template_library.search_page_kits({ query: "<describe the page you need>", page_type: "<pdp|landing|homepage|collection>", industry: "<vertical>", mood: "<mood>" })
-```
+Templates are a starting point: swap copy, images, and colors to match the
+brand kit, and keep the house rules above every example.
 
-Templates are conversion-proven, pixel-perfect, and faster than generating from scratch. Use them as the starting point — swap copy, images, and colors to match the brand kit.
-
-**Available filters:** section (hero, social-proof, trust, faq, etc.), industry (beauty, fashion, supplements, food, home, tech), mood (bold, clean, warm, editorial, soft, minimal, clinical, rugged, dramatic, neutral, luxurious, calm, modern), page_type (pdp, landing, homepage, collection), islands (filter by islands_used).
+**Available filters** (mirrors `storefront-renderer/public/templates/registry.json`):
+section (hero, buy-box, social-proof, trust, reviews, faq, product-info,
+interactive, navigation, countdown, guarantee, comparison); industry (beauty,
+fashion, fashion-accessories, jewelry, sportswear, supplements, food, home,
+tech); mood (bold, clean, warm, editorial, soft, minimal, clinical, rugged,
+dramatic, neutral, luxurious, calm, modern, playful, cinematic, energetic);
+page_type (pdp, landing, homepage, guided-commerce, campaign, editorial,
+collection, article); archetype (for kits, e.g. conversion_optimized_pdp,
+ingredient_led_pdp, ugc_pdp, concern_landing, listicle_landing, advertorial,
+bundle_landing, offer_landing, quiz_funnel, gifting, seasonal); islands
+(filter by islands_used).
 
 ---
 

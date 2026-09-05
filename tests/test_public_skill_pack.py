@@ -5,6 +5,7 @@ from __future__ import annotations
 import importlib.util
 import subprocess
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -175,6 +176,19 @@ class PublicSkillPackTests(unittest.TestCase):
             text=True,
         )
         self.assertEqual(corrected.returncode, 0, corrected.stdout)
+        with tempfile.TemporaryDirectory() as tmp:
+            allowed = Path(tmp)
+            for name in ("lexsis-source.html", "page-theme.css"):
+                (allowed / name).write_bytes((fixtures / "rejected" / name).read_bytes())
+            (allowed / "page-plan.md").write_text(
+                '**Emoji in copy.** allowed: "please keep the emoji in the ticker copy"\n',
+                encoding="utf-8",
+            )
+            result = subprocess.run(
+                [sys.executable, str(script), str(allowed)], capture_output=True, text=True
+            )
+        self.assertRegex(result.stdout, r"N1 emoji \(plan allows in copy\)\s+1[0-9]\s+PASS")
+        self.assertEqual(result.returncode, 1, "other rules still fail on the rejected fixture")
 
     def test_house_rules_are_wired(self) -> None:
         references = SKILLS / "storefront-engine" / "references"
@@ -218,6 +232,10 @@ class PublicSkillPackTests(unittest.TestCase):
         self.assertNotIn("island_schema", text)
         self.assertIn("occasion dates", text)
         self.assertIn("shelf is empty", text)
+        self.assertIn("### Proof sources", text)
+        self.assertIn("Design template selection", text)
+        self.assertIn("Design asset selection", text)
+        self.assertNotIn("reviewsEndpoint", text)
 
     def test_design_page_compiles_early_and_allows_lazy_hydration(self) -> None:
         text = (SKILLS / "design-page" / "SKILL.md").read_text(encoding="utf-8")

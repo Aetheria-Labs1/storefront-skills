@@ -1,5 +1,5 @@
 <!-- GENERATED from skills/ by scripts/build-distributions.py — DO NOT EDIT.
-     storefront-skills v7.2.0 · 10 skills · 47 active islands -->
+     storefront-skills v7.3.0 · 10 skills · 47 active islands -->
 
 # Lexsis Storefront Skills — Knowledge Base
 
@@ -114,7 +114,10 @@ placeholder, or replacement roles. Do not redesign unrelated sections.
 
 For each role:
 
-1. Search existing Lexsis assets.
+1. Ask whether the user wants to pick from the library first
+   (`lexsis_asset_library.search` with `query: ""`, the `theme_id`, and
+   `mode: "tags"` for a category such as `banner` or `logo`; wait for the
+   `Design asset selection:` message). Otherwise search existing Lexsis assets.
 2. Use real Shopify product media for product identity.
 3. Ask before spending generation credits.
 4. Prefer Lexsis generation. If another image-generation tool is available,
@@ -240,8 +243,9 @@ Use `lexsis_brand.context`, `lexsis_brand.get_theme`,
 `lexsis_template_library.search_page_kits`,
 `lexsis_template_library.search_sections`, `lexsis_design.guide`,
 `lexsis_design.islands`, `lexsis_design.island_schema`,
-`lexsis_design.get_section`, `lexsis_asset_library.search`,
-`lexsis_catalog.get`, `lexsis_assets.view`, `lexsis_workspace.credits`,
+`lexsis_design.get_section`, `lexsis_template_library.get_kit`,
+`lexsis_asset_library.search`, `lexsis_catalog.get`, `lexsis_catalog.reviews`,
+`lexsis_assets.view`, `lexsis_workspace.credits`,
 `lexsis_drafts.asset_generate`, `lexsis_asset_upload.import`, and
 `lexsis_pages.compile`.
 Resolve only unfamiliar argument schemas through exact router/action
@@ -279,7 +283,8 @@ brand design.md".
 
 The plan already resolved the asset slots. Read `assets[]` from the manifest:
 
-1. Slots with `status: verified` are final; use their ids and URLs as-is.
+1. Slots with `status: verified`, including everything the user picked in
+   the plan, are final; use their ids and URLs as-is.
 2. List only `planned` slots. `validate_page_workspace.py --phase design`
    reports them as `asset_slot_unresolved` warnings.
 3. Ask once whether to generate them now (Lexsis first; offer other available
@@ -289,8 +294,11 @@ The plan already resolved the asset slots. Read `assets[]` from the manifest:
    identity-sensitive imagery with `lexsis_assets.view`, and set
    `status: verified` on each resolved slot.
 
-Use Lexsis icons, supported SVG, or CSS for ordinary interface icons; image
-generation is for imagery, banners, and illustrations only.
+Use Lexsis icons, supported SVG, or CSS for ordinary interface icons. When the
+plan's Icons decision names a set to generate, generate one monochrome SVG set
+(one stroke, one size) and import it. Never fall back to emoji as icons; emoji
+appear only where the plan's "Emoji in copy" line allows them, inside running
+text. Image generation is otherwise for imagery, banners, and illustrations.
 
 Placeholders are allowed only in the local preview and cannot pass
 `/generate`. When a store has no usable logo image, use an accessible text
@@ -300,8 +308,11 @@ product image or generic logo placeholder.
 ## Compose
 
 1. Read the saved brand design and selected theme CSS.
-2. Use the template direction from the plan. Fetch selected section source;
-   search again only when the plan has no usable template direction.
+2. Use the template direction from the plan. For a user-picked kit recorded
+   only as a slug or URL, call `lexsis_template_library.get_kit`, then fetch
+   section source with `lexsis_design.get_section`, one to three ids per call,
+   in kit order. Search again only when the plan has no usable template
+   direction.
 3. Convert each planned section into responsive layout and copy, following the
    wireframe, the Imagery and background plan, and the slot ids.
 4. Read the compact island catalog and select only the likely interactive
@@ -311,19 +322,24 @@ product image or generic logo placeholder.
    `hydrate`, and its scoped CSS. Check its `requires` first. Unknown id:
    return `PRESET_NOT_FOUND`. Any deviation is recorded as
    `islands[].presetOverrides`; never edit a preset in place for one page.
-5. Write a rough but complete `lexsis-source.html` with stable section
+5. Review islands follow the plan's Proof sources line: `collectionId` or
+   `productIds`, `minRating`, `pageSize` of 12 or fewer. Omit
+   `reviewsEndpoint`; the page supplies it at runtime. `averageRating` and
+   `totalReviews` only from the `lexsis_catalog.reviews` total. `none` means no
+   review island. Never `SocialProofPopup`.
+6. Write a rough but complete `lexsis-source.html` with stable section
    delimiters, minimal island props, and the documented examples as a starting
    point.
-6. Write global page rules to `page-theme.css`; keep section-specific CSS
+7. Write global page rules to `page-theme.css`; keep section-specific CSS
    beside its section.
-7. Use LX tokens for brand values and compile-time Tailwind utilities for
+8. Use LX tokens for brand values and compile-time Tailwind utilities for
    layout. Do not use a runtime Tailwind CDN.
-8. Compare explicit `NEVER`, `must`, and `non-negotiable` rules in the saved
+9. Compare explicit `NEVER`, `must`, and `non-negotiable` rules in the saved
    brand design with matching theme tokens. On a direct value contradiction,
    return `THEME_CONTEXT_CONFLICT` with both values. Do not silently choose one.
-9. Use ordinary HTML for static content and `<lx-island>` source for supported
+10. Use ordinary HTML for static content and `<lx-island>` source for supported
    interactions. Use headless mode only with complete required hooks.
-10. Keep preview props safe and presentation-focused. Real commerce is tested
+11. Keep preview props safe and presentation-focused. Real commerce is tested
    on the hosted draft.
 
 ## Parallel Section Generation
@@ -960,10 +976,13 @@ Read:
 
 Use `lexsis_catalog.list`, `lexsis_catalog.get`,
 `lexsis_template_library.search_page_kits`,
-`lexsis_template_library.search_sections`, `lexsis_asset_library.search`,
-`lexsis_assets.view`, `lexsis_asset_upload.import`,
-`lexsis_drafts.asset_generate`, and `lexsis_workspace.credits`. Resolve an
-unfamiliar schema with exact router/action discovery.
+`lexsis_template_library.search_sections`, `lexsis_template_library.get_kit`,
+`lexsis_asset_library.search`, `lexsis_assets.view`,
+`lexsis_asset_upload.import`, `lexsis_drafts.asset_generate`,
+`lexsis_workspace.credits`, `lexsis_catalog.reviews_status`,
+`lexsis_catalog.review_collections`, `lexsis_catalog.reviews`, and
+`lexsis_catalog.reviews_search`. Resolve an unfamiliar schema with exact
+router/action discovery.
 
 Read `work/storefront/setup/setup.json`, select one saved store/theme pair, and
 read its brand design. If the selection is not saved, stop with
@@ -983,10 +1002,36 @@ Collect:
 Ask no more than four questions at once. Read current products, variants,
 prices, and availability from Lexsis.
 
+When the first answers arrive, ask a second round of three questions together.
+The user picks first; the skill searches only where the user declines:
+
+7. Templates: pick a page kit or sections yourself, or should I search and
+   propose?
+8. Assets: pick from your library (banners, lifestyle photos, proof, logo), or
+   should I search and propose?
+9. Reviews: which review collection should the page use (list the active ones
+   with their counts), product reviews, or none?
+
 ## Choose a Direction
 
-Search page kits using the page type, objective, industry, and mood. If no kit
-fits, inspect the returned status before deciding why:
+Ask first, search second. The catalog is small (about 30 page kits, about 200
+section templates, only a few kits per page type); a person scans it faster
+than a query ranks it.
+
+**User picks (question 7).** Call `lexsis_template_library.search_page_kits`
+with `query: ""`, the `page_type`, `industry` and `mood` filters, and
+`limit: 20`. When the host shows the Template Gallery, wait for the
+`Design template selection:` message and record its `kind` and `slug` or `id`.
+If no kit fits, browse `search_sections` with `query: ""` for the section that
+matters most. Without a picker, give the public gallery
+`https://storefront.trylexsis.com/templates?view=kits&page_type=<type>&industry=<vertical>&mood=<mood>`
+and accept a pasted kit URL, template URL, slug, or id. Resolve kit slugs and
+URLs with `lexsis_template_library.get_kit`; pass template URLs on unchanged,
+`/design-page` resolves them.
+
+**Skill searches (user declined).** Search page kits using the page type,
+objective, industry, and mood. If no kit fits, inspect the returned status
+before deciding why:
 
 - A successful catalog response with zero results means that shelf is empty.
   Continue with section search or a custom direction; do not make an unrelated
@@ -994,9 +1039,13 @@ fits, inspect the returned status before deciding why:
 - A failed request is a tool error, not an empty shelf. Report it and use only
   an explicitly documented fallback.
 
-Search sections for useful structural references when no page kit fits. Record
-only the selected kit or section IDs in the manifest; put the short selection
-rationale in the plan.
+Search sections for useful structural references when no page kit fits.
+Present at most three candidates, one line each, and ask the user to confirm
+one or decline all.
+
+Record only the selected kit or section IDs in the manifest (`template.mode`
+is `page-kit`, `sections`, or `custom`); put the short selection rationale in
+the plan. Custom composition names the evaluated ids and why none fit.
 
 Template selection at this stage is directional. `/design-page` owns fetching
 source, adapting layouts, selecting islands, and resolving schemas.
@@ -1016,14 +1065,16 @@ their output; otherwise run the same three blocks sequentially in this order.
 
 1. Hierarchy and wireframe: section order, buy-box position, media share, the
    ASCII wireframe at 1280 and 390 with a slot id on every media box.
-2. Imagery, background plan and asset slots: search the asset library and
-   catalog media for every slot; propose the treatment per imagery section.
+2. Imagery, background plan, asset slots and proof sources: search the asset
+   library and catalog media only for slots the user did not pick; read
+   `lexsis_catalog.reviews_status` and `lexsis_catalog.review_collections`;
+   propose the treatment per imagery section.
 3. Palette, type, motion and icon decisions from the saved brand design and
    theme tokens, with the overrides list.
 
 Each lane returns only its block. The parent merges them into `page-plan.md`,
 runs the generic-default check, resolves conflicts by the house rules, and asks
-the single asset question below. Lanes never write files or spend credits.
+the second-round questions. Lanes never write files or spend credits.
 
 ## Write a One-Page Plan
 
@@ -1076,7 +1127,9 @@ Template to copy into `page-plan.md`:
 | lifestyle photo [A2] | copy       |  | lifestyle [A2]   |
 +-----------------------------------+  +------------------+
 
-**Icons.** `none` or `one inline SVG set: <name>, <stroke>px, <size>px, currentColor`. Never emoji.
+**Icons.** `none` or `one inline SVG set: <name>, <stroke>px, <size>px, currentColor`. Never emoji as icons; if no set fits, generate a monochrome SVG icon set.
+
+**Emoji in copy.** `none` (default) or `allowed: "<the user's exact request>"`. Only when the user explicitly insists, only inside running text, never as an icon or separator.
 
 **Background rule.** One page background `<hex>` from navbar to footer. Full-bleed exception: `none` or `<section id>` (this must be the bold moment).
 
@@ -1119,27 +1172,57 @@ List every slot the wireframe names, for any page type:
 
 `Role/purpose` uses the generation purposes where they apply (`hero_bg`,
 `product_lifestyle`, `section_bg`, `product_composite`, `texture_fill`,
-`decorative_element`) plus `product_media`, `logo`, and `proof`. `Status` is
-`verified` or `planned`. Interface icons are never slots.
+`decorative_element`) plus `product_media`, `logo`, `proof`, and `icon_set` (only
+when the Icons decision says a set must be generated). `Status` is `verified`
+or `planned`. Ordinary interface icons come from one inline SVG set and are
+not slots; emoji are never an icon fallback.
 
-Resolve every slot before approval:
+Resolve every slot before approval. The user picks first (question 8); the
+skill searches only for what the user did not pick.
 
-1. For each slot, search `lexsis_asset_library.search` (semantic, then tags)
-   and the product's Shopify media through `lexsis_catalog.get`.
-2. Present the table with the best candidate per slot, then ask once:
-   - **You pick.** Use the asset picker if one appeared in this host; otherwise
-     name asset ids or filenames from the web asset library (Storefront →
-     Design library → Assets) and the skill searches by filename.
-   - **I pick.** Use the best library or catalog match for every slot.
-   - **Generate the gaps.** Check `lexsis_workspace.credits`, then
-     `lexsis_drafts.asset_generate` per unresolved slot with the slot's
-     purpose and aspect, and import externally supplied files with
-     `lexsis_asset_upload.import`.
-3. Apply the answer to all slots. Verify identity-sensitive picks with
-   `lexsis_assets.view`. Record the provider and asset id for generated slots.
+1. **User picks.** Call `lexsis_asset_library.search` once per slot group
+   (`query: ""`, `kind: "image"` or `"svg"` for the logo, `mode: "tags"` with
+   `banner`, `lifestyle`, `social-proof`, `logo`, `product-shot` or `hero` when
+   the group is clear, `theme_id` from `setup.json` (required), `limit: 48`).
+   The asset picker multi-selects across pages; wait for the
+   `Design asset selection:` message and map its `assets[]` to slot ids in
+   `selection_order` (A1, A2, …). Confirm the mapping in one line or take a
+   one-line remap. Without a picker: Storefront → Design library → Assets;
+   accept filenames or URLs and look them up with `mode: "filename"`. Files
+   not yet in the library go through `lexsis_asset_upload.import` with no
+   source; the upload panel's message carries the new asset id.
+2. **Skill fills the gaps.** For every slot still unresolved, search
+   `lexsis_asset_library.search` (semantic, then tags) and the product's
+   Shopify media through `lexsis_catalog.get`. Present the table with the best
+   candidate per slot, then ask once: **I pick** (use the best match for every
+   remaining slot) or **Generate the gaps** (check `lexsis_workspace.credits`,
+   then `lexsis_drafts.asset_generate` per slot with its purpose and aspect).
+3. Verify identity-sensitive picks with `lexsis_assets.view`. Record the
+   provider and asset id for generated slots.
 4. Write the final table into the plan and one `assets[]` entry per slot into
    the manifest. A slot the user postpones stays `planned`; `/design-page`
    confirms only those.
+
+### Proof sources
+
+Before planning any reviews or testimonials section, call
+`lexsis_catalog.reviews_status` and `lexsis_catalog.review_collections` with
+`collection_status: "active"`. Ask question 9 with the active collections and
+their `item_count`. Write one line in the plan:
+
+```text
+reviews → collection:<id> "<name>" (<n> items)
+        | products:<gid, …> (min rating <r>, <n> available via lexsis_catalog.reviews)
+        | none → guarantees, certifications, product evidence instead
+```
+
+`connected: false` with an empty library means `none`; do not plan the
+section. Every count comes from the API and is listed under "Claims to
+confirm". The plan never activates a collection. To propose a shortlist, run
+`lexsis_catalog.reviews_search` and, only when the user asks,
+`lexsis_drafts.review_collection_create` (draft); the merchant activates it in
+Storefront → Reviews → Collections. If the host returns `UNKNOWN_ACTION` for
+these actions, ask the user to pick a collection there and paste its id.
 
 Verify facts that control the page's urgency or trust before treating them as
 copy. This includes occasion dates, delivery cutoffs, prices, availability,
@@ -1159,7 +1242,8 @@ Do not include:
 
 Create the page directory, `assets/`, and a compact schema-v3
 `page-manifest.json` using `references/page-files.md`, including one
-`assets[]` entry per slot. Do not create source, preview, compile, or QA files.
+`assets[]` entry per slot and the `reviews` block. Do not create source,
+preview, compile, or QA files.
 
 ## Approval
 
@@ -1176,6 +1260,7 @@ Overrides:
 Sections:
 Asset slots: <n verified / m planned>
 Planned slots (unresolved):
+Proof sources:
 Claims to confirm:
 ```
 
@@ -1250,7 +1335,14 @@ Start with a compact progressive manifest:
       "sourceType": "pending",
       "status": "planned"
     }
-  ]
+  ],
+  "reviews": {
+    "source": "collection",
+    "collectionId": "...",
+    "productIds": [],
+    "minRating": 4,
+    "available": 37
+  }
 }
 ```
 
@@ -1263,9 +1355,14 @@ search transcripts in JSON.
 `preview-placeholder`, or `pending` while the slot is still `planned`.
 `status` is `verified` or `planned`.
 
+`reviews` records the plan's Proof sources line: `source` is `collection`,
+`products`, or `none`; `collectionId` or `productIds` name the real source;
+`available` is the count returned by the reviews API. Omit the block when the
+page has no review section.
+
 The manifest grows only when later stages have real state to record:
 
-- `/plan-page` writes `assets[]` (verified or planned).
+- `/plan-page` writes `assets[]` (verified or planned) and `reviews`.
 - `/design-page` adds compact `config`, `islands`, and `design` records,
   resolves `planned` assets, and records `islands[].preset` and
   `islands[].presetOverrides` when a preset is applied.
@@ -1531,7 +1628,7 @@ Use via `style="color: var(--lx-accent-color)"` or `style="font-family: var(--lx
 - Proper heading hierarchy (h1 → h2 → h3)
 - Islands for all interactive commerce (BuyBox, Cart, Reviews)
 - Generated/library images — no broken placeholder URLs in production
-- Zero emoji, one page background, one icon set, one bold moment
+- No emoji as icons, one page background, one icon set, one bold moment
 - Trust signals near purchase points
 - Sticky add-to-cart on PDP
 
@@ -1634,11 +1731,11 @@ Format per rule: imperative sentence; rationale; a check the agent can run. Chec
 
 ### 2.1 NEVER
 
-N1. Never use emoji anywhere: copy, tickers, trust strips, badges, buttons, alt text, island JSON props, CSS `content`.
+N1. Never use emoji by default, and never as icons: not in tickers, trust strips, badges, buttons, alt text, island JSON props or CSS `content`. Emoji may appear in copy only when the user explicitly insists; record it in `page-plan.md` under "Design direction › Emoji in copy" with the merchant's wording, and keep every occurrence inside running text. When the page needs icons and no inline SVG set fits, generate a monochrome SVG icon set (one stroke, one size); never substitute emoji.
 Rationale: glyphs render differently per OS vendor, ignore `currentColor` and stroke weight, are announced by Unicode name to screen readers, and are the most recognised marker of AI-generated pages (Miller et al. 2018; uxskill).
 Check:
 ```bash
-perl -CSD -ne 'while(/([\x{1F000}-\x{1FAFF}\x{2600}-\x{27BF}\x{2B00}-\x{2BFF}\x{2300}-\x{23FF}\x{1F1E6}-\x{1F1FF}\x{FE0F}\x{200D}\x{203C}\x{2049}])/g){print "$ARGV:$.: $1\n"}' $W/lexsis-source.html $W/page-theme.css | wc -l   # must be 0
+perl -CSD -ne 'while(/([\x{1F000}-\x{1FAFF}\x{2600}-\x{27BF}\x{2B00}-\x{2BFF}\x{2300}-\x{23FF}\x{1F1E6}-\x{1F1FF}\x{FE0F}\x{200D}\x{203C}\x{2049}])/g){print "$ARGV:$.: $1\n"}' $W/lexsis-source.html $W/page-theme.css | wc -l   # 0, unless page-plan.md records "Emoji in copy: allowed"; then every hit must be inside copy, none as an icon
 ```
 
 N2. Never change the background from section to section. The page has one background, `--lx-bg-color`, from below the navbar to above the footer. Allowed exceptions, exhaustively: the announcement bar, the navbar, the footer, and at most one full-bleed moment that `page-plan.md` names under "Design direction › Bold moment". A `<section>` or any full-width wrapper painted `--lx-bg-surface`, `--lx-surface-alt` or `--lx-secondary-color` is a band and fails, even if it is white.
@@ -1987,7 +2084,7 @@ Gotchas: social icons are the island's own glyphs; `socialLinks[].icon` accepts 
 
 ### 2.10 ReviewCarousel
 
-Rotating or grid review showcase with stars, verified flag, avatars, optional media. Category social_proof. Hydrate `visible`. Headless: no. Two data modes: static `reviews[]` (wins if non-empty) or fetch (`reviewsEndpoint` + filters). Mid-page or after product details, never first. Needs 3+ real reviews; never fabricate.
+Rotating or grid review showcase with stars, verified flag, avatars, optional media. Category social_proof. Hydrate `visible`. Headless: no. Two data modes: static `reviews[]` (wins if non-empty) or fetch (`collectionId` or `productIds` + filters; the page supplies the endpoint at runtime, never write `reviewsEndpoint`). Mid-page or after product details, never first. Needs 3+ real reviews; never fabricate.
 
 UI-controlling props:
 
@@ -1998,7 +2095,7 @@ UI-controlling props:
 | `interval` | number | 5000, keep >= 4000 | - |
 | `pageSize` | number | 10, max 20 | fetch mode count |
 
-Data props: `reviews[{id?, author, rating, title?, body, date?, verified?, avatar?, helpful_count?, media[]?}]`, `reviewsEndpoint`, `productIds[]`, `collectionId`, `reviewSnapshotId`, `minRating`, `sort` (`recent|highest|most_helpful`).
+Data props: `reviews[{id?, author, rating, title?, body, date?, verified?, avatar?, helpful_count?, media[]?}]` (static, only real reviews from `lexsis_catalog.reviews`), or fetch mode `collectionId` (an active collection from the plan's Proof sources line) or `productIds[]`, plus `reviewSnapshotId`, `minRating`, `sort` (`recent|highest|most_helpful`). Omit `reviewsEndpoint`.
 CSS vars: `--lx-accent-color` (avatar bg, active dot), `--lx-text-color` (author). Parts: `root, card, avatar, author, body, title, date, verified, media-preview, nav-prev, nav-next, dots, dot, load-more`.
 Fallback: 3 static blockquotes with author lines.
 Gotchas: stars and the verified check are island glyphs (not controllable); acceptable as the page's single icon set only if the rest of the page uses no other icons, otherwise hide `[data-part="verified"]` and rely on the "Verified" text. `index.md` mentions `card-grid` on `--lx-surface-alt` backgrounds; house rules forbid that, so cards sit on the page background with a hairline border. `card` default may carry a shadow; flatten via `[data-part="card"]{box-shadow:none;border:1px solid var(--lx-border-color)}`.
@@ -2272,17 +2369,17 @@ Shared flat card CSS:
 
 **reviewcarousel/grid-flat** - all reviews visible, no motion. Default when 3-6 reviews.
 ```json
-{"props":{"reviews":"{{reviews.top}}","variant":"grid","autoplay":false}}
+{"props":{"collectionId":"{{reviews.collection_id}}","minRating":4,"pageSize":8,"variant":"grid","autoplay":false}}
 ```
 
 **reviewcarousel/single-quiet** - one card at a time, manual arrows, no autoplay. Use when review bodies are long.
 ```json
-{"props":{"reviews":"{{reviews.top}}","variant":"default","autoplay":false,"interval":6000}}
+{"props":{"collectionId":"{{reviews.collection_id}}","minRating":4,"pageSize":6,"variant":"default","autoplay":false,"interval":6000}}
 ```
 
 **reviewcarousel/strip-compact** - short strip of one-line reviews with slow rotation. Use near the BuyBox as a proof line, bodies under 60 chars.
 ```json
-{"props":{"reviews":"{{reviews.short}}","variant":"compact","autoplay":true,"interval":6000}}
+{"props":{"collectionId":"{{reviews.collection_id}}","minRating":4,"pageSize":6,"variant":"compact","autoplay":true,"interval":6000}}
 ```
 ```css
 #{{id}} [data-part="verified"]{display:none}
@@ -2604,7 +2701,9 @@ Islands are React components that hydrate client-side. They handle interactive c
 ### Prop Data Sources
 - Product data → `lexsis_catalog` action `get` or `list`
 - Navigation → `lexsis_brand` action `navigation`
-- Reviews → configured review source or public reviews endpoint; never invent
+- Reviews → `lexsis_catalog` actions `reviews_status`, `review_collections`,
+  `reviews` (the plan's Proof sources line); island props `collectionId` or
+  `productIds` plus `minRating`, never `reviewsEndpoint`; never invent
   reviewers, ratings, locations, or counts
 - Brand tokens → `lexsis_brand` action `brand_kit` or `lexsis_brand.get_theme`
 
@@ -3173,24 +3272,27 @@ Raw metrics. Most credible when specific and large.
 <section class="py-16 px-4">
   <div class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-6xl mx-auto">
     <div>
-      <p class="text-3xl md:text-4xl font-bold" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">247,000+</p>
+      <p class="text-3xl md:text-4xl font-bold" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">{{customer_total}}</p>
       <p class="text-sm mt-2" style="color:var(--lx-text-muted)">Happy customers</p>
     </div>
     <div>
-      <p class="text-3xl md:text-4xl font-bold" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">4.8/5.0</p>
+      <p class="text-3xl md:text-4xl font-bold" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">{{average_rating}}/5</p>
       <p class="text-sm mt-2" style="color:var(--lx-text-muted)">Average rating</p>
     </div>
     <div>
-      <p class="text-3xl md:text-4xl font-bold" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">12,000+</p>
-      <p class="text-sm mt-2" style="color:var(--lx-text-muted)">Five-star reviews</p>
+      <p class="text-3xl md:text-4xl font-bold" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">{{review_total}}</p>
+      <p class="text-sm mt-2" style="color:var(--lx-text-muted)">Verified reviews</p>
     </div>
     <div>
-      <p class="text-3xl md:text-4xl font-bold" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">94%</p>
+      <p class="text-3xl md:text-4xl font-bold" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">{{recommend_pct}}</p>
       <p class="text-sm mt-2" style="color:var(--lx-text-muted)">Would recommend</p>
     </div>
   </div>
 </section>
 ```
+
+Every `{{…}}` figure is a placeholder for a value returned by `lexsis_catalog` action `reviews` (`total`, ratings) or a claim the merchant confirmed in the plan. Never type a number here; omit the figure when no source exists (house rule N11).
+
 
 **When to use:** First 3 sections. Anchor trust before storytelling.
 
@@ -3239,8 +3341,8 @@ Text-only reviews. Lowest impact but high volume works (10+ reviews).
 ```html
 <section class="py-16 px-4">
   <div class="max-w-6xl mx-auto">
-    <h2 class="text-3xl md:text-4xl font-bold text-center mb-12" style="color:var(--lx-text-color)">12,000+ 5-Star Reviews</h2>
-    <div data-island="ReviewCarousel" data-props='{"autoplay":true,"reviewsPerView":3,"reviews":[{"rating":5,"text":"Exceeded expectations. Results were visible in days. Highly recommend.","author":"John D.","verified":true,"date":"2026-06-15"}]}'></div>
+    <h2 class="text-3xl md:text-4xl font-bold text-center mb-12" style="color:var(--lx-text-color)">What customers say</h2>
+    <div data-island="ReviewCarousel" data-props='{"collectionId":"<active collection id from the plan>","minRating":4,"pageSize":8,"variant":"grid"}'></div>
   </div>
 </section>
 ```
@@ -3756,21 +3858,20 @@ Layout options: `"grid"` (thumbnails below), `"stack"` (vertical scroll), `"caro
       <p class="text-xs uppercase tracking-[0.2em] mb-2" style="color:var(--lx-accent-color)">Testimonials</p>
       <h2 class="font-bold" style="font-family:var(--lx-font-heading);font-size:clamp(1.5rem,3vw,2.25rem)">What Customers Say</h2>
     </div>
-    <div data-island="ReviewCarousel" data-props='{"reviews":[{"author":"Priya M.","rating":5,"body":"Amazing results in just one week!","date":"2026-05-01"},{"author":"Ananya R.","rating":5,"body":"Best serum I have ever used.","date":"2026-04-15"},{"author":"Kavita S.","rating":4,"body":"Great for sensitive skin.","date":"2026-03-20"}],"autoplay":true}'></div>
+    <div data-island="ReviewCarousel" data-props='{"collectionId":"<review collection uuid from the plan>","minRating":4,"pageSize":8,"variant":"grid"}'></div>
   </div>
 </section>
 ```
 
-**With Shopify product reviews (auto-fetch):**
-
-```html
-<div data-island="ReviewCarousel" data-props='{"reviewsEndpoint":"/api/v1/storefront/public/reviews/PAGE_SHORT_ID","productIds":["gid://shopify/Product/123"],"autoplay":true}'></div>
-```
-
-Use the carousel only with 3 or more real reviews. For 1-2 verified reviews,
-render static testimonial cards. If there are no reviews, use product proof,
-certifications, guarantees, or verified press instead. Never fabricate names,
-ratings, locations, or review counts.
+**Data source.** Reviews come from the merchant's imported library
+(`lexsis_catalog` actions `reviews_status`, `review_collections`, `reviews`,
+`reviews_search`) as recorded in the plan's Proof sources line. Pass
+`collectionId` (an active collection) or `productIds`; omit
+`reviewsEndpoint`, the page supplies it at runtime. Use the carousel only with
+3 or more real reviews. For 1-2 verified reviews, render static testimonial
+cards quoting them. If there are no reviews, use product proof, certifications,
+guarantees, or verified press instead. Never fabricate names, ratings,
+locations, or review counts.
 
 ### Trust Signals — Static HTML
 
@@ -4372,9 +4473,9 @@ Need an image or video for a section?
 | `lexsis_asset_library` → `search` | Search workspace assets | Free |
 | `lexsis_drafts` → `asset_generate` | Generate, composite, inpaint, or restyle | Credits |
 | `lexsis_assets` → `view` | Verify an asset | Free |
-| `lexsis_asset_upload` → `import` | Import URL, base64, attachments, or use upload picker | Free |
+| `lexsis_asset_upload` → `import` | Import URL, base64, attachments; with no source it opens the upload panel and the resulting asset id arrives in a user message | Free |
 
-Always search first. Pass `workspace_id` explicitly when multiple workspaces
+Ask the user whether they want to pick from the library before searching; an empty `query` browses and opens the asset picker (`Design asset selection:` carries `asset_ids` and `selection_order`). Pass `workspace_id` explicitly when multiple workspaces
 are available and the selected `theme_id` whenever the discovered action
 schema supports it.
 
@@ -5204,9 +5305,14 @@ and shared keyframes:
 
 Before custom composition:
 
-1. Discover `lexsis_template_library` actions `search_page_kits` and
-   `search_sections`.
-2. Search page kits using page type, archetype, objective, industry, and mood.
+0. Ask whether the user wants to pick a kit or sections themselves. If so,
+   browse with `query: ""` and the page type, industry, and mood filters, and
+   wait for the `Design template selection:` message. Resolve a picked or
+   pasted kit with `lexsis_template_library` action `get_kit`.
+1. Discover `lexsis_template_library` actions `search_page_kits`,
+   `search_sections`, and `get_kit`.
+2. Only when the user declines: search page kits using page type, archetype,
+   objective, industry, and mood, and present at most three candidates.
 3. Treat a page kit as a coherent list of section-template IDs. There is no
    single page-kit instantiation action.
 4. Fetch selected section source through `lexsis_design` action `get_section`,
@@ -5218,9 +5324,10 @@ Template search returns metadata, not editable markup. `get_section` returns
 authoring source with section delimiters, `<lx-island>` markup, and section
 CSS/JS.
 
-If the host renders an interactive template picker, wait for the user's
-selection. Custom composition is allowed only after recording the evaluated
-templates and why none fit.
+If the host renders the Template Gallery, wait for the user's
+`Design template selection:` message; without a picker, offer the public
+gallery URL and accept a pasted kit or template URL. Custom composition is
+allowed only after recording the evaluated templates and why none fit.
 
 ## Islands
 

@@ -60,7 +60,14 @@ Start with a compact progressive manifest:
       "sourceType": "pending",
       "status": "planned"
     }
-  ]
+  ],
+  "reviews": {
+    "source": "collection",
+    "collectionId": "...",
+    "productIds": [],
+    "minRating": 4,
+    "available": 37
+  }
 }
 ```
 
@@ -73,9 +80,14 @@ search transcripts in JSON.
 `preview-placeholder`, or `pending` while the slot is still `planned`.
 `status` is `verified` or `planned`.
 
+`reviews` records the plan's Proof sources line: `source` is `collection`,
+`products`, or `none`; `collectionId` or `productIds` name the real source;
+`available` is the count returned by the reviews API. Omit the block when the
+page has no review section.
+
 The manifest grows only when later stages have real state to record:
 
-- `/plan-page` writes `assets[]` (verified or planned).
+- `/plan-page` writes `assets[]` (verified or planned) and `reviews`.
 - `/design-page` adds compact `config`, `islands`, and `design` records,
   resolves `planned` assets, and records `islands[].preset` and
   `islands[].presetOverrides` when a preset is applied.

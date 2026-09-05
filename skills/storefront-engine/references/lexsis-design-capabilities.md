@@ -69,9 +69,14 @@ and shared keyframes:
 
 Before custom composition:
 
-1. Discover `lexsis_template_library` actions `search_page_kits` and
-   `search_sections`.
-2. Search page kits using page type, archetype, objective, industry, and mood.
+0. Ask whether the user wants to pick a kit or sections themselves. If so,
+   browse with `query: ""` and the page type, industry, and mood filters, and
+   wait for the `Design template selection:` message. Resolve a picked or
+   pasted kit with `lexsis_template_library` action `get_kit`.
+1. Discover `lexsis_template_library` actions `search_page_kits`,
+   `search_sections`, and `get_kit`.
+2. Only when the user declines: search page kits using page type, archetype,
+   objective, industry, and mood, and present at most three candidates.
 3. Treat a page kit as a coherent list of section-template IDs. There is no
    single page-kit instantiation action.
 4. Fetch selected section source through `lexsis_design` action `get_section`,
@@ -83,9 +88,10 @@ Template search returns metadata, not editable markup. `get_section` returns
 authoring source with section delimiters, `<lx-island>` markup, and section
 CSS/JS.
 
-If the host renders an interactive template picker, wait for the user's
-selection. Custom composition is allowed only after recording the evaluated
-templates and why none fit.
+If the host renders the Template Gallery, wait for the user's
+`Design template selection:` message; without a picker, offer the public
+gallery URL and accept a pasted kit or template URL. Custom composition is
+allowed only after recording the evaluated templates and why none fit.
 
 ## Islands
 
