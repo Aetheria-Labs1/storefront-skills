@@ -19,8 +19,9 @@ Use `lexsis_brand.context`, `lexsis_brand.get_theme`,
 `lexsis_template_library.search_page_kits`,
 `lexsis_template_library.search_sections`, `lexsis_design.guide`,
 `lexsis_design.islands`, `lexsis_design.island_schema`,
-`lexsis_design.get_section`, `lexsis_asset_library.search`,
-`lexsis_catalog.get`, `lexsis_assets.view`, `lexsis_workspace.credits`,
+`lexsis_design.get_section`, `lexsis_template_library.get_kit`,
+`lexsis_asset_library.search`, `lexsis_catalog.get`, `lexsis_catalog.reviews`,
+`lexsis_assets.view`, `lexsis_workspace.credits`,
 `lexsis_drafts.asset_generate`, `lexsis_asset_upload.import`, and
 `lexsis_pages.compile`.
 Resolve only unfamiliar argument schemas through exact router/action
@@ -58,7 +59,8 @@ brand design.md".
 
 The plan already resolved the asset slots. Read `assets[]` from the manifest:
 
-1. Slots with `status: verified` are final; use their ids and URLs as-is.
+1. Slots with `status: verified`, including everything the user picked in
+   the plan, are final; use their ids and URLs as-is.
 2. List only `planned` slots. `validate_page_workspace.py --phase design`
    reports them as `asset_slot_unresolved` warnings.
 3. Ask once whether to generate them now (Lexsis first; offer other available
@@ -82,8 +84,11 @@ product image or generic logo placeholder.
 ## Compose
 
 1. Read the saved brand design and selected theme CSS.
-2. Use the template direction from the plan. Fetch selected section source;
-   search again only when the plan has no usable template direction.
+2. Use the template direction from the plan. For a user-picked kit recorded
+   only as a slug or URL, call `lexsis_template_library.get_kit`, then fetch
+   section source with `lexsis_design.get_section`, one to three ids per call,
+   in kit order. Search again only when the plan has no usable template
+   direction.
 3. Convert each planned section into responsive layout and copy, following the
    wireframe, the Imagery and background plan, and the slot ids.
 4. Read the compact island catalog and select only the likely interactive
@@ -93,19 +98,24 @@ product image or generic logo placeholder.
    `hydrate`, and its scoped CSS. Check its `requires` first. Unknown id:
    return `PRESET_NOT_FOUND`. Any deviation is recorded as
    `islands[].presetOverrides`; never edit a preset in place for one page.
-5. Write a rough but complete `lexsis-source.html` with stable section
+5. Review islands follow the plan's Proof sources line: `collectionId` or
+   `productIds`, `minRating`, `pageSize` of 12 or fewer. Omit
+   `reviewsEndpoint`; the page supplies it at runtime. `averageRating` and
+   `totalReviews` only from the `lexsis_catalog.reviews` total. `none` means no
+   review island. Never `SocialProofPopup`.
+6. Write a rough but complete `lexsis-source.html` with stable section
    delimiters, minimal island props, and the documented examples as a starting
    point.
-6. Write global page rules to `page-theme.css`; keep section-specific CSS
+7. Write global page rules to `page-theme.css`; keep section-specific CSS
    beside its section.
-7. Use LX tokens for brand values and compile-time Tailwind utilities for
+8. Use LX tokens for brand values and compile-time Tailwind utilities for
    layout. Do not use a runtime Tailwind CDN.
-8. Compare explicit `NEVER`, `must`, and `non-negotiable` rules in the saved
+9. Compare explicit `NEVER`, `must`, and `non-negotiable` rules in the saved
    brand design with matching theme tokens. On a direct value contradiction,
    return `THEME_CONTEXT_CONFLICT` with both values. Do not silently choose one.
-9. Use ordinary HTML for static content and `<lx-island>` source for supported
+10. Use ordinary HTML for static content and `<lx-island>` source for supported
    interactions. Use headless mode only with complete required hooks.
-10. Keep preview props safe and presentation-focused. Real commerce is tested
+11. Keep preview props safe and presentation-focused. Real commerce is tested
    on the hosted draft.
 
 ## Parallel Section Generation
