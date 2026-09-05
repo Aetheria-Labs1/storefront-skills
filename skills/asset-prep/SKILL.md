@@ -8,10 +8,13 @@ description: Replace visual-page placeholders with verified production images an
 Use the approved plan and canonical page source to finalize media. Do not
 create a draft.
 
-Before reading live assets or changing the page workspace, confirm
-`lexsis_discover` is available and discover the exact asset, catalogue,
-generation, upload, and inspection actions needed by this run. If discovery
-fails, return `BLOCKED_LEXSIS_MCP` without changing page artifacts.
+Use `lexsis_asset_library.search`, `lexsis_catalog.list`,
+`lexsis_catalog.get`, `lexsis_workspace.credits`,
+`lexsis_drafts.asset_generate`, `lexsis_asset_upload.import`, and
+`lexsis_assets.view`. Resolve an unfamiliar schema with exact router/action
+discovery. Do not use prose discovery for these known actions, and do not
+treat an empty discovery result as an asset or catalogue outage. Report the
+concrete domain call that failed.
 
 The full skill pack includes optional deeper design guidance at
 `storefront-engine/references/lexsis-design-capabilities.md`.

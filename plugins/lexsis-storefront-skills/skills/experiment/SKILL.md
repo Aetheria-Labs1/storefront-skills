@@ -7,9 +7,14 @@ description: Create or evaluate a focused Lexsis storefront experiment from a cl
 
 Use this for a measurable comparison, not ordinary page editing.
 
-Confirm `lexsis_discover` is available and discover the exact page, analytics,
-experiment, and draft actions needed by this request. If discovery fails,
-return `BLOCKED_LEXSIS_MCP` without creating local or remote variants.
+Use `lexsis_pages.edit_context`, `lexsis_pages.source`,
+`lexsis_pages.compile`, `lexsis_pages.integrity`, `lexsis_analytics.page`,
+`lexsis_analytics.experiment`, `lexsis_drafts.page_duplicate`,
+`lexsis_drafts.page_variation`, and `lexsis_drafts.experiment_create`.
+Resolve unfamiliar argument schemas with exact router/action discovery. Do
+not interpret an empty discovery result as a page or analytics outage. Report
+any failure from the actual read or mutation and do not claim that operation
+succeeded.
 
 Confirm the base page's store/theme binding exists in
 `work/storefront/setup/setup.json`. If it is missing, stop and ask the user to

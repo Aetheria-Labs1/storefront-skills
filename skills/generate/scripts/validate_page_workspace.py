@@ -343,7 +343,7 @@ def validate_workspace(
             errors.append(
                 finding(
                     "mcp_status",
-                    "Standard page workflows require a successful Lexsis MCP preflight",
+                    "Standard page workflows require evidence from the Lexsis domain actions actually used",
                     manifest_path.name,
                 )
             )
@@ -361,7 +361,7 @@ def validate_workspace(
                 errors.append(
                     finding(
                         "mcp_capabilities",
-                        "Manifest MCP evidence requires discovered capabilities",
+                        "Manifest MCP evidence requires the capabilities actually used",
                         manifest_path.name,
                     )
                 )

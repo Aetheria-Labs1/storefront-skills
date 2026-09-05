@@ -10,11 +10,16 @@ Do not publish.
 
 Read `references/source-and-sync.md`.
 
-Complete a fresh MCP preflight before reading live data or changing production
-artifacts. Do not trust an earlier skill's connection as proof that MCP is
-available in this session. Discover the exact catalogue, template, brand,
-island, compile, page-create, and edit actions needed by this run. If discovery
-fails, return `BLOCKED_LEXSIS_MCP` without changing production artifacts.
+Use exact action slots for this run:
+`lexsis_catalog.get`, `lexsis_brand.context`, `lexsis_brand.get_theme`,
+`lexsis_design.island_schema`, `lexsis_pages.compile`,
+`lexsis_pages.edit_context`, `lexsis_pages.source`,
+`lexsis_pages.integrity`, `lexsis_page_create.create`,
+`lexsis_drafts.page_update_section`, and `lexsis_drafts.page_patch`. Resolve
+unfamiliar argument schemas with exact router/action discovery. Do not use
+prose queries for known actions. A discovery lookup miss is not a connection
+failure; only the corresponding live call proves whether that operation is
+available.
 
 When the full Lexsis skill pack is installed, also read
 `storefront-engine/references/lexsis-design-capabilities.md` for the detailed

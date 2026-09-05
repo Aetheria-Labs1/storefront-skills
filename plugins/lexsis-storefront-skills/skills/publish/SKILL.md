@@ -7,10 +7,13 @@ description: Publish a synchronized and QA-passed Lexsis storefront draft. Use o
 
 Publishing is a separate, explicit action. Do not rebuild the page here.
 
-Complete a fresh MCP preflight and discover the exact page-context,
-entitlement, and publish actions required by this run. If discovery fails,
-return `BLOCKED_LEXSIS_MCP`; a local QA report cannot authorize or substitute
-for a live publish action.
+Use `lexsis_pages.edit_context`, `lexsis_pages.integrity`,
+`lexsis_pages.source`, `lexsis_workspace.get`, and
+`lexsis_live_ops.publish`. Resolve unfamiliar argument schemas with exact
+router/action discovery. Do not use a prose query for these known actions. An
+empty discovery result is not a publishing outage; the actual context,
+entitlement, or publish call determines availability. A local QA report cannot
+authorize or substitute for a successful live publish.
 
 ## Gate
 

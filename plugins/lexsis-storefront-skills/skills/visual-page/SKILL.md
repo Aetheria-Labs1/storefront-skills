@@ -13,10 +13,16 @@ Read:
 - `references/visual-layout.md`
 - `references/island-preview.md`
 
-Complete the MCP preflight before reading or changing standard page artifacts.
-MCP unavailable means `BLOCKED_LEXSIS_MCP`, not a silent static replacement.
-Discover the exact brand, template, design, island, and compile actions needed
-by this run.
+Use the known action slots:
+`lexsis_brand.context`, `lexsis_brand.get_theme`,
+`lexsis_template_library.search_page_kits`,
+`lexsis_template_library.search_sections`, `lexsis_design.guide`,
+`lexsis_design.islands`, `lexsis_design.island_schema`,
+`lexsis_design.get_section`, and `lexsis_pages.compile`. Resolve only
+unfamiliar argument schemas through `lexsis_discover` with exact router and
+action fields. A zero-result discovery lookup is not a Lexsis failure. If an
+actual compile or live read fails, report that operation and do not present a
+static replacement as equivalent.
 
 When the full Lexsis skill pack is installed, also read
 `storefront-engine/references/lexsis-design-capabilities.md` for the detailed

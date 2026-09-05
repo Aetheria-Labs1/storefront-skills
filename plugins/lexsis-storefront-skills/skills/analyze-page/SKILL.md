@@ -15,9 +15,14 @@ Choose one mode:
 Generic URL or screenshot analysis can use the host browser without Lexsis and
 reports `MCP status: not-required`. Any request that reads a Lexsis campaign,
 catalogue, page, asset, or stored analysis requires the normal MCP preflight.
-Confirm `lexsis_discover` is available and discover the exact actions needed.
-If that preflight fails, return `BLOCKED_LEXSIS_MCP` rather than replacing
-missing live data with assumptions.
+Use the exact actions required by the evidence:
+`lexsis_campaigns.creatives`, `lexsis_campaigns.analyze`,
+`lexsis_campaigns.frames`, `lexsis_catalog.list`, `lexsis_catalog.get`,
+`lexsis_pages.get`, `lexsis_pages.inspect`, `lexsis_pages.source`, and
+`lexsis_assets.view`. Resolve an unfamiliar schema with exact
+`router` + `action` discovery. An empty discovery match does not make the
+domain router unavailable. Report an actual failed live call and do not
+replace missing evidence with assumptions.
 
 ## Capture
 

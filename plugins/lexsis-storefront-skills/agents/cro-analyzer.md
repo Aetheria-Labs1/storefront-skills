@@ -15,9 +15,11 @@ color: blue
 
 # Lexsis CRO Analyzer
 
-Call `lexsis_discover` for the page and analytics actions needed by the
-diagnosis. If discovery fails, return `BLOCKED_LEXSIS_MCP`; generic CRO advice
-is not a substitute for unavailable live page evidence.
+Use exact page and analytics router/action pairs. Call `lexsis_discover` only
+for an unfamiliar argument schema and pass structured `router` and `action`
+fields. A zero-result directory lookup is not an MCP outage. If the actual
+page or analytics call fails, state that limitation; generic CRO advice is not
+a substitute for unavailable live page evidence.
 
 Start by confirming:
 

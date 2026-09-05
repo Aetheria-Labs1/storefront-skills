@@ -8,14 +8,18 @@ description: Connect a Lexsis storefront workspace and save reusable brand and t
 Run this once after installing the Lexsis MCP and skills. It saves the
 slow-changing context that page skills reuse; it does not create or edit pages.
 
-A successful `lexsis_discover` call is required; MCP configuration alone is
-not a connection check. If discovery fails, return `BLOCKED_LEXSIS_MCP`
-without writing setup files.
+Use exact action slots for setup: `lexsis_workspace.list`,
+`lexsis_workspace.stores`, `lexsis_brand.context`,
+`lexsis_brand.brand_kit`, `lexsis_brand.list_themes`,
+`lexsis_brand.get_theme`, `lexsis_brand.navigation`, and
+`lexsis_design.guide`. When an input schema is unfamiliar, call
+`lexsis_discover` with its exact `router` and `action`. Never use a prose query
+for these known actions. An empty discovery result is not a connection
+failure; the real domain call determines whether the operation is available.
 
 ## What to Save
 
-1. Use `lexsis_discover` for the exact workspace, store, brand, theme, design,
-   and navigation actions required by this run.
+1. Resolve only unfamiliar schemas through exact router/action discovery.
 2. Resolve the authorized workspace and connected stores.
 3. When several stores or themes exist, ask the user which ones to save and
    which store/theme should be the default. Show names, not raw IDs.

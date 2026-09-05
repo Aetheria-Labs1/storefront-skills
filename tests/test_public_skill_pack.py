@@ -153,6 +153,28 @@ class PublicSkillPackTests(unittest.TestCase):
         for path in SKILLS.rglob("*.md"):
             self.assertNotIn("visual-source.html", path.read_text(encoding="utf-8"), path)
 
+    def test_discovery_is_not_a_global_blocker(self) -> None:
+        checked = [
+            *SKILLS.rglob("*.md"),
+            ROOT / "scripts" / "build-distributions.py",
+            *(
+                ROOT / "plugins" / "lexsis-storefront-skills" / "agents"
+            ).glob("*.md"),
+        ]
+        for path in checked:
+            text = path.read_text(encoding="utf-8")
+            self.assertNotIn("BLOCKED_LEXSIS_MCP", text, path)
+
+        contract = (
+            SKILLS
+            / "storefront-engine"
+            / "references"
+            / "lexsis-mcp-contract.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("A response with `ok: true` and `count: 0` is a", contract)
+        self.assertIn('"router": "lexsis_catalog"', contract)
+        self.assertIn('"action": "list"', contract)
+
 
 if __name__ == "__main__":
     unittest.main()

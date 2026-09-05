@@ -8,35 +8,52 @@ MCP dependency metadata and an `.mcp.json` entry describe configuration. They
 do not prove that the server or its tools are available in the current
 session.
 
-## Required Preflight
+## Resolve Actions with Exact Slots
 
-Before reading live Lexsis data or creating, reading, or changing standard
-page artifacts:
+The public skills declare the stable router and action pairs they use. Resolve
+an unfamiliar input schema with the structured discovery fields:
 
-1. Confirm that the `lexsis-ai` MCP server exposes `lexsis_discover`.
-2. Call `lexsis_discover` for each router/action needed by the current skill.
-   Use the returned schema as authoritative; never guess arguments from memory.
-3. Record the successful discovery in `page-manifest.json` when a page
-   workspace exists.
-4. Use live Lexsis reads for changing data such as products, variants, prices,
-   availability, assets, island schemas, permissions, analytics, and remote
-   versions.
+```json
+{
+  "router": "lexsis_catalog",
+  "action": "list"
+}
+```
 
-Discover only the capabilities required for the current task. Do not load the
-entire action catalogue when a small targeted query is enough.
+Do not use a natural-language `query` for a known workflow action. The `query`
+field is only a convenience when the router/action is genuinely unknown or
+when mapping a former tool name.
 
-## Failure Policy
+`lexsis_discover` is an API directory, not a connection test and not the tool
+that performs the operation. A response with `ok: true` and `count: 0` is a
+lookup miss. It does not mean Lexsis MCP, the target router, or the storefront
+is unavailable.
 
-### MCP unavailable
+Before live Lexsis work:
 
-If `lexsis_discover` is absent, fails, or cannot return the required action
-schemas:
+1. Use the exact router/action pairs listed by the active skill.
+2. When an action's arguments are unfamiliar, call `lexsis_discover` with
+   `router` and `action`; never improvise a prose query for a known pair.
+3. Invoke the real domain router for the operation.
+4. Record capabilities actually used in `page-manifest.json`.
+5. Read changing products, variants, prices, availability, assets, island
+   schemas, permissions, analytics, and remote versions live.
 
-- stop with `BLOCKED_LEXSIS_MCP`
-- name the unavailable capabilities
-- do not create or modify standard page artifacts
-- do not present static HTML, cached catalogue data, or custom commerce
-  controls as an equivalent Lexsis result
+## Error Handling
+
+- `ok: true, count: 0` from discovery: keep working. Retry with the exact
+  router/action pair, then use the current MCP tool schema or bundled Lexsis
+  contract. Record discovery as degraded when appropriate.
+- Missing router, authentication failure, transport failure, or an error from
+  the actual domain call: report that concrete error and identify the affected
+  operation.
+- Continue work that does not depend on the failed live operation.
+- Do not claim live data, successful compilation, a remote write, QA, or
+  publishing when the corresponding real call did not succeed.
+- Never substitute static HTML, cached catalogue data, or custom commerce
+  controls as an equivalent successful Lexsis result.
+- For a write, use only fields defined by the current MCP schema or bundled
+  Lexsis contract. Do not guess mutation arguments.
 
 ### Explicit offline prototype
 
@@ -76,25 +93,29 @@ Record the latest successful preflight:
     "status": "connected",
     "checkedAt": "2026-09-04T12:00:00Z",
     "surfaceVersion": "3.0",
+    "discoveryStatus": "exact",
     "capabilities": [
       {
         "router": "lexsis_template_library",
-        "actions": ["search_page_kits", "search_sections"]
+        "actions": ["search_page_kits", "search_sections"],
+        "resolution": "discovered"
       }
     ]
   }
 }
 ```
 
-Store capability names, not full schemas or credentials. Update this record
-when another skill performs a new preflight.
+`discoveryStatus` may be `exact`, `degraded`, or `not-needed`. Capability
+`resolution` may be `discovered`, `tool-schema`, or `bundled-contract`. Store
+capability names, not full schemas or credentials. Update this record when
+another skill uses additional live capabilities.
 
 ## Result Evidence
 
 Every Lexsis-dependent result reports:
 
 - MCP connection status
-- discovered capabilities used
+- capabilities and resolution method used
 - Lexsis router actions called
 - selected template or reason for custom composition
 - live product and asset bindings used

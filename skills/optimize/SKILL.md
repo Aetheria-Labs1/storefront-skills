@@ -9,11 +9,18 @@ Read:
 
 - `references/evidence-led-cro.md`
 
-Before reading the Lexsis page, analytics, or remote version, confirm
-`lexsis_discover` is available and discover the exact page, analytics,
-template, compile, and edit actions required by this run. If discovery fails,
-return `BLOCKED_LEXSIS_MCP`; generic CRO guidance is not a substitute for
-unavailable live page data.
+Use the needed exact actions from
+`lexsis_pages.edit_context`, `lexsis_pages.source`,
+`lexsis_pages.section_source`, `lexsis_pages.compile`,
+`lexsis_pages.integrity`, `lexsis_pages.diff`, `lexsis_analytics.page`,
+`lexsis_analytics.timeseries`, `lexsis_analytics.attribution`,
+`lexsis_template_library.search_page_kits`,
+`lexsis_template_library.search_sections`,
+`lexsis_drafts.page_update_section`, and `lexsis_drafts.page_patch`. Resolve
+only unfamiliar schemas through exact router/action discovery. A zero-result
+directory lookup does not make page or analytics data unavailable. If the
+actual live read fails, state that limitation; generic CRO guidance is not a
+substitute.
 
 The full skill pack includes optional deeper design guidance at
 `storefront-engine/references/lexsis-design-capabilities.md`.

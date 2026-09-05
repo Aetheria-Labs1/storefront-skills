@@ -11,10 +11,13 @@ Read:
 
 - `references/page-files.md`
 
-Before creating or changing the page workspace, confirm `lexsis_discover` is
-available and discover the exact catalogue and template actions required by
-this run. Configuration alone is not proof of connection. If discovery fails,
-return `BLOCKED_LEXSIS_MCP` without changing page artifacts.
+Use `lexsis_catalog.list`, `lexsis_catalog.get`,
+`lexsis_template_library.search_page_kits`, and
+`lexsis_template_library.search_sections`. Resolve an unfamiliar input schema
+with `lexsis_discover` using the exact router and action fields. Do not use
+natural-language discovery for these known actions. An empty directory match
+is not an MCP failure; the catalogue or template call itself determines
+availability.
 
 When the full Lexsis skill pack is installed, the optional detailed contracts
 are under `storefront-engine/references/lexsis-mcp-contract.md` and

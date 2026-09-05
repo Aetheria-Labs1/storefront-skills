@@ -1,5 +1,5 @@
 <!-- GENERATED from skills/ by scripts/build-distributions.py — DO NOT EDIT.
-     storefront-skills v7.0.2 · 10 skills · 47 active islands -->
+     storefront-skills v7.0.3 · 10 skills · 47 active islands -->
 
 # Lexsis Storefront Skills — Knowledge Base
 
@@ -23,9 +23,14 @@ Choose one mode:
 Generic URL or screenshot analysis can use the host browser without Lexsis and
 reports `MCP status: not-required`. Any request that reads a Lexsis campaign,
 catalogue, page, asset, or stored analysis requires the normal MCP preflight.
-Confirm `lexsis_discover` is available and discover the exact actions needed.
-If that preflight fails, return `BLOCKED_LEXSIS_MCP` rather than replacing
-missing live data with assumptions.
+Use the exact actions required by the evidence:
+`lexsis_campaigns.creatives`, `lexsis_campaigns.analyze`,
+`lexsis_campaigns.frames`, `lexsis_catalog.list`, `lexsis_catalog.get`,
+`lexsis_pages.get`, `lexsis_pages.inspect`, `lexsis_pages.source`, and
+`lexsis_assets.view`. Resolve an unfamiliar schema with exact
+`router` + `action` discovery. An empty discovery match does not make the
+domain router unavailable. Report an actual failed live call and do not
+replace missing evidence with assumptions.
 
 ## Capture
 
@@ -87,10 +92,13 @@ when Lexsis was used. This can inform `/plan-page` for a new page or
 Use the approved plan and canonical page source to finalize media. Do not
 create a draft.
 
-Before reading live assets or changing the page workspace, confirm
-`lexsis_discover` is available and discover the exact asset, catalogue,
-generation, upload, and inspection actions needed by this run. If discovery
-fails, return `BLOCKED_LEXSIS_MCP` without changing page artifacts.
+Use `lexsis_asset_library.search`, `lexsis_catalog.list`,
+`lexsis_catalog.get`, `lexsis_workspace.credits`,
+`lexsis_drafts.asset_generate`, `lexsis_asset_upload.import`, and
+`lexsis_assets.view`. Resolve an unfamiliar schema with exact router/action
+discovery. Do not use prose discovery for these known actions, and do not
+treat an empty discovery result as an asset or catalogue outage. Report the
+concrete domain call that failed.
 
 The full skill pack includes optional deeper design guidance at
 `storefront-engine/references/lexsis-design-capabilities.md`.
@@ -176,9 +184,11 @@ evidence. The next normal command is `/generate`.
 
 Cart profiles are managed separately from page section HTML.
 
-Confirm `lexsis_discover` is available and discover the exact cart read/write
-actions needed by this request. If discovery fails, return
-`BLOCKED_LEXSIS_MCP`; do not infer the effective cart profile from page HTML.
+Use `lexsis_cart.get` and, when requested,
+`lexsis_drafts.cart_set` and `lexsis_drafts.cart_edit`. Resolve unfamiliar
+argument schemas with exact router/action discovery. An empty discovery result
+is not a cart outage; the actual cart call determines availability. Do not
+infer the effective cart profile from page HTML.
 
 Resolve the target store from a page binding, an explicit saved choice, or the
 unambiguous default in `work/storefront/setup/setup.json`. If it is not saved,
@@ -230,9 +240,14 @@ publication in Lexsis.
 
 Use this for a measurable comparison, not ordinary page editing.
 
-Confirm `lexsis_discover` is available and discover the exact page, analytics,
-experiment, and draft actions needed by this request. If discovery fails,
-return `BLOCKED_LEXSIS_MCP` without creating local or remote variants.
+Use `lexsis_pages.edit_context`, `lexsis_pages.source`,
+`lexsis_pages.compile`, `lexsis_pages.integrity`, `lexsis_analytics.page`,
+`lexsis_analytics.experiment`, `lexsis_drafts.page_duplicate`,
+`lexsis_drafts.page_variation`, and `lexsis_drafts.experiment_create`.
+Resolve unfamiliar argument schemas with exact router/action discovery. Do
+not interpret an empty discovery result as a page or analytics outage. Report
+any failure from the actual read or mutation and do not claim that operation
+succeeded.
 
 Confirm the base page's store/theme binding exists in
 `work/storefront/setup/setup.json`. If it is missing, stop and ask the user to
@@ -302,11 +317,16 @@ Do not publish.
 
 Read `references/source-and-sync.md`.
 
-Complete a fresh MCP preflight before reading live data or changing production
-artifacts. Do not trust an earlier skill's connection as proof that MCP is
-available in this session. Discover the exact catalogue, template, brand,
-island, compile, page-create, and edit actions needed by this run. If discovery
-fails, return `BLOCKED_LEXSIS_MCP` without changing production artifacts.
+Use exact action slots for this run:
+`lexsis_catalog.get`, `lexsis_brand.context`, `lexsis_brand.get_theme`,
+`lexsis_design.island_schema`, `lexsis_pages.compile`,
+`lexsis_pages.edit_context`, `lexsis_pages.source`,
+`lexsis_pages.integrity`, `lexsis_page_create.create`,
+`lexsis_drafts.page_update_section`, and `lexsis_drafts.page_patch`. Resolve
+unfamiliar argument schemas with exact router/action discovery. Do not use
+prose queries for known actions. A discovery lookup miss is not a connection
+failure; only the corresponding live call proves whether that operation is
+available.
 
 When the full Lexsis skill pack is installed, also read
 `storefront-engine/references/lexsis-design-capabilities.md` for the detailed
@@ -558,11 +578,18 @@ Read:
 
 - `references/evidence-led-cro.md`
 
-Before reading the Lexsis page, analytics, or remote version, confirm
-`lexsis_discover` is available and discover the exact page, analytics,
-template, compile, and edit actions required by this run. If discovery fails,
-return `BLOCKED_LEXSIS_MCP`; generic CRO guidance is not a substitute for
-unavailable live page data.
+Use the needed exact actions from
+`lexsis_pages.edit_context`, `lexsis_pages.source`,
+`lexsis_pages.section_source`, `lexsis_pages.compile`,
+`lexsis_pages.integrity`, `lexsis_pages.diff`, `lexsis_analytics.page`,
+`lexsis_analytics.timeseries`, `lexsis_analytics.attribution`,
+`lexsis_template_library.search_page_kits`,
+`lexsis_template_library.search_sections`,
+`lexsis_drafts.page_update_section`, and `lexsis_drafts.page_patch`. Resolve
+only unfamiliar schemas through exact router/action discovery. A zero-result
+directory lookup does not make page or analytics data unavailable. If the
+actual live read fails, state that limitation; generic CRO guidance is not a
+substitute.
 
 The full skill pack includes optional deeper design guidance at
 `storefront-engine/references/lexsis-design-capabilities.md`.
@@ -740,10 +767,13 @@ Read:
 
 - `references/page-files.md`
 
-Before creating or changing the page workspace, confirm `lexsis_discover` is
-available and discover the exact catalogue and template actions required by
-this run. Configuration alone is not proof of connection. If discovery fails,
-return `BLOCKED_LEXSIS_MCP` without changing page artifacts.
+Use `lexsis_catalog.list`, `lexsis_catalog.get`,
+`lexsis_template_library.search_page_kits`, and
+`lexsis_template_library.search_sections`. Resolve an unfamiliar input schema
+with `lexsis_discover` using the exact router and action fields. Do not use
+natural-language discovery for these known actions. An empty directory match
+is not an MCP failure; the catalogue or template call itself determines
+availability.
 
 When the full Lexsis skill pack is installed, the optional detailed contracts
 are under `storefront-engine/references/lexsis-mcp-contract.md` and
@@ -963,10 +993,13 @@ creation. It is included in approval and synchronization hashes.
 
 Publishing is a separate, explicit action. Do not rebuild the page here.
 
-Complete a fresh MCP preflight and discover the exact page-context,
-entitlement, and publish actions required by this run. If discovery fails,
-return `BLOCKED_LEXSIS_MCP`; a local QA report cannot authorize or substitute
-for a live publish action.
+Use `lexsis_pages.edit_context`, `lexsis_pages.integrity`,
+`lexsis_pages.source`, `lexsis_workspace.get`, and
+`lexsis_live_ops.publish`. Resolve unfamiliar argument schemas with exact
+router/action discovery. Do not use a prose query for these known actions. An
+empty discovery result is not a publishing outage; the actual context,
+entitlement, or publish call determines availability. A local QA report cannot
+authorize or substitute for a successful live publish.
 
 ## Gate
 
@@ -1014,14 +1047,18 @@ evidence.
 Run this once after installing the Lexsis MCP and skills. It saves the
 slow-changing context that page skills reuse; it does not create or edit pages.
 
-A successful `lexsis_discover` call is required; MCP configuration alone is
-not a connection check. If discovery fails, return `BLOCKED_LEXSIS_MCP`
-without writing setup files.
+Use exact action slots for setup: `lexsis_workspace.list`,
+`lexsis_workspace.stores`, `lexsis_brand.context`,
+`lexsis_brand.brand_kit`, `lexsis_brand.list_themes`,
+`lexsis_brand.get_theme`, `lexsis_brand.navigation`, and
+`lexsis_design.guide`. When an input schema is unfamiliar, call
+`lexsis_discover` with its exact `router` and `action`. Never use a prose query
+for these known actions. An empty discovery result is not a connection
+failure; the real domain call determines whether the operation is available.
 
 ## What to Save
 
-1. Use `lexsis_discover` for the exact workspace, store, brand, theme, design,
-   and navigation actions required by this run.
+1. Resolve only unfamiliar schemas through exact router/action discovery.
 2. Resolve the authorized workspace and connected stores.
 3. When several stores or themes exist, ask the user which ones to save and
    which store/theme should be the default. Show names, not raw IDs.
@@ -1101,10 +1138,16 @@ Read:
 - `references/visual-layout.md`
 - `references/island-preview.md`
 
-Complete the MCP preflight before reading or changing standard page artifacts.
-MCP unavailable means `BLOCKED_LEXSIS_MCP`, not a silent static replacement.
-Discover the exact brand, template, design, island, and compile actions needed
-by this run.
+Use the known action slots:
+`lexsis_brand.context`, `lexsis_brand.get_theme`,
+`lexsis_template_library.search_page_kits`,
+`lexsis_template_library.search_sections`, `lexsis_design.guide`,
+`lexsis_design.islands`, `lexsis_design.island_schema`,
+`lexsis_design.get_section`, and `lexsis_pages.compile`. Resolve only
+unfamiliar argument schemas through `lexsis_discover` with exact router and
+action fields. A zero-result discovery lookup is not a Lexsis failure. If an
+actual compile or live read fails, report that operation and do not present a
+static replacement as equivalent.
 
 When the full Lexsis skill pack is installed, also read
 `storefront-engine/references/lexsis-design-capabilities.md` for the detailed
@@ -4260,35 +4303,52 @@ MCP dependency metadata and an `.mcp.json` entry describe configuration. They
 do not prove that the server or its tools are available in the current
 session.
 
-## Required Preflight
+## Resolve Actions with Exact Slots
 
-Before reading live Lexsis data or creating, reading, or changing standard
-page artifacts:
+The public skills declare the stable router and action pairs they use. Resolve
+an unfamiliar input schema with the structured discovery fields:
 
-1. Confirm that the `lexsis-ai` MCP server exposes `lexsis_discover`.
-2. Call `lexsis_discover` for each router/action needed by the current skill.
-   Use the returned schema as authoritative; never guess arguments from memory.
-3. Record the successful discovery in `page-manifest.json` when a page
-   workspace exists.
-4. Use live Lexsis reads for changing data such as products, variants, prices,
-   availability, assets, island schemas, permissions, analytics, and remote
-   versions.
+```json
+{
+  "router": "lexsis_catalog",
+  "action": "list"
+}
+```
 
-Discover only the capabilities required for the current task. Do not load the
-entire action catalogue when a small targeted query is enough.
+Do not use a natural-language `query` for a known workflow action. The `query`
+field is only a convenience when the router/action is genuinely unknown or
+when mapping a former tool name.
 
-## Failure Policy
+`lexsis_discover` is an API directory, not a connection test and not the tool
+that performs the operation. A response with `ok: true` and `count: 0` is a
+lookup miss. It does not mean Lexsis MCP, the target router, or the storefront
+is unavailable.
 
-### MCP unavailable
+Before live Lexsis work:
 
-If `lexsis_discover` is absent, fails, or cannot return the required action
-schemas:
+1. Use the exact router/action pairs listed by the active skill.
+2. When an action's arguments are unfamiliar, call `lexsis_discover` with
+   `router` and `action`; never improvise a prose query for a known pair.
+3. Invoke the real domain router for the operation.
+4. Record capabilities actually used in `page-manifest.json`.
+5. Read changing products, variants, prices, availability, assets, island
+   schemas, permissions, analytics, and remote versions live.
 
-- stop with `BLOCKED_LEXSIS_MCP`
-- name the unavailable capabilities
-- do not create or modify standard page artifacts
-- do not present static HTML, cached catalogue data, or custom commerce
-  controls as an equivalent Lexsis result
+## Error Handling
+
+- `ok: true, count: 0` from discovery: keep working. Retry with the exact
+  router/action pair, then use the current MCP tool schema or bundled Lexsis
+  contract. Record discovery as degraded when appropriate.
+- Missing router, authentication failure, transport failure, or an error from
+  the actual domain call: report that concrete error and identify the affected
+  operation.
+- Continue work that does not depend on the failed live operation.
+- Do not claim live data, successful compilation, a remote write, QA, or
+  publishing when the corresponding real call did not succeed.
+- Never substitute static HTML, cached catalogue data, or custom commerce
+  controls as an equivalent successful Lexsis result.
+- For a write, use only fields defined by the current MCP schema or bundled
+  Lexsis contract. Do not guess mutation arguments.
 
 ### Explicit offline prototype
 
@@ -4328,25 +4388,29 @@ Record the latest successful preflight:
     "status": "connected",
     "checkedAt": "2026-09-04T12:00:00Z",
     "surfaceVersion": "3.0",
+    "discoveryStatus": "exact",
     "capabilities": [
       {
         "router": "lexsis_template_library",
-        "actions": ["search_page_kits", "search_sections"]
+        "actions": ["search_page_kits", "search_sections"],
+        "resolution": "discovered"
       }
     ]
   }
 }
 ```
 
-Store capability names, not full schemas or credentials. Update this record
-when another skill performs a new preflight.
+`discoveryStatus` may be `exact`, `degraded`, or `not-needed`. Capability
+`resolution` may be `discovered`, `tool-schema`, or `bundled-contract`. Store
+capability names, not full schemas or credentials. Update this record when
+another skill uses additional live capabilities.
 
 ## Result Evidence
 
 Every Lexsis-dependent result reports:
 
 - MCP connection status
-- discovered capabilities used
+- capabilities and resolution method used
 - Lexsis router actions called
 - selected template or reason for custom composition
 - live product and asset bindings used

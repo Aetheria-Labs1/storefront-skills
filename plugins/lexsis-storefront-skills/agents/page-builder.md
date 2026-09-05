@@ -26,9 +26,11 @@ Use the public commands as distinct stages:
 
 ## MCP Gate
 
-Call `lexsis_discover` for the exact actions needed by each stage. MCP
-configuration is not proof of availability. If discovery fails, stop with
-`BLOCKED_LEXSIS_MCP`; do not replace the Lexsis workflow with static HTML
+Use the exact router/action pairs declared by each stage. Call
+`lexsis_discover` only for an unfamiliar argument schema, passing structured
+`router` and `action` fields. Never use a prose query for a known action. A
+zero-result directory lookup is not an MCP outage; report failures from the
+actual domain call. Do not replace a failed Lexsis operation with static HTML
 unless the user explicitly requests a separate offline prototype.
 
 ## Setup

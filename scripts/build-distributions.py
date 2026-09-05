@@ -297,8 +297,10 @@ edit, and optimize AI-built Shopify storefront pages using the Lexsis AI MCP
 Use the normal workflow when building a page:
 setup → plan-page → visual-page → asset-prep → generate → publish.
 Each command remains independently invokable, and explicit skips are recorded.
-Run the mandatory MCP preflight before Lexsis-dependent work. Configuration is
-not proof of availability. If discovery fails, return BLOCKED_LEXSIS_MCP and
+Use the exact router/action pairs declared by each skill. Call
+lexsis_discover only for an unfamiliar argument schema, using its structured
+router and action fields. A zero-result discovery lookup is not an MCP outage;
+the actual domain call determines availability. Report its concrete error and
 do not substitute static HTML unless the user explicitly requests an offline
 prototype.
 Search page kits and section templates before custom composition. Load the
