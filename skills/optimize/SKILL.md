@@ -23,7 +23,10 @@ actual live read fails, state that limitation; generic CRO guidance is not a
 substitute.
 
 The full skill pack includes optional deeper design guidance at
-`storefront-engine/references/lexsis-design-capabilities.md`.
+`storefront-engine/references/lexsis-design-capabilities.md`. Every edit obeys
+the house rules in `storefront-engine/references/design-rules.md`; an
+optimization never adds emoji, gradients, hover transforms, or a section
+background.
 
 Start by confirming:
 

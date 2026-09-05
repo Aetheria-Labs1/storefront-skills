@@ -3,12 +3,15 @@
 from __future__ import annotations
 
 import importlib.util
+import subprocess
+import sys
 import unittest
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILLS = ROOT / "skills"
+PLUGIN_AGENTS = ROOT / "plugins" / "lexsis-storefront-skills" / "agents"
 
 EXPECTED_PUBLIC_SKILLS = {
     "setup",
@@ -155,6 +158,58 @@ class PublicSkillPackTests(unittest.TestCase):
     def test_active_skill_docs_use_one_html_source(self) -> None:
         for path in SKILLS.rglob("*.md"):
             self.assertNotIn("visual-source.html", path.read_text(encoding="utf-8"), path)
+
+    def test_design_lint_fixture_exit_codes(self) -> None:
+        script = SKILLS / "design-page" / "scripts" / "design_lint.py"
+        fixtures = ROOT / "tests" / "fixtures" / "design-lint"
+        rejected = subprocess.run(
+            [sys.executable, str(script), str(fixtures / "rejected")],
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(rejected.returncode, 1, rejected.stdout)
+        self.assertRegex(rejected.stdout, r"N1 emoji\s+1[0-9]\s+FAIL")
+        corrected = subprocess.run(
+            [sys.executable, str(script), str(fixtures / "corrected")],
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(corrected.returncode, 0, corrected.stdout)
+
+    def test_house_rules_are_wired(self) -> None:
+        references = SKILLS / "storefront-engine" / "references"
+        self.assertTrue((references / "design-rules.md").is_file())
+        self.assertTrue((references / "island-presets.md").is_file())
+        rules = (references / "design-rules.md").read_text(encoding="utf-8")
+        self.assertEqual(rules.count("\n```") % 2, 0, "unclosed code fence in design-rules.md")
+        wired = [
+            path
+            for path in [*SKILLS.rglob("SKILL.md"), *PLUGIN_AGENTS.glob("*.md"), *references.glob("*.md")]
+            if "design-rules.md" in path.read_text(encoding="utf-8")
+        ]
+        self.assertGreaterEqual(len(wired), 10, [p.name for p in wired])
+        for name in (
+            "storefront-craft",
+            "conversion-psychology",
+            "animation-system",
+            "visual-craft",
+            "premium-patterns",
+            "plan-page",
+            "generation-protocol",
+        ):
+            text = (references / f"{name}.md").read_text(encoding="utf-8")
+            self.assertIn("House rules in `storefront-engine/references/design-rules.md`", text, name)
+            self.assertNotIn("hover:scale", text, name)
+        self.assertNotIn(
+            "Color Temperature Flow",
+            (references / "plan-page.md").read_text(encoding="utf-8"),
+        )
+        plan = (SKILLS / "plan-page" / "SKILL.md").read_text(encoding="utf-8")
+        for block in ("## Design direction", "### Imagery and background plan", "### Asset slots", "## Parallel Planning"):
+            self.assertIn(block, plan)
+        design = (SKILLS / "design-page" / "SKILL.md").read_text(encoding="utf-8")
+        for block in ("## Design Direction Gate", "## Self-Critique Gate", "## Asset Gap Confirmation", "design-critique.md"):
+            self.assertIn(block, design)
 
     def test_plan_page_does_not_choose_islands(self) -> None:
         text = (SKILLS / "plan-page" / "SKILL.md").read_text(encoding="utf-8")

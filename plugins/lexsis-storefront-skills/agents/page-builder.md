@@ -46,13 +46,23 @@ live.
 Create or consume a concise one-page `page-plan.md`. Ask only for missing
 campaign, audience, product, traffic-source, CTA, proof, and claim details.
 Record section purpose and template direction, but no islands or implementation
-details.
+details. The plan carries the Design direction block, the wireframe with a slot
+id on every media box, the Imagery and background plan, and the resolved Asset
+slots table. Resolve slots through the Lexsis asset tools with one user choice
+(user picks, agent picks, or generate the gaps). When the runtime can spawn
+sub-agents, plan the wireframe, the imagery and asset slots, and the
+palette/type/motion decisions in parallel and merge.
 
 ## Design
 
-Search existing Lexsis and Shopify assets first. Present one combined summary
-of reusable, missing, and optional media, then ask once before generation.
-Prefer Lexsis generation; offer other available image tools before using them.
+Read `skills/storefront-engine/references/design-rules.md`; house rules override
+generated brand guidance and preview blueprints. Apply the plan's Design
+direction and any `Preset:` ids from
+`skills/storefront-engine/references/island-presets.md`. Confirm only the asset
+slots the plan left `planned`; verified slots are final. Prefer Lexsis
+generation; offer other available image tools before using them. Run the
+Self-Critique Gate (design_lint.py, screenshots at 390 and 1280,
+`design-critique.md`) before showing any preview.
 
 Load the selected theme, adapt template source, choose and resolve islands,
 use LX tokens and compile-time Tailwind utilities, and write

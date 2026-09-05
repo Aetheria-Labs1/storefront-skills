@@ -1,0 +1,4 @@
+:root { --lx-bg-color: #F5F0E6; --lx-border-color: #E2D9CC; --lx-accent-color: #D52600; --lx-text-color: #1F1D24; --r-control: 6px; --r-media: 8px; }
+.rs-btn { border-radius: var(--r-control); }
+.rs-btn:focus-visible { outline: 2px solid var(--lx-accent-color); }
+img { border-radius: var(--r-media); }
