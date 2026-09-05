@@ -159,11 +159,11 @@ storefront-skills/
 │   └── storefront-engine/           ← shared resources, not a public command
 │       └── references/              ← workflow guidance + island schemas
 ├── .agents/skills → skills/         ← Codex + Cursor native discovery (symlink)
-├── plugins/lexsis-storefront-skills/← Claude Code plugin (skills → symlink, agents, MCP config)
+├── plugins/lexsis-storefront-skills/← Claude plugin (generated skill copy, agents, MCP config)
 ├── codex/                           ← Codex plugin manifest + MCP config
 ├── gpt/                             ← GENERATED — custom GPT instructions + knowledge
 ├── cursor/                          ← pointer README (Cursor needs no copies)
-└── scripts/build-distributions.py   ← regenerates gpt/, validates everything (CI gate)
+└── scripts/build-distributions.py   ← regenerates Claude/GPT outputs and validates everything
 ```
 
 One source of truth: edit `skills/`, run `python3 scripts/build-distributions.py`, commit. CI fails on drift.
@@ -173,7 +173,9 @@ The full Claude/Codex plugins and GPT distribution package the shared
 self-contained so clients that install only selected skill folders do not
 depend on a missing shared directory.
 
-> **Windows note:** the fan-out uses symlinks — clone with `git config core.symlinks true`.
+> **Windows note:** `.agents/skills` is a convenience symlink for local agent
+> discovery. The published Claude plugin uses real copied files and does not
+> depend on symlink support.
 
 ## Contributing
 

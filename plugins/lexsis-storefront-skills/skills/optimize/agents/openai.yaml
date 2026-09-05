@@ -1,0 +1,11 @@
+interface:
+  display_name: "Optimize Storefront Page"
+  short_description: "Improve a page for one measurable business outcome."
+  default_prompt: "Use $optimize to improve this page for my chosen outcome."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "lexsis-ai"
+      description: "Lexsis AI storefront MCP server"
+      transport: "streamable_http"
+      url: "https://mcp.trylexsis.com/mcp"

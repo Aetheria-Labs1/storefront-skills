@@ -1,0 +1,6 @@
+{
+  "id": "email-popup",
+  "html": "<div class=\"fixed inset-0 z-50 flex items-center justify-center\" style=\"background: rgba(0,0,0,0.5)\"><div class=\"relative max-w-md w-full mx-4 rounded-xl p-8 shadow-2xl\" style=\"background-color: var(--lx-bg-color)\"><button class=\"absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full text-lg\" style=\"color: var(--lx-text-muted); background: var(--lx-surface-alt)\" aria-label=\"Close\">&times;</button><div class=\"text-center mb-6\"><h2 class=\"text-2xl font-bold mb-2\" style=\"font-family: var(--lx-font-heading); color: var(--lx-text-color)\">{{HEADING}}</h2><p style=\"color: var(--lx-text-muted)\">{{SUBHEADING}}</p></div><div data-island=\"EmailCapture\" data-props='{\"variant\":\"default\",\"placeholder\":\"Enter your email\",\"successMessage\":\"Welcome aboard!\",\"buttonText\":\"{{CTA_TEXT}}\"}'></div></div></div>",
+  "css": "",
+  "js": ""
+}

@@ -1,0 +1,6 @@
+{
+  "id": "product-showcase",
+  "html": "<section class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20\"><div class=\"grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-8 lg:gap-16 items-start\"><div data-island=\"ProductGallery\" data-props='{\"productId\":\"{{PRODUCT_ID}}\",\"layout\":\"grid\"}'></div><div class=\"lg:sticky lg:top-24 lg:self-start space-y-6\"><div data-island=\"BuyBox\" data-props='{\"productId\":\"{{PRODUCT_ID}}\",\"ctaText\":\"{{CTA_TEXT}}\",\"showTrustBadges\":true}'></div><div class=\"pt-4 border-t\" style=\"border-color: var(--lx-border-color)\"></div></div></div></section>",
+  "css": "",
+  "js": ""
+}

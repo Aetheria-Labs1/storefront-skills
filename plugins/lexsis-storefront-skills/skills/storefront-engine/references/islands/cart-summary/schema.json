@@ -1,0 +1,68 @@
+{
+  "contract_version": 2,
+  "name": "CartSummary",
+  "category": "commerce",
+  "usage_hint": "Displays cart subtotal, optional tax/shipping/discount lines. Subscribes to shared cart state.",
+  "when_to_use": "Inside DrawerShell below CartLines to show order summary before checkout.",
+  "when_not_to_use": "Outside cart context or on pages without cart functionality.",
+  "defaultHydrate": "idle",
+  "combine_with": [
+    "DrawerShell",
+    "CartLines",
+    "CartCheckoutButton"
+  ],
+  "anti_patterns": [],
+  "props": {
+    "showTax": {
+      "type": "boolean",
+      "required": false,
+      "default": "false"
+    },
+    "showShipping": {
+      "type": "boolean",
+      "required": false,
+      "default": "false"
+    },
+    "showDiscounts": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
+    "currency": {
+      "type": "string",
+      "required": false
+    }
+  },
+  "variants": null,
+  "css_vars": [
+    "--lx-border-color",
+    "--lx-text-color",
+    "--lx-text-muted"
+  ],
+  "parts": [
+    "line",
+    "line-label",
+    "line-value",
+    "root",
+    "subtotal",
+    "subtotal-label",
+    "subtotal-value"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"CartSummary\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
+    "examples": []
+  }
+}

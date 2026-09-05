@@ -1,0 +1,132 @@
+{
+  "contract_version": 2,
+  "name": "VariantSwatches",
+  "category": "commerce",
+  "usage_hint": "Visual variant selector with image/color/text/size_grid swatch types. Emits variant:changed or option:changed events for BuyBox/ProductGallery sync.",
+  "when_to_use": "Use on PDP when you want a dedicated, visually rich variant selector separate from BuyBox. Common for products with color/pattern variants where images are more informative than text labels.",
+  "when_not_to_use": "Not when BuyBox's built-in variant selector is sufficient. Not for single-variant products. Not for multi-axis variants unless you use axis mode per option (e.g., separate VariantSwatches for color and size).",
+  "defaultHydrate": "immediate",
+  "combine_with": [
+    "BuyBox (set listenForEvents:true",
+    "showVariantSelector:false on BuyBox to avoid duplicate selectors)",
+    "ProductGallery (set listenForVariant:true to sync images)"
+  ],
+  "anti_patterns": [
+    "Using with BuyBox showVariantSelector:true: duplicates variant UI; set showVariantSelector:false on BuyBox",
+    "Not setting listenForEvents:true on BuyBox: BuyBox won't update when user selects a swatch",
+    "Using image swatches with large images: swatches are 64x64px; large images load slowly and waste bandwidth",
+    "Using axis mode without defining all option values: missing values break the selector"
+  ],
+  "props": {
+    "variants": {
+      "type": "array",
+      "required": false,
+      "shape": {
+        "id": "string",
+        "title": "string",
+        "price": "string",
+        "compareAtPrice": "?string",
+        "available": "boolean",
+        "image": "?string",
+        "images": "?array<{url: string, alt: ?string}>",
+        "color": "?string",
+        "badge": "?string"
+      }
+    },
+    "axis": {
+      "type": "string",
+      "required": false
+    },
+    "values": {
+      "type": "array",
+      "required": false,
+      "shape": {
+        "value": "string",
+        "image": "?string",
+        "color": "?string",
+        "badge": "?string",
+        "available": "?boolean"
+      }
+    },
+    "type": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "image",
+        "text",
+        "color",
+        "size_grid"
+      ],
+      "default": "image"
+    },
+    "label": {
+      "type": "string",
+      "required": false
+    },
+    "columns": {
+      "type": "number",
+      "required": false
+    },
+    "selectedId": {
+      "type": "string",
+      "required": false
+    },
+    "selectedValue": {
+      "type": "string",
+      "required": false
+    }
+  },
+  "variants": null,
+  "css_vars": [
+    "--lx-accent-color",
+    "--lx-text-color"
+  ],
+  "parts": [
+    "badge",
+    "grid",
+    "label",
+    "root",
+    "swatch",
+    "swatch-color",
+    "swatch-image",
+    "unavailable-slash"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"VariantSwatches\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Image swatches (color/pattern variants)",
+        "source": "<lx-island name=\"VariantSwatches\">\n  <script type=\"application/json\">{\"variants\":[{\"id\":\"v1\",\"title\":\"Red\",\"price\":\"$99.00\",\"available\":true,\"image\":\"https://via.placeholder.com/64/ff0000\"},{\"id\":\"v2\",\"title\":\"Blue\",\"price\":\"$99.00\",\"available\":true,\"image\":\"https://via.placeholder.com/64/0000ff\"}],\"type\":\"image\",\"label\":\"Color\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Color swatches (solid colors)",
+        "source": "<lx-island name=\"VariantSwatches\">\n  <script type=\"application/json\">{\"variants\":[{\"id\":\"v1\",\"title\":\"Black\",\"price\":\"$49.00\",\"available\":true,\"color\":\"#000000\"},{\"id\":\"v2\",\"title\":\"White\",\"price\":\"$49.00\",\"available\":false,\"color\":\"#ffffff\"}],\"type\":\"color\",\"label\":\"Choose Color\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Text swatches (simple variant names)",
+        "source": "<lx-island name=\"VariantSwatches\">\n  <script type=\"application/json\">{\"variants\":[{\"id\":\"v1\",\"title\":\"Small\",\"price\":\"$29.00\",\"available\":true},{\"id\":\"v2\",\"title\":\"Medium\",\"price\":\"$29.00\",\"available\":true},{\"id\":\"v3\",\"title\":\"Large\",\"price\":\"$29.00\",\"available\":false}],\"type\":\"text\",\"label\":\"Size\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Size grid (4-column grid layout)",
+        "source": "<lx-island name=\"VariantSwatches\">\n  <script type=\"application/json\">{\"variants\":[{\"id\":\"v1\",\"title\":\"XS\",\"price\":\"$39.00\",\"available\":true},{\"id\":\"v2\",\"title\":\"S\",\"price\":\"$39.00\",\"available\":true},{\"id\":\"v3\",\"title\":\"M\",\"price\":\"$39.00\",\"available\":true},{\"id\":\"v4\",\"title\":\"L\",\"price\":\"$39.00\",\"available\":false}],\"type\":\"size_grid\",\"columns\":4,\"label\":\"Size\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Axis mode (color option, used with multi-axis products)",
+        "source": "<lx-island name=\"VariantSwatches\">\n  <script type=\"application/json\">{\"axis\":\"Color\",\"values\":[{\"value\":\"Red\",\"image\":\"https://via.placeholder.com/64/ff0000\",\"available\":true},{\"value\":\"Blue\",\"image\":\"https://via.placeholder.com/64/0000ff\",\"available\":true}],\"type\":\"image\",\"label\":\"Color\"}</script>\n</lx-island>"
+      }
+    ]
+  }
+}

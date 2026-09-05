@@ -1,0 +1,11 @@
+interface:
+  display_name: "Analyze Page"
+  short_description: "Analyze a page, screenshot, or ad into a safe brief."
+  default_prompt: "Use $analyze-page to analyze this reference for my storefront."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "lexsis-ai"
+      description: "Lexsis AI storefront MCP server"
+      transport: "streamable_http"
+      url: "https://mcp.trylexsis.com/mcp"

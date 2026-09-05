@@ -1,0 +1,6 @@
+{
+  "id": "countdown-circular",
+  "html": "<section class=\"py-12 md:py-16 lg:py-20\" style=\"background-color: var(--lx-surface-alt)\"><div class=\"max-w-md mx-auto px-4 text-center\"><h2 class=\"text-2xl md:text-3xl font-bold mb-8\" style=\"font-family: var(--lx-font-heading); color: var(--lx-text-color)\">{{HEADING}}</h2><div data-island=\"CountdownTimer\" data-props='{\"endDate\":\"{{END_DATE}}\",\"style\":\"circular\"}'></div></div></section>",
+  "css": "",
+  "js": ""
+}

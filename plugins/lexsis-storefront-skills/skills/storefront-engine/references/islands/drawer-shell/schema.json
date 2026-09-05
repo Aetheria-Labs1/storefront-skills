@@ -1,0 +1,124 @@
+{
+  "contract_version": 2,
+  "name": "DrawerShell",
+  "category": "commerce",
+  "usage_hint": "Multi-mode container island that lazily hydrates child islands on first open and keeps them mounted across subsequent opens.",
+  "when_to_use": "Wrap CartLines, CartSummary, CartCheckoutButton, CartProgressBar, and CartCrossSell inside DrawerShell for a composable cart.",
+  "when_not_to_use": "Do not use for always-visible content or nest one DrawerShell inside another.",
+  "defaultHydrate": "immediate",
+  "combine_with": [
+    "CartLines",
+    "CartSummary",
+    "CartCheckoutButton",
+    "CartProgressBar",
+    "CartCrossSell"
+  ],
+  "anti_patterns": [
+    "Omitting data-island-container (children hydrate eagerly instead of on first open)",
+    "Nesting DrawerShell instances (focus, scroll locking, and overlays conflict)"
+  ],
+  "props": {
+    "mode": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "drawer-right",
+        "drawer-left",
+        "bottom-sheet",
+        "modal",
+        "fullscreen",
+        "dropdown"
+      ],
+      "default": "drawer-right"
+    },
+    "responsive": {
+      "type": "object",
+      "required": false,
+      "shape": {
+        "mobile": "?string",
+        "tablet": "?string"
+      }
+    },
+    "trigger": {
+      "type": "string",
+      "required": false,
+      "default": "cart:open"
+    },
+    "title": {
+      "type": "string",
+      "required": false,
+      "default": "Shopping cart"
+    },
+    "width": {
+      "type": "string",
+      "required": false,
+      "default": "400px"
+    },
+    "maxHeight": {
+      "type": "string",
+      "required": false,
+      "default": "85vh"
+    },
+    "overlay": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
+    "animate": {
+      "type": "boolean",
+      "required": false,
+      "default": "smooth"
+    },
+    "swipeToDismiss": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
+    "dragHandle": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
+    "__innerHTML": {
+      "type": "string",
+      "required": false,
+      "default": ""
+    }
+  },
+  "variants": null,
+  "css_vars": [
+    "--lx-bg-color",
+    "--lx-border-color",
+    "--lx-surface-alt",
+    "--lx-text-color",
+    "--lx-text-muted"
+  ],
+  "parts": [
+    "close",
+    "content",
+    "drag-handle",
+    "header",
+    "header-count",
+    "header-title",
+    "overlay",
+    "panel",
+    "portal"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"DrawerShell\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
+    "examples": []
+  }
+}

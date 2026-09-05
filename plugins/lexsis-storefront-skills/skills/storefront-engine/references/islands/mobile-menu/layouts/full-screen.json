@@ -1,0 +1,6 @@
+{
+  "id": "mobile-menu-full-screen",
+  "html": "<div class=\"fixed inset-0 z-50 hidden\" data-mobile-menu style=\"background-color: var(--lx-bg-color)\"><div class=\"flex flex-col h-full\"><div class=\"flex items-center justify-between p-6\"><img src=\"{{LOGO_URL}}\" alt=\"Home\" class=\"h-7 w-auto\" /><button aria-label=\"Close menu\" class=\"p-2 rounded-md hover:bg-gray-100\"><svg class=\"w-6 h-6\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M6 18L18 6M6 6l12 12\"/></svg></button></div><div class=\"flex-1 flex items-center justify-center\"><nav class=\"text-center\"><div data-island=\"MobileMenu\" data-props='{\"links\":{{LINKS}},\"logo\":{\"src\":\"{{LOGO_URL}}\"},\"socials\":[]}'></div></nav></div><div class=\"p-6 text-center\" style=\"color: var(--lx-text-muted)\"><div class=\"flex items-center justify-center gap-6 text-sm\"></div></div></div></div>",
+  "css": "",
+  "js": ""
+}

@@ -1,0 +1,161 @@
+{
+  "contract_version": 2,
+  "name": "Navbar",
+  "category": "navigation",
+  "usage_hint": "Site-wide top navigation bar with logo, links, cart, and mobile menu.",
+  "when_to_use": "When you need persistent navigation across all pages. Supports both hydration mode (custom HTML with data-lx-nav tags) and legacy mode (React-rendered with props). Cart badge auto-syncs with cart state.",
+  "when_not_to_use": "For announcement-only headers use AnnouncementBar. For combined announcement + nav use SiteHeader. For page-specific navigation use MobileMenu (standalone mobile sheet).",
+  "defaultHydrate": "immediate",
+  "combine_with": [
+    "CartDrawer",
+    "Footer",
+    "AnnouncementBar",
+    "BackToTop"
+  ],
+  "anti_patterns": [
+    "Using both SiteHeader and Navbar on the same page — SiteHeader already includes Navbar functionality",
+    "Placing Navbar inside a section wrapper — it should be a direct page child for sticky positioning to work",
+    "Hard-coding cart count instead of omitting it (the island subscribes to real cart state automatically)"
+  ],
+  "props": {
+    "sticky": {
+      "type": "boolean",
+      "required": false
+    },
+    "cartMode": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "drawer",
+        "link"
+      ]
+    },
+    "cartUrl": {
+      "type": "string",
+      "required": false
+    },
+    "transparent": {
+      "type": "boolean",
+      "required": false
+    },
+    "offsetTop": {
+      "type": "string",
+      "required": false
+    },
+    "hideCart": {
+      "type": "boolean",
+      "required": false
+    },
+    "logo": {
+      "type": "object",
+      "required": true,
+      "shape": {
+        "src": "?string",
+        "html": "?string",
+        "alt": "?string",
+        "url": "?string"
+      }
+    },
+    "links": {
+      "type": "array",
+      "required": true,
+      "shape": {
+        "label": "string",
+        "url": "string",
+        "children": "?array<{label: string, url: string, children: ?array<{label: object, url: object, children: ?object}>}>"
+      }
+    },
+    "cartCount": {
+      "type": "number",
+      "required": false
+    },
+    "style": {
+      "type": "object",
+      "required": false,
+      "shape": {
+        "bgColor": "?string",
+        "textColor": "?string",
+        "accentColor": "?string",
+        "logoHeight": "?string",
+        "height": "?string",
+        "borderBottom": "?string",
+        "fontFamily": "?string",
+        "fontSize": "?string",
+        "fontWeight": "?string",
+        "padding": "?string",
+        "maxWidth": "?string",
+        "dropdownBg": "?string",
+        "dropdownTextColor": "?string",
+        "mobileBg": "?string",
+        "mobileTextColor": "?string"
+      }
+    },
+    "cta": {
+      "type": "object",
+      "required": false,
+      "shape": {
+        "label": "string",
+        "url": "string"
+      }
+    },
+    "cart": {
+      "type": "object",
+      "required": false,
+      "shape": {
+        "icon": "?'cart' | 'bag' | 'basket'",
+        "svg": "?string",
+        "image": "?string",
+        "label": "?string",
+        "badgeColor": "?string"
+      }
+    }
+  },
+  "variants": null,
+  "css_vars": [
+    "--lx-accent-color"
+  ],
+  "parts": [
+    "cart-badge",
+    "cart-trigger",
+    "cta",
+    "dropdown",
+    "dropdown-item",
+    "link",
+    "links",
+    "logo",
+    "mobile-link",
+    "mobile-panel",
+    "mobile-trigger",
+    "root"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"Navbar\">\n  <script type=\"application/json\">\n{\n  \"logo\": {},\n  \"links\": [\n    {\n      \"label\": \"example-label\",\n      \"url\": \"example-url\"\n    }\n  ]\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Hydration mode with custom HTML",
+        "source": "<lx-island name=\"Navbar\">\n  <script type=\"application/json\">{\"sticky\":true,\"cartMode\":\"drawer\"}</script>\n  <nav data-lx-nav=\"root\"><a href=\"/\"><img src=\"/logo.svg\" alt=\"Logo\"/></a><button data-lx-nav=\"cart-trigger\"><svg>...</svg><span data-lx-nav=\"cart-count\"></span></button><button data-lx-nav=\"mobile-trigger\">Menu</button><div data-lx-nav=\"mobile-panel\">...</div></nav>\n</lx-island>"
+      },
+      {
+        "label": "Legacy mode with transparent sticky nav",
+        "source": "<lx-island name=\"Navbar\">\n  <script type=\"application/json\">{\"logo\":{\"src\":\"/logo.svg\",\"alt\":\"Store\"},\"links\":[{\"label\":\"Shop\",\"url\":\"/collections\"},{\"label\":\"About\",\"url\":\"/pages/about\"}],\"transparent\":true,\"sticky\":true,\"style\":{\"accentColor\":\"#5055aa\"}}</script>\n</lx-island>"
+      },
+      {
+        "label": "Legacy mode with dropdown menu and CTA",
+        "source": "<lx-island name=\"Navbar\">\n  <script type=\"application/json\">{\"logo\":{\"src\":\"/logo.svg\"},\"links\":[{\"label\":\"Products\",\"url\":\"#\",\"children\":[{\"label\":\"New\",\"url\":\"/new\"},{\"label\":\"Sale\",\"url\":\"/sale\"}]},{\"label\":\"Contact\",\"url\":\"/contact\"}],\"cta\":{\"label\":\"Sign Up\",\"url\":\"/signup\"}}</script>\n</lx-island>"
+      }
+    ]
+  }
+}

@@ -1,0 +1,1 @@
+{"id":"stock-indicator","html":"<div class=\"space-y-1\"><div data-island=\"InventoryIndicator\" data-props='{\"productId\":\"{{PRODUCT_ID}}\",\"variant\":\"bar\"}'></div></div>","css":"","js":""}

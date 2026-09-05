@@ -1,0 +1,140 @@
+{
+  "contract_version": 2,
+  "name": "SocialProofPopup",
+  "category": "social_proof",
+  "usage_hint": "Floating notification popup showing recent purchases (\"X from Y just bought Z\") that cycles through events, creating urgency and social proof. Supports static events array or live fetch from our social proof API.",
+  "when_to_use": "On high-traffic product or collection pages where real-time purchase activity is meaningful. Two modes: static events[] array (baked in) or fetch mode (socialProofEndpoint for live data with background refresh). Supports bottom-left, bottom-right, and top-banner positions.",
+  "when_not_to_use": "On checkout pages (distracts from completion). Avoid on low-traffic products (sparse events damage trust). Skip on mobile-first experiences where viewport is tight. Never show multiple SocialProofPopups on one page.",
+  "defaultHydrate": "visible",
+  "combine_with": [
+    "BuyBox",
+    "ReviewCarousel",
+    "TrustBadgeBar",
+    "EmailCapture"
+  ],
+  "anti_patterns": [
+    "Multiple popups on one page (chaos; only one global instance per site)",
+    "Showing fake/synthetic events without real data (destroys trust if users notice)",
+    "Setting delay or interval too low (<3000ms delay, <6000ms interval; users can't read)",
+    "Using both events[] and socialProofEndpoint (events[] takes priority; pick one mode)",
+    "Using on pages with other competing popups (email capture, exit intent; pick one)"
+  ],
+  "props": {
+    "events": {
+      "type": "array",
+      "required": false,
+      "shape": {
+        "name": "string",
+        "product": "string",
+        "location": "?string",
+        "time": "?string",
+        "image": "?string"
+      }
+    },
+    "socialProofEndpoint": {
+      "type": "string",
+      "required": false
+    },
+    "productId": {
+      "type": "string",
+      "required": false
+    },
+    "storeId": {
+      "type": "string",
+      "required": false
+    },
+    "batchSize": {
+      "type": "number",
+      "required": false,
+      "default": "10"
+    },
+    "refreshInterval": {
+      "type": "number",
+      "required": false,
+      "default": "300000"
+    },
+    "delay": {
+      "type": "number",
+      "required": false
+    },
+    "delayMs": {
+      "type": "number",
+      "required": false
+    },
+    "duration": {
+      "type": "number",
+      "required": false
+    },
+    "durationMs": {
+      "type": "number",
+      "required": false
+    },
+    "interval": {
+      "type": "number",
+      "required": false,
+      "default": "8000"
+    },
+    "position": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "bottom-left",
+        "bottom-right",
+        "top-banner"
+      ],
+      "default": "bottom-left"
+    },
+    "showProductImage": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    }
+  },
+  "variants": null,
+  "css_vars": [
+    "--lx-accent-color",
+    "--lx-text-color"
+  ],
+  "parts": [
+    "card",
+    "image",
+    "name",
+    "product",
+    "root",
+    "time"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"SocialProofPopup\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Fetch mode — live purchases from API (bottom-left)",
+        "source": "<lx-island name=\"SocialProofPopup\">\n  <script type=\"application/json\">{\"socialProofEndpoint\":\"/api/v1/storefront/public/social-proof/abc12345\",\"delayMs\":3000,\"durationMs\":4000,\"interval\":8000,\"position\":\"bottom-left\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Static events (bottom-right, 6s interval)",
+        "source": "<lx-island name=\"SocialProofPopup\">\n  <script type=\"application/json\">{\"events\":[{\"name\":\"Sarah M.\",\"product\":\"Organic Cotton Tee\",\"location\":\"New York\",\"time\":\"2 minutes ago\",\"image\":\"/products/tee.jpg\"},{\"name\":\"Mike R.\",\"product\":\"Denim Jacket\",\"location\":\"Los Angeles\",\"time\":\"5 minutes ago\",\"image\":\"/products/jacket.jpg\"}],\"delayMs\":3000,\"interval\":6000,\"durationMs\":4000,\"position\":\"bottom-right\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Top-banner variant (slides down from top)",
+        "source": "<lx-island name=\"SocialProofPopup\">\n  <script type=\"application/json\">{\"socialProofEndpoint\":\"/api/v1/storefront/public/social-proof/abc12345\",\"position\":\"top-banner\",\"delayMs\":5000,\"durationMs\":3000,\"interval\":10000}</script>\n</lx-island>"
+      },
+      {
+        "label": "Static with no images (minimal)",
+        "source": "<lx-island name=\"SocialProofPopup\">\n  <script type=\"application/json\">{\"events\":[{\"name\":\"Customer in CA\",\"product\":\"Ceramic Mug\",\"time\":\"just now\"},{\"name\":\"Customer in NY\",\"product\":\"Water Bottle\",\"time\":\"5 min ago\"}],\"showProductImage\":false,\"delayMs\":4000,\"durationMs\":4500,\"interval\":9000,\"position\":\"bottom-left\"}</script>\n</lx-island>"
+      }
+    ]
+  }
+}

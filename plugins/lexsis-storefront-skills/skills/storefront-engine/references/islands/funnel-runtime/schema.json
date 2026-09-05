@@ -1,0 +1,169 @@
+{
+  "contract_version": 2,
+  "name": "FunnelRuntime",
+  "category": "engagement",
+  "usage_hint": "Generic inline or popup funnel runtime for quizzes, offers, gift reveals, and lead capture.",
+  "when_to_use": "Use when a storefront journey needs server-resolved steps, branching, resumable answers, or a timed overlay.",
+  "when_not_to_use": "Use EmailCapture for a single email field and Modal for static overlay content without a journey.",
+  "defaultHydrate": "immediate",
+  "combine_with": [
+    "Modal",
+    "EmailCapture",
+    "ProductCarousel",
+    "BuyBox"
+  ],
+  "anti_patterns": [
+    "Embedding private reward logic in data-props; rewards must be resolved by the runtime API.",
+    "Mounting multiple auto-triggered funnel runtimes on one page; coordinate campaigns to avoid modal fatigue.",
+    "Using a popup for long-form content; use inline placement or a dedicated page instead."
+  ],
+  "props": {
+    "funnelKey": {
+      "type": "string",
+      "required": true
+    },
+    "shortId": {
+      "type": "string",
+      "required": false
+    },
+    "endpoint": {
+      "type": "string",
+      "required": false
+    },
+    "localRuntime": {
+      "type": "object",
+      "required": false,
+      "shape": {
+        "funnel_id": "string",
+        "funnel_version": "number",
+        "public_key": "string",
+        "entry_step": "{key: string, kind: string, position: number, settings: object, branch_logic: ?{rules: ?object, default_goto: ?object}}",
+        "steps": "array<{key: string, kind: string, position: number, settings: object, branch_logic: ?{rules: ?object, default_goto: ?object}}>"
+      }
+    },
+    "placement": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "inline",
+        "modal"
+      ],
+      "default": "modal"
+    },
+    "trigger": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "click",
+        "immediate",
+        "delay",
+        "scroll",
+        "exit_intent",
+        "event"
+      ],
+      "default": "delay"
+    },
+    "triggerValue": {
+      "type": "number",
+      "required": false,
+      "default": "5000"
+    },
+    "showOnce": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
+    "storageKey": {
+      "type": "string",
+      "required": false
+    },
+    "title": {
+      "type": "string",
+      "required": false
+    },
+    "subtitle": {
+      "type": "string",
+      "required": false
+    }
+  },
+  "variants": null,
+  "css_vars": [
+    "--lx-accent-color",
+    "--lx-bg-color",
+    "--lx-border-color",
+    "--lx-funnel-accent",
+    "--lx-funnel-bg",
+    "--lx-funnel-border",
+    "--lx-funnel-confetti-2",
+    "--lx-funnel-confetti-3",
+    "--lx-funnel-muted",
+    "--lx-funnel-panel",
+    "--lx-funnel-text",
+    "--lx-muted-color",
+    "--lx-text-color"
+  ],
+  "parts": [
+    "backdrop",
+    "close",
+    "complete",
+    "complete-icon",
+    "complete-message",
+    "complete-title",
+    "confetti",
+    "continue-button",
+    "error",
+    "form",
+    "header",
+    "heading",
+    "input",
+    "offer-button",
+    "option-description",
+    "option-icon",
+    "option-label",
+    "options",
+    "panel",
+    "progress-bar",
+    "progress-track",
+    "reveal-continue",
+    "reward",
+    "reward-description",
+    "reward-icon",
+    "reward-title",
+    "root",
+    "step",
+    "step-count",
+    "subtitle",
+    "terminal-copy",
+    "trigger"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"FunnelRuntime\">\n  <script type=\"application/json\">\n{\n  \"funnelKey\": \"example-funnelKey\"\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Five-second product finder popup",
+        "source": "<lx-island name=\"FunnelRuntime\">\n  <script type=\"application/json\">{\"funnelKey\":\"product-finder\",\"shortId\":\"abc12345\",\"placement\":\"modal\",\"trigger\":\"delay\",\"triggerValue\":5000,\"showOnce\":true}</script>\n</lx-island>"
+      },
+      {
+        "label": "Inline quiz",
+        "source": "<lx-island name=\"FunnelRuntime\">\n  <script type=\"application/json\">{\"funnelKey\":\"skin-finder\",\"shortId\":\"abc12345\",\"placement\":\"inline\",\"trigger\":\"immediate\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Mystery gift reveal",
+        "source": "<lx-island name=\"FunnelRuntime\">\n  <script type=\"application/json\">{\"funnelKey\":\"mystery-gift\",\"shortId\":\"abc12345\",\"placement\":\"modal\",\"trigger\":\"exit_intent\",\"triggerValue\":4000,\"showOnce\":true}</script>\n</lx-island>"
+      }
+    ]
+  }
+}

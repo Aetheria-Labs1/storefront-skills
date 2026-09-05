@@ -1,0 +1,6 @@
+{
+  "id": "product-gallery",
+  "html": "<section class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16\"><div class=\"grid grid-cols-1 md:grid-cols-[80px_1fr] gap-4\"><div class=\"hidden md:flex flex-col gap-2 order-1\"><div data-island=\"ProductGallery\" data-props='{\"productId\":\"{{PRODUCT_ID}}\",\"layout\":\"vertical\"}'></div></div><div class=\"md:order-2\"><div class=\"aspect-square rounded-lg overflow-hidden\" style=\"background-color: var(--lx-surface-alt)\"><img src=\"{{IMAGE_URL}}\" alt=\"{{PRODUCT_TITLE}}\" class=\"w-full h-full object-contain\" /></div></div></div></section>",
+  "css": "",
+  "js": ""
+}

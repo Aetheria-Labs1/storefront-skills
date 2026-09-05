@@ -1,0 +1,126 @@
+{
+  "contract_version": 2,
+  "name": "BundleBuilder",
+  "category": "commerce",
+  "usage_hint": "Multi-product bundle selector with optional discount and \"Add All to Cart\" action. Shows main product + checkbox-selectable recommendations with pricing summary.",
+  "when_to_use": "Use on PDP or collection pages to upsell complementary products as a bundle (e.g., \"Frequently Bought Together\", \"Complete the Look\"). Encourages multi-item purchases with optional bundle discount.",
+  "when_not_to_use": "Not for single-product add-to-cart (use BuyBox or QuickAdd). Not for general product grids (use ProductCarousel). Not for cross-sells without bundle context (use ProductCarousel).",
+  "defaultHydrate": "immediate",
+  "combine_with": [
+    "CartDrawer (REQUIRED for cart feedback)",
+    "BuyBox (common on PDP pages)"
+  ],
+  "anti_patterns": [
+    "Omitting CartDrawer: users get no cart confirmation feedback after clicking \"Add All\"",
+    "Using without a discount: reduces incentive; bundle builders work best with visible savings",
+    "Mixing incompatible products: bundle should make logical sense (e.g., phone + case + charger, not random items)",
+    "Using layout:\"stacked\" with 5+ recommendations: becomes very tall; use horizontal layout or limit items"
+  ],
+  "props": {
+    "mainProduct": {
+      "type": "object",
+      "required": true,
+      "shape": {
+        "id": "string",
+        "title": "string",
+        "price": "string",
+        "image": "string"
+      }
+    },
+    "recommendations": {
+      "type": "array",
+      "required": true,
+      "shape": {
+        "id": "string",
+        "title": "string",
+        "price": "string",
+        "image": "string",
+        "handle": "?string",
+        "selected": "?boolean"
+      }
+    },
+    "bundleDiscount": {
+      "type": "object",
+      "required": false,
+      "shape": {
+        "type": "'percentage' | 'fixed'",
+        "value": "number"
+      }
+    },
+    "title": {
+      "type": "string",
+      "required": false,
+      "default": "Frequently bought together"
+    },
+    "layout": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "horizontal",
+        "stacked"
+      ],
+      "default": "horizontal"
+    },
+    "showCheckboxes": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    }
+  },
+  "variants": [
+    "horizontal",
+    "stacked"
+  ],
+  "css_vars": [
+    "--lx-accent-color",
+    "--lx-text-color"
+  ],
+  "parts": [
+    "cta",
+    "heading",
+    "item",
+    "item-checkbox",
+    "item-image",
+    "item-price",
+    "item-title",
+    "main-image",
+    "main-price",
+    "main-product",
+    "main-title",
+    "pricing",
+    "root",
+    "savings-badge",
+    "subtotal",
+    "total"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"BundleBuilder\">\n  <script type=\"application/json\">\n{\n  \"mainProduct\": {\n    \"id\": \"example-id\",\n    \"title\": \"example-title\",\n    \"price\": \"example-price\",\n    \"image\": \"example-image\"\n  },\n  \"recommendations\": [\n    {\n      \"id\": \"example-id\",\n      \"title\": \"example-title\",\n      \"price\": \"example-price\",\n      \"image\": \"example-image\"\n    }\n  ]\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Stacked bundle with percentage discount",
+        "source": "<lx-island name=\"BundleBuilder\">\n  <script type=\"application/json\">{\"mainProduct\":{\"id\":\"p1\",\"title\":\"Wireless Headphones\",\"price\":\"$99.00\",\"image\":\"https://via.placeholder.com/64\"},\"recommendations\":[{\"id\":\"p2\",\"title\":\"Carrying Case\",\"price\":\"$19.00\",\"image\":\"https://via.placeholder.com/64\"},{\"id\":\"p3\",\"title\":\"Audio Cable\",\"price\":\"$9.00\",\"image\":\"https://via.placeholder.com/64\"}],\"bundleDiscount\":{\"type\":\"percentage\",\"value\":10},\"title\":\"Complete Your Setup\",\"layout\":\"stacked\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Horizontal bundle with fixed discount",
+        "source": "<lx-island name=\"BundleBuilder\">\n  <script type=\"application/json\">{\"mainProduct\":{\"id\":\"p1\",\"title\":\"Camera\",\"price\":\"$499.00\",\"image\":\"https://via.placeholder.com/64\"},\"recommendations\":[{\"id\":\"p2\",\"title\":\"Lens\",\"price\":\"$199.00\",\"image\":\"https://via.placeholder.com/64\"},{\"id\":\"p3\",\"title\":\"Tripod\",\"price\":\"$49.00\",\"image\":\"https://via.placeholder.com/64\"}],\"bundleDiscount\":{\"type\":\"fixed\",\"value\":50},\"layout\":\"horizontal\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Bundle without checkboxes (all items pre-selected)",
+        "source": "<lx-island name=\"BundleBuilder\">\n  <script type=\"application/json\">{\"mainProduct\":{\"id\":\"p1\",\"title\":\"Laptop\",\"price\":\"$999.00\",\"image\":\"https://via.placeholder.com/64\"},\"recommendations\":[{\"id\":\"p2\",\"title\":\"Mouse\",\"price\":\"$29.00\",\"image\":\"https://via.placeholder.com/64\"}],\"showCheckboxes\":false,\"title\":\"Bundle & Save\"}</script>\n</lx-island>"
+      }
+    ]
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "id": "quick-buy",
+  "html": "<div class=\"rounded-lg border p-4\" style=\"border-color: var(--lx-border-color); background-color: var(--lx-bg-surface)\"><div class=\"flex items-center gap-4\"><img src=\"{{IMAGE_URL}}\" alt=\"{{PRODUCT_TITLE}}\" class=\"w-16 h-16 rounded-md object-cover flex-shrink-0\" /><div class=\"flex-1 min-w-0\"><h3 class=\"text-sm font-medium truncate\" style=\"color: var(--lx-text-color)\">{{PRODUCT_TITLE}}</h3><p class=\"text-sm\" style=\"color: var(--lx-text-muted)\">{{PRODUCT_PRICE}}</p></div><div class=\"flex-shrink-0\"><div data-island=\"BuyBox\" data-props='{\"productId\":\"{{PRODUCT_ID}}\",\"variant\":\"compact\",\"ctaText\":\"Add\"}'></div></div></div></div>",
+  "css": "",
+  "js": ""
+}

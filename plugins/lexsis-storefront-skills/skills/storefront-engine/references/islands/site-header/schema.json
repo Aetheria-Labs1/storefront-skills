@@ -1,0 +1,102 @@
+{
+  "contract_version": 2,
+  "name": "SiteHeader",
+  "category": "navigation",
+  "usage_hint": "Combined announcement bar + navigation bar in one unified header component. Announcement supports rotation, dismissal, and session persistence.",
+  "when_to_use": "When you need both announcement bar and navigation in a single sticky header unit. Announcement auto-rotates messages, persists dismissal in sessionStorage. Use this OR (Navbar + AnnouncementBar separately), not both.",
+  "when_not_to_use": "If you only need navigation without announcement, use Navbar alone. If announcement should scroll away while nav stays sticky, use separate AnnouncementBar + Navbar.",
+  "defaultHydrate": "immediate",
+  "combine_with": [
+    "CartDrawer",
+    "Footer",
+    "BackToTop"
+  ],
+  "anti_patterns": [
+    "Using SiteHeader AND Navbar on the same page — they duplicate functionality",
+    "Multiple SiteHeader instances — there should be one site-wide header",
+    "Setting announcement messages that are too long (causes mobile overflow — keep under 60 chars)"
+  ],
+  "props": {
+    "announcement": {
+      "type": "object",
+      "required": false,
+      "shape": {
+        "messages": "array<string>",
+        "speed": "?number",
+        "backgroundColor": "?string",
+        "textColor": "?string",
+        "dismissible": "?boolean",
+        "link": "?string"
+      }
+    },
+    "navbar": {
+      "type": "object",
+      "required": true,
+      "shape": {
+        "logo": "{src: string, alt: ?string, url: ?string}",
+        "links": "array<{label: string, url: string, children: ?array<{label: object, url: object, children: ?object}>}>",
+        "cartCount": "?number",
+        "transparent": "?boolean",
+        "style": "?{bgColor: ?string, textColor: ?string, accentColor: ?string, logoHeight: ?string, height: ?string, borderBottom: ?string, fontFamily: ?string, fontSize: ?string, fontWeight: ?string, padding: ?string, maxWidth: ?string, dropdownBg: ?string, dropdownTextColor: ?string, mobileBg: ?string, mobileTextColor: ?string}",
+        "cta": "?{label: string, url: string}",
+        "hideCart": "?boolean"
+      }
+    },
+    "sticky": {
+      "type": "boolean",
+      "required": false
+    }
+  },
+  "variants": null,
+  "css_vars": [
+    "--lx-accent-color"
+  ],
+  "parts": [
+    "announcement",
+    "announcement-dismiss",
+    "announcement-text",
+    "cart-badge",
+    "cart-trigger",
+    "cta",
+    "dropdown",
+    "dropdown-item",
+    "link",
+    "links",
+    "logo",
+    "mobile-link",
+    "mobile-panel",
+    "mobile-trigger",
+    "nav",
+    "root"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"SiteHeader\">\n  <script type=\"application/json\">\n{\n  \"navbar\": {\n    \"logo\": {},\n    \"links\": []\n  }\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Hydration mode with rotating announcements",
+        "source": "<lx-island name=\"SiteHeader\">\n  <script type=\"application/json\">{\"sticky\":true,\"announcement\":{\"messages\":[\"Free shipping over $50\",\"New arrivals daily\",\"20% off first order\"],\"speed\":5000,\"dismissible\":true},\"navbar\":{\"logo\":{\"src\":\"/logo.svg\"},\"links\":[]}}</script>\n  <header data-lx-header=\"root\"><div data-lx-header=\"announcement\"><span data-lx-header=\"announcement-text\"></span><button data-lx-header=\"announcement-dismiss\">×</button></div><nav data-lx-nav=\"root\">...</nav></header>\n</lx-island>"
+      },
+      {
+        "label": "Legacy mode with single announcement",
+        "source": "<lx-island name=\"SiteHeader\">\n  <script type=\"application/json\">{\"announcement\":{\"messages\":[\"Sale ends tonight!\"],\"backgroundColor\":\"#5055aa\",\"dismissible\":false},\"navbar\":{\"logo\":{\"src\":\"/logo.svg\"},\"links\":[{\"label\":\"Shop\",\"url\":\"/shop\"}],\"transparent\":true},\"sticky\":true}</script>\n</lx-island>"
+      },
+      {
+        "label": "Legacy mode with linked announcement",
+        "source": "<lx-island name=\"SiteHeader\">\n  <script type=\"application/json\">{\"announcement\":{\"messages\":[\"Click here for 20% off\"],\"link\":\"/sale\",\"backgroundColor\":\"#000\",\"textColor\":\"#fff\"},\"navbar\":{\"logo\":{\"src\":\"/logo.svg\"},\"links\":[{\"label\":\"Products\",\"url\":\"/products\"}]}}</script>\n</lx-island>"
+      }
+    ]
+  }
+}

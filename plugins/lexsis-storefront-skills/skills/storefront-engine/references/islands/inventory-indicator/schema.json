@@ -1,0 +1,103 @@
+{
+  "contract_version": 2,
+  "name": "InventoryIndicator",
+  "category": "commerce",
+  "usage_hint": "Low stock badge/bar/text that shows inventory urgency. Listens for variant:changed events and emits inventory:updated.",
+  "when_to_use": "On product pages to create urgency when stock is low. Shows \"Only X left\" or \"Out of stock\". Three variants: badge (pill), bar (progress), text (inline). Auto-hides when stock is above threshold.",
+  "when_not_to_use": "For products where inventory urgency doesn't drive sales. When inventory data isn't available. For pre-order or made-to-order products (misleading).",
+  "defaultHydrate": "immediate",
+  "combine_with": [
+    "BuyBox",
+    "VariantSelector",
+    "OptionResolver",
+    "ProductPrice"
+  ],
+  "anti_patterns": [
+    "Setting lowStockThreshold too high (everything shows as \"low\" — loses urgency impact)",
+    "Showing exact count when inventory is high (exposes supply chain data unnecessarily)",
+    "Using variant=\"bar\" without enough horizontal space (bars need width to be readable)"
+  ],
+  "props": {
+    "variantId": {
+      "type": "string",
+      "required": false
+    },
+    "quantity": {
+      "type": "number",
+      "required": false
+    },
+    "lowStockThreshold": {
+      "type": "number",
+      "required": false,
+      "default": "5"
+    },
+    "urgentThreshold": {
+      "type": "number",
+      "required": false,
+      "default": "3"
+    },
+    "showExactCount": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
+    "listenForEvents": {
+      "type": "boolean",
+      "required": false,
+      "default": "false"
+    },
+    "variant": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "badge",
+        "bar",
+        "text"
+      ],
+      "default": "badge"
+    }
+  },
+  "variants": [
+    "badge",
+    "bar",
+    "text"
+  ],
+  "css_vars": [],
+  "parts": [
+    "bar-fill",
+    "bar-track",
+    "dot",
+    "message",
+    "root"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"InventoryIndicator\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Badge variant with exact count",
+        "source": "<lx-island name=\"InventoryIndicator\">\n  <script type=\"application/json\">{\"variantId\":\"gid://shopify/ProductVariant/123\",\"quantity\":4,\"lowStockThreshold\":10,\"urgentThreshold\":3,\"showExactCount\":true,\"variant\":\"badge\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Bar variant that listens for variant changes",
+        "source": "<lx-island name=\"InventoryIndicator\">\n  <script type=\"application/json\">{\"quantity\":8,\"lowStockThreshold\":15,\"urgentThreshold\":5,\"listenForEvents\":true,\"variant\":\"bar\",\"showExactCount\":true}</script>\n</lx-island>"
+      },
+      {
+        "label": "Text variant without exact count",
+        "source": "<lx-island name=\"InventoryIndicator\">\n  <script type=\"application/json\">{\"variantId\":\"gid://shopify/ProductVariant/789\",\"quantity\":2,\"lowStockThreshold\":5,\"urgentThreshold\":3,\"showExactCount\":false,\"variant\":\"text\"}</script>\n</lx-island>"
+      }
+    ]
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "id": "bundle-compact-upsell",
+  "html": "<div class=\"rounded-lg border p-4\" style=\"border-color: var(--lx-border-color); background-color: var(--lx-surface-alt)\"><div class=\"flex items-center gap-3 mb-3\"><span class=\"inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold text-white\" style=\"background: var(--lx-accent-color)\">BUNDLE & SAVE</span><span class=\"text-sm\" style=\"color: var(--lx-text-muted)\">Add complementary items for up to 20% off</span></div><div data-island=\"BundleBuilder\" data-props='{\"layout\":\"horizontal\",\"mainProduct\":{{MAIN_PRODUCT_JSON}},\"recommendations\":{{RECOMMENDATIONS_JSON}},\"bundleDiscount\":{{BUNDLE_DISCOUNT_JSON}}}'></div></div>",
+  "css": "",
+  "js": ""
+}

@@ -1,0 +1,6 @@
+{
+  "id": "email-banner",
+  "html": "<section class=\"py-12 md:py-16 lg:py-20\" style=\"background-color: var(--lx-accent-color)\"><div class=\"max-w-3xl mx-auto px-4 text-center\"><h2 class=\"text-2xl md:text-3xl lg:text-4xl font-bold mb-4\" style=\"font-family: var(--lx-font-heading); color: #ffffff\">{{HEADING}}</h2><p class=\"text-lg mb-8\" style=\"color: rgba(255,255,255,0.85)\">{{SUBHEADING}}</p><div data-island=\"EmailCapture\" data-props='{\"variant\":\"default\",\"placeholder\":\"Enter your email\",\"successMessage\":\"You are in!\",\"buttonText\":\"{{CTA_TEXT}}\"}'></div></div></section>",
+  "css": "",
+  "js": ""
+}

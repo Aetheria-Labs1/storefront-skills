@@ -51,7 +51,8 @@ read the current Lexsis schema before changing examples.
 
 ## Generated Files
 
-Do not edit `gpt/instructions.md` or `gpt/knowledge.md` directly.
+Do not edit `gpt/instructions.md`, `gpt/knowledge.md`, or
+`plugins/lexsis-storefront-skills/skills/` directly.
 
 After changing a skill or shared reference, run:
 

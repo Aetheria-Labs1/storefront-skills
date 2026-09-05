@@ -1,0 +1,6 @@
+{
+  "id": "cart-cta",
+  "html": "<div class=\"text-sm\"><div data-island=\"ProceedToCart\" data-props='{\"variant\":\"minimal\",\"label\":\"View cart →\"}'></div></div>",
+  "css": "",
+  "js": ""
+}

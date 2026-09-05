@@ -1,0 +1,6 @@
+{
+  "id": "swatches-image-thumbnails",
+  "html": "<div class=\"space-y-3\"><label class=\"text-sm font-medium\" style=\"color: var(--lx-text-color)\">Style: <span class=\"font-normal\" style=\"color: var(--lx-text-muted)\">{{SELECTED_VARIANT}}</span></label><div data-island=\"VariantSwatches\" data-props='{\"variants\":{{VARIANTS_ARRAY}},\"values\":{{VALUES_ARRAY}},\"type\":\"image\"}'></div></div>",
+  "css": "",
+  "js": ""
+}

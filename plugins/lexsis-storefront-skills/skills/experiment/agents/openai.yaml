@@ -1,0 +1,11 @@
+interface:
+  display_name: "Run Experiment"
+  short_description: "Set up and evaluate storefront experiments."
+  default_prompt: "Use $experiment to create a focused storefront test from this hypothesis."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "lexsis-ai"
+      description: "Lexsis AI storefront MCP server"
+      transport: "streamable_http"
+      url: "https://mcp.trylexsis.com/mcp"

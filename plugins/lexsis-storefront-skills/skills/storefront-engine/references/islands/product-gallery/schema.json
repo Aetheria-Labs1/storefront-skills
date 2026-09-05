@@ -1,0 +1,320 @@
+{
+  "contract_version": 2,
+  "name": "ProductGallery",
+  "category": "commerce",
+  "usage_hint": "PDP media gallery with thumbnail rails, editorial photo grids, mixed image/video support, lightbox viewing, and variant synchronization.",
+  "when_to_use": "Use on product detail pages for horizontal/vertical thumbnail galleries or CSS-customizable grid, collage, masonry, and stacked media layouts.",
+  "when_not_to_use": "Not for hero banners (use ProductHero). Not for card media (use MediaCarousel). Not for standalone image carousels (use MediaSlideshow primitive).",
+  "defaultHydrate": "immediate",
+  "combine_with": [
+    "BuyBox (product context)",
+    "VariantSwatches (when listenForVariant:true",
+    "gallery auto-updates images on variant change)"
+  ],
+  "anti_patterns": [
+    "Setting listenForVariant:true without emitting variant:changed events: gallery won't update on variant selection",
+    "Using a grid layout without a mobileLayout decision: verify the default swipe rail fits the surrounding PDP composition",
+    "Setting autoplay with short interval: distracts users from reading product details",
+    "Using kenBurns transition on every image: excessive motion, may trigger motion sensitivity"
+  ],
+  "props": {
+    "media": {
+      "type": "array",
+      "required": false
+    },
+    "images": {
+      "type": "array",
+      "required": false,
+      "shape": {
+        "id": "?string",
+        "type": "?'image' | 'video'",
+        "src": "?string",
+        "url": "?string",
+        "alt": "?string",
+        "poster": "?string",
+        "mobileSrc": "?string",
+        "srcSet": "?string",
+        "srcSetWebp": "?string",
+        "sizes": "?string",
+        "fit": "?'cover' | 'contain'",
+        "objectFit": "?'cover' | 'contain'",
+        "objectPosition": "?string",
+        "sources": "?array<{type: ?'application/x-mpegURL' | 'application/vnd.apple.mpegurl' | 'application/dash+xml' | 'video/mp4' | 'video/webm' | 'video/ogg', url: string, width: ?number, height: ?number, bitrate: ?number}>",
+        "preview": "?{url: string, type: 'video/mp4' | 'image/gif' | 'image/webp', poster: ?string}",
+        "captionsUrl": "?string",
+        "assetId": "?string",
+        "provider": "?'cloudflare_stream' | 'cloudflare_cdn' | 'external'"
+      }
+    },
+    "layout": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "horizontal",
+        "vertical",
+        "stacked",
+        "grid",
+        "collageLeft",
+        "collageRight",
+        "twoColumn",
+        "masonry"
+      ],
+      "default": "horizontal"
+    },
+    "mobileLayout": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "stacked",
+        "swipe"
+      ]
+    },
+    "enableLightbox": {
+      "type": "boolean",
+      "required": false
+    },
+    "autoplay": {
+      "type": "boolean",
+      "required": false,
+      "default": "false"
+    },
+    "interval": {
+      "type": "number",
+      "required": false,
+      "default": "4000"
+    },
+    "transition": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "none",
+        "slide",
+        "fade",
+        "zoom",
+        "kenBurns"
+      ],
+      "default": "fade"
+    },
+    "listenForVariant": {
+      "type": "boolean",
+      "required": false,
+      "default": "false"
+    },
+    "maxHeight": {
+      "type": "string",
+      "required": false
+    },
+    "thumbPosition": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "left",
+        "right",
+        "bottom",
+        "top"
+      ]
+    },
+    "objectFit": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "cover",
+        "contain"
+      ],
+      "default": "cover"
+    }
+  },
+  "variants": [
+    "horizontal",
+    "vertical",
+    "stacked",
+    "grid",
+    "collageLeft",
+    "collageRight",
+    "twoColumn",
+    "masonry"
+  ],
+  "css_vars": [
+    "--lx-accent-color",
+    "--lx-bg-surface",
+    "--lx-featured-media-arrow-bg",
+    "--lx-featured-media-arrow-border",
+    "--lx-featured-media-arrow-color",
+    "--lx-featured-media-arrow-inset",
+    "--lx-featured-media-arrow-radius",
+    "--lx-featured-media-arrow-shadow",
+    "--lx-featured-media-arrow-size",
+    "--lx-featured-media-dot-color",
+    "--lx-featured-media-dot-gap",
+    "--lx-featured-media-dot-size",
+    "--lx-featured-media-dots-bottom",
+    "--lx-media-carousel-arrow-bg",
+    "--lx-media-carousel-arrow-border",
+    "--lx-media-carousel-arrow-color",
+    "--lx-media-carousel-arrow-hover-bg",
+    "--lx-media-carousel-arrow-offset",
+    "--lx-media-carousel-arrow-radius",
+    "--lx-media-carousel-arrow-shadow",
+    "--lx-media-carousel-arrow-size",
+    "--lx-media-carousel-bg",
+    "--lx-media-carousel-dot-active-color",
+    "--lx-media-carousel-dot-active-scale",
+    "--lx-media-carousel-dot-color",
+    "--lx-media-carousel-dot-gap",
+    "--lx-media-carousel-dot-offset",
+    "--lx-media-carousel-dot-shadow",
+    "--lx-media-carousel-dot-size",
+    "--lx-media-carousel-duration",
+    "--lx-media-carousel-ease",
+    "--lx-media-carousel-fit",
+    "--lx-media-carousel-placeholder",
+    "--lx-media-carousel-radius",
+    "--lx-media-lightbox-backdrop",
+    "--lx-media-lightbox-close-bg",
+    "--lx-media-lightbox-close-border",
+    "--lx-media-lightbox-close-color",
+    "--lx-media-lightbox-close-hover-bg",
+    "--lx-media-lightbox-close-inset",
+    "--lx-media-lightbox-close-radius",
+    "--lx-media-lightbox-close-size",
+    "--lx-media-lightbox-control-bg",
+    "--lx-media-lightbox-control-color",
+    "--lx-media-lightbox-focus-color",
+    "--lx-media-lightbox-max-height",
+    "--lx-media-lightbox-max-width",
+    "--lx-media-lightbox-media-bg",
+    "--lx-media-lightbox-mobile-padding",
+    "--lx-media-lightbox-padding",
+    "--lx-media-lightbox-z-index",
+    "--lx-product-gallery-bg",
+    "--lx-product-gallery-border",
+    "--lx-product-gallery-columns",
+    "--lx-product-gallery-featured-ratio",
+    "--lx-product-gallery-focus-offset",
+    "--lx-product-gallery-focus-width",
+    "--lx-product-gallery-gap",
+    "--lx-product-gallery-masonry-tall-ratio",
+    "--lx-product-gallery-masonry-wide-ratio",
+    "--lx-product-gallery-mobile-gap",
+    "--lx-product-gallery-mobile-peek",
+    "--lx-product-gallery-mobile-ratio",
+    "--lx-product-gallery-open-bg",
+    "--lx-product-gallery-open-color",
+    "--lx-product-gallery-open-shadow",
+    "--lx-product-gallery-radius",
+    "--lx-product-gallery-stacked-ratio",
+    "--lx-product-gallery-tile-ratio",
+    "--lx-shoppable-button-radius",
+    "--lx-shoppable-control-bg",
+    "--lx-shoppable-control-border",
+    "--lx-shoppable-control-color",
+    "--lx-shoppable-control-hover",
+    "--lx-shoppable-control-size",
+    "--lx-shoppable-progress-bg",
+    "--lx-shoppable-progress-color",
+    "--lx-shoppable-progress-height",
+    "--lx-shoppable-radius",
+    "--lx-shoppable-video-bg",
+    "--lx-shoppable-video-error-bg",
+    "--lx-text-color",
+    "--lx-video-bg",
+    "--lx-video-button-bg",
+    "--lx-video-button-color",
+    "--lx-video-button-padding-x",
+    "--lx-video-button-radius",
+    "--lx-video-control-bg",
+    "--lx-video-control-border",
+    "--lx-video-control-color",
+    "--lx-video-control-gap",
+    "--lx-video-control-hover",
+    "--lx-video-control-inset",
+    "--lx-video-control-radius",
+    "--lx-video-control-size",
+    "--lx-video-control-transition",
+    "--lx-video-error-bg",
+    "--lx-video-error-color",
+    "--lx-video-error-padding",
+    "--lx-video-focus-color",
+    "--lx-video-object-fit",
+    "--lx-video-preview-fit",
+    "--lx-video-preview-opacity",
+    "--lx-video-progress-bg",
+    "--lx-video-progress-color",
+    "--lx-video-progress-height",
+    "--lx-video-radius"
+  ],
+  "parts": [
+    "adaptive-video",
+    "adaptive-video-controls",
+    "adaptive-video-element",
+    "adaptive-video-error",
+    "adaptive-video-error-content",
+    "adaptive-video-error-message",
+    "adaptive-video-mute",
+    "adaptive-video-play",
+    "adaptive-video-preview",
+    "adaptive-video-preview-media",
+    "adaptive-video-progress",
+    "adaptive-video-progress-fill",
+    "adaptive-video-retry",
+    "controls",
+    "dot",
+    "dots",
+    "grid",
+    "grid-item",
+    "image",
+    "image-placeholder",
+    "lightbox",
+    "lightbox-close",
+    "lightbox-content",
+    "main-media",
+    "media",
+    "next",
+    "open-lightbox",
+    "previous",
+    "root",
+    "scroll-container",
+    "slide",
+    "thumbnail",
+    "thumbnail-strip",
+    "track",
+    "video",
+    "video-placeholder",
+    "video-poster",
+    "viewport"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"ProductGallery\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Horizontal gallery with fade transition",
+        "source": "<lx-island name=\"ProductGallery\">\n  <script type=\"application/json\">{\"media\":[{\"type\":\"image\",\"src\":\"https://via.placeholder.com/600\",\"alt\":\"Product front\"},{\"type\":\"image\",\"src\":\"https://via.placeholder.com/600\",\"alt\":\"Product back\"}],\"layout\":\"horizontal\",\"transition\":\"fade\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Vertical gallery with thumbnail rail on left",
+        "source": "<lx-island name=\"ProductGallery\">\n  <script type=\"application/json\">{\"media\":[{\"type\":\"image\",\"src\":\"https://via.placeholder.com/600\"},{\"type\":\"video\",\"poster\":\"https://via.placeholder.com/600\",\"sources\":[{\"url\":\"https://example.com/product.m3u8\"}]}],\"layout\":\"vertical\",\"thumbPosition\":\"left\",\"transition\":\"slide\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Left collage with lightbox",
+        "source": "<lx-island name=\"ProductGallery\">\n  <script type=\"application/json\">{\"media\":[{\"type\":\"image\",\"src\":\"https://via.placeholder.com/900\"},{\"type\":\"image\",\"src\":\"https://via.placeholder.com/600\"},{\"type\":\"image\",\"src\":\"https://via.placeholder.com/600\"}],\"layout\":\"collageLeft\",\"enableLightbox\":true}</script>\n</lx-island>"
+      },
+      {
+        "label": "Autoplay gallery with variant sync",
+        "source": "<lx-island name=\"ProductGallery\">\n  <script type=\"application/json\">{\"media\":[{\"type\":\"image\",\"src\":\"https://via.placeholder.com/600\"}],\"autoplay\":true,\"interval\":5000,\"listenForVariant\":true,\"transition\":\"zoom\"}</script>\n</lx-island>"
+      }
+    ]
+  }
+}

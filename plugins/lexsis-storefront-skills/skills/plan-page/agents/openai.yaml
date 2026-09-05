@@ -1,0 +1,11 @@
+interface:
+  display_name: "Plan Storefront Page"
+  short_description: "Create an approved storefront page blueprint before generation."
+  default_prompt: "Use $plan-page to turn this campaign brief into an approved storefront plan."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "lexsis-ai"
+      description: "Lexsis AI storefront MCP server"
+      transport: "streamable_http"
+      url: "https://mcp.trylexsis.com/mcp"

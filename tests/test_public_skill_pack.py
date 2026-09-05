@@ -125,6 +125,30 @@ class PublicSkillPackTests(unittest.TestCase):
                 ).is_file()
             )
 
+    def test_claude_plugin_contains_materialized_skills(self) -> None:
+        plugin_skills = (
+            ROOT / "plugins" / "lexsis-storefront-skills" / "skills"
+        )
+        self.assertTrue(plugin_skills.is_dir())
+        self.assertFalse(plugin_skills.is_symlink())
+        self.assertEqual(
+            EXPECTED_PUBLIC_SKILLS,
+            {
+                path.parent.name
+                for path in plugin_skills.glob("*/SKILL.md")
+            },
+        )
+        for source in SKILLS.rglob("*"):
+            if (
+                not source.is_file()
+                or "__pycache__" in source.parts
+                or source.suffix == ".pyc"
+            ):
+                continue
+            packaged = plugin_skills / source.relative_to(SKILLS)
+            self.assertTrue(packaged.is_file(), source)
+            self.assertEqual(source.read_bytes(), packaged.read_bytes(), source)
+
     def test_active_skill_docs_use_one_html_source(self) -> None:
         for path in SKILLS.rglob("*.md"):
             self.assertNotIn("visual-source.html", path.read_text(encoding="utf-8"), path)

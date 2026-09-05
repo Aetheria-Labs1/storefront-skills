@@ -1,0 +1,180 @@
+{
+  "contract_version": 2,
+  "name": "Modal",
+  "category": "engagement",
+  "usage_hint": "Generic modal container with multiple trigger types (delay, scroll, exit-intent, click, event) and flexible content rendering via child islands or simple headline/body/image.",
+  "when_to_use": "For email capture popups, size guides, video embeds, product quick-views, announcements, or any temporary overlay content. Use exit_intent trigger for lead recovery, delay trigger for timed promos, click trigger for \"View Details\" links.",
+  "when_not_to_use": "For persistent navigation (use a sidebar instead). Don't use for critical checkout flows (modals can be accidentally closed). Avoid for long-form content (scrolling in modals is bad UX; use a dedicated page). Skip if mobile-first and content doesn't fit small screens.",
+  "defaultHydrate": "immediate",
+  "combine_with": [
+    "EmailCapture",
+    "ReviewCarousel",
+    "BuyBox (quick-view)",
+    "FAQ",
+    "ProductGrid (size chart)"
+  ],
+  "anti_patterns": [
+    "Multiple modals auto-triggering on one page (modal fatigue; coordinate triggers or pick one)",
+    "Not setting showOnce:true for promotional modals (spams user every page; always use showOnce for one-time offers)",
+    "exit_intent trigger without minimum delay (fires immediately on accidental mouse move; set triggerValue to 3000-5000ms)",
+    "Large child islands in sm or md size modals (content overflow; use lg/xl or fullscreen for complex child content)",
+    "backdrop:false without closable:false (users can't close modal, trapped; always allow escape)",
+    "Using position:fullscreen for simple messages (overkill; reserve fullscreen for video or multi-step flows)"
+  ],
+  "props": {
+    "trigger": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "click",
+        "exit_intent",
+        "delay",
+        "scroll",
+        "event"
+      ],
+      "default": "delay"
+    },
+    "triggerValue": {
+      "type": "string",
+      "required": false,
+      "default": "5000"
+    },
+    "position": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "fullscreen",
+        "right",
+        "center",
+        "bottom"
+      ],
+      "default": "center"
+    },
+    "size": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "full",
+        "sm",
+        "md",
+        "lg",
+        "xl"
+      ],
+      "default": "md"
+    },
+    "closable": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
+    "backdrop": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
+    "animation": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "fade",
+        "slide-up",
+        "slide-right",
+        "scale"
+      ],
+      "default": "scale"
+    },
+    "showOnce": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
+    "storageKey": {
+      "type": "string",
+      "required": false,
+      "default": "_lx_modal"
+    },
+    "headline": {
+      "type": "string",
+      "required": false
+    },
+    "body": {
+      "type": "string",
+      "required": false
+    },
+    "image": {
+      "type": "string",
+      "required": false
+    },
+    "triggerLabel": {
+      "type": "string",
+      "required": false
+    },
+    "triggerVariant": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "minimal",
+        "outline",
+        "primary",
+        "ghost"
+      ],
+      "default": "primary"
+    },
+    "children": {
+      "type": "array",
+      "required": false,
+      "shape": {
+        "island": "string",
+        "props": "?object"
+      },
+      "default": "[]"
+    }
+  },
+  "variants": null,
+  "css_vars": [
+    "--lx-accent-color",
+    "--lx-text-color"
+  ],
+  "parts": [
+    "backdrop",
+    "root"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"Modal\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Exit-intent email capture modal (center, medium, once per session)",
+        "source": "<lx-island name=\"Modal\">\n  <script type=\"application/json\">{\"trigger\":\"exit_intent\",\"triggerValue\":5000,\"position\":\"center\",\"size\":\"md\",\"closable\":true,\"backdrop\":true,\"animation\":\"scale\",\"showOnce\":true,\"storageKey\":\"newsletter_2024\",\"headline\":\"Don't miss out!\",\"body\":\"Join 10,000+ subscribers and get exclusive deals.\",\"image\":\"/modal-hero.jpg\",\"children\":[{\"island\":\"EmailCapture\",\"props\":{\"placeholder\":\"Your email\",\"buttonText\":\"Get 15% Off\",\"discount\":\"15% OFF YOUR FIRST ORDER\",\"endpoint\":\"/api/modal-signup\"}}]}</script>\n</lx-island>"
+      },
+      {
+        "label": "Timed promo modal (5s delay, bottom position, compact)",
+        "source": "<lx-island name=\"Modal\">\n  <script type=\"application/json\">{\"trigger\":\"delay\",\"triggerValue\":5000,\"position\":\"bottom\",\"size\":\"lg\",\"closable\":true,\"backdrop\":true,\"animation\":\"slide-up\",\"showOnce\":true,\"headline\":\"Flash Sale! 20% Off Ends Tonight\",\"body\":\"Use code FLASH20 at checkout. Limited time only.\",\"children\":[{\"island\":\"Button\",\"props\":{\"text\":\"Shop Now\",\"href\":\"/collections/sale\"}}]}</script>\n</lx-island>"
+      },
+      {
+        "label": "Scroll-triggered size guide (50% scroll, right sidebar)",
+        "source": "<lx-island name=\"Modal\">\n  <script type=\"application/json\">{\"trigger\":\"scroll\",\"triggerValue\":50,\"position\":\"right\",\"size\":\"md\",\"closable\":true,\"backdrop\":true,\"animation\":\"slide-right\",\"showOnce\":false,\"headline\":\"Need help with sizing?\",\"body\":\"Check our detailed size chart to find your perfect fit.\",\"children\":[{\"island\":\"SizeChart\",\"props\":{\"chartType\":\"apparel\"}}]}</script>\n</lx-island>"
+      },
+      {
+        "label": "Click-triggered product quick-view (event-based)",
+        "source": "<lx-island name=\"Modal\">\n  <script type=\"application/json\">{\"trigger\":\"event\",\"storageKey\":\"product_quickview\",\"position\":\"center\",\"size\":\"xl\",\"closable\":true,\"backdrop\":true,\"animation\":\"fade\",\"showOnce\":false,\"children\":[{\"island\":\"BuyBox\",\"props\":{\"productId\":\"12345\",\"variant\":\"compact\"}}]}</script>\n</lx-island>"
+      },
+      {
+        "label": "Announcement modal with custom trigger button",
+        "source": "<lx-island name=\"Modal\">\n  <script type=\"application/json\">{\"trigger\":\"click\",\"position\":\"center\",\"size\":\"md\",\"closable\":true,\"backdrop\":true,\"animation\":\"scale\",\"triggerLabel\":\"View Announcement\",\"triggerVariant\":\"primary\",\"headline\":\"New Feature Launch!\",\"body\":\"We've just released our most requested feature. Check it out now.\",\"image\":\"/announcement-banner.jpg\"}</script>\n</lx-island>"
+      }
+    ]
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "contract_version": 2,
+  "name": "CartProgressBar",
+  "category": "commerce",
+  "usage_hint": "Shows progress toward free shipping or tiered rewards. Subscribes to shared cart state.",
+  "when_to_use": "Inside DrawerShell above CartLines to incentivize adding more items. Shows a visual bar and templated message.",
+  "when_not_to_use": "If the store does not offer free shipping thresholds or tiered incentives.",
+  "defaultHydrate": "idle",
+  "combine_with": [
+    "DrawerShell",
+    "CartLines",
+    "CartSummary"
+  ],
+  "anti_patterns": [],
+  "props": {
+    "threshold": {
+      "type": "number",
+      "required": false
+    },
+    "message": {
+      "type": "string",
+      "required": false,
+      "default": "{remaining} away from free shipping!"
+    },
+    "completedMessage": {
+      "type": "string",
+      "required": false,
+      "default": "Free shipping unlocked!"
+    },
+    "tiers": {
+      "type": "array",
+      "required": false,
+      "shape": {
+        "threshold": "number",
+        "label": "string"
+      }
+    },
+    "currency": {
+      "type": "string",
+      "required": false
+    },
+    "celebrationEnabled": {
+      "type": "boolean",
+      "required": false
+    }
+  },
+  "variants": null,
+  "css_vars": [
+    "--lx-accent-color"
+  ],
+  "parts": [
+    "bar",
+    "message",
+    "root",
+    "track"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"CartProgressBar\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
+    "examples": []
+  }
+}

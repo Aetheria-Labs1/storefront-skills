@@ -1,0 +1,6 @@
+{
+  "id": "subscription-toggle-card",
+  "html": "<div class=\"rounded-lg border p-5 space-y-4\" style=\"border-color: var(--lx-border-color); background-color: var(--lx-bg-surface)\"><div class=\"flex items-center justify-between\"><h3 class=\"text-sm font-semibold\" style=\"color: var(--lx-text-color)\">Purchase options</h3><span class=\"text-xs font-medium px-2 py-1 rounded-full text-white\" style=\"background-color: var(--lx-accent-color)\">Save {{SAVINGS_PERCENT}}%</span></div><div data-island=\"SubscriptionToggle\" data-props='{\"plans\":{{PLANS_ARRAY}},\"benefits\":{{BENEFITS_ARRAY}},\"oneTimePrice\":\"{{ONE_TIME_PRICE}}\"}'></div><ul class=\"text-xs space-y-1\" style=\"color: var(--lx-text-muted)\"><li>Free shipping on subscriptions</li><li>Cancel anytime</li><li>Modify frequency as needed</li></ul></div>",
+  "css": "",
+  "js": ""
+}

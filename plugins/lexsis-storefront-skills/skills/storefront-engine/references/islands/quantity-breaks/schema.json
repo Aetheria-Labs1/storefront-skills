@@ -1,0 +1,141 @@
+{
+  "contract_version": 2,
+  "name": "QuantityBreaks",
+  "category": "commerce",
+  "usage_hint": "Tiered bulk pricing selector — list rows, image pack cards, column tiles, or compact quantity pills. Buy more, save more UI pattern with optional add-to-cart or pure-selector mode feeding PlanSelector/BuyBox.",
+  "when_to_use": "For products with volume discounts (1/3/6-pack, 30/60/90-day supplies, wholesale bundles). Each tier shows quantity, price, per-unit cost, and optional savings, badge, and imagery. Use variant \"cards\" for image pack cards, \"columns\" for supply-duration tiles, \"pills\" for compact \"how many?\" selectors, or \"list\" for classic rows. Set emitEvents plus showCta:false to use it as a pure selector that re-prices a PlanSelector/BuyBox via the tiers:changed event.",
+  "when_not_to_use": "For subscription pricing UI use PlanSelector or SubscriptionToggle. For simple quantity selectors use BuyBox. When you want separate quantity input + add button (this island combines them).",
+  "defaultHydrate": "immediate",
+  "combine_with": [
+    "PlanSelector",
+    "BuyBox",
+    "ProductImage",
+    "InventoryIndicator",
+    "CartDrawer"
+  ],
+  "anti_patterns": [
+    "Using with showCta:true alongside BuyBox on the same page (they both add to cart — set showCta:false and let BuyBox own the CTA)",
+    "Setting tier quantities that exceed available inventory without checking stock first",
+    "Listing tiers in non-ascending order (confusing — always show smallest to largest quantity)",
+    "Styling selection state via inline overrides (target [data-part=\"tier\"][data-selected=\"true\"] in CSS instead)"
+  ],
+  "props": {
+    "tiers": {
+      "type": "array",
+      "required": true,
+      "shape": {
+        "quantity": "number",
+        "price": "string",
+        "perUnit": "string",
+        "savings": "?string",
+        "label": "?string",
+        "eyebrow": "?string",
+        "image": "?string",
+        "imageCount": "?number",
+        "badge": "?string",
+        "compareAtPrice": "?string",
+        "subscribePrice": "?string",
+        "subscribeCompareAt": "?string",
+        "subscribePerUnit": "?string",
+        "cadence": "?string",
+        "variantId": "?string"
+      }
+    },
+    "variantId": {
+      "type": "string",
+      "required": true
+    },
+    "currency": {
+      "type": "string",
+      "required": false
+    },
+    "variant": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "cards",
+        "columns",
+        "list",
+        "pills"
+      ],
+      "default": "list"
+    },
+    "emitEvents": {
+      "type": "boolean",
+      "required": false,
+      "default": "false"
+    },
+    "showCta": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
+    "defaultSelected": {
+      "type": "number",
+      "required": false,
+      "default": "0"
+    }
+  },
+  "variants": [
+    "cards",
+    "columns",
+    "list",
+    "pills"
+  ],
+  "css_vars": [
+    "--lx-accent-color",
+    "--lx-border-color",
+    "--lx-font-heading",
+    "--lx-secondary-color",
+    "--lx-surface",
+    "--lx-surface-alt",
+    "--lx-text-color"
+  ],
+  "parts": [
+    "cta",
+    "root",
+    "tier",
+    "tier-badge",
+    "tier-body",
+    "tier-compare",
+    "tier-discount",
+    "tier-eyebrow",
+    "tier-footer",
+    "tier-image",
+    "tier-list",
+    "tier-per-unit",
+    "tier-price",
+    "tier-qty",
+    "tier-radio"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"QuantityBreaks\">\n  <script type=\"application/json\">\n{\n  \"tiers\": [\n    {\n      \"quantity\": 0,\n      \"price\": \"example-price\",\n      \"perUnit\": \"example-perUnit\"\n    }\n  ],\n  \"variantId\": \"example-variantId\"\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Three-tier bulk pricing (classic list)",
+        "source": "<lx-island name=\"QuantityBreaks\">\n  <script type=\"application/json\">{\"variantId\":\"gid://shopify/ProductVariant/123\",\"tiers\":[{\"quantity\":1,\"price\":\"$10.00\",\"perUnit\":\"$10.00\"},{\"quantity\":3,\"price\":\"$27.00\",\"perUnit\":\"$9.00\",\"savings\":\"$3.00\",\"label\":\"Save 10%\"},{\"quantity\":5,\"price\":\"$40.00\",\"perUnit\":\"$8.00\",\"savings\":\"$10.00\",\"label\":\"Best Value\"}],\"currency\":\"USD\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Image pack cards with badges (pure selector for PlanSelector)",
+        "source": "<lx-island name=\"QuantityBreaks\">\n  <script type=\"application/json\">{\"variantId\":\"gid://shopify/ProductVariant/456\",\"variant\":\"cards\",\"showCta\":false,\"emitEvents\":true,\"defaultSelected\":1,\"tiers\":[{\"quantity\":1,\"label\":\"1 Pack\",\"price\":\"$24.95\",\"perUnit\":\"$0.83 / gummy\",\"image\":\"https://cdn.example.com/bottle.png\"},{\"quantity\":3,\"label\":\"3 Pack\",\"badge\":\"Most Popular\",\"price\":\"$59.95\",\"compareAtPrice\":\"$74.85\",\"perUnit\":\"$0.66 / gummy\",\"image\":\"https://cdn.example.com/bottle.png\",\"imageCount\":2,\"subscribePrice\":\"$47.96\",\"subscribeCompareAt\":\"$59.95\"},{\"quantity\":6,\"label\":\"6 Pack\",\"badge\":\"Best Value\",\"price\":\"$99.95\",\"compareAtPrice\":\"$149.70\",\"perUnit\":\"$0.55 / gummy\",\"image\":\"https://cdn.example.com/bottle.png\",\"imageCount\":3}]}</script>\n</lx-island>"
+      },
+      {
+        "label": "Supply-duration columns with percent-off footer strips",
+        "source": "<lx-island name=\"QuantityBreaks\">\n  <script type=\"application/json\">{\"variantId\":\"gid://shopify/ProductVariant/789\",\"variant\":\"columns\",\"showCta\":false,\"emitEvents\":true,\"tiers\":[{\"quantity\":1,\"eyebrow\":\"30 Days\",\"label\":\"1 Pack\",\"perUnit\":\"$28.99/pack\",\"price\":\"$28.99\",\"compareAtPrice\":\"$36.50\",\"savings\":\"20% off\",\"cadence\":\"1 Pack Auto-Shipped Every Month\"},{\"quantity\":2,\"eyebrow\":\"60 Days\",\"label\":\"2 Packs\",\"perUnit\":\"$23.99/pack\",\"price\":\"$47.98\",\"compareAtPrice\":\"$73.00\",\"savings\":\"34% off\",\"cadence\":\"2 Packs Auto-Shipped Every 2 Months\"},{\"quantity\":3,\"eyebrow\":\"90 Days\",\"label\":\"3 Packs\",\"perUnit\":\"$19.99/pack\",\"price\":\"$59.97\",\"compareAtPrice\":\"$109.50\",\"savings\":\"45% off\",\"cadence\":\"3 Packs Auto-Shipped Every 3 Months\"}]}</script>\n</lx-island>"
+      }
+    ]
+  }
+}

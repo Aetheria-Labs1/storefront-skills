@@ -1,0 +1,7 @@
+{
+  "name": "lookbook-grid",
+  "description": "4-column tight grid gallery with hover-scale effect. Click triggers fullscreen lightbox.",
+  "html": "<div class=\"glb-grid\" style=\"display:grid;grid-template-columns:repeat(4,1fr);gap:4px;overflow:hidden\">\n  <div class=\"glb-item\" style=\"cursor:pointer;overflow:hidden;border-radius:0\">\n    <img src=\"{{IMAGE_1}}\" alt=\"\" style=\"width:100%;aspect-ratio:1;object-fit:cover;transition:transform 0.4s\">\n  </div>\n  <div class=\"glb-item\" style=\"cursor:pointer;overflow:hidden;border-radius:0\">\n    <img src=\"{{IMAGE_2}}\" alt=\"\" style=\"width:100%;aspect-ratio:1;object-fit:cover;transition:transform 0.4s\">\n  </div>\n  <div class=\"glb-item\" style=\"cursor:pointer;overflow:hidden;border-radius:0\">\n    <img src=\"{{IMAGE_3}}\" alt=\"\" style=\"width:100%;aspect-ratio:1;object-fit:cover;transition:transform 0.4s\">\n  </div>\n  <div class=\"glb-item\" style=\"cursor:pointer;overflow:hidden;border-radius:0\">\n    <img src=\"{{IMAGE_4}}\" alt=\"\" style=\"width:100%;aspect-ratio:1;object-fit:cover;transition:transform 0.4s\">\n  </div>\n</div>\n<div data-island=\"GalleryLightbox\" data-props='{}'></div>",
+  "js": "document.querySelectorAll('.glb-item').forEach((el,i)=>{el.addEventListener('click',()=>{const imgs=Array.from(document.querySelectorAll('.glb-item img')).map(img=>({src:img.src,alt:img.alt}));document.dispatchEvent(new CustomEvent('lx:lightbox:open',{detail:{images:imgs,startIndex:i}}))})});",
+  "notes": "Hover effect: .glb-item:hover img { transform: scale(1.1) }"
+}

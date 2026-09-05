@@ -1,0 +1,93 @@
+{
+  "contract_version": 2,
+  "name": "BeforeAfter",
+  "category": "content",
+  "usage_hint": "Before/after image comparison slider with draggable divider. Supports horizontal and vertical orientation.",
+  "when_to_use": "For product transformations (skincare, makeup, home improvement, photo editing tools). User drags divider to reveal before/after images. Supports optional labels.",
+  "when_not_to_use": "For simple image galleries use ProductImage carousel. When images don't align perfectly (different crops/angles look broken). For video comparisons use side-by-side videos instead.",
+  "defaultHydrate": "immediate",
+  "combine_with": [
+    "ProductImage",
+    "ProductDescription",
+    "Testimonials",
+    "Hero sections"
+  ],
+  "anti_patterns": [
+    "Using images with different aspect ratios (causes misalignment)",
+    "Setting initialPosition to extreme (0 or 100) — users don't realize it's interactive",
+    "Using low-resolution images (pixelation ruins credibility of before/after claim)"
+  ],
+  "props": {
+    "before": {
+      "type": "object",
+      "required": true,
+      "shape": {
+        "src": "string",
+        "label": "?string"
+      }
+    },
+    "after": {
+      "type": "object",
+      "required": true,
+      "shape": {
+        "src": "string",
+        "label": "?string"
+      }
+    },
+    "orientation": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "horizontal",
+        "vertical"
+      ],
+      "default": "horizontal"
+    },
+    "initialPosition": {
+      "type": "number",
+      "required": false,
+      "default": "50"
+    }
+  },
+  "variants": null,
+  "css_vars": [
+    "--lx-accent-color"
+  ],
+  "parts": [
+    "after-image",
+    "before-image",
+    "handle",
+    "root",
+    "slider"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"BeforeAfter\">\n  <script type=\"application/json\">\n{\n  \"before\": {\n    \"src\": \"example-src\"\n  },\n  \"after\": {\n    \"src\": \"example-src\"\n  }\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Horizontal skincare before/after",
+        "source": "<lx-island name=\"BeforeAfter\">\n  <script type=\"application/json\">{\"before\":{\"src\":\"/images/before.jpg\",\"label\":\"Before\"},\"after\":{\"src\":\"/images/after.jpg\",\"label\":\"After\"},\"orientation\":\"horizontal\",\"initialPosition\":50}</script>\n</lx-island>"
+      },
+      {
+        "label": "Vertical photo edit comparison",
+        "source": "<lx-island name=\"BeforeAfter\">\n  <script type=\"application/json\">{\"before\":{\"src\":\"/images/original.jpg\",\"label\":\"Original\"},\"after\":{\"src\":\"/images/edited.jpg\",\"label\":\"Enhanced\"},\"orientation\":\"vertical\",\"initialPosition\":50}</script>\n</lx-island>"
+      },
+      {
+        "label": "Home improvement without labels",
+        "source": "<lx-island name=\"BeforeAfter\">\n  <script type=\"application/json\">{\"before\":{\"src\":\"/images/old-room.jpg\"},\"after\":{\"src\":\"/images/renovated.jpg\"},\"orientation\":\"horizontal\",\"initialPosition\":60}</script>\n</lx-island>"
+      }
+    ]
+  }
+}

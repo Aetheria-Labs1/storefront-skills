@@ -1,0 +1,256 @@
+{
+  "contract_version": 2,
+  "name": "ProductCarousel",
+  "category": "commerce",
+  "usage_hint": "Horizontal scrolling product carousel with arrow navigation and responsive grid columns. Displays ProductCard instances with staggered fade-up animations.",
+  "when_to_use": "Use for \"Related Products\", \"You May Also Like\", \"Trending\", or \"Recently Viewed\" sections on PDP or landing pages. Provides quick product browsing without leaving the page.",
+  "when_not_to_use": "Not for full-width collections (use collection page with standard grid). Not for single product display (use BuyBox or QuickAdd).",
+  "defaultHydrate": "immediate",
+  "combine_with": [
+    "CartDrawer (REQUIRED if showQuickAdd:true)",
+    "BuyBox or other PDP components (common on PDP pages)"
+  ],
+  "anti_patterns": [
+    "Using with fewer than 4 products: carousel arrows are unnecessary, use a static grid instead",
+    "Setting showQuickAdd:true without CartDrawer: users get no cart feedback",
+    "Overriding columns prop in carousel context: carousel calculates responsive widths; columns prop doesn't apply here",
+    "Using cardVariant:\"horizontal\" in carousel: horizontal cards break carousel scroll layout"
+  ],
+  "props": {
+    "products": {
+      "type": "array",
+      "required": true,
+      "shape": {
+        "id": "string",
+        "handle": "string",
+        "title": "string",
+        "subtitle": "?string",
+        "price": "string",
+        "compareAtPrice": "?string",
+        "badge": "?string",
+        "variants": "?array<{id: string, title: string, price: string, available: boolean}>",
+        "media": "?array<{id: ?string, type: string, src: string, alt: ?string, mobileSrc: ?string, srcSet: ?string, srcSetWebp: ?string, sizes: ?string, fit: ?'cover' | 'contain', objectPosition: ?string}>",
+        "image": "?string"
+      }
+    },
+    "title": {
+      "type": "string",
+      "required": false
+    },
+    "showQuickAdd": {
+      "type": "boolean",
+      "required": false
+    },
+    "showWishlist": {
+      "type": "boolean",
+      "required": false
+    },
+    "showLearnMore": {
+      "type": "boolean",
+      "required": false
+    },
+    "showQuickView": {
+      "type": "boolean",
+      "required": false
+    },
+    "mediaTransition": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "none",
+        "slide",
+        "fade",
+        "zoom",
+        "kenBurns"
+      ]
+    },
+    "hoverAdvance": {
+      "type": "boolean",
+      "required": false
+    },
+    "hoverAdvanceMode": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "next",
+        "cycle"
+      ]
+    },
+    "hoverInterval": {
+      "type": "number",
+      "required": false
+    },
+    "cardVariant": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "default",
+        "compact",
+        "compactRows"
+      ]
+    },
+    "columns": {
+      "type": "number",
+      "required": false
+    },
+    "animate": {
+      "type": "boolean",
+      "required": false
+    }
+  },
+  "variants": null,
+  "css_vars": [
+    "--lx-accent-color",
+    "--lx-bg-surface",
+    "--lx-border-color",
+    "--lx-featured-media-arrow-bg",
+    "--lx-featured-media-arrow-border",
+    "--lx-featured-media-arrow-color",
+    "--lx-featured-media-arrow-inset",
+    "--lx-featured-media-arrow-radius",
+    "--lx-featured-media-arrow-shadow",
+    "--lx-featured-media-arrow-size",
+    "--lx-featured-media-dot-color",
+    "--lx-featured-media-dot-gap",
+    "--lx-featured-media-dot-size",
+    "--lx-featured-media-dots-bottom",
+    "--lx-media-carousel-arrow-bg",
+    "--lx-media-carousel-arrow-border",
+    "--lx-media-carousel-arrow-color",
+    "--lx-media-carousel-arrow-hover-bg",
+    "--lx-media-carousel-arrow-offset",
+    "--lx-media-carousel-arrow-radius",
+    "--lx-media-carousel-arrow-shadow",
+    "--lx-media-carousel-arrow-size",
+    "--lx-media-carousel-bg",
+    "--lx-media-carousel-dot-active-color",
+    "--lx-media-carousel-dot-active-scale",
+    "--lx-media-carousel-dot-color",
+    "--lx-media-carousel-dot-gap",
+    "--lx-media-carousel-dot-offset",
+    "--lx-media-carousel-dot-shadow",
+    "--lx-media-carousel-dot-size",
+    "--lx-media-carousel-duration",
+    "--lx-media-carousel-ease",
+    "--lx-media-carousel-fit",
+    "--lx-media-carousel-placeholder",
+    "--lx-media-carousel-radius",
+    "--lx-shoppable-button-radius",
+    "--lx-shoppable-control-bg",
+    "--lx-shoppable-control-border",
+    "--lx-shoppable-control-color",
+    "--lx-shoppable-control-hover",
+    "--lx-shoppable-control-size",
+    "--lx-shoppable-progress-bg",
+    "--lx-shoppable-progress-color",
+    "--lx-shoppable-progress-height",
+    "--lx-shoppable-radius",
+    "--lx-shoppable-video-bg",
+    "--lx-shoppable-video-error-bg",
+    "--lx-surface-alt",
+    "--lx-text-color",
+    "--lx-text-muted",
+    "--lx-video-bg",
+    "--lx-video-button-bg",
+    "--lx-video-button-color",
+    "--lx-video-button-padding-x",
+    "--lx-video-button-radius",
+    "--lx-video-control-bg",
+    "--lx-video-control-border",
+    "--lx-video-control-color",
+    "--lx-video-control-gap",
+    "--lx-video-control-hover",
+    "--lx-video-control-inset",
+    "--lx-video-control-radius",
+    "--lx-video-control-size",
+    "--lx-video-control-transition",
+    "--lx-video-error-bg",
+    "--lx-video-error-color",
+    "--lx-video-error-padding",
+    "--lx-video-focus-color",
+    "--lx-video-object-fit",
+    "--lx-video-preview-fit",
+    "--lx-video-preview-opacity",
+    "--lx-video-progress-bg",
+    "--lx-video-progress-color",
+    "--lx-video-progress-height",
+    "--lx-video-radius"
+  ],
+  "parts": [
+    "adaptive-video",
+    "adaptive-video-controls",
+    "adaptive-video-element",
+    "adaptive-video-error",
+    "adaptive-video-error-content",
+    "adaptive-video-error-message",
+    "adaptive-video-mute",
+    "adaptive-video-play",
+    "adaptive-video-preview",
+    "adaptive-video-preview-media",
+    "adaptive-video-progress",
+    "adaptive-video-progress-fill",
+    "adaptive-video-retry",
+    "badge",
+    "card-wrapper",
+    "compare-price",
+    "controls",
+    "dot",
+    "dots",
+    "heading",
+    "icon",
+    "image",
+    "image-placeholder",
+    "media-placeholder",
+    "nav-next",
+    "nav-prev",
+    "next",
+    "previous",
+    "price",
+    "quick-add",
+    "root",
+    "row",
+    "row-image",
+    "row-list",
+    "row-price",
+    "row-subtitle",
+    "row-title",
+    "scroll-container",
+    "slide",
+    "title",
+    "track",
+    "video",
+    "video-placeholder",
+    "video-poster",
+    "viewport"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"ProductCarousel\">\n  <script type=\"application/json\">\n{\n  \"products\": [\n    {\n      \"id\": \"example-id\",\n      \"handle\": \"example-handle\",\n      \"title\": \"example-title\",\n      \"price\": \"example-price\"\n    }\n  ]\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Related products carousel",
+        "source": "<lx-island name=\"ProductCarousel\">\n  <script type=\"application/json\">{\"products\":[{\"id\":\"p1\",\"handle\":\"item1\",\"title\":\"Product 1\",\"price\":\"$49.00\",\"image\":\"https://via.placeholder.com/300\"},{\"id\":\"p2\",\"handle\":\"item2\",\"title\":\"Product 2\",\"price\":\"$59.00\",\"image\":\"https://via.placeholder.com/300\"},{\"id\":\"p3\",\"handle\":\"item3\",\"title\":\"Product 3\",\"price\":\"$69.00\",\"image\":\"https://via.placeholder.com/300\"},{\"id\":\"p4\",\"handle\":\"item4\",\"title\":\"Product 4\",\"price\":\"$79.00\",\"image\":\"https://via.placeholder.com/300\"}],\"title\":\"You May Also Like\",\"showQuickAdd\":true,\"showLearnMore\":true}</script>\n</lx-island>"
+      },
+      {
+        "label": "Trending products with hover advance",
+        "source": "<lx-island name=\"ProductCarousel\">\n  <script type=\"application/json\">{\"products\":[{\"id\":\"p1\",\"title\":\"Item 1\",\"price\":\"$29.00\",\"media\":[{\"src\":\"https://via.placeholder.com/300\"}]},{\"id\":\"p2\",\"title\":\"Item 2\",\"price\":\"$39.00\",\"media\":[{\"src\":\"https://via.placeholder.com/300\"}]}],\"title\":\"Trending Now\",\"mediaTransition\":\"zoom\",\"hoverAdvance\":true}</script>\n</lx-island>"
+      },
+      {
+        "label": "Compact carousel without animations",
+        "source": "<lx-island name=\"ProductCarousel\">\n  <script type=\"application/json\">{\"products\":[{\"id\":\"p1\",\"title\":\"A\",\"price\":\"$10\",\"image\":\"https://via.placeholder.com/300\"},{\"id\":\"p2\",\"title\":\"B\",\"price\":\"$20\",\"image\":\"https://via.placeholder.com/300\"}],\"cardVariant\":\"compact\",\"animate\":false}</script>\n</lx-island>"
+      }
+    ]
+  }
+}

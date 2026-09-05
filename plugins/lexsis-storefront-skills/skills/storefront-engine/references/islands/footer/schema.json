@@ -1,0 +1,145 @@
+{
+  "contract_version": 2,
+  "name": "Footer",
+  "category": "navigation",
+  "usage_hint": "Site-wide footer with links, logo, newsletter signup, social icons, and copyright. Always placed at bottom of page.",
+  "when_to_use": "Every page needs a footer. Supports multiple layouts (simple, columns, centered, editorialGrid, newsletterSplit) and both hydration mode (custom HTML with data-lx-footer tags) and legacy mode (React-rendered). Hydration mode's newsletter form captures automatically — no endpoint to configure.",
+  "when_not_to_use": "For minimal page templates without site-wide footer (rare). For mid-page newsletter blocks use a dedicated newsletter island.",
+  "defaultHydrate": "immediate",
+  "combine_with": [
+    "Navbar",
+    "SiteHeader",
+    "BackToTop"
+  ],
+  "anti_patterns": [
+    "Using multiple Footer instances on one page — there should be one site-wide footer",
+    "Hardcoding current year instead of using data-lx-footer=\"year\" (hydration) or letting the component auto-fill it",
+    "Duplicating social links in both Footer and separate social bar (pick one location)"
+  ],
+  "props": {
+    "links": {
+      "type": "array",
+      "required": true,
+      "shape": {
+        "label": "string",
+        "url": "string"
+      }
+    },
+    "columns": {
+      "type": "array",
+      "required": false,
+      "shape": {
+        "heading": "?string",
+        "links": "array<{label: string, url: string}>"
+      }
+    },
+    "logo": {
+      "type": "object",
+      "required": false,
+      "shape": {
+        "src": "string",
+        "alt": "?string"
+      }
+    },
+    "copyright": {
+      "type": "string",
+      "required": false
+    },
+    "tagline": {
+      "type": "string",
+      "required": false
+    },
+    "socialLinks": {
+      "type": "array",
+      "required": false,
+      "shape": {
+        "platform": "string",
+        "url": "string",
+        "icon": "?string"
+      }
+    },
+    "style": {
+      "type": "object",
+      "required": false,
+      "shape": {
+        "bgColor": "?string",
+        "textColor": "?string",
+        "linkColor": "?string",
+        "linkHoverColor": "?string",
+        "headingColor": "?string",
+        "accentColor": "?string",
+        "borderColor": "?string",
+        "fontFamily": "?string",
+        "fontSize": "?string",
+        "padding": "?string",
+        "maxWidth": "?string",
+        "logoHeight": "?string",
+        "logoFilter": "?string",
+        "layout": "?'simple' | 'centered' | 'columns' | 'editorialGrid' | 'newsletterSplit'"
+      }
+    },
+    "newsletter": {
+      "type": "object",
+      "required": false,
+      "shape": {
+        "heading": "?string",
+        "placeholder": "?string",
+        "buttonText": "?string"
+      }
+    },
+    "borderStyle": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "none",
+        "solid",
+        "dashed"
+      ]
+    },
+    "tileLayout": {
+      "type": "boolean",
+      "required": false
+    }
+  },
+  "variants": null,
+  "css_vars": [
+    "--lx-accent-color"
+  ],
+  "parts": [
+    "columns",
+    "nav-rows",
+    "newsletter",
+    "root",
+    "social-tiles"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"Footer\">\n  <script type=\"application/json\">\n{\n  \"links\": [\n    {\n      \"label\": \"example-label\",\n      \"url\": \"example-url\"\n    }\n  ]\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Hydration mode with newsletter form",
+        "source": "<lx-island name=\"Footer\">\n  <script type=\"application/json\">{\"links\":[]}</script>\n  <footer data-lx-footer=\"root\"><form data-lx-footer=\"newsletter-form\"><input data-lx-footer=\"newsletter-input\" type=\"email\"/><button>Subscribe</button></form><div data-lx-footer=\"newsletter-success\" style=\"display:none;\">Thanks!</div><p>&copy; <span data-lx-footer=\"year\"></span> All rights reserved.</p></footer>\n</lx-island>"
+      },
+      {
+        "label": "Legacy simple layout",
+        "source": "<lx-island name=\"Footer\">\n  <script type=\"application/json\">{\"links\":[{\"label\":\"Privacy\",\"url\":\"/privacy\"},{\"label\":\"Terms\",\"url\":\"/terms\"}],\"logo\":{\"src\":\"/logo.svg\"},\"copyright\":\"© 2026 Store\",\"socialLinks\":[{\"platform\":\"instagram\",\"url\":\"https://instagram.com/store\"}]}</script>\n</lx-island>"
+      },
+      {
+        "label": "Legacy columns layout with newsletter",
+        "source": "<lx-island name=\"Footer\">\n  <script type=\"application/json\">{\"columns\":[{\"heading\":\"Shop\",\"links\":[{\"label\":\"New Arrivals\",\"url\":\"/new\"},{\"label\":\"Sale\",\"url\":\"/sale\"}]},{\"heading\":\"Help\",\"links\":[{\"label\":\"FAQ\",\"url\":\"/faq\"},{\"label\":\"Shipping\",\"url\":\"/shipping\"}]}],\"newsletter\":{\"heading\":\"Stay Updated\",\"placeholder\":\"Your email\",\"buttonText\":\"Subscribe\"},\"style\":{\"layout\":\"columns\"}}</script>\n</lx-island>"
+      }
+    ]
+  }
+}

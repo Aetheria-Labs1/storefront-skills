@@ -1,0 +1,88 @@
+{
+  "contract_version": 2,
+  "name": "VariantSelector",
+  "category": "unknown",
+  "usage_hint": "Visual variant/option selector that emits scoped variant:changed events. Supports swatches, dropdown, and button pill modes. For headless (no UI) selection, use data-behavior=\"variant-select\" instead.",
+  "when_to_use": "Use inside custom product cards, quick-view modals, or anywhere you need visual variant selection with automatic event emission. Pairs with QuickAdd for full add-to-cart flow.",
+  "when_not_to_use": "Not for PDP (BuyBox handles variant selection). Not for headless coordination only (use data-behavior=\"variant-select\"). Not when you need full product gallery image switching (use ProductGallery).",
+  "defaultHydrate": "immediate",
+  "combine_with": [
+    "QuickAdd (add-to-cart after selection)",
+    "MediaCarousel (switch images on variant change)",
+    "CartDrawer (cart feedback)"
+  ],
+  "anti_patterns": [
+    "Using without data-scope when multiple VariantSelectors on page (events will collide)",
+    "Using render:\"swatches\" for non-color options (confusing UX — use \"buttons\" for sizes)",
+    "Providing variants without options array (selector won't know axis names)"
+  ],
+  "props": {
+    "product": {
+      "type": "object",
+      "required": true,
+      "shape": {
+        "variants": "array<{id: string, title: string, price: string, compareAtPrice: ?string, available: boolean, image: ?string, images: ?array<{url: object, alt: ?object}>, options: object}>",
+        "options": "array<{name: string, values: array<string>}>"
+      }
+    },
+    "render": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "dropdown",
+        "buttons",
+        "swatches"
+      ],
+      "default": "buttons"
+    },
+    "defaultVariant": {
+      "type": "string",
+      "required": false
+    }
+  },
+  "variants": null,
+  "css_vars": [
+    "--lx-accent-color",
+    "--lx-border-color",
+    "--lx-text-color"
+  ],
+  "parts": [
+    "dropdown",
+    "option-btn",
+    "option-group",
+    "option-label",
+    "option-values",
+    "root",
+    "swatch"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"VariantSelector\">\n  <script type=\"application/json\">\n{\n  \"product\": {\n    \"variants\": [],\n    \"options\": []\n  }\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Color swatches",
+        "source": "<lx-island name=\"VariantSelector\">\n  <script type=\"application/json\">{\"product\":{\"variants\":[{\"id\":\"v1\",\"title\":\"Black / M\",\"price\":\"$49\",\"available\":true,\"options\":{\"Color\":\"Black\",\"Size\":\"M\"}},{\"id\":\"v2\",\"title\":\"White / M\",\"price\":\"$49\",\"available\":true,\"options\":{\"Color\":\"White\",\"Size\":\"M\"}}],\"options\":[{\"name\":\"Color\",\"values\":[\"Black\",\"White\"]},{\"name\":\"Size\",\"values\":[\"M\",\"L\"]}]},\"render\":\"swatches\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Button pills for sizes",
+        "source": "<lx-island name=\"VariantSelector\">\n  <script type=\"application/json\">{\"product\":{\"variants\":[{\"id\":\"v1\",\"title\":\"S\",\"price\":\"$29\",\"available\":true,\"options\":{\"Size\":\"S\"}},{\"id\":\"v2\",\"title\":\"M\",\"price\":\"$29\",\"available\":true,\"options\":{\"Size\":\"M\"}},{\"id\":\"v3\",\"title\":\"L\",\"price\":\"$29\",\"available\":false,\"options\":{\"Size\":\"L\"}}],\"options\":[{\"name\":\"Size\",\"values\":[\"S\",\"M\",\"L\"]}]},\"render\":\"buttons\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Dropdown selector",
+        "source": "<lx-island name=\"VariantSelector\">\n  <script type=\"application/json\">{\"product\":{\"variants\":[{\"id\":\"v1\",\"title\":\"Default\",\"price\":\"$99\",\"available\":true,\"options\":{\"Style\":\"Classic\"}},{\"id\":\"v2\",\"title\":\"Modern\",\"price\":\"$109\",\"available\":true,\"options\":{\"Style\":\"Modern\"}}],\"options\":[{\"name\":\"Style\",\"values\":[\"Classic\",\"Modern\"]}]},\"render\":\"dropdown\"}</script>\n</lx-island>"
+      }
+    ]
+  }
+}

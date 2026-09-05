@@ -1,0 +1,6 @@
+{
+  "id": "navbar-minimal",
+  "html": "<header class=\"w-full\" style=\"border-bottom: 1px solid var(--lx-border-color)\"><nav class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16\"><a href=\"/\" class=\"flex-shrink-0\"><img src=\"{{LOGO_URL}}\" alt=\"{{BRAND_NAME}}\" class=\"h-8 w-auto\" /></a><div class=\"hidden md:flex items-center gap-8\"><div data-island=\"Navbar\" data-props='{\"logo\":{\"src\":\"{{LOGO_URL}}\",\"alt\":\"{{BRAND_NAME}}\"},\"links\":{{LINKS}},\"style\":{\"variant\":\"minimal\",\"transparent\":true},\"cta\":{\"url\":\"{{CTA_URL}}\",\"label\":\"{{CTA_TEXT}}\"}}'></div></div><div class=\"flex items-center gap-4\"><button aria-label=\"Cart\" class=\"p-2 rounded-md hover:bg-gray-100\"><svg class=\"w-5 h-5\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z\"/></svg></button></div></nav></header>",
+  "css": "",
+  "js": ""
+}

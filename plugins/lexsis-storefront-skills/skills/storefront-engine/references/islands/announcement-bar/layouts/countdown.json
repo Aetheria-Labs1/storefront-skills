@@ -1,0 +1,6 @@
+{
+  "id": "announcement-bar-countdown",
+  "html": "<div class=\"w-full py-2.5 relative\" style=\"background-color: {{BG_COLOR}}\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center gap-3\"><div data-island=\"AnnouncementBar\" data-props='{\"messages\":{{MESSAGES}},\"style\":{\"variant\":\"countdown\",\"showCountdown\":true,\"countdownEndDate\":\"2026-12-31T23:59:59Z\",\"dismissible\":true}}'></div></div><button aria-label=\"Dismiss announcement\" class=\"absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-sm text-white/80 hover:text-white\"><svg class=\"w-4 h-4\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M6 18L18 6M6 6l12 12\"/></svg></button></div>",
+  "css": "",
+  "js": ""
+}

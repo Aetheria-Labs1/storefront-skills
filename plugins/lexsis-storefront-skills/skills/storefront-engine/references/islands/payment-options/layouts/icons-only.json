@@ -1,0 +1,6 @@
+{
+  "id": "payment-methods",
+  "html": "<div class=\"flex items-center gap-2 opacity-60\"><div data-island=\"PaymentOptions\" data-props='{\"variant\":\"icons_only\",\"price\":{{PRICE_CENTS}}}'></div></div>",
+  "css": "",
+  "js": ""
+}

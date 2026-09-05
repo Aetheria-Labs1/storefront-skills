@@ -1,0 +1,102 @@
+{
+  "contract_version": 2,
+  "name": "ProceedToCart",
+  "category": "commerce",
+  "usage_hint": "Full-page CTA button that navigates to /cart or /checkout. Buy Now mode adds item + redirects; Proceed to Checkout mode is a direct link.",
+  "when_to_use": "For prominent checkout CTAs on product pages (Buy Now) or as cart page footer button (Proceed to Checkout). Unlike CartDrawer which slides out, this navigates to a full page. Supports variant:changed event listening.",
+  "when_not_to_use": "For add-to-cart without redirect use BuyBox or AddToCart. For slide-out cart use CartDrawer. When you want users to stay on page after adding.",
+  "defaultHydrate": "immediate",
+  "combine_with": [
+    "ProductImage",
+    "VariantSelector",
+    "OptionResolver",
+    "SubscriptionToggle"
+  ],
+  "anti_patterns": [
+    "Using ProceedToCart AND BuyBox on the same product page (redundant CTA confusion)",
+    "Setting checkoutUrl to /cart when you mean /checkout (different pages)",
+    "Passing variantId without OptionResolver or VariantSelector to keep it synced (stale variant on option change)"
+  ],
+  "props": {
+    "label": {
+      "type": "string",
+      "required": false
+    },
+    "checkoutUrl": {
+      "type": "string",
+      "required": false,
+      "default": "/checkout"
+    },
+    "variantId": {
+      "type": "string",
+      "required": false
+    },
+    "quantity": {
+      "type": "number",
+      "required": false,
+      "default": "1"
+    },
+    "variant": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "minimal",
+        "outline",
+        "primary"
+      ],
+      "default": "primary"
+    },
+    "fullWidth": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
+    "showCartCount": {
+      "type": "boolean",
+      "required": false,
+      "default": "false"
+    }
+  },
+  "variants": [
+    "minimal",
+    "outline",
+    "primary"
+  ],
+  "css_vars": [
+    "--lx-accent-color"
+  ],
+  "parts": [
+    "badge",
+    "root"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"ProceedToCart\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Buy Now button (adds + redirects)",
+        "source": "<lx-island name=\"ProceedToCart\">\n  <script type=\"application/json\">{\"variantId\":\"gid://shopify/ProductVariant/123\",\"quantity\":1,\"label\":\"Buy Now\",\"checkoutUrl\":\"/checkout\",\"variant\":\"primary\",\"fullWidth\":true}</script>\n</lx-island>"
+      },
+      {
+        "label": "Proceed to Checkout link (no add-to-cart)",
+        "source": "<lx-island name=\"ProceedToCart\">\n  <script type=\"application/json\">{\"label\":\"Proceed to Checkout\",\"checkoutUrl\":\"/checkout\",\"variant\":\"primary\",\"showCartCount\":true}</script>\n</lx-island>"
+      },
+      {
+        "label": "Outline CTA with cart badge",
+        "source": "<lx-island name=\"ProceedToCart\">\n  <script type=\"application/json\">{\"label\":\"Go to Cart\",\"checkoutUrl\":\"/cart\",\"variant\":\"outline\",\"fullWidth\":false,\"showCartCount\":true}</script>\n</lx-island>"
+      }
+    ]
+  }
+}

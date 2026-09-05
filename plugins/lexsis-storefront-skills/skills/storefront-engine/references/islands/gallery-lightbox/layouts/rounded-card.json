@@ -1,0 +1,7 @@
+{
+  "name": "rounded-card",
+  "description": "3-column gallery inside a pastel gradient card wrapper. Items have 20px border-radius. Hover rotates and scales.",
+  "html": "<div style=\"background:linear-gradient(135deg,#fefce8,#ecfdf5,#f0fdf4);border-radius:12px;padding:24px\">\n  <div class=\"glb-rounded\" style=\"display:grid;grid-template-columns:repeat(2,1fr);gap:12px\">\n    <div class=\"glb-item\" style=\"border-radius:20px;overflow:hidden;cursor:pointer\">\n      <img src=\"{{IMAGE_1}}\" alt=\"\" style=\"width:100%;aspect-ratio:1;object-fit:cover;transition:transform 0.4s\">\n    </div>\n    <div class=\"glb-item\" style=\"border-radius:20px;overflow:hidden;cursor:pointer\">\n      <img src=\"{{IMAGE_2}}\" alt=\"\" style=\"width:100%;aspect-ratio:1;object-fit:cover;transition:transform 0.4s\">\n    </div>\n    <!-- repeat for 6 images -->\n  </div>\n</div>\n<div data-island=\"GalleryLightbox\" data-props='{}'></div>",
+  "css_overrides": "@media(min-width:1024px){.glb-rounded{grid-template-columns:repeat(3,1fr);gap:20px}} .glb-rounded .glb-item:hover img{transform:rotate(3deg) scale(1.1)}",
+  "notes": "Pastel gradient card gives a soft, premium feel. Good for lifestyle brands, DTC beauty, artisan food."
+}

@@ -1,0 +1,6 @@
+{
+  "id": "cart-drawer-right",
+  "html": "<div data-island=\"DrawerShell\" data-island-container data-props='{\"mode\":\"drawer-right\",\"trigger\":\"cart:open\",\"responsive\":{\"mobile\":\"bottom-sheet\"},\"width\":\"420px\"}'><div class=\"flex flex-col h-full\"><div class=\"flex-shrink-0 px-6 pt-6 pb-4 border-b\" style=\"border-color: var(--lx-border-color)\"><div data-island=\"CartProgressBar\" data-props='{}'></div></div><div class=\"flex-1 overflow-y-auto px-6 py-4\"><div data-island=\"CartLines\" data-props='{\"layout\":\"full\",\"showQuantity\":true,\"showRemove\":true}'></div><div data-island=\"CartCrossSell\" data-props='{}'></div></div><div class=\"flex-shrink-0 px-6 pb-6 pt-4 border-t space-y-4\" style=\"border-color: var(--lx-border-color)\"><div data-island=\"CartSummary\" data-props='{\"showDiscounts\":true}'></div><div data-island=\"CartCheckoutButton\" data-props='{\"text\":\"Checkout\",\"style\":\"filled\"}'></div></div></div></div>",
+  "css": "",
+  "js": ""
+}

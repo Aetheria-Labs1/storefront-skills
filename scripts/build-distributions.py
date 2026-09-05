@@ -8,10 +8,13 @@ skills/storefront-engine/references/.
 Everything else is DERIVED:
   gpt/knowledge.md      — concatenation of skill bodies + curated references
   gpt/instructions.md   — persona template with version injected
+  plugins/lexsis-storefront-skills/skills/
+                        — materialized Claude plugin skill tree
 
-Claude Code, Codex, and Cursor need no generation step — they discover the
-canonical tree directly (.claude plugin via plugins/*/skills symlink, Codex and
-Cursor via .agents/skills symlink).
+Claude marketplace packages must contain real skill directories. Git symlinks
+that point outside the plugin root are not a reliable distribution format.
+Codex and Cursor continue to discover the canonical tree through
+`.agents/skills`.
 
 Also validates:
   - spec frontmatter on every skill (name == dirname, <=64 chars, description
@@ -29,12 +32,14 @@ from __future__ import annotations
 
 import json
 import re
+import shutil
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SKILLS = ROOT / "skills"
 REFERENCES = SKILLS / "storefront-engine" / "references"
+CLAUDE_PLUGIN_SKILLS = ROOT / "plugins" / "lexsis-storefront-skills" / "skills"
 SHARED_RESOURCE_DIRS = {"storefront-engine"}
 
 RETIRED_TOOLS = [
@@ -99,6 +104,45 @@ def parse_frontmatter(path: Path) -> tuple[dict, str]:
 def plugin_version() -> str:
     pj = json.loads((ROOT / "plugins/lexsis-storefront-skills/.claude-plugin/plugin.json").read_text())
     return pj["version"]
+
+
+def tree_snapshot(root: Path) -> dict[str, tuple[bytes, int]]:
+    if not root.is_dir() or root.is_symlink():
+        return {}
+    snapshot: dict[str, tuple[bytes, int]] = {}
+    for path in sorted(root.rglob("*")):
+        if (
+            not path.is_file()
+            or "__pycache__" in path.parts
+            or path.suffix == ".pyc"
+            or path.name == ".DS_Store"
+        ):
+            continue
+        snapshot[str(path.relative_to(root))] = (
+            path.read_bytes(),
+            path.stat().st_mode & 0o111,
+        )
+    return snapshot
+
+
+def claude_plugin_skills_are_current() -> bool:
+    return (
+        CLAUDE_PLUGIN_SKILLS.is_dir()
+        and not CLAUDE_PLUGIN_SKILLS.is_symlink()
+        and tree_snapshot(CLAUDE_PLUGIN_SKILLS) == tree_snapshot(SKILLS)
+    )
+
+
+def materialize_claude_plugin_skills() -> None:
+    if CLAUDE_PLUGIN_SKILLS.is_symlink() or CLAUDE_PLUGIN_SKILLS.is_file():
+        CLAUDE_PLUGIN_SKILLS.unlink()
+    elif CLAUDE_PLUGIN_SKILLS.is_dir():
+        shutil.rmtree(CLAUDE_PLUGIN_SKILLS)
+    shutil.copytree(
+        SKILLS,
+        CLAUDE_PLUGIN_SKILLS,
+        ignore=shutil.ignore_patterns("__pycache__", "*.pyc", ".DS_Store"),
+    )
 
 
 def validate() -> list[str]:
@@ -184,8 +228,8 @@ def validate() -> list[str]:
                 f"{reference.relative_to(ROOT)}: compiled island markup is missing the source-format notice"
             )
 
-    # Symlinks resolve
-    for link in [ROOT / ".agents/skills", ROOT / "plugins/lexsis-storefront-skills/skills"]:
+    # Local agent discovery remains a symlink to the canonical tree.
+    for link in [ROOT / ".agents/skills"]:
         if not link.is_symlink():
             errors.append(f"{link.relative_to(ROOT)}: expected symlink")
         elif not link.resolve().exists():
@@ -286,6 +330,10 @@ def main() -> int:
                 print(f"FATAL: generated {rel} would contain retired tool {tool}")
                 return 1
     changed = []
+    if not claude_plugin_skills_are_current():
+        changed.append(str(CLAUDE_PLUGIN_SKILLS.relative_to(ROOT)))
+        if not check:
+            materialize_claude_plugin_skills()
     for rel, content in outputs.items():
         path = ROOT / rel
         if not path.exists() or path.read_text() != content:

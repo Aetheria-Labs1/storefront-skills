@@ -1,0 +1,92 @@
+{
+  "contract_version": 2,
+  "name": "CartDrawer",
+  "category": "commerce",
+  "deprecated": true,
+  "replacement": "Cart V2 via head.use_cart_v2",
+  "deprecation_reason": "CartDrawer is retained only for legacy pages; new pages must use the Cart V2 profile.",
+  "usage_hint": "DEPRECATED (Cart V1). Use Cart V2 instead: set head.use_cart_v2: true and the renderer injects the resolved cart profile automatically. CartDrawer remains only for legacy pages that already use it.",
+  "when_to_use": "NEVER on new pages — set head.use_cart_v2: true instead. Only keep CartDrawer when editing an existing legacy page that already contains it and the store has not enabled Cart V2.",
+  "when_not_to_use": "Any new page. Any page with head.use_cart_v2: true (conflict — publish validation rejects it). Any store with cart_v2 enabled.",
+  "defaultHydrate": "idle",
+  "combine_with": [
+    "Legacy pages only. For new pages: head.use_cart_v2 plus a published cart profile."
+  ],
+  "anti_patterns": [
+    "Using CartDrawer on a new page: deprecated — Cart V2 (use_cart_v2: true) is the default cart",
+    "Adding CartDrawer to a use_cart_v2 page: dual cart surfaces, publish validation fails",
+    "Multiple CartDrawer instances: creates state conflicts"
+  ],
+  "props": {
+    "items": {
+      "type": "array",
+      "required": true,
+      "shape": {
+        "id": "string",
+        "title": "string",
+        "variant": "string",
+        "price": "string",
+        "quantity": "number",
+        "image": "?string",
+        "handle": "?string"
+      }
+    },
+    "currency": {
+      "type": "string",
+      "required": false,
+      "default": "USD"
+    },
+    "checkoutUrl": {
+      "type": "string",
+      "required": false,
+      "default": "/checkout"
+    },
+    "animate": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
+    "showClearCart": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    }
+  },
+  "variants": null,
+  "css_vars": [
+    "--lx-accent-color",
+    "--lx-text-color"
+  ],
+  "parts": [
+    "backdrop",
+    "checkout",
+    "close-btn",
+    "content",
+    "drawer",
+    "footer",
+    "header",
+    "title"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"CartDrawer\">\n  <script type=\"application/json\">\n{\n  \"items\": [\n    {\n      \"id\": \"example-id\",\n      \"title\": \"example-title\",\n      \"variant\": \"example-variant\",\n      \"price\": \"example-price\",\n      \"quantity\": 0\n    }\n  ]\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "DEPRECATED — do not use on new pages. Cart V2 equivalent shown for migration reference",
+        "source": "<lx-island name=\"CartDrawer\">\n  <script type=\"application/json\">{\"items\":[],\"currency\":\"USD\",\"checkoutUrl\":\"/checkout\"}</script>\n</lx-island>"
+      }
+    ]
+  }
+}

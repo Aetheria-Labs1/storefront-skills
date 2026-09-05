@@ -1,0 +1,184 @@
+{
+  "contract_version": 2,
+  "name": "ProductHero",
+  "category": "commerce",
+  "usage_hint": "Premium full-height hero gallery for PDP split layouts. Supports fade/slide/zoom/kenBurns transitions, thumbnail rail, autoplay, hover-advance, and variant sync. Fully CSS-customizable via data-part attributes and --lx-hero-* properties.",
+  "when_to_use": "Use for high-end PDP layouts where media occupies 50-60% of viewport height and sits alongside BuyBox. Ideal for fashion, furniture, premium goods where large immersive media is key.",
+  "when_not_to_use": "Not for compact galleries (use ProductGallery). Not for hero banners on landing pages. Not for card-based media (use MediaCarousel).",
+  "defaultHydrate": "visible",
+  "combine_with": [
+    "BuyBox (side-by-side split layout)",
+    "VariantSwatches (when listenForVariant:true",
+    "hero updates images on variant change)"
+  ],
+  "anti_patterns": [
+    "Using on mobile without testing: full-height hero can push BuyBox too far down",
+    "Setting maxHeight too high: creates whitespace on smaller screens",
+    "Using autoplay with very short interval (<2000ms): disorienting"
+  ],
+  "props": {
+    "images": {
+      "type": "array",
+      "required": true,
+      "shape": {
+        "url": "string",
+        "alt": "?string",
+        "type": "?'image' | 'video'",
+        "poster": "?string",
+        "objectFit": "?'cover' | 'contain'",
+        "objectPosition": "?string"
+      }
+    },
+    "layout": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "stacked",
+        "splitLeft",
+        "splitRight",
+        "fullHeight"
+      ],
+      "default": "splitLeft"
+    },
+    "thumbnails": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "none",
+        "rail",
+        "dots"
+      ],
+      "default": "rail"
+    },
+    "thumbnailPosition": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "left",
+        "right",
+        "bottom"
+      ],
+      "default": "left"
+    },
+    "navigation": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "none",
+        "arrows",
+        "floatingArrows"
+      ],
+      "default": "floatingArrows"
+    },
+    "aspectRatio": {
+      "type": "string",
+      "required": false,
+      "default": "3:4"
+    },
+    "maxHeight": {
+      "type": "string",
+      "required": false,
+      "default": "85vh"
+    },
+    "transition": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "none",
+        "slide",
+        "fade",
+        "zoom",
+        "kenBurns"
+      ],
+      "default": "fade"
+    },
+    "listenForVariant": {
+      "type": "boolean",
+      "required": false,
+      "default": "false"
+    },
+    "autoplay": {
+      "type": "boolean",
+      "required": false,
+      "default": "false"
+    },
+    "interval": {
+      "type": "number",
+      "required": false,
+      "default": "4000"
+    },
+    "hoverAdvance": {
+      "type": "boolean",
+      "required": false,
+      "default": "false"
+    },
+    "showIndicators": {
+      "type": "boolean",
+      "required": false
+    },
+    "className": {
+      "type": "string",
+      "required": false
+    }
+  },
+  "variants": [
+    "stacked",
+    "splitLeft",
+    "splitRight",
+    "fullHeight"
+  ],
+  "css_vars": [
+    "--lx-accent-color",
+    "--lx-border-color",
+    "--lx-hero-",
+    "--lx-hero-arrow-bg",
+    "--lx-hero-arrow-offset",
+    "--lx-hero-arrow-size",
+    "--lx-hero-bg",
+    "--lx-hero-radius",
+    "--lx-hero-thumb-gap",
+    "--lx-hero-thumb-radius",
+    "--lx-hero-thumb-size",
+    "--lx-hero-transition-duration"
+  ],
+  "parts": [
+    "dot",
+    "media-pane",
+    "nav-next",
+    "nav-prev",
+    "root",
+    "slide",
+    "thumbnail",
+    "thumbnail-rail"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"ProductHero\">\n  <script type=\"application/json\">\n{\n  \"images\": [\n    {\n      \"url\": \"example-url\"\n    }\n  ]\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Split-left hero with thumbnail rail and autoplay",
+        "source": "<lx-island name=\"ProductHero\">\n  <script type=\"application/json\">{\"images\":[{\"url\":\"https://via.placeholder.com/800x1000\",\"alt\":\"Product 1\"},{\"url\":\"https://via.placeholder.com/800x1000\",\"alt\":\"Product 2\"},{\"url\":\"https://via.placeholder.com/800x1000\",\"alt\":\"Product 3\"}],\"layout\":\"splitLeft\",\"thumbnails\":\"rail\",\"thumbnailPosition\":\"left\",\"autoplay\":true,\"transition\":\"fade\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Full-height cinematic with kenBurns",
+        "source": "<lx-island name=\"ProductHero\">\n  <script type=\"application/json\">{\"images\":[{\"url\":\"https://via.placeholder.com/1200x800\",\"alt\":\"Hero 1\"},{\"url\":\"https://via.placeholder.com/1200x800\",\"alt\":\"Hero 2\"}],\"layout\":\"fullHeight\",\"transition\":\"kenBurns\",\"autoplay\":true,\"thumbnails\":\"none\",\"navigation\":\"none\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Hover-advance, no arrows",
+        "source": "<lx-island name=\"ProductHero\">\n  <script type=\"application/json\">{\"images\":[{\"url\":\"https://via.placeholder.com/800\",\"alt\":\"A\"},{\"url\":\"https://via.placeholder.com/800\",\"alt\":\"B\"}],\"hoverAdvance\":true,\"thumbnails\":\"rail\",\"navigation\":\"none\"}</script>\n</lx-island>"
+      }
+    ]
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "contract_version": 2,
+  "name": "CartCheckoutButton",
+  "category": "commerce",
+  "usage_hint": "Checkout CTA button that navigates to the Shopify checkout URL. Subscribes to shared cart state.",
+  "when_to_use": "Inside DrawerShell below CartSummary as the primary cart action button.",
+  "when_not_to_use": "Outside cart context. For generic CTAs use a plain link or button element.",
+  "defaultHydrate": "immediate",
+  "combine_with": [
+    "DrawerShell",
+    "CartSummary",
+    "CartLines"
+  ],
+  "anti_patterns": [],
+  "props": {
+    "text": {
+      "type": "string",
+      "required": false,
+      "default": "Checkout"
+    },
+    "style": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "filled",
+        "outline"
+      ],
+      "default": "filled"
+    },
+    "secondaryCta": {
+      "type": "object",
+      "required": false,
+      "shape": {
+        "label": "string",
+        "url": "string"
+      }
+    },
+    "showCartCount": {
+      "type": "boolean",
+      "required": false,
+      "default": "false"
+    }
+  },
+  "variants": [
+    "filled",
+    "outline"
+  ],
+  "css_vars": [
+    "--lx-accent-color",
+    "--lx-text-muted"
+  ],
+  "parts": [
+    "cta",
+    "root",
+    "secondary-cta"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"CartCheckoutButton\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
+    "examples": []
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "mosaic-strip",
+  "description": "Dense 8-column mosaic thumbnail grid (4-col on mobile). Hover applies grayscale. Click triggers lightbox.",
+  "html": "<div class=\"glb-mosaic\" style=\"display:grid;grid-template-columns:repeat(4,1fr);gap:2px;overflow:hidden\">\n  <div class=\"glb-item\"><img src=\"{{IMAGE_1}}\" alt=\"\" style=\"width:100%;aspect-ratio:1;object-fit:cover\"></div>\n  <div class=\"glb-item\"><img src=\"{{IMAGE_2}}\" alt=\"\" style=\"width:100%;aspect-ratio:1;object-fit:cover\"></div>\n  <!-- repeat for all images -->\n</div>\n<div data-island=\"GalleryLightbox\" data-props='{}'></div>",
+  "css_overrides": "@media(min-width:1024px){.glb-mosaic{grid-template-columns:repeat(8,1fr);gap:4px}} .glb-mosaic .glb-item:hover img{filter:grayscale(100%)}",
+  "notes": "Best for 12-16 images. Dense layout works as a mood board or Instagram-feed section."
+}

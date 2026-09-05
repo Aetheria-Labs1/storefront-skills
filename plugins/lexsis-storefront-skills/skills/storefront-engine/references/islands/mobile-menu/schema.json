@@ -1,0 +1,86 @@
+{
+  "contract_version": 2,
+  "name": "MobileMenu",
+  "category": "navigation",
+  "usage_hint": "Full-screen mobile navigation overlay with expandable sections and social links.",
+  "when_to_use": "As a standalone mobile menu island when you need custom mobile navigation separate from desktop nav. Automatically opens on mount (controlled by parent). Supports nested link hierarchies with expand/collapse.",
+  "when_not_to_use": "When Navbar or SiteHeader already provides mobile menu functionality (they have built-in mobile panels). Don't use both.",
+  "defaultHydrate": "immediate",
+  "combine_with": [
+    "Navbar (as alternative mobile UI)",
+    "Footer"
+  ],
+  "anti_patterns": [
+    "Mounting MobileMenu without controlling isOpen state from parent — it defaults to open, so you must unmount when closed",
+    "Using MobileMenu alongside Navbar's built-in mobile panel (data-lx-nav=\"mobile-panel\") — they conflict",
+    "Passing deeply nested link structures (>2 levels) — mobile menu only supports parent + children, not grandchildren"
+  ],
+  "props": {
+    "links": {
+      "type": "array",
+      "required": true,
+      "shape": {
+        "label": "string",
+        "url": "string",
+        "children": "?array<{label: string, url: string, children: ?array<{label: object, url: object, children: ?object}>}>"
+      }
+    },
+    "socials": {
+      "type": "array",
+      "required": false,
+      "shape": {
+        "platform": "string",
+        "url": "string"
+      }
+    },
+    "logo": {
+      "type": "object",
+      "required": false,
+      "shape": {
+        "src": "string",
+        "alt": "?string"
+      }
+    }
+  },
+  "variants": null,
+  "css_vars": [
+    "--lx-accent-color",
+    "--lx-text-color"
+  ],
+  "parts": [
+    "close-btn",
+    "header",
+    "link",
+    "root"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"MobileMenu\">\n  <script type=\"application/json\">\n{\n  \"links\": [\n    {\n      \"label\": \"example-label\",\n      \"url\": \"example-url\"\n    }\n  ]\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Basic mobile menu with social links",
+        "source": "<lx-island name=\"MobileMenu\">\n  <script type=\"application/json\">{\"links\":[{\"label\":\"Shop\",\"url\":\"/shop\",\"children\":[{\"label\":\"New\",\"url\":\"/new\"},{\"label\":\"Sale\",\"url\":\"/sale\"}]},{\"label\":\"About\",\"url\":\"/about\"}],\"socials\":[{\"platform\":\"instagram\",\"url\":\"https://instagram.com/store\"},{\"platform\":\"twitter\",\"url\":\"https://twitter.com/store\"}],\"logo\":{\"src\":\"/logo.svg\",\"alt\":\"Store\"}}</script>\n</lx-island>"
+      },
+      {
+        "label": "Mobile menu with flat navigation",
+        "source": "<lx-island name=\"MobileMenu\">\n  <script type=\"application/json\">{\"links\":[{\"label\":\"Home\",\"url\":\"/\"},{\"label\":\"Products\",\"url\":\"/products\"},{\"label\":\"Contact\",\"url\":\"/contact\"}]}</script>\n</lx-island>"
+      },
+      {
+        "label": "Mobile menu with nested categories",
+        "source": "<lx-island name=\"MobileMenu\">\n  <script type=\"application/json\">{\"links\":[{\"label\":\"Clothing\",\"url\":\"#\",\"children\":[{\"label\":\"Tops\",\"url\":\"/tops\"},{\"label\":\"Bottoms\",\"url\":\"/bottoms\"},{\"label\":\"Dresses\",\"url\":\"/dresses\"}]},{\"label\":\"Accessories\",\"url\":\"#\",\"children\":[{\"label\":\"Bags\",\"url\":\"/bags\"},{\"label\":\"Jewelry\",\"url\":\"/jewelry\"}]}],\"logo\":{\"src\":\"/logo.svg\"}}</script>\n</lx-island>"
+      }
+    ]
+  }
+}

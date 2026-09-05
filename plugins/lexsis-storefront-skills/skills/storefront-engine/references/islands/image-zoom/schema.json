@@ -1,0 +1,82 @@
+{
+  "contract_version": 2,
+  "name": "ImageZoom",
+  "category": "content",
+  "usage_hint": "Product image with hover/click-to-zoom magnifier. Shows 2.5x (default) zoomed view following cursor.",
+  "when_to_use": "On product pages where detail matters (jewelry, fabrics, electronics, cosmetics). Two triggers: hover (desktop-friendly) or click (mobile-friendly). High-quality images required for zoom to be useful.",
+  "when_not_to_use": "For images that don't benefit from zoom (graphics, text, low-res photos). When image is already cropped to show detail. For galleries with many images (use lightbox instead).",
+  "defaultHydrate": "immediate",
+  "combine_with": [
+    "ProductImage",
+    "VariantSelector",
+    "ProductGallery"
+  ],
+  "anti_patterns": [
+    "Using low-resolution images (zoom reveals pixelation instead of detail)",
+    "Setting zoomLevel too high (>3x causes slow rendering on mobile)",
+    "Using trigger=\"hover\" on touch-only pages (hover doesn't work — use \"click\")"
+  ],
+  "props": {
+    "src": {
+      "type": "string",
+      "required": true
+    },
+    "alt": {
+      "type": "string",
+      "required": false,
+      "default": ""
+    },
+    "zoomLevel": {
+      "type": "number",
+      "required": false,
+      "default": "2.5"
+    },
+    "trigger": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "hover",
+        "click"
+      ],
+      "default": "hover"
+    }
+  },
+  "variants": null,
+  "css_vars": [],
+  "parts": [
+    "image",
+    "root",
+    "zoom-indicator",
+    "zoom-overlay"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"ImageZoom\">\n  <script type=\"application/json\">\n{\n  \"src\": \"example-src\"\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Hover zoom on desktop",
+        "source": "<lx-island name=\"ImageZoom\">\n  <script type=\"application/json\">{\"src\":\"/images/product-detail.jpg\",\"alt\":\"Product close-up\",\"zoomLevel\":2.5,\"trigger\":\"hover\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Click zoom for mobile",
+        "source": "<lx-island name=\"ImageZoom\">\n  <script type=\"application/json\">{\"src\":\"/images/jewelry.jpg\",\"alt\":\"Ring detail\",\"zoomLevel\":3,\"trigger\":\"click\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Fabric texture zoom",
+        "source": "<lx-island name=\"ImageZoom\">\n  <script type=\"application/json\">{\"src\":\"/images/fabric-weave.jpg\",\"alt\":\"Fabric weave detail\",\"zoomLevel\":4,\"trigger\":\"hover\"}</script>\n</lx-island>"
+      }
+    ]
+  }
+}

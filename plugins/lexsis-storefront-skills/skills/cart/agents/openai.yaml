@@ -1,0 +1,11 @@
+interface:
+  display_name: "Configure Cart Profiles"
+  short_description: "Configure cart profiles, rules, and upsells."
+  default_prompt: "Use $cart to inspect or configure this storefront's cart profile."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "lexsis-ai"
+      description: "Lexsis AI storefront MCP server"
+      transport: "streamable_http"
+      url: "https://mcp.trylexsis.com/mcp"

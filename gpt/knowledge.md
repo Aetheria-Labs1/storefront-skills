@@ -1,5 +1,5 @@
 <!-- GENERATED from skills/ by scripts/build-distributions.py — DO NOT EDIT.
-     storefront-skills v7.0.1 · 10 skills · 47 active islands -->
+     storefront-skills v7.0.2 · 10 skills · 47 active islands -->
 
 # Lexsis Storefront Skills — Knowledge Base
 

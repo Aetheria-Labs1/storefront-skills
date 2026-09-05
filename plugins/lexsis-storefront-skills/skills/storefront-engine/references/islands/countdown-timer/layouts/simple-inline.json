@@ -1,0 +1,6 @@
+{
+  "id": "countdown-inline",
+  "html": "<div class=\"inline-flex items-center gap-2\"><span class=\"text-sm font-medium\" style=\"color: var(--lx-text-muted)\">{{HEADING}}</span><div data-island=\"CountdownTimer\" data-props='{\"endDate\":\"{{END_DATE}}\",\"style\":\"simple\"}'></div></div>",
+  "css": "",
+  "js": ""
+}

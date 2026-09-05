@@ -1,0 +1,79 @@
+{
+  "contract_version": 2,
+  "name": "WishlistButton",
+  "category": "commerce",
+  "usage_hint": "Heart icon button that toggles wishlist/favorites for a product. Thin wrapper around WishlistButton primitive.",
+  "when_to_use": "On product cards, product pages, or anywhere users can save items for later. Syncs state to localStorage or backend wishlist service. Can be sized (sm/md/lg) and styled via className.",
+  "when_not_to_use": "When wishlist functionality isn't implemented in your store. For compare lists (different feature). When you need custom wishlist UI (use the primitive directly instead).",
+  "defaultHydrate": "immediate",
+  "combine_with": [
+    "BuyBox",
+    "ProductCarousel",
+    "ProductGallery",
+    "ProductHero"
+  ],
+  "anti_patterns": [
+    "Passing both productId and variantId when only productId is needed (wishlist is product-level, not variant-level)",
+    "Not providing productId (required field)",
+    "Multiple WishlistButton instances for same product on one page (they sync, but wasteful)"
+  ],
+  "props": {
+    "productId": {
+      "type": "string",
+      "required": true
+    },
+    "variantId": {
+      "type": "string",
+      "required": false
+    },
+    "size": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "sm",
+        "md",
+        "lg"
+      ]
+    },
+    "className": {
+      "type": "string",
+      "required": false
+    }
+  },
+  "variants": null,
+  "css_vars": [],
+  "parts": [
+    "icon",
+    "root"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"WishlistButton\">\n  <script type=\"application/json\">\n{\n  \"productId\": \"example-productId\"\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Standard wishlist button",
+        "source": "<lx-island name=\"WishlistButton\">\n  <script type=\"application/json\">{\"productId\":\"gid://shopify/Product/123\",\"size\":\"md\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Small wishlist icon for product cards",
+        "source": "<lx-island name=\"WishlistButton\">\n  <script type=\"application/json\">{\"productId\":\"gid://shopify/Product/456\",\"size\":\"sm\",\"className\":\"absolute top-2 right-2\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Large wishlist button with variant tracking",
+        "source": "<lx-island name=\"WishlistButton\">\n  <script type=\"application/json\">{\"productId\":\"gid://shopify/Product/789\",\"variantId\":\"gid://shopify/ProductVariant/1011\",\"size\":\"lg\"}</script>\n</lx-island>"
+      }
+    ]
+  }
+}

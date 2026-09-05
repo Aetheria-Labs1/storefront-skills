@@ -1,0 +1,173 @@
+{
+  "contract_version": 2,
+  "name": "CartLines",
+  "category": "commerce",
+  "usage_hint": "Renders cart line items with quantity controls and remove buttons. Subscribes to shared cart state.",
+  "when_to_use": "Inside DrawerShell as the main cart items list. Shows each line with image, title, variant, price, and quantity +/- controls.",
+  "when_not_to_use": "Outside a cart context. If you need a static product list, use ProductCarousel instead.",
+  "defaultHydrate": "idle",
+  "combine_with": [
+    "DrawerShell",
+    "CartSummary",
+    "CartCheckoutButton",
+    "CartProgressBar"
+  ],
+  "anti_patterns": [],
+  "props": {
+    "layout": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "compact",
+        "full"
+      ],
+      "default": "compact"
+    },
+    "showQuantity": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
+    "showRemove": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
+    "showImage": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
+    "emptyMessage": {
+      "type": "string",
+      "required": false,
+      "default": "Your cart is empty"
+    },
+    "emptyCtaText": {
+      "type": "string",
+      "required": false,
+      "default": "Continue Shopping"
+    },
+    "emptyCtaUrl": {
+      "type": "string",
+      "required": false,
+      "default": "/"
+    },
+    "spacing": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "compact",
+        "comfortable",
+        "spacious"
+      ]
+    },
+    "quantityAnimation": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "none",
+        "slide",
+        "crossfade",
+        "roll"
+      ]
+    },
+    "buttonFeedback": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "none",
+        "press",
+        "highlight"
+      ]
+    },
+    "itemRemovalAnimation": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "none",
+        "slide",
+        "fade",
+        "collapse"
+      ]
+    },
+    "showPurchaseOptions": {
+      "type": "boolean",
+      "required": false
+    },
+    "purchaseOptionStyle": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "cards",
+        "select"
+      ]
+    },
+    "purchaseOptionMessage": {
+      "type": "string",
+      "required": false
+    },
+    "__previewProducts": {
+      "type": "array",
+      "required": false,
+      "shape": {
+        "id": "string",
+        "handle": "string",
+        "title": "string",
+        "price": "string",
+        "image": "?string",
+        "variantId": "?string"
+      }
+    }
+  },
+  "variants": [
+    "compact",
+    "full"
+  ],
+  "css_vars": [
+    "--lx-accent-color",
+    "--lx-bg-surface",
+    "--lx-border-color",
+    "--lx-error-color",
+    "--lx-surface-alt",
+    "--lx-text-color",
+    "--lx-text-muted"
+  ],
+  "parts": [
+    "add-button",
+    "empty",
+    "empty-cta",
+    "empty-message",
+    "heading",
+    "item",
+    "item-image",
+    "item-info",
+    "item-price",
+    "item-title",
+    "item-variant",
+    "purchase-option",
+    "qty-controls",
+    "qty-decrease",
+    "qty-increase",
+    "qty-value",
+    "remove-btn",
+    "root"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"CartLines\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
+    "examples": []
+  }
+}

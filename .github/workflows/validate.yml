@@ -26,7 +26,7 @@ jobs:
           echo "All JSON files valid"
 
       # Spec frontmatter, phase-scheme consistency, retired-tool sweep,
-      # symlink integrity, and generated-distribution drift — one gate.
+      # local symlink integrity, Claude package contents, and generated drift.
       - name: Validate skills + check generated distributions
         run: python3 scripts/build-distributions.py --check
 

@@ -1,0 +1,11 @@
+interface:
+  display_name: "Set Up Storefront"
+  short_description: "Save reusable store and theme design settings."
+  default_prompt: "Use $setup to save the Lexsis stores and themes I want to work with."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "lexsis-ai"
+      description: "Lexsis AI storefront MCP server"
+      transport: "streamable_http"
+      url: "https://mcp.trylexsis.com/mcp"

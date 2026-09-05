@@ -1,0 +1,6 @@
+{
+  "id": "sticky-bar",
+  "html": "<section class=\"fixed bottom-0 left-0 right-0 z-50 border-t shadow-lg\" style=\"background-color: var(--lx-bg-color); border-color: var(--lx-border-color)\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3\"><div class=\"flex items-center justify-between gap-4\"><div class=\"flex items-center gap-3 min-w-0\"><img src=\"{{IMAGE_URL}}\" alt=\"{{PRODUCT_TITLE}}\" class=\"w-10 h-10 rounded object-cover flex-shrink-0\" /><div class=\"min-w-0\"><span class=\"block font-medium text-sm truncate\" style=\"color: var(--lx-text-color)\">{{PRODUCT_TITLE}}</span><span class=\"block text-sm font-bold\" style=\"color: var(--lx-text-color)\">{{PRODUCT_PRICE}}</span></div></div><div data-island=\"StickyBar\" data-props='{\"productId\":\"{{PRODUCT_ID}}\",\"cta\":\"{{CTA_TEXT}}\"}'></div></div></div></section>",
+  "css": "",
+  "js": ""
+}

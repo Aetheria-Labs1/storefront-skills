@@ -1,0 +1,106 @@
+{
+  "contract_version": 2,
+  "name": "IngredientExplorer",
+  "category": "engagement",
+  "usage_hint": "Expandable ingredient list with descriptions, benefits, and optional icons/images. Three layouts: grid (cards), list (accordions), editorial (image + copy).",
+  "when_to_use": "For skincare, supplements, food products where ingredients matter. Each ingredient has name, description, optional benefit callout, icon/image, percentage. Grid/list layouts are interactive (click to expand), editorial is always-open rich content.",
+  "when_not_to_use": "For simple ingredient lists use plain HTML. When ingredient details aren't selling points. For allergen warnings use dedicated alert component (not this).",
+  "defaultHydrate": "immediate",
+  "combine_with": [
+    "ProductDescription",
+    "Tabs",
+    "ProductImage"
+  ],
+  "anti_patterns": [
+    "Using editorial layout for >6 ingredients (too long — use grid/list for many items)",
+    "Not providing descriptions (ingredient names alone don't educate customers)",
+    "Listing inactive/filler ingredients prominently (focus on hero active ingredients)"
+  ],
+  "props": {
+    "ingredients": {
+      "type": "array",
+      "required": true,
+      "shape": {
+        "name": "string",
+        "description": "string",
+        "benefit": "?string",
+        "icon": "?string",
+        "image": "?string",
+        "percentage": "?string"
+      }
+    },
+    "layout": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "grid",
+        "list",
+        "editorial"
+      ],
+      "default": "grid"
+    },
+    "columns": {
+      "type": "number",
+      "required": false,
+      "default": "2"
+    },
+    "size": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "sm",
+        "md",
+        "lg"
+      ],
+      "default": "sm"
+    }
+  },
+  "variants": [
+    "grid",
+    "list",
+    "editorial"
+  ],
+  "css_vars": [
+    "--lx-accent-color",
+    "--lx-text-color"
+  ],
+  "parts": [
+    "item",
+    "item-benefit",
+    "item-description",
+    "item-icon",
+    "item-image",
+    "item-name",
+    "root"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"IngredientExplorer\">\n  <script type=\"application/json\">\n{\n  \"ingredients\": [\n    {\n      \"name\": \"example-name\",\n      \"description\": \"example-description\"\n    }\n  ]\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Grid layout skincare ingredients",
+        "source": "<lx-island name=\"IngredientExplorer\">\n  <script type=\"application/json\">{\"ingredients\":[{\"name\":\"Hyaluronic Acid\",\"description\":\"Deeply hydrates and plumps skin by retaining moisture\",\"benefit\":\"Reduces fine lines\",\"icon\":\"💧\",\"percentage\":\"2%\"},{\"name\":\"Vitamin C\",\"description\":\"Brightens skin tone and protects against free radicals\",\"benefit\":\"Even skin tone\",\"icon\":\"🍊\",\"percentage\":\"10%\"}],\"layout\":\"grid\",\"columns\":2,\"size\":\"md\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "List accordion for supplements",
+        "source": "<lx-island name=\"IngredientExplorer\">\n  <script type=\"application/json\">{\"ingredients\":[{\"name\":\"Magnesium\",\"description\":\"Supports muscle and nerve function, bone health\",\"benefit\":\"Promotes relaxation\",\"percentage\":\"400mg\"},{\"name\":\"Vitamin D3\",\"description\":\"Essential for calcium absorption and immune function\",\"benefit\":\"Stronger bones\",\"percentage\":\"2000 IU\"}],\"layout\":\"list\",\"size\":\"sm\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Editorial layout with images",
+        "source": "<lx-island name=\"IngredientExplorer\">\n  <script type=\"application/json\">{\"ingredients\":[{\"name\":\"Organic Almond Oil\",\"description\":\"Cold-pressed from raw almonds, rich in vitamin E and fatty acids. Nourishes dry skin and improves elasticity.\",\"benefit\":\"Softens and smooths\",\"image\":\"/almond.jpg\",\"percentage\":\"30%\"},{\"name\":\"Shea Butter\",\"description\":\"Extracted from shea tree nuts in West Africa. Natural anti-inflammatory with vitamins A and E.\",\"benefit\":\"Deep moisturization\",\"image\":\"/shea.jpg\",\"percentage\":\"25%\"}],\"layout\":\"editorial\",\"columns\":2,\"size\":\"lg\"}</script>\n</lx-island>"
+      }
+    ]
+  }
+}

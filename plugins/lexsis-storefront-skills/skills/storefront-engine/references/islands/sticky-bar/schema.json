@@ -1,0 +1,95 @@
+{
+  "contract_version": 2,
+  "name": "StickyBar",
+  "category": "commerce",
+  "usage_hint": "Sticky bottom bar that appears after scrolling past the main BuyBox. Shows product thumbnail, price, and quick add-to-cart CTA.",
+  "when_to_use": "Use on PDP pages below the fold to re-surface add-to-cart after the user scrolls past the main BuyBox. Provides persistent purchase access during product review/description reading.",
+  "when_not_to_use": "Not for initial purchase UI (use BuyBox). Not for collection pages (use QuickAdd in cards). Not if your layout keeps BuyBox always visible (e.g., sticky sidebar).",
+  "defaultHydrate": "immediate",
+  "combine_with": [
+    "BuyBox (StickyBar appears AFTER scrolling past BuyBox)",
+    "CartDrawer (REQUIRED for cart feedback)",
+    "ProductGallery or ProductHero (provides context above the fold)"
+  ],
+  "anti_patterns": [
+    "Using StickyBar without BuyBox: StickyBar is a follow-up CTA, not the primary purchase interface",
+    "Omitting showAfter or misconfiguring it: bar may appear too early or not at all",
+    "Missing CartDrawer: users get no cart feedback after clicking the sticky bar CTA",
+    "Using on collection pages: wrong pattern; use QuickAdd in product grids instead"
+  ],
+  "props": {
+    "product": {
+      "type": "object",
+      "required": true,
+      "shape": {
+        "title": "string",
+        "price": "string",
+        "compareAtPrice": "?string",
+        "image": "?string",
+        "variantId": "string"
+      }
+    },
+    "cta": {
+      "type": "string",
+      "required": false,
+      "default": "Add to Cart"
+    },
+    "showAfter": {
+      "type": "string",
+      "required": false
+    },
+    "animate": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    }
+  },
+  "variants": null,
+  "css_vars": [
+    "--lx-accent-color",
+    "--lx-text-color"
+  ],
+  "parts": [
+    "bar",
+    "cta",
+    "product-image",
+    "product-info",
+    "product-price",
+    "product-title",
+    "root"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"StickyBar\">\n  <script type=\"application/json\">\n{\n  \"product\": {\n    \"title\": \"example-title\",\n    \"price\": \"example-price\",\n    \"variantId\": \"example-variantId\"\n  }\n}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Default sticky bar (appears after BuyBox)",
+        "source": "<lx-island name=\"StickyBar\">\n  <script type=\"application/json\">{\"product\":{\"title\":\"Wireless Headphones\",\"price\":\"$99.00\",\"compareAtPrice\":\"$129.00\",\"image\":\"https://via.placeholder.com/40\",\"variantId\":\"v1\"},\"cta\":\"Add to Cart\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Sticky bar with custom trigger selector",
+        "source": "<lx-island name=\"StickyBar\">\n  <script type=\"application/json\">{\"product\":{\"title\":\"Watch\",\"price\":\"$249.00\",\"variantId\":\"v1\"},\"cta\":\"Buy Now\",\"showAfter\":\"#product-details\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Sticky bar revealed after the offer section",
+        "source": "<lx-island name=\"StickyBar\">\n  <script type=\"application/json\">{\"product\":{\"title\":\"Watch\",\"price\":\"$249.00\",\"variantId\":\"v1\"},\"cta\":\"Buy Now\",\"showAfter\":\"#primary-offer\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Sticky bar without animations",
+        "source": "<lx-island name=\"StickyBar\">\n  <script type=\"application/json\">{\"product\":{\"title\":\"Sneakers\",\"price\":\"$120.00\",\"image\":\"https://via.placeholder.com/40\",\"variantId\":\"v1\"},\"animate\":false}</script>\n</lx-island>"
+      }
+    ]
+  }
+}

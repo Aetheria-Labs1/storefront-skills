@@ -1,0 +1,96 @@
+{
+  "contract_version": 2,
+  "name": "DeliveryEstimate",
+  "category": "commerce",
+  "usage_hint": "Shipping estimate with countdown to cutoff time. Shows delivery date and \"order within X hours\" urgency message.",
+  "when_to_use": "On product pages or cart to show estimated delivery. Countdown updates every minute until cutoff hour. Three variants: inline (compact), card (detailed), banner (full-width promo). Supports free shipping threshold messaging.",
+  "when_not_to_use": "For international shipping with variable transit times (misleading). When you can't guarantee delivery dates. For digital products (no shipping).",
+  "defaultHydrate": "immediate",
+  "combine_with": [
+    "BuyBox",
+    "AddToCart",
+    "ProductPrice",
+    "ProceedToCart"
+  ],
+  "anti_patterns": [
+    "Setting estimatedDays without considering weekends/holidays (inaccurate dates)",
+    "Using cutoffHour in timezone that doesn't match customer location (shows wrong countdown)",
+    "Showing countdown after cutoff passes (it returns null — no message, looks broken)"
+  ],
+  "props": {
+    "estimatedDays": {
+      "type": "number",
+      "required": false,
+      "default": "4"
+    },
+    "cutoffHour": {
+      "type": "number",
+      "required": false,
+      "default": "14"
+    },
+    "showCountdown": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
+    "freeShippingThreshold": {
+      "type": "number",
+      "required": false
+    },
+    "variant": {
+      "type": "enum",
+      "required": false,
+      "values": [
+        "inline",
+        "card",
+        "banner"
+      ],
+      "default": "inline"
+    }
+  },
+  "variants": [
+    "inline",
+    "card",
+    "banner"
+  ],
+  "css_vars": [
+    "--lx-accent-color",
+    "--lx-text-color"
+  ],
+  "parts": [
+    "date",
+    "icon",
+    "root",
+    "text"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate",
+      "headless"
+    ],
+    "headless": {
+      "supported": false
+    },
+    "example": "<lx-island name=\"DeliveryEstimate\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
+    "examples": [
+      {
+        "label": "Inline delivery estimate",
+        "source": "<lx-island name=\"DeliveryEstimate\">\n  <script type=\"application/json\">{\"estimatedDays\":4,\"cutoffHour\":14,\"showCountdown\":true,\"variant\":\"inline\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Card with free shipping threshold",
+        "source": "<lx-island name=\"DeliveryEstimate\">\n  <script type=\"application/json\">{\"estimatedDays\":3,\"cutoffHour\":16,\"showCountdown\":true,\"freeShippingThreshold\":5000,\"variant\":\"card\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "Banner promo style",
+        "source": "<lx-island name=\"DeliveryEstimate\">\n  <script type=\"application/json\">{\"estimatedDays\":2,\"cutoffHour\":12,\"showCountdown\":true,\"variant\":\"banner\"}</script>\n</lx-island>"
+      }
+    ]
+  }
+}

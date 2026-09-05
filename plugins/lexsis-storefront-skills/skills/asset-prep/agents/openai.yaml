@@ -1,0 +1,11 @@
+interface:
+  display_name: "Prepare Page Assets"
+  short_description: "Replace temporary media with verified final assets."
+  default_prompt: "Use $asset-prep to finalize the media for my approved visual page."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "lexsis-ai"
+      description: "Lexsis AI storefront MCP server"
+      transport: "streamable_http"
+      url: "https://mcp.trylexsis.com/mcp"
