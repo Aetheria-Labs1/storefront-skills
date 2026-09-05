@@ -277,6 +277,74 @@ class WorkspaceValidatorTests(unittest.TestCase):
         self.write_manifest(root, manifest)
         self.assertTrue(VALIDATOR.validate_workspace(root, "plan")["ok"])
 
+    def test_plan_phase_accepts_planned_asset_slots(self) -> None:
+        root = self.make_workspace()
+        manifest = self.manifest(root)
+        manifest["assets"] = [
+            {
+                "slotId": "A2",
+                "role": "product_lifestyle",
+                "sectionId": "hero",
+                "sourceType": "pending",
+                "status": "planned",
+            }
+        ]
+        self.write_manifest(root, manifest)
+        result = VALIDATOR.validate_workspace(root, "design")
+        self.assertTrue(result["ok"])
+        self.assertIn("asset_slot_unresolved", {item["code"] for item in result["warnings"]})
+        self.assertIn("asset_slot_unresolved", self.codes(root, "precompile"))
+
+    def test_island_preset_mismatch_blocks_design(self) -> None:
+        root = self.make_workspace()
+        presets = root / "presets.md"
+        presets.write_text(
+            "### 3.6 BuyBox\n\n"
+            "**buybox/test-light** - test preset.\n"
+            "```json\n"
+            '{"props":{"product":"{{product}}","variant":"compact","animate":false}}\n'
+            "```\n"
+            "```css\n#{{id}} [data-part=\"cta\"]{border-radius:0}\n```\n",
+            encoding="utf-8",
+        )
+        manifest = self.manifest(root)
+        manifest["islands"][0]["preset"] = "buybox/test-light"
+        self.write_manifest(root, manifest)
+
+        def codes(phase: str) -> set[str]:
+            result = VALIDATOR.validate_workspace(root, phase, presets_path=presets)
+            return {item["code"] for item in result["errors"]}
+
+        self.assertIn("island_preset_mismatch", codes("design"))
+
+        manifest["islands"][0]["preset"] = "buybox/does-not-exist"
+        self.write_manifest(root, manifest)
+        self.assertIn("island_preset_mismatch", codes("design"))
+
+        presets.write_text(
+            "**buybox/test-light** - only placeholder props.\n"
+            "```json\n"
+            '{"props":{"product":"{{product}}"}}\n'
+            "```\n",
+            encoding="utf-8",
+        )
+        manifest["islands"][0]["preset"] = "buybox/test-light"
+        self.write_manifest(root, manifest)
+        self.assertNotIn("island_preset_mismatch", codes("design"))
+
+        merged = VALIDATOR._merge(
+            VALIDATOR._strip_placeholders({"product": "{{product}}", "variant": "compact"}),
+            {"variant": "expanded"},
+        )
+        self.assertEqual(merged, {"variant": "expanded"})
+
+    def test_load_island_presets_parses_shipped_file(self) -> None:
+        presets = VALIDATOR.load_island_presets()
+        self.assertGreaterEqual(len(presets), 30)
+        for preset_id, entry in presets.items():
+            self.assertRegex(preset_id, r"^[a-z]+/[a-z0-9]+(-[a-z0-9]+)+$")
+            self.assertIsInstance(entry["props"], dict)
+
     def test_design_passes_and_requires_generated_files(self) -> None:
         root = self.make_workspace()
         self.assertTrue(VALIDATOR.validate_workspace(root, "design")["ok"])

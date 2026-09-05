@@ -206,6 +206,53 @@ def finding(code: str, message: str, path: str | None = None) -> dict[str, str]:
     return item
 
 
+PRESET_ENTRY_RE = re.compile(
+    r"\*\*([a-z]+/[a-z0-9-]+)\*\*[^\n]*\n```json\n(\{.*?\})\n```(?:\n```css\n(.*?)\n```)?",
+    re.DOTALL,
+)
+DEFAULT_PRESETS_PATH = (
+    Path(__file__).resolve().parents[2] / "storefront-engine" / "references" / "island-presets.md"
+)
+
+
+def load_island_presets(path: Path | None = None) -> dict[str, dict[str, Any]]:
+    """Parse `island-presets.md` §3 into {preset_id: {"props": {...}, "css": str | None}}."""
+    text = (path or DEFAULT_PRESETS_PATH).read_text(encoding="utf-8")
+    presets: dict[str, dict[str, Any]] = {}
+    for preset_id, raw_json, css in PRESET_ENTRY_RE.findall(text):
+        try:
+            entry = json.loads(raw_json)
+        except json.JSONDecodeError:
+            continue
+        presets[preset_id] = {"props": entry.get("props", entry), "css": css or None}
+    return presets
+
+
+def _strip_placeholders(value: Any) -> Any:
+    """Drop `{{...}}`-bound values so only fixed preset props are compared."""
+    if isinstance(value, dict):
+        return {
+            key: stripped
+            for key, item in value.items()
+            if (stripped := _strip_placeholders(item)) is not _PLACEHOLDER
+        }
+    if isinstance(value, str) and "{{" in value:
+        return _PLACEHOLDER
+    return value
+
+
+_PLACEHOLDER = object()
+
+
+def _merge(base: Any, patch: Any) -> Any:
+    if isinstance(base, dict) and isinstance(patch, dict):
+        merged = dict(base)
+        for key, item in patch.items():
+            merged[key] = _merge(base.get(key), item)
+        return merged
+    return patch
+
+
 def resolve_workspace_path(directory: Path, raw_path: Any) -> Path:
     path = Path(str(raw_path))
     if path.is_absolute():
@@ -235,6 +282,7 @@ def validate_workspace(
     current_remote_version: int | str | None = None,
     remote_source_hash: str | None = None,
     remote_bundle_hash: str | None = None,
+    presets_path: Path | None = None,
 ) -> dict[str, Any]:
     errors: list[dict[str, str]] = []
     warnings: list[dict[str, str]] = []
@@ -440,6 +488,7 @@ def validate_workspace(
 
     source_sections: list[str] = []
     source_islands: list[dict[str, str]] = []
+    source_island_props: dict[tuple[str, str], Any] = {}
     hashes: dict[str, str] = {}
     if source:
         matches = list(SECTION_RE.finditer(source))
@@ -503,7 +552,7 @@ def validate_workspace(
                     )
                 else:
                     try:
-                        json.loads(payload.group(1))
+                        source_island_props[(section_id, name)] = json.loads(payload.group(1))
                     except json.JSONDecodeError as exc:
                         errors.append(
                             finding(
@@ -663,6 +712,45 @@ def validate_workspace(
                 manifest_path.name,
             )
         )
+
+    preset_islands = [
+        island
+        for island in manifest_islands
+        if isinstance(island, dict) and island.get("preset")
+    ]
+    if source and phase in SOURCE_PHASES and preset_islands:
+        try:
+            presets = load_island_presets(presets_path)
+        except OSError:
+            presets = {}
+        for island in preset_islands:
+            preset_id = str(island.get("preset"))
+            label = f"{island.get('name', '<unknown>')} ({preset_id})"
+            preset = presets.get(preset_id)
+            if preset is None:
+                errors.append(
+                    finding("island_preset_mismatch", f"Unknown preset {label}", manifest_path.name)
+                )
+                continue
+            expected = _merge(
+                _strip_placeholders(preset["props"]),
+                island.get("presetOverrides") or {},
+            )
+            actual = source_island_props.get((island.get("sectionId"), island.get("name")), {})
+            # ponytail: compares fixed props only; preset CSS presence is left to compile.
+            drift = [
+                key
+                for key, value in expected.items()
+                if not isinstance(actual, dict) or actual.get(key) != value
+            ]
+            if drift:
+                errors.append(
+                    finding(
+                        "island_preset_mismatch",
+                        f"Island {label} props differ from preset: {', '.join(sorted(drift))}",
+                        manifest_path.name,
+                    )
+                )
 
     design_state = manifest.get("design", {}) if manifest else {}
     design_status = design_state.get("status")
@@ -922,6 +1010,14 @@ def validate_workspace(
                     manifest_path.name,
                 )
             )
+        if asset.get("status") == "planned":
+            item = finding(
+                "asset_slot_unresolved",
+                f"Asset slot {asset.get('slotId') or asset.get('role', '<unknown>')!r} is planned but unresolved",
+                manifest_path.name,
+            )
+            (errors if phase in PRODUCTION_PHASES else warnings).append(item)
+            continue
         if asset.get("sourceType") == "lexsis" and not asset.get("assetId"):
             errors.append(finding("asset_identity", "Lexsis assets require assetId", manifest_path.name))
         if asset.get("sourceType") == "shopify" and not all(
