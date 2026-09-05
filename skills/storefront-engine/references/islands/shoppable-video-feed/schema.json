@@ -20,10 +20,27 @@
   "props": {
     "items": {
       "type": "array",
-      "required": true,
+      "items": {
+        "type": "object",
+        "shape": {
+          "id": "string",
+          "media": "?{assetId: ?object, provider: ?object, sources: object, poster: object, preview: ?object, captionsUrl: ?object}",
+          "src": "?string",
+          "poster": "?string",
+          "captionsSrc": "?string",
+          "alt": "string",
+          "title": "?string",
+          "caption": "?string",
+          "badge": "?string",
+          "creator": "?{name: object, handle: ?object, avatar: ?object, verified: ?object}",
+          "metrics": "?{views: ?object, likes: ?object, comments: ?object}",
+          "testimonial": "?{author: object, productLabel: ?object, rating: ?object, verified: ?object}",
+          "products": "array<{productId: string, variantId: ?object, label: ?object, ctaLabel: ?object, title: ?object, price: ?object, compareAtPrice: ?object, image: ?object, available: ?object | object, productUrl: ?object, variants: ?object}>"
+        }
+      },
       "shape": {
         "id": "string",
-        "media": "?{assetId: ?string, provider: ?'cloudflare_stream' | 'cloudflare_cdn' | 'external', sources: array<{url: object, type: object, width: ?object, height: ?object, bitrate: ?object}>, poster: string, preview: ?{url: object, type: object, poster: ?object}, captionsUrl: ?string}",
+        "media": "?{assetId: ?object, provider: ?'cloudflare_stream' | 'cloudflare_cdn' | 'external', sources: array<{}>, poster: string, preview: ?object, captionsUrl: ?object}",
         "src": "?string",
         "poster": "?string",
         "captionsSrc": "?string",
@@ -31,73 +48,74 @@
         "title": "?string",
         "caption": "?string",
         "badge": "?string",
-        "creator": "?{name: string, handle: ?string, avatar: ?string, verified: ?boolean}",
-        "metrics": "?{views: ?number, likes: ?number, comments: ?number}",
-        "testimonial": "?{author: string, productLabel: ?string, rating: ?number, verified: ?boolean}",
-        "products": "array<{productId: string, variantId: ?string, label: ?string, ctaLabel: ?string, title: ?string, price: ?string, compareAtPrice: ?string, image: ?string, available: ?boolean, productUrl: ?string, variants: ?array<{id: object, title: object, price: object, available: object}>}>"
-      }
+        "creator": "?{name: string, handle: ?object, avatar: ?object, verified: ?object | object}",
+        "metrics": "?{views: ?object, likes: ?object, comments: ?object}",
+        "testimonial": "?{author: string, productLabel: ?object, rating: ?object, verified: ?object | object}",
+        "products": "array<{productId: string, variantId: ?string, label: ?string, ctaLabel: ?string, title: ?string, price: ?string, compareAtPrice: ?string, image: ?string, available: ?boolean | boolean, productUrl: ?string, variants: ?array<{}>}>"
+      },
+      "required": true
     },
     "variant": {
       "type": "enum",
-      "required": false,
       "values": [
         "grid",
         "rail",
         "reel"
-      ]
+      ],
+      "required": false
     },
     "reelMode": {
       "type": "enum",
-      "required": false,
       "values": [
         "paged",
         "vertical-scroll"
-      ]
+      ],
+      "required": false
     },
     "railPresentation": {
       "type": "enum",
-      "required": false,
       "values": [
         "standard",
         "coverflow"
-      ]
+      ],
+      "required": false
     },
     "viewerMode": {
       "type": "enum",
-      "required": false,
       "values": [
         "inline",
         "fullscreen"
-      ]
+      ],
+      "required": false
     },
     "aspectRatio": {
       "type": "enum",
-      "required": false,
       "values": [
         "9:16",
         "4:5",
         "1:1"
-      ]
+      ],
+      "required": false
     },
     "actionMode": {
       "type": "enum",
-      "required": false,
       "values": [
         "add_to_cart",
         "buy_now",
         "view_product"
-      ]
+      ],
+      "required": false
     },
     "productPresentation": {
       "type": "enum",
-      "required": false,
       "values": [
         "card",
         "auto",
         "button",
         "hidden",
         "chip"
-      ]
+      ],
+      "required": false
     },
     "openCartOnAdd": {
       "type": "boolean",
@@ -113,59 +131,59 @@
     },
     "playbackMode": {
       "type": "enum",
-      "required": false,
       "values": [
         "hover",
         "manual",
         "active",
         "always-visible"
-      ]
+      ],
+      "required": false
     },
     "soundMode": {
       "type": "enum",
-      "required": false,
       "values": [
         "hover",
         "muted",
         "toggle"
-      ]
+      ],
+      "required": false
     },
     "controlsVisibility": {
       "type": "enum",
-      "required": false,
       "values": [
         "hover",
         "never",
         "always"
-      ]
+      ],
+      "required": false
     },
     "navigationMode": {
       "type": "enum",
-      "required": false,
       "values": [
         "none",
         "swipe",
         "buttons",
         "both"
-      ]
+      ],
+      "required": false
     },
     "mobileNavigationMode": {
       "type": "enum",
-      "required": false,
       "values": [
         "none",
         "swipe",
         "buttons",
         "both"
-      ]
+      ],
+      "required": false
     },
     "navigationPlacement": {
       "type": "enum",
-      "required": false,
       "values": [
         "below",
         "overlay"
-      ]
+      ],
+      "required": false
     },
     "autoAdvance": {
       "type": "boolean",
@@ -189,12 +207,12 @@
     },
     "previewMode": {
       "type": "enum",
-      "required": false,
       "values": [
         "hover",
         "always",
         "poster"
-      ]
+      ],
+      "required": false
     },
     "loop": {
       "type": "boolean",
@@ -210,12 +228,12 @@
     },
     "preload": {
       "type": "enum",
-      "required": false,
       "values": [
         "none",
         "auto",
         "metadata"
-      ]
+      ],
+      "required": false
     },
     "preloadAdjacent": {
       "type": "boolean",
@@ -254,7 +272,18 @@
       "required": false
     },
     "columns": {
-      "type": "number",
+      "type": "union",
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        }
+      ],
       "required": false
     },
     "maxVisibleItems": {
@@ -516,8 +545,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

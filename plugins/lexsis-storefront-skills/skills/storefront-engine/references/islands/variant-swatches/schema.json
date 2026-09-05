@@ -20,7 +20,20 @@
   "props": {
     "variants": {
       "type": "array",
-      "required": false,
+      "items": {
+        "type": "object",
+        "shape": {
+          "id": "string",
+          "title": "string",
+          "price": "string",
+          "compareAtPrice": "?string",
+          "available": "boolean",
+          "image": "?string",
+          "images": "?array<{url: object, alt: ?object}>",
+          "color": "?string",
+          "badge": "?string"
+        }
+      },
       "shape": {
         "id": "string",
         "title": "string",
@@ -28,10 +41,11 @@
         "compareAtPrice": "?string",
         "available": "boolean",
         "image": "?string",
-        "images": "?array<{url: string, alt: ?string}>",
+        "images": "?array<{url: string, alt: ?object}>",
         "color": "?string",
         "badge": "?string"
-      }
+      },
+      "required": false
     },
     "axis": {
       "type": "string",
@@ -39,24 +53,34 @@
     },
     "values": {
       "type": "array",
-      "required": false,
+      "items": {
+        "type": "object",
+        "shape": {
+          "value": "string",
+          "image": "?string",
+          "color": "?string",
+          "badge": "?string",
+          "available": "?boolean | boolean"
+        }
+      },
       "shape": {
         "value": "string",
         "image": "?string",
         "color": "?string",
         "badge": "?string",
-        "available": "?boolean"
-      }
+        "available": "?boolean | boolean"
+      },
+      "required": false
     },
     "type": {
       "type": "enum",
-      "required": false,
       "values": [
         "image",
         "text",
         "color",
         "size_grid"
       ],
+      "required": false,
       "default": "image"
     },
     "label": {
@@ -99,8 +123,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

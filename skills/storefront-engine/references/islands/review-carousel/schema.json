@@ -22,16 +22,34 @@
   "props": {
     "reviews": {
       "type": "array",
-      "required": false,
+      "items": {
+        "type": "object",
+        "shape": {
+          "id": "?string",
+          "author": "string",
+          "rating": "number",
+          "title": "?string",
+          "body": "string",
+          "date": "?string",
+          "verified": "?boolean | boolean",
+          "avatar": "?string",
+          "helpful_count": "?number",
+          "media": "?array<{type: object, urls: object, thumbnail: ?object, alt: ?object}>"
+        }
+      },
       "shape": {
+        "id": "?string",
         "author": "string",
         "rating": "number",
+        "title": "?string",
         "body": "string",
         "date": "?string",
-        "verified": "?boolean",
+        "verified": "?boolean | boolean",
         "avatar": "?string",
-        "helpful_count": "?number"
-      }
+        "helpful_count": "?number",
+        "media": "?array<{type: 'image' | 'video', urls: array<object>, thumbnail: ?object, alt: ?object}>"
+      },
+      "required": false
     },
     "reviewsEndpoint": {
       "type": "string",
@@ -39,6 +57,17 @@
     },
     "productIds": {
       "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "required": false
+    },
+    "collectionId": {
+      "type": "string",
+      "required": false
+    },
+    "reviewSnapshotId": {
+      "type": "string",
       "required": false
     },
     "minRating": {
@@ -47,12 +76,12 @@
     },
     "sort": {
       "type": "enum",
-      "required": false,
       "values": [
         "recent",
         "highest",
         "most_helpful"
-      ]
+      ],
+      "required": false
     },
     "pageSize": {
       "type": "number",
@@ -71,13 +100,13 @@
     },
     "variant": {
       "type": "enum",
-      "required": false,
       "values": [
         "default",
         "compact",
         "minimal",
         "grid"
       ],
+      "required": false,
       "default": "default"
     }
   },
@@ -100,9 +129,11 @@
     "dot",
     "dots",
     "load-more",
+    "media-preview",
     "nav-next",
     "nav-prev",
     "root",
+    "title",
     "verified"
   ],
   "authoring": {
@@ -113,8 +144,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

@@ -19,30 +19,69 @@
   "props": {
     "announcement": {
       "type": "object",
-      "required": false,
       "shape": {
         "messages": "array<string>",
         "speed": "?number",
         "backgroundColor": "?string",
         "textColor": "?string",
-        "dismissible": "?boolean",
+        "dismissible": "?boolean | boolean",
         "link": "?string"
-      }
+      },
+      "required": false
     },
     "navbar": {
       "type": "object",
-      "required": true,
       "shape": {
-        "logo": "{src: string, alt: ?string, url: ?string}",
-        "links": "array<{label: string, url: string, children: ?array<{label: object, url: object, children: ?object}>}>",
+        "logo": "{src: ?string, text: ?string, alt: ?string, url: ?string}",
+        "links": "array<{label: string, url: string, children: ?array<{}>}>",
         "cartCount": "?number",
-        "transparent": "?boolean",
-        "style": "?{bgColor: ?string, textColor: ?string, accentColor: ?string, logoHeight: ?string, height: ?string, borderBottom: ?string, fontFamily: ?string, fontSize: ?string, fontWeight: ?string, padding: ?string, maxWidth: ?string, dropdownBg: ?string, dropdownTextColor: ?string, mobileBg: ?string, mobileTextColor: ?string}",
+        "transparent": "?boolean | boolean",
+        "style": "?{bgColor: ?object, textColor: ?object, accentColor: ?object, logoHeight: ?object, height: ?object, borderBottom: ?object, fontFamily: ?object, fontSize: ?object, fontWeight: ?object, padding: ?object, maxWidth: ?object, dropdownBg: ?object, dropdownTextColor: ?object, mobileBg: ?object, mobileTextColor: ?object}",
         "cta": "?{label: string, url: string}",
-        "hideCart": "?boolean"
-      }
+        "hideCart": "?boolean | boolean"
+      },
+      "required": false
     },
     "sticky": {
+      "type": "boolean",
+      "required": false
+    },
+    "cartMode": {
+      "type": "enum",
+      "values": [
+        "drawer",
+        "link"
+      ],
+      "required": false
+    },
+    "cartUrl": {
+      "type": "string",
+      "required": false
+    },
+    "transparent": {
+      "type": "boolean",
+      "required": false
+    },
+    "offsetTop": {
+      "type": "string",
+      "required": false
+    },
+    "messages": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "required": false
+    },
+    "rotateInterval": {
+      "type": "number",
+      "required": false
+    },
+    "dismissible": {
+      "type": "boolean",
+      "required": false
+    },
+    "hideCart": {
       "type": "boolean",
       "required": false
     }
@@ -77,21 +116,20 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false
     },
-    "example": "<lx-island name=\"SiteHeader\">\n  <script type=\"application/json\">\n{\n  \"navbar\": {\n    \"logo\": {},\n    \"links\": []\n  }\n}\n  </script>\n</lx-island>",
+    "example": "<lx-island name=\"SiteHeader\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
     "examples": [
       {
         "label": "Hydration mode with rotating announcements",
-        "source": "<lx-island name=\"SiteHeader\">\n  <script type=\"application/json\">{\"sticky\":true,\"announcement\":{\"messages\":[\"Free shipping over $50\",\"New arrivals daily\",\"20% off first order\"],\"speed\":5000,\"dismissible\":true},\"navbar\":{\"logo\":{\"src\":\"/logo.svg\"},\"links\":[]}}</script>\n  <header data-lx-header=\"root\"><div data-lx-header=\"announcement\"><span data-lx-header=\"announcement-text\"></span><button data-lx-header=\"announcement-dismiss\">×</button></div><nav data-lx-nav=\"root\">...</nav></header>\n</lx-island>"
+        "source": "<lx-island name=\"SiteHeader\">\n  <script type=\"application/json\">{\"sticky\":true,\"cartMode\":\"drawer\",\"messages\":[\"Free shipping over $50\",\"New arrivals daily\",\"20% off first order\"],\"rotateInterval\":5000,\"dismissible\":true}</script>\n  <header data-lx-header=\"root\"><div data-lx-header=\"announcement\"><span data-lx-header=\"announcement-text\"></span><button data-lx-header=\"announcement-dismiss\">×</button></div><nav data-lx-nav=\"root\">...</nav></header>\n</lx-island>"
       },
       {
-        "label": "Legacy mode with single announcement",
-        "source": "<lx-island name=\"SiteHeader\">\n  <script type=\"application/json\">{\"announcement\":{\"messages\":[\"Sale ends tonight!\"],\"backgroundColor\":\"#5055aa\",\"dismissible\":false},\"navbar\":{\"logo\":{\"src\":\"/logo.svg\"},\"links\":[{\"label\":\"Shop\",\"url\":\"/shop\"}],\"transparent\":true},\"sticky\":true}</script>\n</lx-island>"
+        "label": "Legacy mode with text wordmark",
+        "source": "<lx-island name=\"SiteHeader\">\n  <script type=\"application/json\">{\"announcement\":{\"messages\":[\"Sale ends tonight!\"],\"backgroundColor\":\"#5055aa\",\"dismissible\":false},\"navbar\":{\"logo\":{\"text\":\"Northstar\"},\"links\":[{\"label\":\"Shop\",\"url\":\"/shop\"}],\"transparent\":true},\"sticky\":true}</script>\n</lx-island>"
       },
       {
         "label": "Legacy mode with linked announcement",

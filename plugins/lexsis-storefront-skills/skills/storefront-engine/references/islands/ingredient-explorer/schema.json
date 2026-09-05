@@ -19,7 +19,17 @@
   "props": {
     "ingredients": {
       "type": "array",
-      "required": true,
+      "items": {
+        "type": "object",
+        "shape": {
+          "name": "string",
+          "description": "string",
+          "benefit": "?string",
+          "icon": "?string",
+          "image": "?string",
+          "percentage": "?string"
+        }
+      },
       "shape": {
         "name": "string",
         "description": "string",
@@ -27,31 +37,46 @@
         "icon": "?string",
         "image": "?string",
         "percentage": "?string"
-      }
+      },
+      "required": true
     },
     "layout": {
       "type": "enum",
-      "required": false,
       "values": [
         "grid",
         "list",
         "editorial"
       ],
+      "required": false,
       "default": "grid"
     },
     "columns": {
-      "type": "number",
+      "type": "union",
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        }
+      ],
       "required": false,
       "default": "2"
     },
     "size": {
       "type": "enum",
-      "required": false,
       "values": [
         "sm",
         "md",
         "lg"
       ],
+      "required": false,
       "default": "sm"
     }
   },
@@ -81,8 +106,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

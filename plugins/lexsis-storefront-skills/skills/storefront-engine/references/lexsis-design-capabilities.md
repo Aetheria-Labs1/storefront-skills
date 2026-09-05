@@ -14,7 +14,11 @@ Select exactly one saved store/theme pair for a page.
   live refresh is required.
 - Use `lexsis_brand` action `compile_theme` when theme CSS must be derived from
   brand inputs.
-- Exact theme tokens win over prose when values conflict.
+- Exact theme tokens are the normal render source. However, an explicit
+  `NEVER`, `must`, or `non-negotiable` rule in the saved design guide that
+  directly contradicts a matching token is invalid theme context. Return
+  `THEME_CONTEXT_CONFLICT`, name both values, and stop using that property until
+  the saved theme or guide is corrected. Do not silently choose one.
 - Never combine design files or CSS from multiple themes on one page.
 
 The theme compiler provides WCAG-checked `--lx-*` variables including:

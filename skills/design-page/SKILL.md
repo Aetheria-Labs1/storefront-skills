@@ -65,34 +65,68 @@ and cannot pass `/generate`.
 2. Use the template direction from the plan. Fetch selected section source;
    search again only when the plan has no usable template direction.
 3. Convert each planned section into responsive layout and copy.
-4. Select islands only now, resolve each current active schema, and prefer
-   native variants. Use headless mode only with complete required hooks.
-5. Write readable `lexsis-source.html` with stable section delimiters.
+4. Read the compact island catalog and select only the likely interactive
+   components. Do not fetch every full schema in advance.
+5. Write a rough but complete `lexsis-source.html` with stable section
+   delimiters, minimal island props, and the documented examples as a starting
+   point.
 6. Write global page rules to `page-theme.css`; keep section-specific CSS
    beside its section.
 7. Use LX tokens for brand values and compile-time Tailwind utilities for
    layout. Do not use a runtime Tailwind CDN.
-8. Use ordinary HTML for static content and schema-valid `<lx-island>` source
-   for supported interactions.
-9. Keep preview props safe and presentation-focused. Real commerce is tested
+8. Compare explicit `NEVER`, `must`, and `non-negotiable` rules in the saved
+   brand design with matching theme tokens. On a direct contradiction, return
+   `THEME_CONTEXT_CONFLICT` with both values. Do not silently choose one.
+9. Use ordinary HTML for static content and `<lx-island>` source for supported
+   interactions. Use headless mode only with complete required hooks.
+10. Keep preview props safe and presentation-focused. Real commerce is tested
    on the hosted draft.
 
 ## Compile and Preview
 
-Compile the complete source, CSS, head, scripts, and bindings once. Fix
-blocking compiler errors, save the exact response and input hashes in
-`compile-artifact.json`, then run:
+Compile the rough complete source, CSS, head, scripts, and bindings early. The
+compiler is the authoritative compatibility check.
+
+1. Use `validation_errors` as the work list.
+2. Fetch a full island schema only for an island named by an error or when a
+   required behavior remains unclear.
+3. Fix the source while preserving the planned composition.
+4. Recompile until blocking errors are clear.
+5. Save the exact clean response and input hashes in `compile-artifact.json`.
+
+Build the preview with the script bundled beside this skill. Resolve its path
+from the loaded skill directory rather than assuming the repository is the
+current working directory:
 
 ```bash
-python3 skills/design-page/scripts/build_page_preview.py \
+python3 <design-page-skill>/scripts/build_page_preview.py \
   <page-workspace>/compile-artifact.json \
   <page-workspace>/page-preview.html \
   --theme-css <page-workspace>/page-theme.css
 ```
 
+Show the first compiled preview as soon as the section structure and responsive
+hierarchy are recognizable. Label it `ROUGH_PREVIEW`; asset polish and final
+validation may continue after the user can see the direction.
+
 Inspect 390px and 1280px. Confirm the expected islands hydrate and there is no
 overflow, clipping, broken hierarchy, or unusable responsive layout. Tablet,
 hosted visual comparison, and real cart behavior belong to `/generate`.
+
+The local hydration check must respect each island's strategy:
+
+- `immediate` must hydrate during initial readiness.
+- `visible`, `idle`, and `interaction` may remain pending until their trigger.
+- Browser QA should scroll through visible islands and exercise interaction
+  islands before final approval.
+
+If browser automation cannot access the preview, return
+`DESIGN_PREVIEW_READY_QA_PENDING` with the preview path and the checks that still
+need manual confirmation. Never record hydration as passed without evidence.
+
+When a store has no usable logo image, use an accessible text wordmark or plain
+HTML header for the local design. Do not substitute a product image or generic
+logo placeholder.
 
 ## Approval
 

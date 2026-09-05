@@ -1,7 +1,7 @@
 {
   "contract_version": 2,
   "name": "Carousel",
-  "category": "unknown",
+  "category": "hero",
   "deprecated": true,
   "replacement": "CSS scroll-snap or a specialized commerce/media island",
   "deprecation_reason": "Generic Swiper behavior is not Shopify-scoped and creates a broad CDN-backed contract that is difficult to customize safely.",
@@ -25,20 +25,26 @@
   "props": {
     "slides": {
       "type": "array",
-      "required": true,
+      "items": {
+        "type": "object",
+        "shape": {
+          "html": "string"
+        }
+      },
       "shape": {
         "html": "string"
-      }
+      },
+      "required": true
     },
     "variant": {
       "type": "enum",
-      "required": false,
       "values": [
         "hero",
         "cards",
         "testimonial",
         "minimal"
-      ]
+      ],
+      "required": false
     },
     "autoplay": {
       "type": "boolean",
@@ -70,12 +76,12 @@
     },
     "effect": {
       "type": "enum",
-      "required": false,
       "values": [
         "slide",
         "fade",
         "creative"
-      ]
+      ],
+      "required": false
     },
     "slidesPerView": {
       "type": "number",
@@ -123,8 +129,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

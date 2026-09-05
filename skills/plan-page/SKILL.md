@@ -37,9 +37,17 @@ prices, and availability from Lexsis.
 ## Choose a Direction
 
 Search page kits using the page type, objective, industry, and mood. If no kit
-fits, search sections for useful structural references. Record only the
-selected kit or section IDs in the manifest; put the short selection rationale
-in the plan.
+fits, inspect the returned status before deciding why:
+
+- A successful catalog response with zero results means that shelf is empty.
+  Continue with section search or a custom direction; do not make an unrelated
+  control call merely to prove the service works.
+- A failed request is a tool error, not an empty shelf. Report it and use only
+  an explicitly documented fallback.
+
+Search sections for useful structural references when no page kit fits. Record
+only the selected kit or section IDs in the manifest; put the short selection
+rationale in the plan.
 
 Template selection at this stage is directional. `/design-page` owns fetching
 source, adapting layouts, selecting islands, and resolving schemas.
@@ -55,6 +63,12 @@ Keep `page-plan.md` concise enough to scan in one view. Include:
 - one sentence describing each section's purpose
 - broad media roles such as hero, product media, or lifestyle proof
 - offers and claims that require confirmation
+
+Verify facts that control the page's urgency or trust before treating them as
+copy. This includes occasion dates, delivery cutoffs, prices, availability,
+medical or performance claims, certifications, endorsements, and legal or
+safety language. Use an authoritative current source where one exists. Mark an
+unverified item as unresolved in the plan instead of guessing it.
 
 Do not include:
 

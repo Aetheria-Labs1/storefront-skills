@@ -20,13 +20,13 @@
   "props": {
     "product": {
       "type": "object",
-      "required": true,
       "shape": {
         "title": "string",
         "price": "string",
         "compareAtPrice": "?string",
         "variants": "array<{id: string, title: string, price: string, available: boolean}>"
-      }
+      },
+      "required": true
     },
     "ctaText": {
       "type": "string",
@@ -50,25 +50,42 @@
     },
     "variant": {
       "type": "enum",
-      "required": false,
       "values": [
         "default",
         "compact",
         "expanded"
-      ]
+      ],
+      "required": false
     },
     "animate": {
-      "type": "boolean",
+      "type": "union",
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "string"
+        }
+      ],
       "required": false
     },
     "buttonStyle": {
       "type": "object",
-      "required": false,
       "shape": {
         "borderRadius": "?string",
         "padding": "?string",
         "fontSize": "?string"
-      }
+      },
+      "required": false
     },
     "__originalHtml": {
       "type": "string",

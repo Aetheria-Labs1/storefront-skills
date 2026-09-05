@@ -39,12 +39,12 @@
     },
     "variant": {
       "type": "enum",
-      "required": false,
       "values": [
         "inline",
         "card",
         "banner"
       ],
+      "required": false,
       "default": "inline"
     }
   },
@@ -71,8 +71,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

@@ -40,11 +40,11 @@
     },
     "variant": {
       "type": "enum",
-      "required": false,
       "values": [
         "default",
         "compact"
       ],
+      "required": false,
       "default": "default"
     }
   },
@@ -73,8 +73,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

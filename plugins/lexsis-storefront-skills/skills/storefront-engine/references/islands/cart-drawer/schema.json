@@ -20,7 +20,18 @@
   "props": {
     "items": {
       "type": "array",
-      "required": true,
+      "items": {
+        "type": "object",
+        "shape": {
+          "id": "string",
+          "title": "string",
+          "variant": "string",
+          "price": "string",
+          "quantity": "number",
+          "image": "?string",
+          "handle": "?string"
+        }
+      },
       "shape": {
         "id": "string",
         "title": "string",
@@ -29,7 +40,8 @@
         "quantity": "number",
         "image": "?string",
         "handle": "?string"
-      }
+      },
+      "required": true
     },
     "currency": {
       "type": "string",
@@ -42,7 +54,24 @@
       "default": "/checkout"
     },
     "animate": {
-      "type": "boolean",
+      "type": "union",
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "string"
+        }
+      ],
       "required": false,
       "default": "true"
     },
@@ -75,8 +104,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

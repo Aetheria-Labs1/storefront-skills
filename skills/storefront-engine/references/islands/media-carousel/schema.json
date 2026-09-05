@@ -1,7 +1,7 @@
 {
   "contract_version": 2,
   "name": "MediaCarousel",
-  "category": "unknown",
+  "category": "media",
   "usage_hint": "Standalone image/video carousel for custom cards, editorial modules, and hero sections. One media item renders normally; multiple items add configurable arrows, dots, autoplay, hover advance, and swipe.",
   "when_to_use": "Use anywhere custom HTML needs the shared MediaItem[] contract without a product-specific layout.",
   "when_not_to_use": "Not for horizontal product scrolling (use ProductCarousel or FeaturedCollectionStage). Not for thumbnail-heavy PDP galleries (use ProductGallery).",
@@ -18,11 +18,69 @@
   "props": {
     "media": {
       "type": "array",
+      "items": {
+        "type": "union",
+        "anyOf": [
+          {
+            "type": "object",
+            "shape": {
+              "id": "?string",
+              "type": "string",
+              "src": "string",
+              "alt": "?string",
+              "mobileSrc": "?string",
+              "srcSet": "?string",
+              "srcSetWebp": "?string",
+              "sizes": "?string",
+              "fit": "?'cover' | 'contain'",
+              "objectPosition": "?string"
+            }
+          },
+          {
+            "type": "object",
+            "shape": {
+              "id": "?string",
+              "type": "string",
+              "alt": "?string",
+              "poster": "string",
+              "sources": "array<{type: ?object, url: object, width: ?object, height: ?object, bitrate: ?object}>",
+              "preview": "?object",
+              "captionsUrl": "?string",
+              "assetId": "?string",
+              "provider": "?'cloudflare_stream' | 'cloudflare_cdn' | 'external'",
+              "fit": "?'cover' | 'contain'",
+              "objectPosition": "?string"
+            }
+          },
+          {
+            "type": "object",
+            "shape": {
+              "id": "?string",
+              "type": "?'image' | 'video'",
+              "src": "?string",
+              "url": "?string",
+              "alt": "?string",
+              "poster": "?string",
+              "mobileSrc": "?string",
+              "srcSet": "?string",
+              "srcSetWebp": "?string",
+              "sizes": "?string",
+              "fit": "?'cover' | 'contain'",
+              "objectFit": "?'cover' | 'contain'",
+              "objectPosition": "?string",
+              "sources": "?array<{}>",
+              "preview": "?object",
+              "captionsUrl": "?string",
+              "assetId": "?string",
+              "provider": "?'cloudflare_stream' | 'cloudflare_cdn' | 'external'"
+            }
+          }
+        ]
+      },
       "required": true
     },
     "transition": {
       "type": "enum",
-      "required": false,
       "values": [
         "none",
         "slide",
@@ -30,6 +88,7 @@
         "zoom",
         "kenBurns"
       ],
+      "required": false,
       "default": "fade"
     },
     "autoplay": {
@@ -54,11 +113,11 @@
     },
     "hoverAdvanceMode": {
       "type": "enum",
-      "required": false,
       "values": [
         "next",
         "cycle"
       ],
+      "required": false,
       "default": "cycle"
     },
     "hoverInterval": {
@@ -69,30 +128,36 @@
     "showArrows": {
       "type": "boolean",
       "required": false,
-      "default": "false"
+      "default": "false",
+      "deprecated": true,
+      "aliasFor": "arrows",
+      "precedence": "`arrows` takes precedence when both props are supplied."
     },
     "showDots": {
       "type": "boolean",
       "required": false,
-      "default": "true"
+      "default": "true",
+      "deprecated": true,
+      "aliasFor": "dots",
+      "precedence": "`dots` takes precedence when both props are supplied."
     },
     "arrows": {
       "type": "enum",
-      "required": false,
       "values": [
         "hover",
         "never",
         "always"
-      ]
+      ],
+      "required": false
     },
     "dots": {
       "type": "enum",
-      "required": false,
       "values": [
         "hover",
         "never",
         "always"
-      ]
+      ],
+      "required": false
     },
     "aspect": {
       "type": "string",
@@ -101,11 +166,11 @@
     },
     "fit": {
       "type": "enum",
-      "required": false,
       "values": [
         "cover",
         "contain"
       ],
+      "required": false,
       "default": "cover"
     },
     "loop": {
@@ -120,52 +185,52 @@
     },
     "swipe": {
       "type": "enum",
-      "required": false,
       "values": [
         "auto",
         "capture",
         "disabled"
-      ]
+      ],
+      "required": false
     },
     "videoPlaybackMode": {
       "type": "enum",
-      "required": false,
       "values": [
         "hover",
         "manual",
         "active",
         "always-visible"
       ],
+      "required": false,
       "default": "active"
     },
     "videoSoundMode": {
       "type": "enum",
-      "required": false,
       "values": [
         "hover",
         "muted",
         "toggle"
       ],
+      "required": false,
       "default": "muted"
     },
     "videoControls": {
       "type": "enum",
-      "required": false,
       "values": [
         "hover",
         "never",
         "always"
       ],
+      "required": false,
       "default": "never"
     },
     "videoPreload": {
       "type": "enum",
-      "required": false,
       "values": [
         "none",
         "auto",
         "metadata"
       ],
+      "required": false,
       "default": "metadata"
     },
     "videoLoop": {
@@ -174,7 +239,24 @@
       "default": "true"
     },
     "animate": {
-      "type": "boolean",
+      "type": "union",
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "string"
+        }
+      ],
       "required": false,
       "default": "true"
     }
@@ -292,8 +374,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

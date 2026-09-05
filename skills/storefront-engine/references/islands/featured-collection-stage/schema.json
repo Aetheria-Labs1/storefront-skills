@@ -19,23 +19,43 @@
   "props": {
     "productIds": {
       "type": "array",
+      "items": {
+        "type": "string"
+      },
       "required": false
     },
     "products": {
       "type": "array",
-      "required": false,
+      "items": {
+        "type": "object",
+        "shape": {
+          "id": "string",
+          "handle": "string",
+          "variantId": "?string",
+          "title": "string",
+          "subtitle": "?string",
+          "price": "string",
+          "compareAtPrice": "?string",
+          "badge": "?string",
+          "available": "?boolean | boolean",
+          "productUrl": "?string",
+          "media": "array<object | object | object>"
+        }
+      },
       "shape": {
         "id": "string",
         "handle": "string",
+        "variantId": "?string",
         "title": "string",
         "subtitle": "?string",
         "price": "string",
         "compareAtPrice": "?string",
         "badge": "?string",
-        "available": "?boolean",
+        "available": "?boolean | boolean",
         "productUrl": "?string",
-        "media": "array<{id: ?string, type: string, src: string, alt: ?string, mobileSrc: ?string, srcSet: ?string, srcSetWebp: ?string, sizes: ?string, fit: ?'cover' | 'contain', objectPosition: ?string}>"
-      }
+        "media": "array<{id: ?object, type: object, src: object, alt: ?object, mobileSrc: ?object, srcSet: ?object, srcSetWebp: ?object, sizes: ?object, fit: ?object, objectPosition: ?object} | {id: ?object, type: object, alt: ?object, poster: object, sources: object, preview: ?object, captionsUrl: ?object, assetId: ?object, provider: ?object, fit: ?object, objectPosition: ?object} | {id: ?object, type: ?object, src: ?object, url: ?object, alt: ?object, poster: ?object, mobileSrc: ?object, srcSet: ?object, srcSetWebp: ?object, sizes: ?object, fit: ?object, objectFit: ?object, objectPosition: ?object, sources: ?object, preview: ?object, captionsUrl: ?object, assetId: ?object, provider: ?object}>"
+      },
+      "required": false
     },
     "heading": {
       "type": "string",
@@ -52,24 +72,24 @@
     },
     "variant": {
       "type": "enum",
-      "required": false,
       "values": [
         "minimal",
         "fullBleed",
         "contained",
         "gallery"
       ],
+      "required": false,
       "default": "fullBleed"
     },
     "activation": {
       "type": "enum",
-      "required": false,
       "values": [
         "hover",
         "click",
         "centered"
       ],
-      "default": "hover"
+      "required": false,
+      "default": "click"
     },
     "initialIndex": {
       "type": "number",
@@ -93,12 +113,12 @@
     },
     "mediaBehavior": {
       "type": "enum",
-      "required": false,
       "values": [
         "first",
         "hoverAdvance",
         "autoplay"
       ],
+      "required": false,
       "default": "first"
     },
     "showBadges": {
@@ -111,8 +131,35 @@
       "required": false,
       "default": "true"
     },
-    "animate": {
+    "quickAddLabel": {
+      "type": "string",
+      "required": false,
+      "default": "Quick add"
+    },
+    "quickAddOpenCart": {
       "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
+    "animate": {
+      "type": "union",
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "string"
+        }
+      ],
       "required": false,
       "default": "true"
     },
@@ -226,6 +273,10 @@
     "--lx-featured-price-weight",
     "--lx-featured-product-height",
     "--lx-featured-product-index",
+    "--lx-featured-quick-add-bg",
+    "--lx-featured-quick-add-color",
+    "--lx-featured-quick-add-radius",
+    "--lx-featured-quick-add-size",
     "--lx-featured-radius",
     "--lx-featured-scroll-snap-align",
     "--lx-featured-stage-bg",
@@ -339,6 +390,7 @@
     "price-group",
     "product",
     "product-link",
+    "quick-add",
     "root",
     "scroll-container",
     "shell",
@@ -359,8 +411,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false
@@ -368,8 +419,8 @@
     "example": "<lx-island name=\"FeaturedCollectionStage\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
     "examples": [
       {
-        "label": "Full-bleed best sellers",
-        "source": "<lx-island name=\"FeaturedCollectionStage\">\n  <script type=\"application/json\">{\"heading\":\"Best Sellers\",\"collectionLabel\":\"Shop all\",\"collectionUrl\":\"/collections/best-sellers\",\"products\":[{\"id\":\"cup-1\",\"handle\":\"navy-mug\",\"title\":\"Navy Mug\",\"price\":\"$32.00\",\"badge\":\"Last chance\",\"media\":[{\"src\":\"https://example.com/navy-mug.png\",\"type\":\"image\",\"alt\":\"Navy ceramic mug\"}]},{\"id\":\"cup-2\",\"handle\":\"spoon-mug\",\"title\":\"Shortbread Spoon Mug\",\"subtitle\":\"4 in H x 4 in W\",\"price\":\"$32.00\",\"badge\":\"Last chance\",\"media\":[{\"src\":\"https://example.com/spoon-mug.png\",\"type\":\"image\",\"alt\":\"Cream ceramic spoon mug\"}]},{\"id\":\"cup-3\",\"handle\":\"green-mug\",\"title\":\"Green Mug\",\"price\":\"$30.00\",\"badge\":\"Selling fast\",\"media\":[{\"src\":\"https://example.com/green-mug.png\",\"type\":\"image\",\"alt\":\"Green ceramic mug\"}]}]}</script>\n</lx-island>"
+        "label": "Full-bleed best sellers with quick add",
+        "source": "<lx-island name=\"FeaturedCollectionStage\">\n  <script type=\"application/json\">{\"heading\":\"Best Sellers\",\"collectionLabel\":\"Shop all\",\"collectionUrl\":\"/collections/best-sellers\",\"products\":[{\"id\":\"cup-1\",\"handle\":\"navy-mug\",\"variantId\":\"gid://shopify/ProductVariant/1\",\"title\":\"Navy Mug\",\"price\":\"$32.00\",\"badge\":\"Last chance\",\"media\":[{\"src\":\"https://example.com/navy-mug.png\",\"type\":\"image\",\"alt\":\"Navy ceramic mug\"}]},{\"id\":\"cup-2\",\"handle\":\"spoon-mug\",\"variantId\":\"gid://shopify/ProductVariant/2\",\"title\":\"Shortbread Spoon Mug\",\"subtitle\":\"4 in H x 4 in W\",\"price\":\"$32.00\",\"badge\":\"Last chance\",\"media\":[{\"src\":\"https://example.com/spoon-mug.png\",\"type\":\"image\",\"alt\":\"Cream ceramic spoon mug\"}]},{\"id\":\"cup-3\",\"handle\":\"green-mug\",\"variantId\":\"gid://shopify/ProductVariant/3\",\"title\":\"Green Mug\",\"price\":\"$30.00\",\"badge\":\"Selling fast\",\"media\":[{\"src\":\"https://example.com/green-mug.png\",\"type\":\"image\",\"alt\":\"Green ceramic mug\"}]}]}</script>\n</lx-island>"
       },
       {
         "label": "Contained collection stage",

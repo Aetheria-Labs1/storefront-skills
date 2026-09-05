@@ -2,8 +2,8 @@
   "contract_version": 2,
   "name": "BundleBuilder",
   "category": "commerce",
-  "usage_hint": "Multi-product bundle selector with optional discount and \"Add All to Cart\" action. Shows main product + checkbox-selectable recommendations with pricing summary.",
-  "when_to_use": "Use on PDP or collection pages to upsell complementary products as a bundle (e.g., \"Frequently Bought Together\", \"Complete the Look\"). Encourages multi-item purchases with optional bundle discount.",
+  "usage_hint": "Multi-product bundle or peer-set selector with optional discount and \"Add All to Cart\" action.",
+  "when_to_use": "Use on PDP or collection pages for complementary bundles, gift sets, kits, and peer-product sets.",
   "when_not_to_use": "Not for single-product add-to-cart (use BuyBox or QuickAdd). Not for general product grids (use ProductCarousel). Not for cross-sells without bundle context (use ProductCarousel).",
   "defaultHydrate": "immediate",
   "combine_with": [
@@ -19,33 +19,70 @@
   "props": {
     "mainProduct": {
       "type": "object",
-      "required": true,
       "shape": {
         "id": "string",
         "title": "string",
-        "price": "string",
-        "image": "string"
-      }
+        "price": "string | {amount: object | object, currency_code: string}",
+        "image": "string",
+        "handle": "?string",
+        "selected": "?boolean | boolean"
+      },
+      "required": false
     },
     "recommendations": {
       "type": "array",
-      "required": true,
+      "items": {
+        "type": "object",
+        "shape": {
+          "id": "string",
+          "title": "string",
+          "price": "string | {amount: object, currency_code: object}",
+          "image": "string",
+          "handle": "?string",
+          "selected": "?boolean | boolean"
+        }
+      },
       "shape": {
         "id": "string",
         "title": "string",
-        "price": "string",
+        "price": "string | {amount: object | object, currency_code: string}",
         "image": "string",
         "handle": "?string",
-        "selected": "?boolean"
-      }
+        "selected": "?boolean | boolean"
+      },
+      "required": false,
+      "default": "[]"
+    },
+    "products": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "shape": {
+          "id": "string",
+          "title": "string",
+          "price": "string | {amount: object, currency_code: object}",
+          "image": "string",
+          "handle": "?string",
+          "selected": "?boolean | boolean"
+        }
+      },
+      "shape": {
+        "id": "string",
+        "title": "string",
+        "price": "string | {amount: object | object, currency_code: string}",
+        "image": "string",
+        "handle": "?string",
+        "selected": "?boolean | boolean"
+      },
+      "required": false
     },
     "bundleDiscount": {
       "type": "object",
-      "required": false,
       "shape": {
         "type": "'percentage' | 'fixed'",
         "value": "number"
-      }
+      },
+      "required": false
     },
     "title": {
       "type": "string",
@@ -54,17 +91,25 @@
     },
     "layout": {
       "type": "enum",
-      "required": false,
       "values": [
         "horizontal",
         "stacked"
       ],
+      "required": false,
       "default": "horizontal"
     },
     "showCheckboxes": {
       "type": "boolean",
       "required": false,
       "default": "true"
+    },
+    "currencyCode": {
+      "type": "string",
+      "required": false
+    },
+    "locale": {
+      "type": "string",
+      "required": false
     }
   },
   "variants": [
@@ -101,13 +146,12 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false
     },
-    "example": "<lx-island name=\"BundleBuilder\">\n  <script type=\"application/json\">\n{\n  \"mainProduct\": {\n    \"id\": \"example-id\",\n    \"title\": \"example-title\",\n    \"price\": \"example-price\",\n    \"image\": \"example-image\"\n  },\n  \"recommendations\": [\n    {\n      \"id\": \"example-id\",\n      \"title\": \"example-title\",\n      \"price\": \"example-price\",\n      \"image\": \"example-image\"\n    }\n  ]\n}\n  </script>\n</lx-island>",
+    "example": "<lx-island name=\"BundleBuilder\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
     "examples": [
       {
         "label": "Stacked bundle with percentage discount",
@@ -120,6 +164,10 @@
       {
         "label": "Bundle without checkboxes (all items pre-selected)",
         "source": "<lx-island name=\"BundleBuilder\">\n  <script type=\"application/json\">{\"mainProduct\":{\"id\":\"p1\",\"title\":\"Laptop\",\"price\":\"$999.00\",\"image\":\"https://via.placeholder.com/64\"},\"recommendations\":[{\"id\":\"p2\",\"title\":\"Mouse\",\"price\":\"$29.00\",\"image\":\"https://via.placeholder.com/64\"}],\"showCheckboxes\":false,\"title\":\"Bundle & Save\"}</script>\n</lx-island>"
+      },
+      {
+        "label": "INR peer gift set",
+        "source": "<lx-island name=\"BundleBuilder\">\n  <script type=\"application/json\">{\"products\":[{\"id\":\"gid://shopify/ProductVariant/1\",\"title\":\"6 Mukhi Bracelet\",\"price\":{\"amount\":\"1899\",\"currency_code\":\"INR\"},\"image\":\"https://example.com/bracelet.jpg\"},{\"id\":\"gid://shopify/ProductVariant/2\",\"title\":\"Citrine Mala\",\"price\":{\"amount\":\"1399\",\"currency_code\":\"INR\"},\"image\":\"https://example.com/mala.jpg\"}],\"bundleDiscount\":{\"type\":\"fixed\",\"value\":200},\"title\":\"Build the gift set\",\"layout\":\"horizontal\"}</script>\n</lx-island>"
       }
     ]
   }

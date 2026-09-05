@@ -14,12 +14,20 @@
   "props": {
     "tabs": {
       "type": "array",
-      "required": true,
+      "items": {
+        "type": "object",
+        "shape": {
+          "label": "string",
+          "content": "string",
+          "icon": "?string"
+        }
+      },
       "shape": {
         "label": "string",
         "content": "string",
         "icon": "?string"
-      }
+      },
+      "required": true
     },
     "defaultTab": {
       "type": "number",
@@ -28,12 +36,12 @@
     },
     "style": {
       "type": "enum",
-      "required": false,
       "values": [
         "pills",
         "underline",
         "bordered"
       ],
+      "required": false,
       "default": "underline"
     }
   },
@@ -59,8 +67,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

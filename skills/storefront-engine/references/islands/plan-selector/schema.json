@@ -21,7 +21,22 @@
   "props": {
     "plans": {
       "type": "array",
-      "required": true,
+      "items": {
+        "type": "object",
+        "shape": {
+          "id": "string",
+          "title": "string",
+          "price": "string",
+          "compareAtPrice": "?string",
+          "perUnit": "?string",
+          "sellingPlanId": "?string",
+          "frequency": "?string",
+          "benefits": "?array<string>",
+          "note": "?string",
+          "badge": "?string",
+          "static": "?boolean | boolean"
+        }
+      },
       "shape": {
         "id": "string",
         "title": "string",
@@ -33,8 +48,9 @@
         "benefits": "?array<string>",
         "note": "?string",
         "badge": "?string",
-        "static": "?boolean"
-      }
+        "static": "?boolean | boolean"
+      },
+      "required": true
     },
     "defaultPlanId": {
       "type": "string",
@@ -42,12 +58,12 @@
     },
     "variant": {
       "type": "enum",
-      "required": false,
       "values": [
         "stacked",
         "cards",
         "minimal"
       ],
+      "required": false,
       "default": "cards"
     },
     "listenForTiers": {
@@ -105,8 +121,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

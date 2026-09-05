@@ -33,11 +33,11 @@
     },
     "trigger": {
       "type": "enum",
-      "required": false,
       "values": [
         "hover",
         "click"
       ],
+      "required": false,
       "default": "hover"
     }
   },
@@ -57,8 +57,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

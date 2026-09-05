@@ -20,7 +20,6 @@
   "props": {
     "mode": {
       "type": "enum",
-      "required": false,
       "values": [
         "drawer-right",
         "drawer-left",
@@ -29,15 +28,16 @@
         "fullscreen",
         "dropdown"
       ],
+      "required": false,
       "default": "drawer-right"
     },
     "responsive": {
       "type": "object",
-      "required": false,
       "shape": {
         "mobile": "?string",
         "tablet": "?string"
-      }
+      },
+      "required": false
     },
     "trigger": {
       "type": "string",
@@ -65,7 +65,27 @@
       "default": "true"
     },
     "animate": {
-      "type": "boolean",
+      "type": "union",
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "string"
+        }
+      ],
       "required": false,
       "default": "smooth"
     },
@@ -112,8 +132,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

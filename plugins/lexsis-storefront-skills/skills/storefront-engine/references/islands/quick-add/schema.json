@@ -19,22 +19,22 @@
   "props": {
     "product": {
       "type": "object",
-      "required": true,
       "shape": {
         "title": "string",
         "variants": "array<{id: string, title: string, price: string, available: boolean}>",
         "image": "?string"
-      }
+      },
+      "required": true
     },
     "render": {
       "type": "enum",
-      "required": false,
       "values": [
         "minimal",
         "button",
         "icon",
         "custom-trigger"
       ],
+      "required": false,
       "default": "button"
     },
     "iconSize": {
@@ -46,7 +46,24 @@
       "required": false
     },
     "animate": {
-      "type": "boolean",
+      "type": "union",
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "string"
+        }
+      ],
       "required": false,
       "default": "true"
     }
@@ -73,8 +90,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

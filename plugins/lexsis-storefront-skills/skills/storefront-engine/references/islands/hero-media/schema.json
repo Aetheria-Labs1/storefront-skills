@@ -1,11 +1,11 @@
 {
   "contract_version": 2,
   "name": "HeroMedia",
-  "category": "unknown",
+  "category": "hero",
   "usage_hint": "Full-bleed background media layer for hero sections. Supports static image, carousel (fade/slide), and video modes with parallax, ken-burns, and zoom-on-scroll effects. Positioned absolute to fill its parent section container.",
   "when_to_use": "As the background media layer inside any hero section with position:relative and overflow:hidden. Use for landing page heroes, campaign headers, collection banners, and any section needing immersive full-bleed background media.",
   "when_not_to_use": "Not for inline product images (use ProductGallery). Not for thumbnail galleries (use ProductHero). Not for standalone video players (use VideoPlayer). Not for card-based carousels (use MediaCarousel).",
-  "defaultHydrate": "eager",
+  "defaultHydrate": "immediate",
   "combine_with": [
     "Hero text overlays (headline",
     "subheadline",
@@ -24,12 +24,12 @@
   "props": {
     "type": {
       "type": "enum",
-      "required": true,
       "values": [
         "image",
-        "carousel",
-        "video"
-      ]
+        "video",
+        "carousel"
+      ],
+      "required": true
     },
     "src": {
       "type": "string",
@@ -46,23 +46,31 @@
     },
     "effect": {
       "type": "enum",
-      "required": false,
       "values": [
         "none",
         "parallax",
         "ken-burns",
         "zoom-on-scroll"
       ],
+      "required": false,
       "default": "none"
     },
     "slides": {
       "type": "array",
-      "required": false,
+      "items": {
+        "type": "object",
+        "shape": {
+          "src": "string",
+          "mobileSrc": "?string",
+          "alt": "?string"
+        }
+      },
       "shape": {
         "src": "string",
         "mobileSrc": "?string",
         "alt": "?string"
       },
+      "required": false,
       "default": "[]"
     },
     "autoplay": {
@@ -77,11 +85,11 @@
     },
     "transition": {
       "type": "enum",
-      "required": false,
       "values": [
         "slide",
         "fade"
       ],
+      "required": false,
       "default": "fade"
     },
     "videoSrc": {
@@ -114,11 +122,11 @@
     },
     "objectFit": {
       "type": "enum",
-      "required": false,
       "values": [
         "cover",
         "contain"
       ],
+      "required": false,
       "default": "cover"
     },
     "minHeight": {
@@ -128,11 +136,11 @@
     },
     "loading": {
       "type": "enum",
-      "required": false,
       "values": [
         "eager",
         "lazy"
       ],
+      "required": false,
       "default": "eager"
     }
   },
@@ -254,8 +262,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

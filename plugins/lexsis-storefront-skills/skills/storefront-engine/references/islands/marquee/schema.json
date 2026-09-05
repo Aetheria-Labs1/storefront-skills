@@ -1,7 +1,7 @@
 {
   "contract_version": 2,
   "name": "Marquee",
-  "category": "unknown",
+  "category": "hero",
   "deprecated": true,
   "replacement": "CSS animation with static HTML",
   "deprecation_reason": "This component has no Shopify integration and its behavior is expressible with HTML and CSS.",
@@ -23,23 +23,32 @@
   "props": {
     "variant": {
       "type": "enum",
-      "required": false,
       "values": [
         "text",
         "logos",
         "badges",
         "mixed"
-      ]
+      ],
+      "required": false
     },
     "items": {
       "type": "array",
-      "required": true,
+      "items": {
+        "type": "object",
+        "shape": {
+          "html": "?string",
+          "text": "?string",
+          "imageSrc": "?string",
+          "imageAlt": "?string"
+        }
+      },
       "shape": {
         "html": "?string",
         "text": "?string",
         "imageSrc": "?string",
         "imageAlt": "?string"
-      }
+      },
+      "required": true
     },
     "speed": {
       "type": "number",
@@ -47,11 +56,11 @@
     },
     "direction": {
       "type": "enum",
-      "required": false,
       "values": [
         "left",
         "right"
-      ]
+      ],
+      "required": false
     },
     "pauseOnHover": {
       "type": "boolean",
@@ -124,8 +133,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

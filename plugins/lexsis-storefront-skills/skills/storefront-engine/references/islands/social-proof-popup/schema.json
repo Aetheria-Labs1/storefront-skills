@@ -22,14 +22,24 @@
   "props": {
     "events": {
       "type": "array",
-      "required": false,
+      "items": {
+        "type": "object",
+        "shape": {
+          "name": "string",
+          "product": "string",
+          "location": "?string",
+          "time": "?string",
+          "image": "?string"
+        }
+      },
       "shape": {
         "name": "string",
         "product": "string",
         "location": "?string",
         "time": "?string",
         "image": "?string"
-      }
+      },
+      "required": false
     },
     "socialProofEndpoint": {
       "type": "string",
@@ -76,12 +86,12 @@
     },
     "position": {
       "type": "enum",
-      "required": false,
       "values": [
         "bottom-left",
         "bottom-right",
         "top-banner"
       ],
+      "required": false,
       "default": "bottom-left"
     },
     "showProductImage": {
@@ -111,8 +121,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

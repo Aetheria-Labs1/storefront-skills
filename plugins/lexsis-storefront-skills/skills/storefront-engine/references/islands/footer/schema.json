@@ -19,27 +19,41 @@
   "props": {
     "links": {
       "type": "array",
-      "required": true,
+      "items": {
+        "type": "object",
+        "shape": {
+          "label": "string",
+          "url": "string"
+        }
+      },
       "shape": {
         "label": "string",
         "url": "string"
-      }
+      },
+      "required": false
     },
     "columns": {
       "type": "array",
-      "required": false,
+      "items": {
+        "type": "object",
+        "shape": {
+          "heading": "?string",
+          "links": "array<{label: string, url: string}>"
+        }
+      },
       "shape": {
         "heading": "?string",
         "links": "array<{label: string, url: string}>"
-      }
+      },
+      "required": false
     },
     "logo": {
       "type": "object",
-      "required": false,
       "shape": {
         "src": "string",
         "alt": "?string"
-      }
+      },
+      "required": false
     },
     "copyright": {
       "type": "string",
@@ -51,16 +65,23 @@
     },
     "socialLinks": {
       "type": "array",
-      "required": false,
+      "items": {
+        "type": "object",
+        "shape": {
+          "platform": "string",
+          "url": "string",
+          "icon": "?string"
+        }
+      },
       "shape": {
         "platform": "string",
         "url": "string",
         "icon": "?string"
-      }
+      },
+      "required": false
     },
     "style": {
       "type": "object",
-      "required": false,
       "shape": {
         "bgColor": "?string",
         "textColor": "?string",
@@ -76,28 +97,33 @@
         "logoHeight": "?string",
         "logoFilter": "?string",
         "layout": "?'simple' | 'centered' | 'columns' | 'editorialGrid' | 'newsletterSplit'"
-      }
+      },
+      "required": false
     },
     "newsletter": {
       "type": "object",
-      "required": false,
       "shape": {
         "heading": "?string",
         "placeholder": "?string",
         "buttonText": "?string"
-      }
+      },
+      "required": false
     },
     "borderStyle": {
       "type": "enum",
-      "required": false,
       "values": [
         "none",
         "solid",
         "dashed"
-      ]
+      ],
+      "required": false
     },
     "tileLayout": {
       "type": "boolean",
+      "required": false
+    },
+    "successMessage": {
+      "type": "string",
       "required": false
     }
   },
@@ -120,17 +146,16 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false
     },
-    "example": "<lx-island name=\"Footer\">\n  <script type=\"application/json\">\n{\n  \"links\": [\n    {\n      \"label\": \"example-label\",\n      \"url\": \"example-url\"\n    }\n  ]\n}\n  </script>\n</lx-island>",
+    "example": "<lx-island name=\"Footer\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
     "examples": [
       {
         "label": "Hydration mode with newsletter form",
-        "source": "<lx-island name=\"Footer\">\n  <script type=\"application/json\">{\"links\":[]}</script>\n  <footer data-lx-footer=\"root\"><form data-lx-footer=\"newsletter-form\"><input data-lx-footer=\"newsletter-input\" type=\"email\"/><button>Subscribe</button></form><div data-lx-footer=\"newsletter-success\" style=\"display:none;\">Thanks!</div><p>&copy; <span data-lx-footer=\"year\"></span> All rights reserved.</p></footer>\n</lx-island>"
+        "source": "<lx-island name=\"Footer\">\n  <script type=\"application/json\">{\"successMessage\":\"Thanks!\"}</script>\n  <footer data-lx-footer=\"root\"><form data-lx-footer=\"newsletter-form\"><input data-lx-footer=\"newsletter-input\" type=\"email\"/><button>Subscribe</button></form><div data-lx-footer=\"newsletter-success\" style=\"display:none;\"></div><p>&copy; <span data-lx-footer=\"year\"></span> All rights reserved.</p></footer>\n</lx-island>"
       },
       {
         "label": "Legacy simple layout",

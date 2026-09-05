@@ -19,6 +19,9 @@
   "props": {
     "messages": {
       "type": "array",
+      "items": {
+        "type": "string"
+      },
       "required": true
     },
     "speed": {
@@ -68,8 +71,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

@@ -23,25 +23,37 @@
     },
     "plans": {
       "type": "array",
-      "required": true,
+      "items": {
+        "type": "object",
+        "shape": {
+          "id": "string",
+          "frequency": "string",
+          "discount": "string",
+          "price": "string"
+        }
+      },
       "shape": {
         "id": "string",
         "frequency": "string",
         "discount": "string",
         "price": "string"
-      }
+      },
+      "required": true
     },
     "benefits": {
       "type": "array",
+      "items": {
+        "type": "string"
+      },
       "required": false
     },
     "defaultMode": {
       "type": "enum",
-      "required": false,
       "values": [
         "one-time",
         "subscribe"
       ],
+      "required": false,
       "default": "one-time"
     },
     "label": {
@@ -71,8 +83,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

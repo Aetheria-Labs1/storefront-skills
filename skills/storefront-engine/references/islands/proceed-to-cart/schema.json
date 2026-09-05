@@ -38,12 +38,12 @@
     },
     "variant": {
       "type": "enum",
-      "required": false,
       "values": [
         "minimal",
         "outline",
         "primary"
       ],
+      "required": false,
       "default": "primary"
     },
     "fullWidth": {
@@ -77,8 +77,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

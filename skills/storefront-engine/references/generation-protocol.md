@@ -25,7 +25,13 @@
 Setup provides slow-changing design context. Commerce, assets, schemas,
 permissions, analytics, and remote versions are always read live.
 
-> **Brand kit ↔ design.md precedence**: when the two disagree, **exact tokens (colors, fonts, radius, spacing values) come from the brand kit**; **style philosophy, component guidance, and explicit don'ts come from design.md**. Conflict on a token → use the kit's value, applied within design.md's don'ts. Don't stall trying to reconcile them.
+> **Brand kit ↔ design.md precedence**: exact tokens normally come from the
+> saved theme, while design.md supplies style philosophy and component guidance.
+> Before authoring, compare any explicit `NEVER`, `must`, or `non-negotiable`
+> design rule with the matching token. If they directly contradict each other,
+> return `THEME_CONTEXT_CONFLICT` with both values and stop using that property
+> until the theme or guide is corrected. Never silently choose a
+> property-by-property winner or invent a blended rule.
 
 > **Documentation precedence**: live MCP contracts win over bundled docs. For
 > islands, use `vibe://schema/island/{name}` (or `lexsis_design` action

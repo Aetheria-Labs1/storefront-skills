@@ -20,27 +20,27 @@
   "props": {
     "before": {
       "type": "object",
-      "required": true,
       "shape": {
         "src": "string",
         "label": "?string"
-      }
+      },
+      "required": true
     },
     "after": {
       "type": "object",
-      "required": true,
       "shape": {
         "src": "string",
         "label": "?string"
-      }
+      },
+      "required": true
     },
     "orientation": {
       "type": "enum",
-      "required": false,
       "values": [
         "horizontal",
         "vertical"
       ],
+      "required": false,
       "default": "horizontal"
     },
     "initialPosition": {
@@ -68,8 +68,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

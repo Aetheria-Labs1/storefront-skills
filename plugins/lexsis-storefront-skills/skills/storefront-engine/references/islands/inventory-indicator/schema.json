@@ -48,12 +48,12 @@
     },
     "variant": {
       "type": "enum",
-      "required": false,
       "values": [
         "badge",
         "bar",
         "text"
       ],
+      "required": false,
       "default": "badge"
     }
   },
@@ -78,8 +78,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

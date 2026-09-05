@@ -18,28 +18,43 @@
   "props": {
     "links": {
       "type": "array",
-      "required": true,
+      "items": {
+        "type": "object",
+        "shape": {
+          "label": "string",
+          "url": "string",
+          "children": "?array<{label: object, url: object, children: ?object}>"
+        }
+      },
       "shape": {
         "label": "string",
         "url": "string",
-        "children": "?array<{label: string, url: string, children: ?array<{label: object, url: object, children: ?object}>}>"
-      }
+        "children": "?array<{label: string, url: string, children: ?object}>"
+      },
+      "required": true
     },
     "socials": {
       "type": "array",
-      "required": false,
+      "items": {
+        "type": "object",
+        "shape": {
+          "platform": "string",
+          "url": "string"
+        }
+      },
       "shape": {
         "platform": "string",
         "url": "string"
-      }
+      },
+      "required": false
     },
     "logo": {
       "type": "object",
-      "required": false,
       "shape": {
         "src": "string",
         "alt": "?string"
-      }
+      },
+      "required": false
     }
   },
   "variants": null,
@@ -61,8 +76,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

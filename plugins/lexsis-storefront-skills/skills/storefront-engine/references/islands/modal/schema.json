@@ -24,35 +24,42 @@
   "props": {
     "trigger": {
       "type": "enum",
-      "required": false,
       "values": [
         "click",
-        "exit_intent",
         "delay",
         "scroll",
+        "exit_intent",
         "event"
       ],
+      "required": false,
       "default": "delay"
     },
     "triggerValue": {
-      "type": "string",
+      "type": "union",
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        }
+      ],
       "required": false,
       "default": "5000"
     },
     "position": {
       "type": "enum",
-      "required": false,
       "values": [
         "fullscreen",
         "right",
         "center",
         "bottom"
       ],
+      "required": false,
       "default": "center"
     },
     "size": {
       "type": "enum",
-      "required": false,
       "values": [
         "full",
         "sm",
@@ -60,6 +67,7 @@
         "lg",
         "xl"
       ],
+      "required": false,
       "default": "md"
     },
     "closable": {
@@ -74,13 +82,13 @@
     },
     "animation": {
       "type": "enum",
-      "required": false,
       "values": [
         "fade",
         "slide-up",
         "slide-right",
         "scale"
       ],
+      "required": false,
       "default": "scale"
     },
     "showOnce": {
@@ -111,22 +119,29 @@
     },
     "triggerVariant": {
       "type": "enum",
-      "required": false,
       "values": [
         "minimal",
         "outline",
         "primary",
         "ghost"
       ],
+      "required": false,
       "default": "primary"
     },
     "children": {
       "type": "array",
-      "required": false,
+      "items": {
+        "type": "object",
+        "shape": {
+          "island": "string",
+          "props": "?object"
+        }
+      },
       "shape": {
         "island": "string",
         "props": "?object"
       },
+      "required": false,
       "default": "[]"
     }
   },
@@ -147,8 +162,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

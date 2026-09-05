@@ -32,27 +32,26 @@
     },
     "localRuntime": {
       "type": "object",
-      "required": false,
       "shape": {
         "funnel_id": "string",
         "funnel_version": "number",
         "public_key": "string",
-        "entry_step": "{key: string, kind: string, position: number, settings: object, branch_logic: ?{rules: ?object, default_goto: ?object}}",
-        "steps": "array<{key: string, kind: string, position: number, settings: object, branch_logic: ?{rules: ?object, default_goto: ?object}}>"
-      }
+        "entry_step": "{key: string, kind: string, position: number, settings: object, branch_logic: ?object}",
+        "steps": "array<{key: string, kind: string, position: number, settings: object, branch_logic: ?object}>"
+      },
+      "required": false
     },
     "placement": {
       "type": "enum",
-      "required": false,
       "values": [
         "inline",
         "modal"
       ],
+      "required": false,
       "default": "modal"
     },
     "trigger": {
       "type": "enum",
-      "required": false,
       "values": [
         "click",
         "immediate",
@@ -61,6 +60,7 @@
         "exit_intent",
         "event"
       ],
+      "required": false,
       "default": "delay"
     },
     "triggerValue": {
@@ -144,8 +144,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

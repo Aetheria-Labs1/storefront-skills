@@ -19,7 +19,17 @@
   "props": {
     "images": {
       "type": "array",
-      "required": true,
+      "items": {
+        "type": "object",
+        "shape": {
+          "url": "string",
+          "alt": "?string",
+          "type": "?'image' | 'video'",
+          "poster": "?string",
+          "objectFit": "?'cover' | 'contain'",
+          "objectPosition": "?string"
+        }
+      },
       "shape": {
         "url": "string",
         "alt": "?string",
@@ -27,47 +37,48 @@
         "poster": "?string",
         "objectFit": "?'cover' | 'contain'",
         "objectPosition": "?string"
-      }
+      },
+      "required": true
     },
     "layout": {
       "type": "enum",
-      "required": false,
       "values": [
         "stacked",
         "splitLeft",
         "splitRight",
         "fullHeight"
       ],
+      "required": false,
       "default": "splitLeft"
     },
     "thumbnails": {
       "type": "enum",
-      "required": false,
       "values": [
         "none",
         "rail",
         "dots"
       ],
+      "required": false,
       "default": "rail"
     },
     "thumbnailPosition": {
       "type": "enum",
-      "required": false,
       "values": [
         "left",
         "right",
         "bottom"
       ],
+      "required": false,
       "default": "left"
     },
     "navigation": {
       "type": "enum",
-      "required": false,
       "values": [
         "none",
         "arrows",
         "floatingArrows"
       ],
+      "required": false,
       "default": "floatingArrows"
     },
     "aspectRatio": {
@@ -82,7 +93,6 @@
     },
     "transition": {
       "type": "enum",
-      "required": false,
       "values": [
         "none",
         "slide",
@@ -90,6 +100,7 @@
         "zoom",
         "kenBurns"
       ],
+      "required": false,
       "default": "fade"
     },
     "listenForVariant": {
@@ -159,8 +170,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

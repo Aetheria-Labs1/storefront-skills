@@ -29,11 +29,18 @@
     },
     "tiers": {
       "type": "array",
-      "required": false,
+      "items": {
+        "type": "object",
+        "shape": {
+          "threshold": "number",
+          "label": "string"
+        }
+      },
       "shape": {
         "threshold": "number",
         "label": "string"
-      }
+      },
+      "required": false
     },
     "currency": {
       "type": "string",
@@ -62,8 +69,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

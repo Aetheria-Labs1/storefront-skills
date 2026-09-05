@@ -22,7 +22,26 @@
   "props": {
     "tiers": {
       "type": "array",
-      "required": true,
+      "items": {
+        "type": "object",
+        "shape": {
+          "quantity": "number",
+          "price": "string",
+          "perUnit": "string",
+          "savings": "?string",
+          "label": "?string",
+          "eyebrow": "?string",
+          "image": "?string",
+          "imageCount": "?number",
+          "badge": "?string",
+          "compareAtPrice": "?string",
+          "subscribePrice": "?string",
+          "subscribeCompareAt": "?string",
+          "subscribePerUnit": "?string",
+          "cadence": "?string",
+          "variantId": "?string"
+        }
+      },
       "shape": {
         "quantity": "number",
         "price": "string",
@@ -39,7 +58,8 @@
         "subscribePerUnit": "?string",
         "cadence": "?string",
         "variantId": "?string"
-      }
+      },
+      "required": true
     },
     "variantId": {
       "type": "string",
@@ -51,13 +71,13 @@
     },
     "variant": {
       "type": "enum",
-      "required": false,
       "values": [
         "cards",
         "columns",
         "list",
         "pills"
       ],
+      "required": false,
       "default": "list"
     },
     "emitEvents": {
@@ -116,8 +136,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

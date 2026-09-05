@@ -49,8 +49,16 @@
       const expectedIslandElements = Array.from(
         previewRoot.querySelectorAll("[data-island]")
       );
+      const strategyFor = (element) =>
+        element.getAttribute("data-hydrate") || "immediate";
       const expectedIslands = expectedIslandElements.map(
         (element, index) => `${index}:${element.getAttribute("data-island")}`
+      );
+      const immediateIslandElements = expectedIslandElements.filter(
+        (element) => strategyFor(element) === "immediate"
+      );
+      const deferredIslandElements = expectedIslandElements.filter(
+        (element) => strategyFor(element) !== "immediate"
       );
       const hydratedIslandElements = new Set();
       const hydratedIslands = [];
@@ -59,6 +67,11 @@
         state: expectedIslands.length ? "hydrating" : "passed",
         expectedIslands,
         hydratedIslands,
+        pendingIslands: [...expectedIslands],
+        strategies: expectedIslandElements.map((element, index) => ({
+          island: expectedIslands[index],
+          strategy: strategyFor(element),
+        })),
         error: null,
       };
 
@@ -66,6 +79,39 @@
         window.__LEXSIS_PREVIEW_STATUS__.state = state;
         window.__LEXSIS_PREVIEW_STATUS__.error = error;
         previewBody.dataset.lxHydrationStatus = state;
+      };
+
+      const islandLabel = (element) => {
+        const index = expectedIslandElements.indexOf(element);
+        return `${index}:${element.getAttribute("data-island")}`;
+      };
+
+      const refreshHydrationState = ({ initialReady = false } = {}) => {
+        const missingImmediate = immediateIslandElements.filter(
+          (element) => !hydratedIslandElements.has(element)
+        );
+        const pending = expectedIslandElements.filter(
+          (element) => !hydratedIslandElements.has(element)
+        );
+        window.__LEXSIS_PREVIEW_STATUS__.pendingIslands =
+          pending.map(islandLabel);
+
+        if (missingImmediate.length) {
+          if (initialReady) {
+            setHydrationState(
+              "failed",
+              `Immediate islands did not hydrate: ${missingImmediate
+                .map(islandLabel)
+                .join(", ")}`
+            );
+          }
+          return;
+        }
+        if (!pending.length) {
+          setHydrationState("passed");
+          return;
+        }
+        setHydrationState("pending-triggers");
       };
 
       if (!expectedIslands.length) {
@@ -92,6 +138,7 @@
           if (!hydratedIslands.includes(island)) {
             hydratedIslands.push(island);
           }
+          refreshHydrationState();
         }
       });
 
@@ -99,17 +146,7 @@
         "lx:islands-ready",
         () => {
           window.setTimeout(() => {
-            if (hydratedIslandElements.size === expectedIslandElements.length) {
-              setHydrationState("passed");
-              return;
-            }
-            const missing = expectedIslands.filter(
-              (_, index) => !hydratedIslandElements.has(expectedIslandElements[index])
-            );
-            setHydrationState(
-              "failed",
-              `Islands did not hydrate: ${missing.join(", ")}`
-            );
+            refreshHydrationState({ initialReady: true });
           }, 0);
         },
         { once: true }
@@ -137,10 +174,26 @@
 
       window.setTimeout(() => {
         if (window.__LEXSIS_PREVIEW_STATUS__.state === "hydrating") {
-          setHydrationState("failed", "Island hydration timed out");
+          const missingImmediate = immediateIslandElements.filter(
+            (element) => !hydratedIslandElements.has(element)
+          );
+          if (missingImmediate.length) {
+            setHydrationState(
+              "failed",
+              `Immediate island hydration timed out: ${missingImmediate
+                .map(islandLabel)
+                .join(", ")}`
+            );
+          } else if (deferredIslandElements.length) {
+            refreshHydrationState();
+          }
           document
             .querySelector("[data-lx-preview-banner]")
-            ?.append(" · hydration timed out");
+            ?.append(
+              missingImmediate.length
+                ? " · immediate hydration timed out"
+                : " · lazy islands await their triggers"
+            );
         }
       }, 10000);
     </script>

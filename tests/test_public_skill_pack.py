@@ -57,6 +57,9 @@ class PublicSkillPackTests(unittest.TestCase):
         self.assertIn("LexsisIslands.hydrateIslands", shell)
         self.assertIn("__LEXSIS_PREVIEW_STATUS__", shell)
         self.assertIn("data-lx-hydration-status", shell)
+        self.assertIn('"pending-triggers"', shell)
+        self.assertIn("Immediate islands did not hydrate", shell)
+        self.assertNotIn("Islands did not hydrate:", shell)
         self.assertNotIn("Content-Security-Policy", shell)
         self.assertNotIn("window.fetch =", shell)
         self.assertNotIn("XMLHttpRequest.prototype.open", shell)
@@ -158,6 +161,16 @@ class PublicSkillPackTests(unittest.TestCase):
         self.assertIn("must not define islands", text)
         self.assertNotIn("required islands", text.lower())
         self.assertNotIn("island_schema", text)
+        self.assertIn("occasion dates", text)
+        self.assertIn("shelf is empty", text)
+
+    def test_design_page_compiles_early_and_allows_lazy_hydration(self) -> None:
+        text = (SKILLS / "design-page" / "SKILL.md").read_text(encoding="utf-8")
+        self.assertIn("Compile the rough complete source", text)
+        self.assertIn("validation_errors", text)
+        self.assertIn("ROUGH_PREVIEW", text)
+        self.assertIn("pending until their trigger", text)
+        self.assertIn("DESIGN_PREVIEW_READY_QA_PENDING", text)
 
     def test_visual_page_was_replaced(self) -> None:
         self.assertFalse((SKILLS / "visual-page").exists())

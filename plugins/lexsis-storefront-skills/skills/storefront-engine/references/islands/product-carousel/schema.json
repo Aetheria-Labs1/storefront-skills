@@ -19,7 +19,21 @@
   "props": {
     "products": {
       "type": "array",
-      "required": true,
+      "items": {
+        "type": "object",
+        "shape": {
+          "id": "string",
+          "handle": "string",
+          "title": "string",
+          "subtitle": "?string",
+          "price": "string",
+          "compareAtPrice": "?string",
+          "badge": "?string",
+          "variants": "?array<{id: object, title: object, price: object, available: object}>",
+          "media": "?array<object | object | object>",
+          "image": "?string"
+        }
+      },
       "shape": {
         "id": "string",
         "handle": "string",
@@ -29,9 +43,10 @@
         "compareAtPrice": "?string",
         "badge": "?string",
         "variants": "?array<{id: string, title: string, price: string, available: boolean}>",
-        "media": "?array<{id: ?string, type: string, src: string, alt: ?string, mobileSrc: ?string, srcSet: ?string, srcSetWebp: ?string, sizes: ?string, fit: ?'cover' | 'contain', objectPosition: ?string}>",
+        "media": "?array<object | object | object>",
         "image": "?string"
-      }
+      },
+      "required": true
     },
     "title": {
       "type": "string",
@@ -55,14 +70,14 @@
     },
     "mediaTransition": {
       "type": "enum",
-      "required": false,
       "values": [
         "none",
         "slide",
         "fade",
         "zoom",
         "kenBurns"
-      ]
+      ],
+      "required": false
     },
     "hoverAdvance": {
       "type": "boolean",
@@ -70,11 +85,11 @@
     },
     "hoverAdvanceMode": {
       "type": "enum",
-      "required": false,
       "values": [
         "next",
         "cycle"
-      ]
+      ],
+      "required": false
     },
     "hoverInterval": {
       "type": "number",
@@ -82,19 +97,36 @@
     },
     "cardVariant": {
       "type": "enum",
-      "required": false,
       "values": [
         "default",
         "compact",
         "compactRows"
-      ]
+      ],
+      "required": false
     },
     "columns": {
       "type": "number",
       "required": false
     },
     "animate": {
-      "type": "boolean",
+      "type": "union",
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "string"
+        }
+      ],
       "required": false
     }
   },
@@ -231,8 +263,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

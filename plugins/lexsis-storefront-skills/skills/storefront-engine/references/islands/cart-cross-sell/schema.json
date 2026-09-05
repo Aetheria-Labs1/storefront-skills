@@ -1,7 +1,7 @@
 {
   "contract_version": 2,
   "name": "CartCrossSell",
-  "category": "unknown",
+  "category": "commerce",
   "usage_hint": "Self-contained cross-sell/upsell inside the cart drawer. Reads config from $cartConfig.upsells, evaluates triggers against $cartLines, fetches recommended products, and self-hides when no triggers match. No external rules needed.",
   "when_to_use": "Inside DrawerShell to show product recommendations based on cart contents. Config comes from commerce_config.upsells — the island is fully reactive to cart state changes.",
   "when_not_to_use": "Outside cart context. For static product grids use ProductCarousel.",
@@ -30,12 +30,12 @@
     },
     "layout": {
       "type": "enum",
-      "required": false,
       "values": [
         "horizontal",
         "grid",
         "stack"
       ],
+      "required": false,
       "default": "horizontal"
     },
     "showQuickAdd": {
@@ -45,13 +45,13 @@
     },
     "placement": {
       "type": "enum",
-      "required": false,
       "values": [
         "header",
         "after_line",
         "after_lines",
         "before_checkout"
       ],
+      "required": false,
       "default": "after_lines"
     },
     "slotId": {
@@ -97,8 +97,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

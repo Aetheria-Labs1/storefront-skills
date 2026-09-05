@@ -24,11 +24,11 @@
     },
     "cartMode": {
       "type": "enum",
-      "required": false,
       "values": [
         "drawer",
         "link"
-      ]
+      ],
+      "required": false
     },
     "cartUrl": {
       "type": "string",
@@ -48,22 +48,30 @@
     },
     "logo": {
       "type": "object",
-      "required": true,
       "shape": {
         "src": "?string",
         "html": "?string",
         "alt": "?string",
         "url": "?string"
-      }
+      },
+      "required": true
     },
     "links": {
       "type": "array",
-      "required": true,
+      "items": {
+        "type": "object",
+        "shape": {
+          "label": "string",
+          "url": "string",
+          "children": "?array<{label: object, url: object, children: ?object}>"
+        }
+      },
       "shape": {
         "label": "string",
         "url": "string",
-        "children": "?array<{label: string, url: string, children: ?array<{label: object, url: object, children: ?object}>}>"
-      }
+        "children": "?array<{label: string, url: string, children: ?object}>"
+      },
+      "required": true
     },
     "cartCount": {
       "type": "number",
@@ -71,7 +79,6 @@
     },
     "style": {
       "type": "object",
-      "required": false,
       "shape": {
         "bgColor": "?string",
         "textColor": "?string",
@@ -88,26 +95,27 @@
         "dropdownTextColor": "?string",
         "mobileBg": "?string",
         "mobileTextColor": "?string"
-      }
+      },
+      "required": false
     },
     "cta": {
       "type": "object",
-      "required": false,
       "shape": {
         "label": "string",
         "url": "string"
-      }
+      },
+      "required": false
     },
     "cart": {
       "type": "object",
-      "required": false,
       "shape": {
         "icon": "?'cart' | 'bag' | 'basket'",
         "svg": "?string",
         "image": "?string",
         "label": "?string",
         "badgeColor": "?string"
-      }
+      },
+      "required": false
     }
   },
   "variants": null,
@@ -136,8 +144,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

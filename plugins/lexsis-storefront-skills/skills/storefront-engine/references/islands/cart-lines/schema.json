@@ -16,11 +16,11 @@
   "props": {
     "layout": {
       "type": "enum",
-      "required": false,
       "values": [
         "compact",
         "full"
       ],
+      "required": false,
       "default": "compact"
     },
     "showQuantity": {
@@ -55,41 +55,41 @@
     },
     "spacing": {
       "type": "enum",
-      "required": false,
       "values": [
         "compact",
         "comfortable",
         "spacious"
-      ]
+      ],
+      "required": false
     },
     "quantityAnimation": {
       "type": "enum",
-      "required": false,
       "values": [
         "none",
         "slide",
         "crossfade",
         "roll"
-      ]
+      ],
+      "required": false
     },
     "buttonFeedback": {
       "type": "enum",
-      "required": false,
       "values": [
         "none",
         "press",
         "highlight"
-      ]
+      ],
+      "required": false
     },
     "itemRemovalAnimation": {
       "type": "enum",
-      "required": false,
       "values": [
         "none",
         "slide",
         "fade",
         "collapse"
-      ]
+      ],
+      "required": false
     },
     "showPurchaseOptions": {
       "type": "boolean",
@@ -97,11 +97,11 @@
     },
     "purchaseOptionStyle": {
       "type": "enum",
-      "required": false,
       "values": [
         "cards",
         "select"
-      ]
+      ],
+      "required": false
     },
     "purchaseOptionMessage": {
       "type": "string",
@@ -109,7 +109,17 @@
     },
     "__previewProducts": {
       "type": "array",
-      "required": false,
+      "items": {
+        "type": "object",
+        "shape": {
+          "id": "string",
+          "handle": "string",
+          "title": "string",
+          "price": "string",
+          "image": "?string",
+          "variantId": "?string"
+        }
+      },
       "shape": {
         "id": "string",
         "handle": "string",
@@ -117,7 +127,8 @@
         "price": "string",
         "image": "?string",
         "variantId": "?string"
-      }
+      },
+      "required": false
     }
   },
   "variants": [
@@ -161,8 +172,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

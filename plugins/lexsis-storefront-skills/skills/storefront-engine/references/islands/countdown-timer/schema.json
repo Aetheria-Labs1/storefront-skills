@@ -24,13 +24,13 @@
     },
     "labels": {
       "type": "object",
-      "required": false,
       "shape": {
         "days": "?string",
         "hours": "?string",
         "minutes": "?string",
         "seconds": "?string"
       },
+      "required": false,
       "default": "{}"
     },
     "expiredMessage": {
@@ -40,23 +40,23 @@
     },
     "style": {
       "type": "enum",
-      "required": false,
       "values": [
         "flip",
         "simple",
         "circular",
         "headless"
       ],
+      "required": false,
       "default": "simple"
     },
     "expiredAction": {
       "type": "enum",
-      "required": false,
       "values": [
         "hide",
         "message",
         "redirect"
       ],
+      "required": false,
       "default": "message"
     },
     "redirectUrl": {
@@ -106,8 +106,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

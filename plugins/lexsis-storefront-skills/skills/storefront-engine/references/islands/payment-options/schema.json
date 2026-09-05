@@ -29,6 +29,28 @@
     },
     "providers": {
       "type": "array",
+      "items": {
+        "type": "enum",
+        "values": [
+          "visa",
+          "mastercard",
+          "amex",
+          "discover",
+          "diners",
+          "jcb",
+          "paypal",
+          "apple_pay",
+          "google_pay",
+          "shop_pay",
+          "klarna",
+          "afterpay",
+          "affirm",
+          "stripe",
+          "cashapp",
+          "upi",
+          "zip"
+        ]
+      },
       "required": false,
       "default": "[\"klarna\", \"afterpay\", \"shop_pay\"]"
     },
@@ -39,12 +61,12 @@
     },
     "variant": {
       "type": "enum",
-      "required": false,
       "values": [
         "inline",
         "expandable",
         "icons_only"
       ],
+      "required": false,
       "default": "inline"
     },
     "listenForEvents": {
@@ -87,8 +109,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

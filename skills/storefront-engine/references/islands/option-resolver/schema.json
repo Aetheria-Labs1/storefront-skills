@@ -21,7 +21,18 @@
   "props": {
     "variants": {
       "type": "array",
-      "required": true,
+      "items": {
+        "type": "object",
+        "shape": {
+          "id": "string",
+          "selectedOptions": "array<{name: string, value: string}>",
+          "price": "string",
+          "compareAtPrice": "?string",
+          "available": "boolean",
+          "image": "?string",
+          "images": "?array<{url: object, alt: ?object}>"
+        }
+      },
       "shape": {
         "id": "string",
         "selectedOptions": "array<{name: string, value: string}>",
@@ -29,21 +40,29 @@
         "compareAtPrice": "?string",
         "available": "boolean",
         "image": "?string",
-        "images": "?array<{url: string, alt: ?string}>"
-      }
+        "images": "?array<{url: string, alt: ?object}>"
+      },
+      "required": true
     },
     "options": {
       "type": "array",
-      "required": true,
+      "items": {
+        "type": "object",
+        "shape": {
+          "name": "string",
+          "position": "number"
+        }
+      },
       "shape": {
         "name": "string",
         "position": "number"
-      }
+      },
+      "required": true
     },
     "defaultSelections": {
       "type": "object",
-      "required": false,
-      "shape": {}
+      "shape": {},
+      "required": false
     }
   },
   "variants": null,
@@ -57,8 +76,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

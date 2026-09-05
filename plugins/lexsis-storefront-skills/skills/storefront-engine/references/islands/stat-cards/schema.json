@@ -1,7 +1,7 @@
 {
   "contract_version": 2,
   "name": "StatCards",
-  "category": "unknown",
+  "category": "social_proof",
   "deprecated": true,
   "replacement": "HTML/CSS with optional IntersectionObserver",
   "deprecation_reason": "Generic count-up presentation has no Shopify scope and should be authored in the page section.",
@@ -23,34 +23,44 @@
   "props": {
     "items": {
       "type": "array",
-      "required": true,
+      "items": {
+        "type": "object",
+        "shape": {
+          "value": "number",
+          "suffix": "?string",
+          "prefix": "?string",
+          "label": "string",
+          "sublabel": "?string"
+        }
+      },
       "shape": {
         "value": "number",
         "suffix": "?string",
         "prefix": "?string",
         "label": "string",
         "sublabel": "?string"
-      }
+      },
+      "required": true
     },
     "layout": {
       "type": "enum",
-      "required": false,
       "values": [
         "horizontal",
         "vertical",
         "inline"
       ],
+      "required": false,
       "default": "horizontal"
     },
     "style": {
       "type": "enum",
-      "required": false,
       "values": [
         "headless",
         "solid",
         "glass",
         "gradient"
       ],
+      "required": false,
       "default": "glass"
     },
     "animate": {
@@ -110,8 +120,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

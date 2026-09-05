@@ -286,34 +286,68 @@ and cannot pass `/generate`.
 2. Use the template direction from the plan. Fetch selected section source;
    search again only when the plan has no usable template direction.
 3. Convert each planned section into responsive layout and copy.
-4. Select islands only now, resolve each current active schema, and prefer
-   native variants. Use headless mode only with complete required hooks.
-5. Write readable `lexsis-source.html` with stable section delimiters.
+4. Read the compact island catalog and select only the likely interactive
+   components. Do not fetch every full schema in advance.
+5. Write a rough but complete `lexsis-source.html` with stable section
+   delimiters, minimal island props, and the documented examples as a starting
+   point.
 6. Write global page rules to `page-theme.css`; keep section-specific CSS
    beside its section.
 7. Use LX tokens for brand values and compile-time Tailwind utilities for
    layout. Do not use a runtime Tailwind CDN.
-8. Use ordinary HTML for static content and schema-valid `<lx-island>` source
-   for supported interactions.
-9. Keep preview props safe and presentation-focused. Real commerce is tested
+8. Compare explicit `NEVER`, `must`, and `non-negotiable` rules in the saved
+   brand design with matching theme tokens. On a direct contradiction, return
+   `THEME_CONTEXT_CONFLICT` with both values. Do not silently choose one.
+9. Use ordinary HTML for static content and `<lx-island>` source for supported
+   interactions. Use headless mode only with complete required hooks.
+10. Keep preview props safe and presentation-focused. Real commerce is tested
    on the hosted draft.
 
 ## Compile and Preview
 
-Compile the complete source, CSS, head, scripts, and bindings once. Fix
-blocking compiler errors, save the exact response and input hashes in
-`compile-artifact.json`, then run:
+Compile the rough complete source, CSS, head, scripts, and bindings early. The
+compiler is the authoritative compatibility check.
+
+1. Use `validation_errors` as the work list.
+2. Fetch a full island schema only for an island named by an error or when a
+   required behavior remains unclear.
+3. Fix the source while preserving the planned composition.
+4. Recompile until blocking errors are clear.
+5. Save the exact clean response and input hashes in `compile-artifact.json`.
+
+Build the preview with the script bundled beside this skill. Resolve its path
+from the loaded skill directory rather than assuming the repository is the
+current working directory:
 
 ```bash
-python3 skills/design-page/scripts/build_page_preview.py \
+python3 <design-page-skill>/scripts/build_page_preview.py \
   <page-workspace>/compile-artifact.json \
   <page-workspace>/page-preview.html \
   --theme-css <page-workspace>/page-theme.css
 ```
 
+Show the first compiled preview as soon as the section structure and responsive
+hierarchy are recognizable. Label it `ROUGH_PREVIEW`; asset polish and final
+validation may continue after the user can see the direction.
+
 Inspect 390px and 1280px. Confirm the expected islands hydrate and there is no
 overflow, clipping, broken hierarchy, or unusable responsive layout. Tablet,
 hosted visual comparison, and real cart behavior belong to `/generate`.
+
+The local hydration check must respect each island's strategy:
+
+- `immediate` must hydrate during initial readiness.
+- `visible`, `idle`, and `interaction` may remain pending until their trigger.
+- Browser QA should scroll through visible islands and exercise interaction
+  islands before final approval.
+
+If browser automation cannot access the preview, return
+`DESIGN_PREVIEW_READY_QA_PENDING` with the preview path and the checks that still
+need manual confirmation. Never record hydration as passed without evidence.
+
+When a store has no usable logo image, use an accessible text wordmark or plain
+HTML header for the local design. Do not substitute a product image or generic
+logo placeholder.
 
 ## Approval
 
@@ -870,9 +904,17 @@ prices, and availability from Lexsis.
 ## Choose a Direction
 
 Search page kits using the page type, objective, industry, and mood. If no kit
-fits, search sections for useful structural references. Record only the
-selected kit or section IDs in the manifest; put the short selection rationale
-in the plan.
+fits, inspect the returned status before deciding why:
+
+- A successful catalog response with zero results means that shelf is empty.
+  Continue with section search or a custom direction; do not make an unrelated
+  control call merely to prove the service works.
+- A failed request is a tool error, not an empty shelf. Report it and use only
+  an explicitly documented fallback.
+
+Search sections for useful structural references when no page kit fits. Record
+only the selected kit or section IDs in the manifest; put the short selection
+rationale in the plan.
 
 Template selection at this stage is directional. `/design-page` owns fetching
 source, adapting layouts, selecting islands, and resolving schemas.
@@ -888,6 +930,12 @@ Keep `page-plan.md` concise enough to scan in one view. Include:
 - one sentence describing each section's purpose
 - broad media roles such as hero, product media, or lifestyle proof
 - offers and claims that require confirmation
+
+Verify facts that control the page's urgency or trust before treating them as
+copy. This includes occasion dates, delivery cutoffs, prices, availability,
+medical or performance claims, certifications, endorsements, and legal or
+safety language. Use an authoritative current source where one exists. Mark an
+unverified item as unresolved in the plan instead of guessing it.
 
 Do not include:
 
@@ -1335,7 +1383,13 @@ Use descriptive kebab-case: `hero`, `product-gallery`, `social-proof`, `ingredie
 Setup provides slow-changing design context. Commerce, assets, schemas,
 permissions, analytics, and remote versions are always read live.
 
-> **Brand kit ↔ design.md precedence**: when the two disagree, **exact tokens (colors, fonts, radius, spacing values) come from the brand kit**; **style philosophy, component guidance, and explicit don'ts come from design.md**. Conflict on a token → use the kit's value, applied within design.md's don'ts. Don't stall trying to reconcile them.
+> **Brand kit ↔ design.md precedence**: exact tokens normally come from the
+> saved theme, while design.md supplies style philosophy and component guidance.
+> Before authoring, compare any explicit `NEVER`, `must`, or `non-negotiable`
+> design rule with the matching token. If they directly contradict each other,
+> return `THEME_CONTEXT_CONFLICT` with both values and stop using that property
+> until the theme or guide is corrected. Never silently choose a
+> property-by-property winner or invent a blended rule.
 
 > **Documentation precedence**: live MCP contracts win over bundled docs. For
 > islands, use `vibe://schema/island/{name}` (or `lexsis_design` action
@@ -4073,7 +4127,11 @@ Select exactly one saved store/theme pair for a page.
   live refresh is required.
 - Use `lexsis_brand` action `compile_theme` when theme CSS must be derived from
   brand inputs.
-- Exact theme tokens win over prose when values conflict.
+- Exact theme tokens are the normal render source. However, an explicit
+  `NEVER`, `must`, or `non-negotiable` rule in the saved design guide that
+  directly contradicts a matching token is invalid theme context. Return
+  `THEME_CONTEXT_CONFLICT`, name both values, and stop using that property until
+  the saved theme or guide is corrected. Do not silently choose one.
 - Never combine design files or CSS from multiple themes on one page.
 
 The theme compiler provides WCAG-checked `--lx-*` variables including:

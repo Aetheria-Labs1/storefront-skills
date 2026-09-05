@@ -23,15 +23,15 @@
     },
     "media": {
       "type": "object",
-      "required": false,
       "shape": {
         "assetId": "?string",
         "provider": "?'cloudflare_stream' | 'cloudflare_cdn' | 'external'",
         "sources": "array<{url: string, type: 'application/x-mpegURL' | 'application/vnd.apple.mpegurl' | 'application/dash+xml' | 'video/mp4' | 'video/webm' | 'video/ogg', width: ?number, height: ?number, bitrate: ?number}>",
         "poster": "string",
-        "preview": "?{url: string, type: 'video/mp4' | 'image/gif' | 'image/webp', poster: ?string}",
+        "preview": "?{url: string, type: 'video/mp4' | 'image/gif' | 'image/webp', poster: ?object}",
         "captionsUrl": "?string"
-      }
+      },
+      "required": false
     },
     "poster": {
       "type": "string",
@@ -170,8 +170,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

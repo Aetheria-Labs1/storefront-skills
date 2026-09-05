@@ -20,20 +20,20 @@
     },
     "style": {
       "type": "enum",
-      "required": false,
       "values": [
         "filled",
         "outline"
       ],
+      "required": false,
       "default": "filled"
     },
     "secondaryCta": {
       "type": "object",
-      "required": false,
       "shape": {
         "label": "string",
         "url": "string"
-      }
+      },
+      "required": false
     },
     "showCartCount": {
       "type": "boolean",
@@ -62,8 +62,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

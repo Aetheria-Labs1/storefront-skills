@@ -20,11 +20,92 @@
   "props": {
     "media": {
       "type": "array",
+      "items": {
+        "type": "union",
+        "anyOf": [
+          {
+            "type": "object",
+            "shape": {
+              "id": "?string",
+              "type": "string",
+              "src": "string",
+              "alt": "?string",
+              "mobileSrc": "?string",
+              "srcSet": "?string",
+              "srcSetWebp": "?string",
+              "sizes": "?string",
+              "fit": "?'cover' | 'contain'",
+              "objectPosition": "?string"
+            }
+          },
+          {
+            "type": "object",
+            "shape": {
+              "id": "?string",
+              "type": "string",
+              "alt": "?string",
+              "poster": "string",
+              "sources": "array<{type: ?object, url: object, width: ?object, height: ?object, bitrate: ?object}>",
+              "preview": "?object",
+              "captionsUrl": "?string",
+              "assetId": "?string",
+              "provider": "?'cloudflare_stream' | 'cloudflare_cdn' | 'external'",
+              "fit": "?'cover' | 'contain'",
+              "objectPosition": "?string"
+            }
+          },
+          {
+            "type": "object",
+            "shape": {
+              "id": "?string",
+              "type": "?'image' | 'video'",
+              "src": "?string",
+              "url": "?string",
+              "alt": "?string",
+              "poster": "?string",
+              "mobileSrc": "?string",
+              "srcSet": "?string",
+              "srcSetWebp": "?string",
+              "sizes": "?string",
+              "fit": "?'cover' | 'contain'",
+              "objectFit": "?'cover' | 'contain'",
+              "objectPosition": "?string",
+              "sources": "?array<{}>",
+              "preview": "?object",
+              "captionsUrl": "?string",
+              "assetId": "?string",
+              "provider": "?'cloudflare_stream' | 'cloudflare_cdn' | 'external'"
+            }
+          }
+        ]
+      },
       "required": false
     },
     "images": {
       "type": "array",
-      "required": false,
+      "items": {
+        "type": "object",
+        "shape": {
+          "id": "?string",
+          "type": "?'image' | 'video'",
+          "src": "?string",
+          "url": "?string",
+          "alt": "?string",
+          "poster": "?string",
+          "mobileSrc": "?string",
+          "srcSet": "?string",
+          "srcSetWebp": "?string",
+          "sizes": "?string",
+          "fit": "?'cover' | 'contain'",
+          "objectFit": "?'cover' | 'contain'",
+          "objectPosition": "?string",
+          "sources": "?array<{type: ?object, url: object, width: ?object, height: ?object, bitrate: ?object}>",
+          "preview": "?{url: object, type: object, poster: ?object}",
+          "captionsUrl": "?string",
+          "assetId": "?string",
+          "provider": "?'cloudflare_stream' | 'cloudflare_cdn' | 'external'"
+        }
+      },
       "shape": {
         "id": "?string",
         "type": "?'image' | 'video'",
@@ -39,16 +120,16 @@
         "fit": "?'cover' | 'contain'",
         "objectFit": "?'cover' | 'contain'",
         "objectPosition": "?string",
-        "sources": "?array<{type: ?'application/x-mpegURL' | 'application/vnd.apple.mpegurl' | 'application/dash+xml' | 'video/mp4' | 'video/webm' | 'video/ogg', url: string, width: ?number, height: ?number, bitrate: ?number}>",
-        "preview": "?{url: string, type: 'video/mp4' | 'image/gif' | 'image/webp', poster: ?string}",
+        "sources": "?array<{type: ?'application/x-mpegURL' | 'application/vnd.apple.mpegurl' | 'application/dash+xml' | 'video/mp4' | 'video/webm' | 'video/ogg', url: string, width: ?object, height: ?object, bitrate: ?object}>",
+        "preview": "?{url: string, type: 'video/mp4' | 'image/gif' | 'image/webp', poster: ?object}",
         "captionsUrl": "?string",
         "assetId": "?string",
         "provider": "?'cloudflare_stream' | 'cloudflare_cdn' | 'external'"
-      }
+      },
+      "required": false
     },
     "layout": {
       "type": "enum",
-      "required": false,
       "values": [
         "horizontal",
         "vertical",
@@ -59,15 +140,16 @@
         "twoColumn",
         "masonry"
       ],
+      "required": false,
       "default": "horizontal"
     },
     "mobileLayout": {
       "type": "enum",
-      "required": false,
       "values": [
         "stacked",
         "swipe"
-      ]
+      ],
+      "required": false
     },
     "enableLightbox": {
       "type": "boolean",
@@ -85,7 +167,6 @@
     },
     "transition": {
       "type": "enum",
-      "required": false,
       "values": [
         "none",
         "slide",
@@ -93,6 +174,7 @@
         "zoom",
         "kenBurns"
       ],
+      "required": false,
       "default": "fade"
     },
     "listenForVariant": {
@@ -106,21 +188,21 @@
     },
     "thumbPosition": {
       "type": "enum",
-      "required": false,
       "values": [
         "left",
         "right",
         "bottom",
         "top"
-      ]
+      ],
+      "required": false
     },
     "objectFit": {
       "type": "enum",
-      "required": false,
       "values": [
         "cover",
         "contain"
       ],
+      "required": false,
       "default": "cover"
     }
   },
@@ -291,8 +373,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

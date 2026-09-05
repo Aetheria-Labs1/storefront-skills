@@ -24,22 +24,31 @@
     },
     "headers": {
       "type": "array",
+      "items": {
+        "type": "string"
+      },
       "required": true
     },
     "rows": {
       "type": "array",
-      "required": true,
+      "items": {
+        "type": "object",
+        "shape": {
+          "size": "string"
+        }
+      },
       "shape": {
         "size": "string"
-      }
+      },
+      "required": true
     },
     "units": {
       "type": "object",
-      "required": false,
       "shape": {
         "metric": "string",
         "imperial": "string"
-      }
+      },
+      "required": false
     },
     "tip": {
       "type": "string",
@@ -68,8 +77,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false

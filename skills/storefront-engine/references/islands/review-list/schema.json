@@ -1,7 +1,7 @@
 {
   "contract_version": 2,
   "name": "ReviewList",
-  "category": "unknown",
+  "category": "social_proof",
   "usage_hint": "Full interactive review list with sort, filter, pagination, demographics sidebar, media thumbnails, and helpful votes. Stamped.io-style layout for DTC landing pages.",
   "when_to_use": "When you need a paginated, sortable review section with rich content (demographics, media, helpful votes). For trust-building social proof sections on PDPs or landing pages.",
   "when_not_to_use": "For decorative review showcases (use ReviewCarousel). For single featured reviews (use a static review card in HTML). For video testimonial carousels (use existing testimonial sections).",
@@ -21,7 +21,25 @@
   "props": {
     "reviews": {
       "type": "array",
-      "required": false,
+      "items": {
+        "type": "object",
+        "shape": {
+          "id": "?string",
+          "author": "string",
+          "rating": "number",
+          "title": "?string",
+          "body": "string",
+          "date": "?string",
+          "verified": "?boolean | boolean",
+          "featured": "?boolean | boolean",
+          "avatar": "?string",
+          "demographics": "?array<{label: object, value: object}>",
+          "improvements": "?array<string>",
+          "media": "?array<{type: object, urls: object, thumbnail: ?object, alt: ?object}>",
+          "helpful_count": "?number",
+          "unhelpful_count": "?number"
+        }
+      },
       "shape": {
         "id": "?string",
         "author": "string",
@@ -29,15 +47,16 @@
         "title": "?string",
         "body": "string",
         "date": "?string",
-        "verified": "?boolean",
-        "featured": "?boolean",
+        "verified": "?boolean | boolean",
+        "featured": "?boolean | boolean",
         "avatar": "?string",
         "demographics": "?array<{label: string, value: string}>",
         "improvements": "?array<string>",
-        "media": "?array<{type: 'image' | 'video', urls: array<string>, thumbnail: ?string, alt: ?string}>",
+        "media": "?array<{type: 'image' | 'video', urls: array<object>, thumbnail: ?object, alt: ?object}>",
         "helpful_count": "?number",
         "unhelpful_count": "?number"
-      }
+      },
+      "required": false
     },
     "reviewsEndpoint": {
       "type": "string",
@@ -45,12 +64,12 @@
     },
     "variant": {
       "type": "enum",
-      "required": false,
       "values": [
         "minimal",
         "stamped",
         "summaryAside"
       ],
+      "required": false,
       "default": "stamped"
     },
     "averageRating": {
@@ -102,16 +121,27 @@
     },
     "productIds": {
       "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "required": false
+    },
+    "collectionId": {
+      "type": "string",
+      "required": false
+    },
+    "reviewSnapshotId": {
+      "type": "string",
       "required": false
     },
     "sort": {
       "type": "enum",
-      "required": false,
       "values": [
         "recent",
         "highest",
         "featured"
-      ]
+      ],
+      "required": false
     }
   },
   "variants": [
@@ -200,8 +230,7 @@
       "class",
       "id",
       "style",
-      "hydrate",
-      "headless"
+      "hydrate"
     ],
     "headless": {
       "supported": false
