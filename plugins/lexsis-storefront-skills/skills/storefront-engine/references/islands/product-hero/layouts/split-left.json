@@ -1,6 +1,0 @@
-{
-  "id": "hero",
-  "html": "<section class=\"w-full py-12 md:py-16 lg:py-20\" style=\"background-color: var(--lx-bg-color)\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center\"><div class=\"aspect-[4/3] md:aspect-auto rounded-lg overflow-hidden\"><img src=\"{{IMAGE_URL}}\" alt=\"{{HEADLINE}}\" class=\"w-full h-full object-cover\" /></div><div class=\"space-y-6\"><h1 class=\"text-4xl md:text-5xl lg:text-6xl font-bold\" style=\"font-family: var(--lx-font-heading); color: var(--lx-text-color)\">{{HEADLINE}}</h1><p class=\"text-lg\" style=\"color: var(--lx-text-muted)\">{{SUBHEADLINE}}</p><div data-island=\"ProductHero\" data-props='{\"productId\":\"{{PRODUCT_ID}}\",\"layout\":\"splitLeft\"}'></div></div></div></div></section>",
-  "css": "",
-  "js": ""
-}

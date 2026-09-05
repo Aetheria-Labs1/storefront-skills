@@ -2,20 +2,11 @@
 
 Event-driven fullscreen lightbox with scroll-snap viewer and thumbnail sidebar. One instance per page serves all galleries.
 
-## Files
-
-| File | Purpose |
-|------|---------|
-| `layouts/lookbook-grid.json` | 4-col tight grid triggering lightbox on click |
-| `layouts/mosaic-strip.json` | 8-col dense mosaic with grayscale hover |
-| `layouts/rounded-card.json` | 3-col grid inside pastel gradient card wrapper |
-
 ## Quick Reference
 
 - **Variants**: none (single behavior, styled via CSS vars)
 - **Required props**: none (event-driven)
 - **Schema**: `vibe://schema/island/GalleryLightbox`
-- **Layouts**: `vibe://islands/gallery-lightbox/layouts/{name}`
 - **Contract**: follows `_contract.md` rules
 
 ## Event Bus Pattern

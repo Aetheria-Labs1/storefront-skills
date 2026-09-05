@@ -2,19 +2,10 @@
 
 Collapsible question-and-answer island for addressing objections and improving SEO.
 
-## Files
-
-| File | Purpose |
-|------|---------|
-| `layouts/accordion.json` | Full-width centered accordion, section wrapper |
-| `layouts/two-column.json` | 2-column grid, questions split left/right |
-| `layouts/compact.json` | No section wrapper, inline for embedding in PDP |
-
 ## Quick Reference
 
 - **Variants**: default, compact
 - **Schema**: `vibe://schema/island/FAQ`
-- **Layouts**: `vibe://islands/faq/layouts/{name}`
 - **Contract**: follows `_contract.md` rules
 
 ## Composition

@@ -2,19 +2,10 @@
 
 Lead capture form for newsletter signups, discount offers, and list building.
 
-## Files
-
-| File | Purpose |
-|------|---------|
-| `layouts/full-width-banner.json` | Full-width accent bg section, centered headline + form |
-| `layouts/inline-minimal.json` | Simple inline form, transparent bg, max-w-xl |
-| `layouts/popup.json` | Modal overlay card with close button |
-
 ## Quick Reference
 
 - **Variants**: default, compact
 - **Schema**: `vibe://schema/island/EmailCapture`
-- **Layouts**: `vibe://islands/email-capture/layouts/{name}`
 - **Contract**: follows `_contract.md` rules
 
 ## Composition

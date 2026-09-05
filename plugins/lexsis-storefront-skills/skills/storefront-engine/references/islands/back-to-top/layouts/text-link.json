@@ -1,6 +1,0 @@
-{
-  "id": "back-to-top-text",
-  "html": "<div class=\"w-full\"><div class=\"max-w-3xl mx-auto px-4 py-8 text-center\"><div data-island=\"BackToTop\" data-props='{\"threshold\":0,\"smooth\":{{SMOOTH}},\"label\":\"{{LABEL}}\"}'></div><a href=\"#top\" class=\"inline-flex items-center gap-2 text-sm font-medium transition-colors hover:opacity-80\" style=\"color: var(--lx-accent-color)\"><svg class=\"w-4 h-4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M5 15l7-7 7 7\"/></svg><span>{{LABEL}}</span></a></div></div>",
-  "css": "",
-  "js": ""
-}

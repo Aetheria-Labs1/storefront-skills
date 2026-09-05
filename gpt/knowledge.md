@@ -1,5 +1,5 @@
 <!-- GENERATED from skills/ by scripts/build-distributions.py — DO NOT EDIT.
-     storefront-skills v7.1.0 · 10 skills · 47 active islands -->
+     storefront-skills v7.2.0 · 10 skills · 47 active islands -->
 
 # Lexsis Storefront Skills — Knowledge Base
 
@@ -222,7 +222,7 @@ publication in Lexsis.
 
 # Skill: design-page
 
-> Turn an approved one-page storefront plan into canonical Lexsis source and a responsive interactive preview, including the page-specific asset decision.
+> Turn an approved one-page storefront plan into canonical Lexsis source and a responsive interactive preview, confirming any asset slots the plan left unresolved.
 
 # Design the Page
 
@@ -231,6 +231,8 @@ a remote draft or publish.
 
 Read:
 
+- `storefront-engine/references/design-rules.md`
+- `storefront-engine/references/island-presets.md`
 - `references/page-layout.md`
 - `references/island-preview.md`
 
@@ -248,46 +250,67 @@ discovery.
 ## Inputs
 
 Use the approved `page-plan.md` and its saved store/theme binding. The plan
-defines strategy and section intent; it must not define islands or
-implementation details.
+defines strategy, the Design direction, the Imagery and background plan, the
+asset slots and section intent; it must not define islands or implementation
+details.
 
-If the user explicitly skips `/plan-page`, write a short one-page plan and
-record the skip. Never run `/setup` or `/plan-page` automatically.
+If the user explicitly skips `/plan-page`, write a short one-page plan with
+the same blocks and record the skip. Never run `/setup` or `/plan-page`
+automatically.
 
-## Asset Decision
+## Design Direction Gate
 
-Before composing the page:
+Before writing any HTML, read the "Design direction" block in `page-plan.md`
+and `storefront-engine/references/design-rules.md`. If the plan has no design
+direction, write one now (palette of four to six named hex values, type roles
+and scale, layout concept, wireframe with slot ids, icon decision, the one
+bold moment) and record it in the plan before continuing.
 
-1. Read product media from Shopify and search the Lexsis asset library for the
-   planned media roles.
-2. Inspect identity-sensitive product or creator media.
-3. Classify the roles as `available`, `missing`, or `optional`.
-4. Present one concise summary of reusable assets, missing assets, and optional
-   enhancements.
-5. Ask once which missing or optional roles the user wants generated.
+Precedence, in order: house rules (`design-rules.md`) > merchant-stated brand
+rules (`voice_md`, owner notes) > brand-kit token values > generated design.md
+guidance > brand-kit preview blueprint and presets. A lower layer may narrow a
+higher one, never widen it. Token values win over prose for values; if a token
+value fails WCAG AA against its documented pairing, return
+`THEME_CONTEXT_CONFLICT` with both values. Style guidance never raises a
+conflict; it is overridden and recorded in `page-plan.md` under "Overrides of
+brand design.md".
 
-For approved generation:
+## Asset Gap Confirmation
 
-- Prefer Lexsis asset generation.
-- If other image-generation tools are available in the current agent context,
-  present the available providers and let the user choose before invoking one.
-- Generate independent roles in parallel where supported.
-- Import externally generated media into Lexsis before production use.
-- Use Lexsis icons, supported SVG, or CSS for ordinary interface icons. Image
-  generation is for custom artwork, imagery, banners, and illustrations.
+The plan already resolved the asset slots. Read `assets[]` from the manifest:
 
-If generation is declined or postponed, copy suitable bundled placeholders
-into the page workspace. Placeholders are allowed only in the local preview
-and cannot pass `/generate`.
+1. Slots with `status: verified` are final; use their ids and URLs as-is.
+2. List only `planned` slots. `validate_page_workspace.py --phase design`
+   reports them as `asset_slot_unresolved` warnings.
+3. Ask once whether to generate them now (Lexsis first; offer other available
+   image tools as an explicit provider choice), pick from the library or
+   Shopify media, or keep a bundled preview placeholder for local review.
+4. Import externally generated media into Lexsis before production use, verify
+   identity-sensitive imagery with `lexsis_assets.view`, and set
+   `status: verified` on each resolved slot.
+
+Use Lexsis icons, supported SVG, or CSS for ordinary interface icons; image
+generation is for imagery, banners, and illustrations only.
+
+Placeholders are allowed only in the local preview and cannot pass
+`/generate`. When a store has no usable logo image, use an accessible text
+wordmark or plain HTML header for the local design. Do not substitute a
+product image or generic logo placeholder.
 
 ## Compose
 
 1. Read the saved brand design and selected theme CSS.
 2. Use the template direction from the plan. Fetch selected section source;
    search again only when the plan has no usable template direction.
-3. Convert each planned section into responsive layout and copy.
+3. Convert each planned section into responsive layout and copy, following the
+   wireframe, the Imagery and background plan, and the slot ids.
 4. Read the compact island catalog and select only the likely interactive
    components. Do not fetch every full schema in advance.
+   When the plan names a preset (`Preset: <island>/<intent>-<tone>`), apply it
+   from `storefront-engine/references/island-presets.md` verbatim: props,
+   `hydrate`, and its scoped CSS. Check its `requires` first. Unknown id:
+   return `PRESET_NOT_FOUND`. Any deviation is recorded as
+   `islands[].presetOverrides`; never edit a preset in place for one page.
 5. Write a rough but complete `lexsis-source.html` with stable section
    delimiters, minimal island props, and the documented examples as a starting
    point.
@@ -296,12 +319,21 @@ and cannot pass `/generate`.
 7. Use LX tokens for brand values and compile-time Tailwind utilities for
    layout. Do not use a runtime Tailwind CDN.
 8. Compare explicit `NEVER`, `must`, and `non-negotiable` rules in the saved
-   brand design with matching theme tokens. On a direct contradiction, return
-   `THEME_CONTEXT_CONFLICT` with both values. Do not silently choose one.
+   brand design with matching theme tokens. On a direct value contradiction,
+   return `THEME_CONTEXT_CONFLICT` with both values. Do not silently choose one.
 9. Use ordinary HTML for static content and `<lx-island>` source for supported
    interactions. Use headless mode only with complete required hooks.
 10. Keep preview props safe and presentation-focused. Real commerce is tested
    on the hosted draft.
+
+## Parallel Section Generation
+
+If the runtime can spawn sub-agents, each may write one section's markup and
+scoped CSS from its plan line, wireframe box, slot ids and preset. The parent
+assembles `lexsis-source.html` in plan order, owns `page-theme.css`, compiles
+once, and runs the Self-Critique Gate. Sub-agents never compile, never edit
+shared CSS, and never spend credits. Without sub-agents, write the sections
+sequentially.
 
 ## Compile and Preview
 
@@ -326,7 +358,8 @@ python3 <design-page-skill>/scripts/build_page_preview.py \
   --theme-css <page-workspace>/page-theme.css
 ```
 
-Show the first compiled preview as soon as the section structure and responsive
+Do not show a preview path until the Self-Critique Gate passes. Then show the
+first compiled preview as soon as the section structure and responsive
 hierarchy are recognizable. Label it `ROUGH_PREVIEW`; asset polish and final
 validation may continue after the user can see the direction.
 
@@ -345,9 +378,43 @@ If browser automation cannot access the preview, return
 `DESIGN_PREVIEW_READY_QA_PENDING` with the preview path and the checks that still
 need manual confirmation. Never record hydration as passed without evidence.
 
-When a store has no usable logo image, use an accessible text wordmark or plain
-HTML header for the local design. Do not substitute a product image or generic
-logo placeholder.
+## Self-Critique Gate
+
+Runs after the first clean compile and before any preview path or screenshot
+is shown to the user. Output: `<page-workspace>/design-critique.md`,
+`critique-390.png`, `critique-1280.png`.
+
+1. Mechanical checks. Run
+   `python3 <design-page-skill>/scripts/design_lint.py <page-workspace>` and
+   paste its table into the critique, then run the remaining checks from
+   `design-rules.md` §2.1 and §2.2 that the script does not cover. All of N1
+   to N14 must be 0 or within the stated allowance; A3, A6, A7, A11, A12 must
+   PASS.
+
+2. Screenshots. Open `page-preview.html` in the browser tool. Capture
+   full-page screenshots at 390 x 844 and 1280 x 800. Run the N2 background
+   script and the A4 line-length script at 1280 and paste their results into
+   the critique.
+
+3. Look at both screenshots and answer each question in one line:
+   - Where does the eye land first? Is it the plan's bold moment? If not, what
+     is stealing attention?
+   - How many visually distinct horizontal bands are there between navbar and
+     footer? Must be 1, plus the named exception.
+   - Which elements would appear on any generic page of this type in this
+     vertical? Name them. Change or remove at least one.
+   - Which accessory can be removed with no loss? Remove it.
+   - Do any of the tells apply: cream page + serif + terracotta accent as the
+     only idea; identical cards; eyebrow caps; pills; arrows in CTAs; icon
+     tiles; uniform radius; scattered motion?
+   - At 390: is anything clipped, is the price above 1.5 screens, are tap
+     targets 48px?
+
+4. Fix, recompile, rerun 1 to 3. When the table has no FAIL and every question
+   in 3 has an answer, show the preview and label it `ROUGH_PREVIEW` if asset
+   polish remains. If the browser tool is unavailable, return
+   `DESIGN_PREVIEW_READY_QA_PENDING` and list the visual checks that were not
+   performed; never mark them passed.
 
 ## Approval
 
@@ -355,24 +422,26 @@ Show:
 
 ```text
 Preview: [path]
+Critique: design-critique.md (no FAIL)
 Sections: [ordered list]
 Interactive components: [islands]
-Reused assets: [roles]
-Generated assets: [roles]
-Temporary placeholders: [roles]
+Presets: [ids]
+Reused assets: [slots]
+Generated assets: [slots]
+Temporary placeholders: [slots]
 ```
 
-On approval, record only final IDs, compact island schema evidence, and source,
-theme, configuration, structure, and bundle hashes in the manifest. Do not
-store creative explanations or tool transcripts there.
+On approval, record only final IDs, compact island schema evidence, presets
+and overrides, and source, theme, configuration, structure, and bundle hashes
+in the manifest. Do not store creative explanations or tool transcripts there.
 
 Any later visible source, CSS, copy, layout, island, or asset change returns
 the design to `changes-pending-approval`.
 
 ## Return
 
-Return the source, theme, preview, compile-artifact paths, sections, selected
-islands, asset summary, and `DESIGN_APPROVED`.
+Return the source, theme, preview, critique, compile-artifact paths, sections,
+selected islands and presets, asset summary, and `DESIGN_APPROVED`.
 
 ### design-page reference: island-preview
 
@@ -584,6 +653,9 @@ Before draft creation:
 - selected island schemas remain active
 - source, CSS, configuration, and bindings match the approved design hashes
 - local validation passes
+- `design-critique.md` exists with no FAIL and its hashes match the approved
+  source (see `storefront-engine/references/design-rules.md`)
+- no `planned` asset slot remains in the manifest
 
 If assets are unresolved, report the missing roles. The user may return to
 `/design-page`, run `/asset-prep`, or supply assets directly.
@@ -703,7 +775,10 @@ actual live read fails, state that limitation; generic CRO guidance is not a
 substitute.
 
 The full skill pack includes optional deeper design guidance at
-`storefront-engine/references/lexsis-design-capabilities.md`.
+`storefront-engine/references/lexsis-design-capabilities.md`. Every edit obeys
+the house rules in `storefront-engine/references/design-rules.md`; an
+optimization never adds emoji, gradients, hover transforms, or a section
+background.
 
 Start by confirming:
 
@@ -868,20 +943,27 @@ uplifts.
 
 # Skill: plan-page
 
-> Turn campaign and product requirements into a concise one-page storefront section plan. Use before page design; this skill does not choose islands or implementation details.
+> Turn campaign and product requirements into a concise one-page storefront plan with a design direction, wireframe, imagery plan and resolved asset slots. Use before page design; this skill does not choose islands or implementation details.
 
 # Plan a Page
 
-Produce a concise strategy and section blueprint that can be reviewed quickly.
+Produce a concise strategy, design direction and section blueprint that can be
+reviewed quickly. The plan owns every visual decision that `/design-page` will
+execute: hierarchy, wireframe, palette, type, the one bold moment, the imagery
+and background plan, and every asset slot on the page.
 
 Read:
 
 - `references/page-files.md`
+- `storefront-engine/references/design-rules.md`
+- `storefront-engine/references/island-presets.md`
 
 Use `lexsis_catalog.list`, `lexsis_catalog.get`,
-`lexsis_template_library.search_page_kits`, and
-`lexsis_template_library.search_sections`. Resolve an unfamiliar schema with
-exact router/action discovery.
+`lexsis_template_library.search_page_kits`,
+`lexsis_template_library.search_sections`, `lexsis_asset_library.search`,
+`lexsis_assets.view`, `lexsis_asset_upload.import`,
+`lexsis_drafts.asset_generate`, and `lexsis_workspace.credits`. Resolve an
+unfamiliar schema with exact router/action discovery.
 
 Read `work/storefront/setup/setup.json`, select one saved store/theme pair, and
 read its brand design. If the selection is not saved, stop with
@@ -920,6 +1002,29 @@ Template selection at this stage is directional. `/design-page` owns fetching
 source, adapting layouts, selecting islands, and resolving schemas.
 The plan must not define islands.
 
+A preset id from `storefront-engine/references/island-presets.md` is a
+design-intent token, not implementation, and may be named per section as
+`Preset: <island>/<intent>-<tone>`. At most one preset per island role; every
+preset's tone must match the tone named in the Design direction block or be
+listed as an explicit exception. Header and footer presets are chosen in the
+Design direction block, not per section.
+
+## Parallel Planning
+
+If the runtime can spawn sub-agents, fan out three read-only lanes and merge
+their output; otherwise run the same three blocks sequentially in this order.
+
+1. Hierarchy and wireframe: section order, buy-box position, media share, the
+   ASCII wireframe at 1280 and 390 with a slot id on every media box.
+2. Imagery, background plan and asset slots: search the asset library and
+   catalog media for every slot; propose the treatment per imagery section.
+3. Palette, type, motion and icon decisions from the saved brand design and
+   theme tokens, with the overrides list.
+
+Each lane returns only its block. The parent merges them into `page-plan.md`,
+runs the generic-default check, resolves conflicts by the house rules, and asks
+the single asset question below. Lanes never write files or spend credits.
+
 ## Write a One-Page Plan
 
 Keep `page-plan.md` concise enough to scan in one view. Include:
@@ -928,8 +1033,113 @@ Keep `page-plan.md` concise enough to scan in one view. Include:
 - selected template direction
 - ordered section list
 - one sentence describing each section's purpose
-- broad media roles such as hero, product media, or lifestyle proof
+- the Design direction, Imagery and background plan, and Asset slots blocks
+  defined below
 - offers and claims that require confirmation
+
+### Design direction (required block in page-plan.md)
+
+Write this block before the section list. Read the saved brand design, the
+theme tokens and `storefront-engine/references/design-rules.md` first. Fill
+every field; "none" is an answer, "TBD" is not. Then run the generic-default
+check at the end and revise anything it catches.
+
+Template to copy into `page-plan.md`:
+
+````markdown
+## Design direction
+
+**Palette (4 to 6, named, with roles)**
+| Role | Name | Hex | Used for |
+|---|---|---|---|
+| page | | | the only section background |
+| ink | | | text, primary button |
+| muted | | | captions, compare-at, metadata |
+| rule | | | 1px hairlines, input borders |
+| accent | | | price, links, focus ring; one accent per screen |
+| bar (optional) | | | announcement bar only |
+
+**Type roles and scale.** Heading family and weight; body family and weights; script family via `[lang]` if any. One ratio (1.2 to 1.333) from 16px, listed as steps. Body line-height; heading line-height. Measure 60 to 70ch.
+
+**Layout concept.** One sentence. Then the alignment rule (left-aligned throughout unless stated).
+
+**Wireframe.** ASCII at 1280 and at 390, one box per section, showing media share, buy-box position and the bold moment. Every box that shows media carries its asset slot id in brackets, so the wireframe enumerates every asset slot on the page.
+
+1280                                   390
++------------------+----------------+  +------------------+
+| gallery 55% [A1] | title          |  | gallery [A1]     |
+|                  | price  variants|  | title / price    |
+|                  | add to cart    |  | variants / cart  |
++------------------+----------------+  +------------------+
+| trust line (hairline above/below)  |  | trust line       |
++-----------------------------------+  +------------------+
+| lifestyle photo [A2] | copy       |  | lifestyle [A2]   |
++-----------------------------------+  +------------------+
+
+**Icons.** `none` or `one inline SVG set: <name>, <stroke>px, <size>px, currentColor`. Never emoji.
+
+**Background rule.** One page background `<hex>` from navbar to footer. Full-bleed exception: `none` or `<section id>` (this must be the bold moment).
+
+**The one bold moment.** Which element, why it is the memorable thing for this brand and product, and what stays quiet because of it.
+
+**Motion.** `none` or `one moment: <what, when, duration>`. Everything else is static; hover states change colour or underline only.
+
+**Generic-default check.** Write two lines: "A generic <page type> for <vertical> would have: ..." then "This plan differs by: ..." with at least three concrete, visible differences (layout, type, moment, media treatment). If you cannot name three, the plan is the default; change it.
+
+**Overrides of brand design.md.** List each design.md or brand-kit line you are ignoring, with the house rule id (N1 to N14, A1 to A12). Example: "design.md 'Always include emoji icons in ticker bar' → N1. 'Trust strip in --lx-secondary-color' → N2."
+````
+
+### Imagery and background plan
+
+The page has one background from navbar to footer. Visual richness comes from
+imagery, the way every strong commerce page is built: a full-bleed hero photo
+or banner, inset product media, lifestyle photography, proof artefacts,
+editorial image grids. Never from tinted section bands.
+
+Write one line per imagery section:
+
+```text
+<section> → <slot ids> → <treatment: full-bleed | inset | grid | background image with legibility overlay>
+```
+
+Every imagery section maps to at least one slot. The single full-bleed
+exception is the bold moment named above. Sections without imagery are
+separated by spacing and a hairline, not colour.
+
+### Asset slots
+
+List every slot the wireframe names, for any page type:
+
+```markdown
+| Slot | Section | Role/purpose | Aspect | Source decision | Id / URL | Status |
+|---|---|---|---|---|---|---|
+| A1 | gallery | product_media | 4:5 | shopify media | gid://…/ProductImage/… | verified |
+| A2 | proof | product_lifestyle | 3:2 | generate | | planned |
+```
+
+`Role/purpose` uses the generation purposes where they apply (`hero_bg`,
+`product_lifestyle`, `section_bg`, `product_composite`, `texture_fill`,
+`decorative_element`) plus `product_media`, `logo`, and `proof`. `Status` is
+`verified` or `planned`. Interface icons are never slots.
+
+Resolve every slot before approval:
+
+1. For each slot, search `lexsis_asset_library.search` (semantic, then tags)
+   and the product's Shopify media through `lexsis_catalog.get`.
+2. Present the table with the best candidate per slot, then ask once:
+   - **You pick.** Use the asset picker if one appeared in this host; otherwise
+     name asset ids or filenames from the web asset library (Storefront →
+     Design library → Assets) and the skill searches by filename.
+   - **I pick.** Use the best library or catalog match for every slot.
+   - **Generate the gaps.** Check `lexsis_workspace.credits`, then
+     `lexsis_drafts.asset_generate` per unresolved slot with the slot's
+     purpose and aspect, and import externally supplied files with
+     `lexsis_asset_upload.import`.
+3. Apply the answer to all slots. Verify identity-sensitive picks with
+   `lexsis_assets.view`. Record the provider and asset id for generated slots.
+4. Write the final table into the plan and one `assets[]` entry per slot into
+   the manifest. A slot the user postpones stays `planned`; `/design-page`
+   confirms only those.
 
 Verify facts that control the page's urgency or trust before treating them as
 copy. This includes occasion dates, delivery cutoffs, prices, availability,
@@ -942,13 +1152,14 @@ Do not include:
 - island names or schemas
 - island props or hydration modes
 - HTML, CSS, Tailwind classes, or implementation notes
-- detailed asset records
+- asset search transcripts or rejected candidates
+- gradients, hover effects, or motion beyond the Motion line
 - template search transcripts
 - QA, compilation, synchronization, or publishing state
 
 Create the page directory, `assets/`, and a compact schema-v3
-`page-manifest.json` using `references/page-files.md`. Do not create source,
-preview, compile, or QA files.
+`page-manifest.json` using `references/page-files.md`, including one
+`assets[]` entry per slot. Do not create source, preview, compile, or QA files.
 
 ## Approval
 
@@ -959,8 +1170,12 @@ Page:
 Goal:
 Audience:
 Template direction:
+Design direction:
+Bold moment:
+Overrides:
 Sections:
-Media needed:
+Asset slots: <n verified / m planned>
+Planned slots (unresolved):
 Claims to confirm:
 ```
 
@@ -968,8 +1183,8 @@ Wait for approval.
 
 ## Return
 
-Return the working directory, plan path, manifest path, and `PLAN_APPROVED`.
-The next normal command is `/design-page`.
+Return the working directory, plan path, manifest path, the asset slot
+summary, and `PLAN_APPROVED`. The next normal command is `/design-page`.
 
 ### plan-page reference: page-files
 
@@ -1017,6 +1232,24 @@ Start with a compact progressive manifest:
       "productId": "...",
       "variantIds": ["..."]
     }
+  ],
+  "assets": [
+    {
+      "slotId": "A1",
+      "role": "hero_bg",
+      "sectionId": "hero",
+      "sourceType": "lexsis",
+      "assetId": "...",
+      "url": "https://...",
+      "status": "verified"
+    },
+    {
+      "slotId": "A2",
+      "role": "product_lifestyle",
+      "sectionId": "benefits",
+      "sourceType": "pending",
+      "status": "planned"
+    }
   ]
 }
 ```
@@ -1025,10 +1258,17 @@ Start with a compact progressive manifest:
 composition, keep the rationale in `page-plan.md`; do not store template
 search transcripts in JSON.
 
+`assets[]` holds one entry per asset slot in the plan. `sourceType` is
+`lexsis` (with `assetId`), `shopify` (with `productId` and `mediaId`),
+`preview-placeholder`, or `pending` while the slot is still `planned`.
+`status` is `verified` or `planned`.
+
 The manifest grows only when later stages have real state to record:
 
-- `/design-page` adds compact `config`, `assets`, `islands`, and `design`
-  records.
+- `/plan-page` writes `assets[]` (verified or planned).
+- `/design-page` adds compact `config`, `islands`, and `design` records,
+  resolves `planned` assets, and records `islands[].preset` and
+  `islands[].presetOverrides` when a preset is applied.
 - `/generate` adds `sync`, `remote`, and `qa`.
 
 Do not prefill null production, approval, hash, QA, or remote fields. Do not
@@ -1182,6 +1422,11 @@ read this setup independently and never invoke `/setup` automatically.
 
 # Storefront Craft Guide — Start Here
 
+> House rules in `storefront-engine/references/design-rules.md` override every example below.
+> Examples show structure and copy intent; their styling (gradients, hover transforms,
+> uppercase labels, pills, emoji, section fills) is illustrative and must not be copied.
+> Where an example conflicts with a house rule, the rule wins.
+
 > **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
 
 Load this skill first on any storefront page generation task.
@@ -1223,7 +1468,7 @@ markers. Do not write that compiled representation by hand.
 | `craft-guide` | This file — architecture, flow, quality bar | Always first |
 | `workflow-orchestration` | Tool sequencing, parallelization, flow selection | Always — load after craft-guide |
 | `conversion-psychology` | Universal persuasion: pricing, urgency, trust, CTA psychology | Always — load for any ecommerce page |
-| `animation-system` | CSS animations, scroll-reveal, headline effects | Adding motion to sections |
+| `animation-system` | CSS animations, scroll-reveal, headline effects | Only when the plan names one motion moment |
 | `visual-craft` | Typography, spacing, color, micro-interactions | Polishing visual quality |
 | `design-enrichment` | AI image generation + compositing pipeline | Need custom images/textures |
 | `premium-patterns` | Proven high-converting section patterns in HTML | Building hero, trust, CTA sections |
@@ -1269,7 +1514,7 @@ All sections use these CSS custom properties (set in `theme_css`):
 | `--lx-text-color` | Primary text |
 | `--lx-text-muted` | Secondary text |
 | `--lx-bg-color` | Page background |
-| `--lx-bg-surface` | Card/section background |
+| `--lx-bg-surface` | Card background (never a section background) |
 | `--lx-border-color` | Borders and dividers |
 | `--lx-font-heading` | Heading font family |
 | `--lx-font-body` | Body font family |
@@ -1286,7 +1531,7 @@ Use via `style="color: var(--lx-accent-color)"` or `style="font-family: var(--lx
 - Proper heading hierarchy (h1 → h2 → h3)
 - Islands for all interactive commerce (BuyBox, Cart, Reviews)
 - Generated/library images — no broken placeholder URLs in production
-- Smooth scroll reveal on key sections
+- Zero emoji, one page background, one icon set, one bold moment
 - Trust signals near purchase points
 - Sticky add-to-cart on PDP
 
@@ -1295,7 +1540,7 @@ Use via `style="color: var(--lx-accent-color)"` or `style="font-family: var(--lx
 - Desktop-only layout
 - Missing islands (raw HTML buttons instead of BuyBox)
 - placeholder.co images shipped to production
-- No animations or visual rhythm
+- Emoji as icons, alternating section fills, mixed icon sets, scattered motion
 - Trust badges missing
 
 ---
@@ -1305,7 +1550,7 @@ Use via `style="color: var(--lx-accent-color)"` or `style="font-family: var(--lx
 1. **No `fetch()` or XHR in section JS** — blocked by hydrator security
 2. **No `eval()`, `localStorage`, `WebSocket`** — blocked
 3. **No `@import` in section CSS** — blocked
-4. **No external `url()` in CSS** — only inline gradients/colors
+4. **No external `url()` in CSS** — only inline colors via `--lx-*` tokens
 5. **No duplicate section IDs** — each must be unique kebab-case
 6. **No `<script src="...">` in HTML** — use section `js` field for vanilla JS
 7. **No framework code** — no React/Vue/Angular in section HTML (islands handle interactivity)
@@ -1356,7 +1601,825 @@ Use descriptive kebab-case: `hero`, `product-gallery`, `social-proof`, `ingredie
 
 ---
 
+# Design Rules
+
+House rules for every generated page. They override generated brand `design.md`
+guidance and brand-kit preview blueprints. Record every override in
+`page-plan.md` under "Overrides of brand design.md".
+
+Loaded by `/plan-page` (Design direction block), `/design-page` (Design Direction
+Gate and Self-Critique Gate), `/generate` (Production Gate) and `/optimize`.
+`design-page/scripts/design_lint.py <workspace>` runs the static checks and prints
+the results table.
+
+## Precedence
+
+```text
+house rules (storefront-engine/references/design-rules.md)
+  > merchant-stated brand rules (voice_md, banned_phrases, explicit owner notes in brand-design.md)
+    > brand-kit token VALUES (colours, fonts, radii, spacing)
+      > generated design.md guidance (intent, component patterns, do/don't)
+        > brand-kit preview blueprint and island presets (illustrative only)
+```
+
+Rules for applying it:
+
+1. A lower layer may narrow a higher layer (pick one of the allowed icon sets) but never widen it (re-enable emoji).
+2. Token values win over design.md prose for values, except where the value fails WCAG AA against its documented pairing; then return `THEME_CONTEXT_CONFLICT` with both values. Conflicts are raised for values only, never for style guidance.
+3. "Mandated by the brand guide" (the ALL-CAPS exception in N5) means merchant-stated only. Anything the generator inferred from screenshots is tagged `[observed]` and cannot unlock an exception.
+
+## 2. Design rules for generated storefront pages
+
+Format per rule: imperative sentence; rationale; a check the agent can run. Checks are written for macOS (BSD grep has no `-P`; use `perl -CSD`). `$W` is the page workspace, e.g. `work/visual-pages/<handle>`. Browser checks run in the preview via the browser tool's evaluate call.
+
+### 2.1 NEVER
+
+N1. Never use emoji anywhere: copy, tickers, trust strips, badges, buttons, alt text, island JSON props, CSS `content`.
+Rationale: glyphs render differently per OS vendor, ignore `currentColor` and stroke weight, are announced by Unicode name to screen readers, and are the most recognised marker of AI-generated pages (Miller et al. 2018; uxskill).
+Check:
+```bash
+perl -CSD -ne 'while(/([\x{1F000}-\x{1FAFF}\x{2600}-\x{27BF}\x{2B00}-\x{2BFF}\x{2300}-\x{23FF}\x{1F1E6}-\x{1F1FF}\x{FE0F}\x{200D}\x{203C}\x{2049}])/g){print "$ARGV:$.: $1\n"}' $W/lexsis-source.html $W/page-theme.css | wc -l   # must be 0
+```
+
+N2. Never change the background from section to section. The page has one background, `--lx-bg-color`, from below the navbar to above the footer. Allowed exceptions, exhaustively: the announcement bar, the navbar, the footer, and at most one full-bleed moment that `page-plan.md` names under "Design direction › Bold moment". A `<section>` or any full-width wrapper painted `--lx-bg-surface`, `--lx-surface-alt` or `--lx-secondary-color` is a band and fails, even if it is white.
+Rationale: bands are a template's way of faking structure; separation belongs to spacing, type scale and hairlines (NN/g grouping; Stellae). Alternating fills are also the reason the rejected page read as five stacked templates.
+Check (browser):
+```js
+(() => { const body = getComputedStyle(document.body).backgroundColor, vw = document.documentElement.clientWidth;
+  return [...document.querySelectorAll('body *')].filter(el => { const cs = getComputedStyle(el);
+    return cs.backgroundColor !== 'rgba(0, 0, 0, 0)' && cs.backgroundColor !== body && el.getBoundingClientRect().width >= vw - 2 && el.getBoundingClientRect().height > 40; })
+    .map(el => ({ el: el.id || el.className || el.tagName, bg: getComputedStyle(el).backgroundColor })); })()
+```
+Pass when the list contains only announcement, nav, footer elements and at most one element whose id matches the plan's bold moment.
+
+N3. Never use emoji, images or mixed libraries as icons. Icons are one inline SVG set, one stroke weight, `stroke="currentColor"`, `fill="none"`, one size per context, `aria-hidden="true"` with a visible text label. Or no icons.
+Rationale: two stroke languages on one screen is a tell; icons that garnish headings are skipped by readers (uxskill icons).
+Check:
+```bash
+grep -o 'stroke-width="[^"]*"' $W/lexsis-source.html | sort -u | wc -l   # 0 or 1
+grep -c '<img[^>]*class="[^"]*icon' $W/lexsis-source.html                 # 0
+```
+
+N4. Never use more than two type families. A non-Latin script gets one matching family declared with `[lang]`; it does not count.
+Rationale: one display face plus one workhorse is the ceiling for coherence (frontend-design; Shopify Theme Store "Consistent typography").
+Check:
+```bash
+grep -oE "family=[A-Za-z+]+" $W/page-theme.css | sort -u | wc -l          # <= 3 including the [lang] family
+```
+
+N5. Never set eyebrow labels in ALL-CAPS unless a merchant-stated brand rule (not a generator-observed one) requires it, and then at most one per three sections.
+Rationale: the tracked-out caps eyebrow above every heading is the highest-frequency AI tell (designer-skill avoid-ai-slop; frontend-design).
+Check:
+```bash
+grep -cE 'uppercase|text-transform:\s*uppercase' $W/lexsis-source.html $W/page-theme.css   # 0, or <= ceil(sections/3) with a stated rule
+```
+
+N6. Never accent a single word or phrase inside a headline with colour, italic, weight or underline.
+Rationale: the one-word accent is a default treatment, not a decision (frontend-design).
+Check:
+```bash
+perl -0ne 'print scalar(() = /<h[1-3][^>]*>[^<]*<(span|em|strong|i|b|mark)/g), "\n"' $W/lexsis-source.html   # 0
+```
+
+N7. Never use gradient washes, glow shadows, shimmer, pulse, float, animated backgrounds, or `hover:scale` / `hover:-translate` / `hover:scale-1xx` on cards, buttons or images. The only permitted gradient is a black-to-transparent overlay on a photograph for text legibility inside the plan-named bold moment.
+Rationale: gradient + hover-lift is the SaaS-card kit that reads as generated regardless of brand (Sailop; frontend-design).
+Check:
+```bash
+grep -nE 'gradient\(|bg-gradient|shimmer|animate-pulse|pulseRing|float-|hover:scale|hover:-translate|scale\(1\.[0-9]|box-shadow:\s*0 0 ' $W/lexsis-source.html $W/page-theme.css | wc -l   # 0, or only the plan-named overlay
+```
+
+N8. Never wrap plain text in a card. A card (`--lx-bg-surface`, border, or shadow with radius) surrounds a distinct object only: a product, a proof artefact with an image, a table, a form, a quoted review. Paragraphs, lists and FAQs sit on the page background.
+Rationale: identical rounded cards chop content into interchangeable units and signal that nothing is more important than anything else (uxskill tells; NN/g common region "use sparingly").
+Check: for each element matching `\.rs-card|bg-surface|rounded-[a-z0-9]+.*shadow`, confirm it contains `<img`, `<table`, `<form`, `<blockquote` or a price. Manual pass on the 1280 screenshot; count cards that contain only text; must be 0.
+
+N9. Never render discount or status pills in ALL-CAPS or with percentages ("31% OFF", "BEST VALUE", "MOST POPULAR", "NEW ARRIVALS") unless the merchant runs a named sale recorded in the plan's confirmed claims. Compare-at price is struck-through text only.
+Rationale: the OFF pill and the highlighted middle tier are stock conversion-template chrome; Baymard's guidance is to show the price and compare-at clearly, not to shout.
+Check:
+```bash
+grep -nE '\b[0-9]{1,2}% ?OFF\b|BEST VALUE|MOST POPULAR|LIMITED TIME|NEW ARRIVAL' $W/lexsis-source.html | wc -l   # 0
+```
+
+N10. Never add motion that is not answering a user action, except one orchestrated moment named in the plan. No fade-up per section, no stagger, no counters, no parallax, no marquee ticker unless the announcement bar's own island provides it.
+Rationale: scattered entrance effects are the generic default; one moment lands, ten do not (frontend-design; Sailop).
+Check:
+```bash
+grep -cE 'data-reveal|IntersectionObserver|@keyframes|animation:' $W/lexsis-source.html $W/page-theme.css   # 0, or exactly the plan-named moment
+grep -c 'prefers-reduced-motion' $W/page-theme.css   # 1 if any animation exists
+```
+
+N11. Never show proof you cannot source: star glyphs, review counts, customer counts, "Only N left", countdowns, "as seen in" logos. Every number in a proof section traces to "Claims confirmed" in the plan.
+Rationale: fabricated proof destroys trust and is itself a tell (five gold stars + round avatar + italic quote). The engine's own `generate-pdp.md` line 64 already says never invent reviewers.
+Check: list every numeral in sections tagged proof/trust/reviews; each must appear in `page-plan.md` under confirmed claims.
+
+N12. Never append `→` or `»` to link and button text, join meta strings with middle dots, or place an icon in a rounded tile above a heading (icon-tile-stack).
+Rationale: template chrome that appears whatever the subject (frontend-design; designer-skill).
+Check:
+```bash
+grep -cE '(→|&rarr;|»)\s*</(a|button)' $W/lexsis-source.html   # 0
+grep -cE 'w-1[0-6] h-1[0-6][^"]*rounded' $W/lexsis-source.html   # 0
+```
+
+N13. Never mix radii on the same object type or use one radius on everything. Declare a radius scale by object type and use only those tokens.
+Rationale: uniform `rounded-2xl` on cards, buttons, inputs and images is the absence of a system (Sailop "rounded-2xl on everything").
+Check:
+```bash
+grep -ohE 'border-radius:\s*[^;]+|rounded(-[a-z0-9\[\]]+)?' $W/lexsis-source.html $W/page-theme.css | sort | uniq -c | sort -rn   # <= 4 distinct values, each mapped to a type in page-theme.css comments
+```
+
+N14. Never hardcode off-brand hex or Tailwind default colours. Colours come from `--lx-*` tokens or the plan's named palette.
+Rationale: `#667eea`, `#764ba2`, `#8b5cf6`, `#f9fafb`, `text-yellow-400` appear throughout the engine references and mark a page as templated (uxskill tells).
+Check:
+```bash
+grep -nEi '#667eea|#764ba2|#8b5cf6|#f9fafb|#6366f1|#7c3aed|text-(yellow|gray|slate|purple|indigo)-[0-9]' $W/lexsis-source.html $W/page-theme.css | wc -l   # 0
+```
+
+### 2.2 ALWAYS
+
+A1. Always write the Design direction block in `page-plan.md` before any HTML: palette of 4 to 6 named hex with roles; type roles, families and one modular ratio; layout concept in one sentence plus an ASCII wireframe at 1280 and 390; alignment rule; icon decision; the one bold moment; the background rule with its single named exception or "none"; motion decision; the generic-default check with at least three concrete differences; the list of brand-design.md lines being overridden.
+Rationale: the plan-review-build-critique loop is what stops the model averaging toward the centre of its training data (frontend-design).
+Check: `grep -c '^\*\*' page-plan.md` under "## Design direction" returns all 10 field labels from the template in section 3.1; none is empty or "TBD".
+
+A2. Always separate sections with a spacing scale and, where a break is needed, one 1px hairline in `--lx-border-color`. Use one 8-point scale; section padding comes from at most two pairs (e.g. 64/96 and 40/56 mobile/desktop).
+Rationale: proximity and whitespace carry grouping; a line is a subtle, universally understood divider; colour is emotional and should be spent on pacing, not plumbing (NN/g; Stellae; Tubik).
+Check: `grep -oE 'padding:\s*[0-9]+px' $W/page-theme.css | sort -u` yields values from the 8-pt scale only; `grep -c 'border-top: 1px solid var(--lx-border-color)'` is the only divider mechanism.
+
+A3. Always build hierarchy with a single modular type scale (one ratio, 1.2 to 1.333 for commerce), no more than three sizes visible on one screen, one `<h1>`, one `<h2>` per section, headings 1.1 to 1.2 line-height, body 1.5 to 1.7.
+Rationale: three sizes give hierarchy without noise; NN/g and accessibility.build converge on this.
+Check: `grep -c '<h1' $W/lexsis-source.html` is 1; every `font-size` in `page-theme.css` is a step of the declared ratio (list them: `grep -oE 'font-size:\s*[^;]+' | sort -u`).
+
+A4. Always keep body measure between 45 and 80 characters at every viewport; give serif body 0.05 more line-height than sans. Constrain text containers with `max-width` in `ch` (60 to 70ch), not px.
+Rationale: WCAG 1.4.8 caps body at 80 characters; legibility research centres on 45 to 75 (Butterick 45 to 90).
+Check (browser, 1280):
+```js
+(() => [...document.querySelectorAll('p, li, figcaption')].map(p => ({ t: p.textContent.trim().slice(0,40), cpl: Math.round(p.getBoundingClientRect().width / (parseFloat(getComputedStyle(p).fontSize) * 0.5)) })).filter(x => x.cpl > 80))()   // []
+```
+
+A5. Always record one icon decision in the plan and, if icons exist, ship them as one inline SVG set at one size and one stroke, with the text label always visible.
+Rationale: see N3. Check: as N3, plus `grep -c 'aria-hidden="true"'` equals the SVG count.
+
+A6. Always declare a radius scale by object type in `page-theme.css` (`--r-control`, `--r-card`, `--r-media`, `--r-pill`) and use only those tokens.
+Rationale: the relationship between radii is the design. Check: `grep -c 'border-radius: var(--r-' $W/page-theme.css $W/lexsis-source.html` equals the total count of `border-radius` declarations.
+
+A7. Always meet WCAG 2.2 AA: 4.5:1 for text under 24px (18.67px bold), 3:1 for large text and for UI component boundaries, including muted text on the page background, accent on any tint, and button text on button fill.
+Rationale: W3C 1.4.3 and 1.4.11; the RudraSetu guide itself flags #D52600 on #FBE9E6 as borderline.
+Check:
+```bash
+python3 - <<'PY'
+def L(h):
+    r,g,b=[int(h.lstrip('#')[i:i+2],16)/255 for i in (0,2,4)]
+    f=lambda c: c/12.92 if c<=0.03928 else ((c+0.055)/1.055)**2.4
+    return 0.2126*f(r)+0.7152*f(g)+0.0722*f(b)
+def ratio(a,b):
+    x,y=sorted([L(a),L(b)],reverse=True); return round((x+0.05)/(y+0.05),2)
+pairs={'text/page':('#1F1D24','#F5F0E6'),'muted/page':('#6B6560','#F5F0E6'),'accent/page':('#D52600','#F5F0E6'),'accent/tint':('#D52600','#FBE9E6'),'cream/charcoal btn':('#F5F0E6','#1F1D24'),'cream/maroon bar':('#F5F0E6','#8B1A00')}
+for k,(a,b) in pairs.items(): print(k, ratio(a,b))
+PY
+```
+Every text pair >= 4.5, every large-text or component pair >= 3.
+
+A8. Always compose the PDP buy section to Baymard and Shopify requirements: untruncated title, price and compare-at, unit price if applicable, variant options as buttons, quantity, add-to-cart, a shipping and returns line, all within the first viewport on desktop and within 1.5 viewports at 390px; product media takes 50 to 60 percent of desktop width.
+Rationale: users decide on the PDP; hidden price or delivery cost is a top abandonment cause (Baymard PDP research; Shopify Theme Store product page requirements).
+Check: at 390 screenshot, price and add-to-cart appear above y = 1266px; at 1280, both appear above y = 800px.
+
+A9. Always spend boldness once. Name the single memorable element in the plan; every other element is quiet: page background, body weight, hairlines, sentence case.
+Rationale: one element can be remembered; the mirror test, remove one accessory (frontend-design; Chanel).
+Check: the 1280 screenshot has exactly one element that a squint test isolates; it matches the plan's bold moment.
+
+A10. Always run the self-critique gate (section 3.2) with screenshots at 390 and 1280 and write `design-critique.md` before showing any preview path.
+Rationale: a picture catches what grep cannot: banding, hierarchy, an eye that lands in the wrong place.
+Check: `$W/design-critique.md` exists, has a results table with no FAIL, and references two screenshot files.
+
+A11. Always ship the quality floor without announcing it: `:focus-visible` styles, `prefers-reduced-motion` handling, 48px minimum tap targets, alt text on product media, `lang` attributes on non-Latin text.
+Check: `grep -c ':focus-visible' $W/page-theme.css` >= 1; `grep -c 'prefers-reduced-motion'` >= 1 when animation exists; `grep -c 'lang="'` >= 1 when Devanagari is present.
+
+A12. Always write copy as design content: sentence case, active voice, the CTA says what happens ("Add to cart", not "Shop Now →"), no placeholder or invented copy, brand voice from `voice_md` or the merchant.
+Check: `grep -cE '>(Shop Now|Get Started|Learn More|Buy Now)\s*(→)?<' $W/lexsis-source.html` is 0; no "lorem".
+
+
+## Tells (fail the squint test)
+
+Cream page + high-contrast serif + terracotta accent as the only idea; identical rounded cards with one radius and one grey shadow; tracked-out ALL-CAPS eyebrow above every heading; meta strings joined with middle dots; `WORD — fragment` labels; `→` appended to links and buttons; icon in a rounded tile above every heading; discount pills and "MOST POPULAR" ribbons; gradient washes; fade-up on every section; five gold stars with a round avatar and an italic quote; a monospace face for small labels; near-black `#0B0B0B` standing in for black.
+
+Source audit: `work/research/lexsis-design-rules.md` (2026-09-05).
+
+---
+
+# Island Presets
+
+Named, pre-validated prop and CSS presets for the active Lexsis islands. A preset id is a
+design-intent token the plan may name (`Preset: buybox/compact-dark`); `/design-page`
+applies it verbatim and records any deviation as `presetOverrides` in the manifest.
+Every preset respects `storefront-engine/references/design-rules.md`: no emoji, no gradients, transparent island
+surfaces on the single page background, no icon glyphs unless the page has no other
+icon set, no motion effects. Verified against island schema 5.1.0 on 2026-09-05; when
+`island_schema` reports a different version, re-verify before use.
+
+## 2. Per-island reference
+
+### 2.1 SiteHeader
+
+Compound announcement bar + navbar. Category navigation. Hydrate default `immediate`. Variants: none. Headless: no (but supports *hydration mode*: author your own `<header>` markup with `data-lx-header="root|announcement|announcement-text|announcement-dismiss"` and `data-lx-nav="root|cart-trigger|cart-count|mobile-trigger|mobile-panel|link|logo"` as the child of `<lx-island>`; props then only carry behavior). Max 1 per page, first section; never combine with a separate Navbar.
+
+UI-controlling props (schema v5.1.0):
+
+| Prop | Type | Values / default | Effect |
+|---|---|---|---|
+| `sticky` | boolean | - | header pins to top |
+| `transparent` | boolean | - | no nav background until scroll (hero overlap) |
+| `offsetTop` | string | CSS length | top offset when sticky |
+| `cartMode` | enum | `drawer` \| `link` | cart icon opens drawer or navigates to `cartUrl` |
+| `hideCart` | boolean | - | removes cart trigger |
+| `dismissible` / `rotateInterval` | boolean / number | top-level, hydration mode only | announcement close button, rotation ms |
+| `announcement.backgroundColor`, `.textColor` | string | hex or `var(--lx-*)` | announcement bar paint (allowed exception to one-background rule) |
+| `announcement.speed` | number | ms; keep >= 4000 | rotation speed |
+| `announcement.dismissible` | boolean | - | close button |
+| `navbar.transparent` | boolean | - | same as top-level for legacy mode |
+| `navbar.style` | object | `bgColor, textColor, accentColor, logoHeight, height, borderBottom, fontFamily, fontSize, fontWeight, padding, maxWidth, dropdownBg, dropdownTextColor, mobileBg, mobileTextColor` (all string) | full nav paint and type; schema types these as `?object`, examples pass strings |
+| `navbar.hideCart` | boolean | - | - |
+
+Data props: `announcement.messages[]` (string, keep < 60 chars), `announcement.link`, `navbar.logo{src|text, alt, url}` (use `text` wordmark when no logo asset), `navbar.links[{label,url,children[]}]`, `navbar.cta{label,url}`, `navbar.cartCount` (omit; auto-synced), `cartUrl`, `messages[]` (hydration mode).
+
+CSS vars declared: `--lx-accent-color` only. `--lx-header-*`, `--lx-nav-*` from the earlier capture: unconfirmed, not in schema.
+Parts: `announcement, announcement-dismiss, announcement-text, cart-badge, cart-trigger, cta, dropdown, dropdown-item, link, links, logo, mobile-link, mobile-panel, mobile-trigger, nav, root`.
+Fallback: hydration-mode markup *is* the fallback; for legacy (props-only) mode give a plain `<header>` with logo link and 3-5 `<a>` links as the `data-lx-island-fallback` child.
+Gotchas: `navbar.style.*` values must be strings even though schema prints `?object`. Announcement paint is the only place a non-page background is allowed besides footer. Do not set `cartCount`.
+
+### 2.2 Navbar
+
+Nav only (use when no announcement, or when announcement should scroll away). Hydrate `immediate`. Variants: none. Hydration mode as above with `data-lx-nav` tags. Must be a direct page child, not inside a section wrapper, for sticky to work.
+
+UI-controlling props: `sticky`, `transparent`, `offsetTop`, `cartMode` (`drawer|link`), `hideCart`, `style{bgColor, textColor, accentColor, logoHeight, height, borderBottom, fontFamily, fontSize, fontWeight, padding, maxWidth, dropdownBg, dropdownTextColor, mobileBg, mobileTextColor}`, `cart{icon: cart|bag|basket, svg, image, label, badgeColor}`.
+Data props: `logo{src|html, alt, url}` (required), `links[{label,url,children[]}]` (required), `cta{label,url}`, `cartUrl`, `cartCount` (omit).
+CSS vars: `--lx-accent-color`. Parts: `cart-badge, cart-trigger, cta, dropdown, dropdown-item, link, links, logo, mobile-link, mobile-panel, mobile-trigger, root`.
+Fallback: plain `<nav>` with logo and links.
+Gotchas: `cart.svg` lets you supply the page's single inline SVG set icon (house rule: one stroke weight, `currentColor`); prefer it over `cart.icon` when the page already uses custom SVGs. `logo.html` accepts an inline SVG wordmark.
+
+### 2.3 AnnouncementBar
+
+Standalone rotating message strip. Hydrate `immediate`. Variants: none (earlier capture's `default|gradient|ticker|minimal` do not exist; a gradient would also break house rules). Max 1 per page; pair with Navbar, never with SiteHeader.
+
+UI-controlling props: `backgroundColor` (string), `textColor` (string), `sticky` (boolean, default false), `dismissible` (boolean, default false; only meaningful with `sticky`), `speed` (number ms, default 4000, keep >= 4000).
+Data props: `messages[]` (required, string), `link` (string, whole bar becomes a link).
+CSS vars: `--lx-accent-color`. Parts: `close-btn, icon, link, root, text`.
+Fallback: one `<p>` with the first message.
+Gotchas: the `icon` part exists but no prop controls it; hide it with `[data-part="icon"]{display:none}` when the page has no icon set. Text must be emoji-free (house rule and validator check).
+
+### 2.4 ProductGallery
+
+PDP media gallery (thumbnail rails, grids, collage, masonry; image + video; lightbox; variant sync). Category commerce. Hydrate `immediate`. Headless: no. Variants = `layout` values.
+
+UI-controlling props:
+
+| Prop | Type | Values / default | Effect |
+|---|---|---|---|
+| `layout` | enum | `horizontal` (default) \| `vertical` \| `stacked` \| `grid` \| `collageLeft` \| `collageRight` \| `twoColumn` \| `masonry` | desktop arrangement |
+| `mobileLayout` | enum | `stacked` \| `swipe` | always set explicitly for grid/collage/masonry |
+| `thumbPosition` | enum | `left` \| `right` \| `bottom` \| `top` | rail placement for horizontal/vertical |
+| `transition` | enum | `none` \| `slide` \| `fade` (default) \| `zoom` \| `kenBurns` | avoid kenBurns (motion) |
+| `objectFit` | enum | `cover` (default) \| `contain` | contain for packshots on white |
+| `maxHeight` | string | CSS length | caps main media |
+| `enableLightbox` | boolean | - | adds `open-lightbox` control |
+| `autoplay` / `interval` | boolean / number | false / 4000 | avoid on PDP |
+
+Data props: `media[]` (current; `images[]` is deprecated and kept as an alias; item `{src|url, alt, type: image|video, poster, mobileSrc, srcSet, sizes, fit, objectPosition, sources[], provider}`), `listenForVariant` (boolean; needs a VariantSwatches emitter).
+
+CSS vars (declared, long list; the useful subset): `--lx-product-gallery-bg, -border, -radius, -gap, -mobile-gap, -mobile-peek, -mobile-ratio, -columns, -tile-ratio, -featured-ratio, -stacked-ratio, -masonry-tall-ratio, -masonry-wide-ratio, -focus-width, -focus-offset, -open-bg, -open-color, -open-shadow`; `--lx-media-carousel-arrow-{bg,border,color,hover-bg,offset,radius,shadow,size}`, `--lx-media-carousel-dot-{color,active-color,active-scale,gap,offset,shadow,size}`, `--lx-media-carousel-{bg,duration,ease,fit,radius,placeholder}`; `--lx-media-lightbox-{backdrop,close-*,control-*,max-width,max-height,media-bg,padding,mobile-padding,z-index}`; `--lx-video-*` and `--lx-shoppable-*` (video tiles only); `--lx-accent-color, --lx-bg-surface, --lx-text-color`.
+Parts (useful subset): `root, viewport, track, slide, main-media, media, image, video, thumbnail-strip, thumbnail, grid, grid-item, controls, previous, next, dots, dot, open-lightbox, lightbox, lightbox-close, lightbox-content, adaptive-video-*`.
+Fallback: first image as `<img>` at the gallery aspect ratio.
+Gotchas: the compile validator accepts `media` or legacy `images`; each item needs `src` (or `url`). Presets use `media`.
+
+### 2.5 ProductHero
+
+Large hero gallery for split PDP layouts (media 50-60 percent of viewport beside BuyBox). Category commerce. Hydrate `visible` (design QA must scroll it into view). Headless: no. Variants = `layout`.
+
+UI-controlling props:
+
+| Prop | Type | Values / default |
+|---|---|---|
+| `layout` | enum | `stacked` \| `splitLeft` (default) \| `splitRight` \| `fullHeight` |
+| `thumbnails` | enum | `none` \| `rail` (default) \| `dots` |
+| `thumbnailPosition` | enum | `left` (default) \| `right` \| `bottom` (no `top`) |
+| `navigation` | enum | `none` \| `arrows` \| `floatingArrows` (default) |
+| `aspectRatio` | string | `3:4` default; `1:1`, `4:5` |
+| `maxHeight` | string | `85vh` default |
+| `transition` | enum | `none` \| `slide` \| `fade` (default) \| `zoom` \| `kenBurns` |
+| `showIndicators` | boolean | - |
+| `autoplay`, `interval`, `hoverAdvance` | boolean, number, boolean | false, 4000, false |
+| `className` | string | passes through to root |
+
+Data props: `images[]` (required; `{url, alt, type, poster, objectFit, objectPosition}`; note key is `url` here, `src` in ProductGallery), `listenForVariant`.
+CSS vars: `--lx-hero-bg, --lx-hero-radius, --lx-hero-thumb-radius, --lx-hero-thumb-size, --lx-hero-thumb-gap, --lx-hero-arrow-bg, --lx-hero-arrow-size, --lx-hero-arrow-offset, --lx-hero-transition-duration, --lx-accent-color, --lx-border-color` (schema also lists a stray `--lx-hero-` prefix entry).
+Parts: `root, media-pane, slide, thumbnail-rail, thumbnail, nav-prev, nav-next, dot`.
+Fallback: first image `<img>` with the chosen aspect ratio.
+Gotchas: default `85vh` pushes BuyBox below the fold on mobile; presets cap at `560px`-`640px`. Set `--lx-hero-bg: transparent`. Confirmed working styling pattern: `#id{--lx-accent-color:...;--lx-hero-radius:12px;--lx-hero-thumb-radius:10px}` and `#id [data-part="thumbnail"]{...}`.
+
+### 2.6 BuyBox
+
+Primary purchase UI: price, variant buttons, quantity, add-to-cart, optional trust badges, notify-me. Category commerce. Hydrate `immediate`. Headless: **yes** (hooks `add` required; `price, compare-price, variant-option[data-variant-id], qty, qty-inc, qty-dec, stock, error`; state classes `lx-selected lx-disabled lx-adding lx-added`). Max 1 per page. Requires `head.use_cart_v2: true` for cart feedback.
+
+UI-controlling props:
+
+| Prop | Type | Values / default | Effect |
+|---|---|---|---|
+| `variant` | enum | `default` \| `compact` \| `expanded` | compact drops qty and variant selector (single-variant only); expanded adds trust badges block |
+| `showPrice` | boolean | true | hide when the section renders its own price |
+| `showVariantSelector` | boolean | true | set false when VariantSwatches is used |
+| `showTrustBadges` | boolean | - | badges row; default icons are the island's own set (see gotcha) |
+| `buttonStyle` | object | `{borderRadius, padding, fontSize}` strings | CTA shape without CSS |
+| `animate` | boolean \| string | true | add-to-cart feedback motion |
+| `ctaText` | string | - | button label |
+
+Data props: `product{title, price, compareAtPrice, variants[{id,title,price,available}]}` (required; `id` is the Shopify variant GID), `listenForEvents` (boolean, pair with VariantSwatches). `productId` shown in `index.md` and old layouts is **not** in the v5.1 schema.
+CSS vars: `--lx-accent-color` only. Parts: `root, cta, variants, variant-btn, qty, qty-btn, trust-badges, notify`.
+Fallback: static price `<p>` plus a disabled-looking `<a>` to `/products/{{product.handle}}`; never a working custom button.
+Gotchas: `showTrustBadges` icons are not controllable by prop; if the page has no icon set or a different SVG set, set `showTrustBadges:false` (house rule: one icon style). Earlier capture's variants `standard|full-width|split|minimal` do not exist. Do not duplicate title/price outside the island unless `showPrice:false`.
+
+### 2.7 StickyBar
+
+Bottom-fixed CTA re-surfacing add-to-cart (product mode) or a collection link (collection mode). Category commerce. Hydrate `immediate`. Variants: none. Headless: no. Place after the BuyBox section.
+
+UI-controlling props: `showAfter` (string CSS selector, e.g. `"#buy"`, or number px; **always set**), `animate` (boolean | string, default true; `false` for quiet pages), `cta` (string, default "Add to Cart").
+Data props: `product{title, price, compareAtPrice?, image?, variantId}` (variantId required in product mode) **or** `collection{label, url, subtitle?, image?}`.
+CSS vars: `--lx-accent-color, --lx-text-color`. Parts: `root, bar, cta, product-image, product-info, product-price, product-title`.
+Fallback: none needed (bar is hidden until scroll); an empty child is fine.
+Gotchas: no bar background prop; the bar paints its own surface (accepted: it is fixed chrome, not a section). Style `[data-part="bar"]` for border-top/shadow removal. Omit `product.image` for a text-only bar.
+
+### 2.8 ProductCarousel
+
+Horizontal product-card rail ("You may also like"). Category commerce. Hydrate `immediate`. Variants: none; card look via `cardVariant`. Headless: no. Needs 4+ products; `showQuickAdd` requires cart v2.
+
+UI-controlling props:
+
+| Prop | Type | Values | Effect |
+|---|---|---|---|
+| `cardVariant` | enum | `default` \| `compact` \| `compactRows` | card density; compactRows renders a list |
+| `mediaTransition` | enum | `none` \| `slide` \| `fade` \| `zoom` \| `kenBurns` | card image swap on hover-advance |
+| `hoverAdvance` / `hoverAdvanceMode` / `hoverInterval` | boolean / `next`\|`cycle` / number | cycles card media on hover; off for quiet pages |
+| `showQuickAdd`, `showWishlist`, `showLearnMore`, `showQuickView` | boolean | - | card actions; each adds a button (icon buttons use the island's icon set) |
+| `animate` | boolean \| string | - | staggered fade-up on entry |
+| `columns` | number | - | ignored in carousel context per anti-pattern note; unconfirmed effect |
+| `title` | string | - | heading rendered by island (`heading`/`title` parts) |
+
+Data props: `products[{id, handle, title, subtitle?, price, compareAtPrice?, badge?, image? | media[]?, variants[]?}]` (required).
+CSS vars: same media-carousel/featured-media/video family as ProductGallery plus `--lx-surface-alt, --lx-text-muted, --lx-border-color, --lx-bg-surface, --lx-accent-color, --lx-text-color`. No dedicated card radius/border var; use parts.
+Parts (useful): `root, heading, title, track, viewport, slide, card-wrapper, image, badge, price, compare-price, quick-add, nav-prev, nav-next, dots, dot, row, row-image, row-title, row-price, row-subtitle, row-list, media-placeholder`.
+Fallback: 4 static cards (`<a>` + `<img>` + title + price) in a 2/4 grid.
+Gotchas: omit `title` and render the section h2 yourself to keep heading hierarchy in the wrapper (contract: h2 owned by section). `showWishlist`/`showQuickView` add icon buttons in the island's own icon style; leave off when the page uses its own SVG set.
+
+### 2.9 Footer
+
+Site footer: link columns, logo, tagline, social, newsletter, copyright. Category navigation. Hydrate `immediate`. Variants: none; layout via `style.layout`. Hydration mode: author your own `<footer data-lx-footer="root">` with optional `newsletter-form`, `newsletter-input`, `newsletter-success`, `year` tags. Max 1, last section. Footer may paint its own background (house-rule exception).
+
+UI-controlling props:
+
+| Prop | Type | Values |
+|---|---|---|
+| `style.layout` | enum | `simple` \| `centered` \| `columns` \| `editorialGrid` \| `newsletterSplit` |
+| `style.bgColor, textColor, linkColor, linkHoverColor, headingColor, accentColor, borderColor` | string | colors |
+| `style.fontFamily, fontSize, padding, maxWidth, logoHeight, logoFilter` | string | type, spacing, logo treatment (`logoFilter: "invert(1)"` for dark footers) |
+| `borderStyle` | enum | `none` \| `solid` \| `dashed` (top rule) |
+| `tileLayout` | boolean | social links as tiles (`social-tiles` part) |
+
+Data props: `columns[{heading?, links[{label,url}]}]`, `links[]` (simple layout), `logo{src, alt}`, `tagline`, `copyright`, `socialLinks[{platform, url, icon?}]`, `newsletter{heading, placeholder, buttonText}`, `successMessage`.
+CSS vars: `--lx-accent-color`. Parts: `root, columns, nav-rows, newsletter, social-tiles`.
+Fallback: hydration-mode markup, or a `<footer>` with links and copyright.
+Gotchas: social icons are the island's own glyphs; `socialLinks[].icon` accepts a string (URL or inline SVG; unconfirmed which). If the page has no icon set, prefer text social links via `columns` and omit `socialLinks`. Old `layouts/compact.json` uses `style.variant`/`style.inline`/`newsletter.enabled`, none of which exist in v5.1.
+
+### 2.10 ReviewCarousel
+
+Rotating or grid review showcase with stars, verified flag, avatars, optional media. Category social_proof. Hydrate `visible`. Headless: no. Two data modes: static `reviews[]` (wins if non-empty) or fetch (`reviewsEndpoint` + filters). Mid-page or after product details, never first. Needs 3+ real reviews; never fabricate.
+
+UI-controlling props:
+
+| Prop | Type | Values / default | Effect |
+|---|---|---|---|
+| `variant` | enum | `default` \| `compact` \| `minimal` \| `grid` (default `default`) | default = one card carousel; compact = short strip; minimal = quote-only (short bodies only); grid = all at once |
+| `autoplay` | boolean | true | set false for grid and for quiet pages |
+| `interval` | number | 5000, keep >= 4000 | - |
+| `pageSize` | number | 10, max 20 | fetch mode count |
+
+Data props: `reviews[{id?, author, rating, title?, body, date?, verified?, avatar?, helpful_count?, media[]?}]`, `reviewsEndpoint`, `productIds[]`, `collectionId`, `reviewSnapshotId`, `minRating`, `sort` (`recent|highest|most_helpful`).
+CSS vars: `--lx-accent-color` (avatar bg, active dot), `--lx-text-color` (author). Parts: `root, card, avatar, author, body, title, date, verified, media-preview, nav-prev, nav-next, dots, dot, load-more`.
+Fallback: 3 static blockquotes with author lines.
+Gotchas: stars and the verified check are island glyphs (not controllable); acceptable as the page's single icon set only if the rest of the page uses no other icons, otherwise hide `[data-part="verified"]` and rely on the "Verified" text. `index.md` mentions `card-grid` on `--lx-surface-alt` backgrounds; house rules forbid that, so cards sit on the page background with a hairline border. `card` default may carry a shadow; flatten via `[data-part="card"]{box-shadow:none;border:1px solid var(--lx-border-color)}`.
+
+### 2.11 InventoryIndicator
+
+Low-stock urgency: "Only X left" pill, progress bar, or inline text. Category commerce. Hydrate `immediate`. Headless: no. Auto-hides above `lowStockThreshold`; can listen for `variant:changed`.
+
+UI-controlling props: `variant` (`badge` default | `bar` | `text`), `showExactCount` (boolean, default true), `lowStockThreshold` (number, default 5; controls when it appears), `urgentThreshold` (number, default 3; colour escalation).
+Data props: `variantId`, `quantity` (number; static preview value), `listenForEvents` (boolean, default false).
+CSS vars: `--lx-inventory-urgent-color`, `--lx-inventory-low-color`, `--lx-inventory-ok-color` (state colours; fall back to the island defaults). Parts: `root, dot, message, bar-track, bar-fill`.
+Fallback: none; the island hides itself when stock is high, so an empty child is correct.
+Gotchas: set the three state vars in the section `<style>` when the brand palette has no red. Do not use for pre-order products.
+
+### 2.12 DeliveryEstimate
+
+"Order within Xh, arrives by <date>" line with optional free-shipping threshold. Category commerce. Hydrate `immediate`. Headless: no. Countdown updates each minute; returns nothing after cutoff.
+
+UI-controlling props: `variant` (`inline` default | `card` | `banner`), `showCountdown` (boolean, default true).
+Data props: `estimatedDays` (number, default 4), `cutoffHour` (number 0-23, default 14; store timezone, unconfirmed), `freeShippingThreshold` (number, minor units per example `5000`; unconfirmed currency handling).
+CSS vars: `--lx-accent-color, --lx-text-color`. Parts: `root, icon, text, date`.
+Fallback: one `<p>` "Ships in {{shipping.days}} business days".
+Gotchas: `card` and `banner` variants paint their own surface, which violates the one-background rule; presets use `inline` only, or `card` with `[data-part="root"]{background:transparent;border:1px solid var(--lx-border-color)}`. The `icon` part is an island glyph; hide it when the page has no icon set. Keep it out of pages with international or variable shipping.
+
+#### Shared notes for section 2
+
+- **Fallback child.** `design-page/references/island-preview.md` asks for a direct `data-lx-island-fallback` child inside `<lx-island>`; `build_page_preview.py` does not reference that attribute, so its runtime handling is unconfirmed. Keep fallback markup simple, class-free or Tailwind-only (every class must compile), and free of interactive controls that could be mistaken for the island.
+- **`animate` type.** Schema shows `boolean|boolean|string|string|string` for BuyBox, StickyBar, ProductCarousel; accepted string values are undocumented. Presets use booleans only.
+- **Manifest evidence per island** (from `validate_page_workspace.py`): `{sectionId, name, schemaVersion, lifecycleStatus:"active", mode:"native"|"headless", previewMode:"hydrated"|"fallback"}`, in source order.
+
+## 3. Presets
+
+Conventions: id is `<island-lowercase>/<intent>-<tone>`. Each preset is `props` (goes verbatim into the `<script type="application/json">`) plus optional `css` (goes into the section `<style>`, scoped by the island wrapper id `{{id}}`). Placeholders `{{...}}` are replaced by `/design-page` from catalog, brand and plan data. Colour strings use `var(--lx-*)` tokens; island `style.*` props are applied as inline styles so `var()` resolves (confirmed for hex, expected for `var()`; verify on first compile). Tones: `light` = page background, dark text; `dark` = inverted strip (`--lx-text-color` bg); `quiet` = no motion, no chrome; `editorial` = square corners, hairlines, letterspaced caps.
+
+### 3.1 SiteHeader
+
+**siteheader/sticky-light** - default PDP/landing header: inverted announcement strip, white nav with hairline. Use when the plan has an announcement message.
+```json
+{"props":{"sticky":true,"cartMode":"drawer","announcement":{"messages":["{{announcement.message_1}}","{{announcement.message_2}}"],"speed":5000,"dismissible":false,"backgroundColor":"var(--lx-text-color)","textColor":"var(--lx-bg-color)"},"navbar":{"logo":{"src":"{{brand.logo_url}}","alt":"{{brand.name}}","url":"/"},"links":"{{nav.links}}","style":{"bgColor":"var(--lx-bg-color)","textColor":"var(--lx-text-color)","accentColor":"var(--lx-accent-color)","height":"64px","logoHeight":"28px","maxWidth":"1280px","fontFamily":"var(--lx-font-body)","fontSize":"14px","fontWeight":"500","borderBottom":"1px solid var(--lx-border-color)","dropdownBg":"var(--lx-bg-color)","dropdownTextColor":"var(--lx-text-color)","mobileBg":"var(--lx-bg-color)","mobileTextColor":"var(--lx-text-color)"}}}}
+```
+
+**siteheader/transparent-dark** - nav floats over the plan's single full-bleed hero, text light, no announcement. Use only when the section directly below is that full-bleed moment.
+```json
+{"props":{"sticky":true,"transparent":true,"cartMode":"drawer","navbar":{"logo":{"src":"{{brand.logo_url_light}}","alt":"{{brand.name}}","url":"/"},"links":"{{nav.links}}","transparent":true,"style":{"textColor":"#ffffff","accentColor":"#ffffff","height":"72px","logoHeight":"28px","maxWidth":"1280px","fontSize":"14px","fontWeight":"500","borderBottom":"none","mobileBg":"var(--lx-text-color)","mobileTextColor":"var(--lx-bg-color)"}}}}
+```
+
+**siteheader/minimal-light** - non-sticky, no announcement, one CTA. Use for campaign landing pages with a single conversion goal.
+```json
+{"props":{"sticky":false,"cartMode":"link","cartUrl":"/cart","navbar":{"logo":{"text":"{{brand.name}}","url":"/"},"links":[{"label":"Shop","url":"{{nav.shop_url}}"}],"cta":{"label":"{{cta.text}}","url":"#buy"},"style":{"bgColor":"var(--lx-bg-color)","textColor":"var(--lx-text-color)","accentColor":"var(--lx-accent-color)","height":"72px","fontSize":"14px","fontWeight":"400","borderBottom":"none","maxWidth":"1280px"}}}}
+```
+```css
+#{{id}} [data-part="cta"]{border-radius:var(--lx-radius,8px);padding:10px 18px}
+```
+
+### 3.2 Navbar
+
+**navbar/sticky-light** - same look as siteheader/sticky-light without the strip. Use when no announcement, or when pairing with `announcementbar/*` that should scroll away.
+```json
+{"props":{"sticky":true,"cartMode":"drawer","logo":{"src":"{{brand.logo_url}}","alt":"{{brand.name}}","url":"/"},"links":"{{nav.links}}","cart":{"icon":"bag"},"style":{"bgColor":"var(--lx-bg-color)","textColor":"var(--lx-text-color)","accentColor":"var(--lx-accent-color)","height":"64px","logoHeight":"28px","maxWidth":"1280px","fontSize":"14px","fontWeight":"500","borderBottom":"1px solid var(--lx-border-color)","dropdownBg":"var(--lx-bg-color)","dropdownTextColor":"var(--lx-text-color)","mobileBg":"var(--lx-bg-color)","mobileTextColor":"var(--lx-text-color)"}}}
+```
+
+**navbar/transparent-dark** - light text over the hero, CTA pill. Use only above the plan's full-bleed moment.
+```json
+{"props":{"sticky":true,"transparent":true,"cartMode":"drawer","logo":{"src":"{{brand.logo_url_light}}","alt":"{{brand.name}}","url":"/"},"links":"{{nav.links}}","cta":{"label":"{{cta.text}}","url":"#buy"},"cart":{"icon":"bag","badgeColor":"#ffffff"},"style":{"textColor":"#ffffff","accentColor":"#ffffff","height":"72px","logoHeight":"28px","borderBottom":"none","mobileBg":"var(--lx-text-color)","mobileTextColor":"var(--lx-bg-color)"}}}
+```
+```css
+#{{id}} [data-part="cta"]{background:#ffffff;color:var(--lx-text-color);border-radius:9999px;padding:10px 18px}
+```
+
+### 3.3 AnnouncementBar
+
+**announcementbar/static-dark** - one message, inverted strip, no controls. Use for shipping or guarantee line.
+```json
+{"props":{"messages":["{{announcement.message_1}}"],"backgroundColor":"var(--lx-text-color)","textColor":"var(--lx-bg-color)","dismissible":false,"sticky":false}}
+```
+```css
+#{{id}} [data-part="icon"]{display:none}
+#{{id}} [data-part="text"]{font-size:13px;letter-spacing:.02em}
+```
+
+**announcementbar/rotating-accent** - 2-3 rotating promo lines on the accent colour. Use during a campaign window; pair with `navbar/sticky-light`.
+```json
+{"props":{"messages":["{{announcement.message_1}}","{{announcement.message_2}}","{{announcement.message_3}}"],"speed":5000,"backgroundColor":"var(--lx-accent-color)","textColor":"#ffffff","link":"{{announcement.url}}","dismissible":false,"sticky":false}}
+```
+```css
+#{{id}} [data-part="icon"]{display:none}
+```
+
+
+### 3.4 ProductGallery
+
+Shared flat-chrome CSS used by all three (flatten arrows, dots, no island surface):
+```css
+#{{id}}{--lx-product-gallery-bg:transparent;--lx-media-carousel-bg:transparent;--lx-media-carousel-arrow-bg:var(--lx-bg-color);--lx-media-carousel-arrow-border:1px solid var(--lx-border-color);--lx-media-carousel-arrow-color:var(--lx-text-color);--lx-media-carousel-arrow-hover-bg:var(--lx-bg-color);--lx-media-carousel-arrow-shadow:none;--lx-media-carousel-arrow-radius:9999px;--lx-media-carousel-arrow-size:40px;--lx-media-carousel-dot-color:var(--lx-border-color);--lx-media-carousel-dot-active-color:var(--lx-text-color);--lx-media-carousel-dot-active-scale:1;--lx-media-carousel-dot-shadow:none;--lx-product-gallery-focus-width:2px;--lx-media-lightbox-backdrop:rgba(0,0,0,.92);--lx-media-lightbox-close-bg:transparent;--lx-media-lightbox-close-border:1px solid rgba(255,255,255,.4);--lx-media-lightbox-close-color:#ffffff}
+```
+
+**productgallery/rail-bottom-light** - main image with thumbnail strip below, rounded, lightbox. Default PDP gallery.
+```json
+{"props":{"media":"{{product.media}}","layout":"horizontal","thumbPosition":"bottom","mobileLayout":"swipe","transition":"fade","objectFit":"cover","enableLightbox":true,"autoplay":false,"listenForVariant":false}}
+```
+```css
+#{{id}}{--lx-product-gallery-radius:var(--lx-radius,12px);--lx-product-gallery-gap:12px;--lx-product-gallery-mobile-ratio:1/1}
+#{{id}} [data-part="thumbnail"]{border:1px solid var(--lx-border-color);border-radius:var(--lx-radius,8px)}
+```
+
+**productgallery/rail-left-editorial** - vertical rail on the left, square corners, `contain` for packshots, no transition. Use for fashion or premium goods with studio imagery.
+```json
+{"props":{"media":"{{product.media}}","layout":"vertical","thumbPosition":"left","mobileLayout":"swipe","transition":"none","objectFit":"contain","enableLightbox":true,"autoplay":false}}
+```
+```css
+#{{id}}{--lx-product-gallery-radius:0;--lx-media-carousel-radius:0;--lx-media-carousel-arrow-radius:0;--lx-product-gallery-gap:16px;--lx-product-gallery-border:1px solid var(--lx-border-color)}
+#{{id}} [data-part="thumbnail"]{border-radius:0;border:1px solid transparent}
+```
+
+**productgallery/stacked-quiet** - all images stacked full-width on desktop, swipe rail on mobile, no lightbox, no motion. Use for long-scroll editorial PDPs where the BuyBox is sticky beside the media.
+```json
+{"props":{"media":"{{product.media}}","layout":"stacked","mobileLayout":"swipe","transition":"none","objectFit":"cover","enableLightbox":false,"autoplay":false}}
+```
+```css
+#{{id}}{--lx-product-gallery-radius:var(--lx-radius,8px);--lx-product-gallery-gap:8px;--lx-product-gallery-stacked-ratio:4/5;--lx-product-gallery-mobile-peek:24px}
+```
+
+### 3.5 ProductHero
+
+**producthero/split-rail-light** - hero beside BuyBox, thumbnails under the image, arrows inside frame, capped height. Default premium PDP.
+```json
+{"props":{"images":"{{product.hero_images}}","layout":"splitLeft","thumbnails":"rail","thumbnailPosition":"bottom","navigation":"arrows","aspectRatio":"4:5","maxHeight":"640px","transition":"fade","autoplay":false,"hoverAdvance":false}}
+```
+```css
+#{{id}}{--lx-hero-bg:transparent;--lx-hero-radius:var(--lx-radius,12px);--lx-hero-thumb-radius:var(--lx-radius,8px);--lx-hero-thumb-size:64px;--lx-hero-thumb-gap:8px;--lx-hero-arrow-bg:var(--lx-bg-color);--lx-hero-arrow-size:40px;--lx-hero-arrow-offset:12px;--lx-hero-transition-duration:300ms}
+#{{id}} [data-part="thumbnail"]{border:1px solid var(--lx-border-color)}
+```
+
+**producthero/stacked-dots-quiet** - square image, dots only, no arrows, mobile-first. Use when the product has 2-4 images and the page is copy-led.
+```json
+{"props":{"images":"{{product.hero_images}}","layout":"stacked","thumbnails":"dots","navigation":"none","showIndicators":true,"aspectRatio":"1:1","maxHeight":"560px","transition":"fade","autoplay":false,"hoverAdvance":false}}
+```
+```css
+#{{id}}{--lx-hero-bg:transparent;--lx-hero-radius:var(--lx-radius,12px);--lx-hero-transition-duration:250ms}
+#{{id}} [data-part="dot"]{background:var(--lx-border-color)}
+```
+
+**producthero/fullheight-sharp-dark** - full-height, square corners, floating arrows on dark chips, no thumbnails. Use only as the plan's one full-bleed moment (pairs with `siteheader/transparent-dark`).
+```json
+{"props":{"images":"{{product.hero_images}}","layout":"fullHeight","thumbnails":"none","navigation":"floatingArrows","aspectRatio":"3:4","maxHeight":"85vh","transition":"slide","autoplay":false,"hoverAdvance":false}}
+```
+```css
+#{{id}}{--lx-hero-bg:var(--lx-text-color);--lx-hero-radius:0;--lx-hero-arrow-bg:rgba(0,0,0,.6);--lx-hero-arrow-size:44px;--lx-hero-arrow-offset:16px;--lx-hero-transition-duration:400ms}
+```
+
+### 3.6 BuyBox
+
+Data block shared by all BuyBox presets: `"product":{"title":"{{product.title}}","price":"{{product.price}}","compareAtPrice":"{{product.compare_at_price}}","variants":"{{product.variants}}"}` where `{{product.variants}}` expands to `[{"id":"gid://shopify/ProductVariant/...","title":"...","price":"...","available":true}]`.
+
+**buybox/default-light** - variant buttons, quantity, accent CTA with the page radius, no trust badges (page owns its icons). Default PDP.
+```json
+{"props":{"product":"{{product}}","variant":"default","ctaText":"{{cta.text}}","showPrice":true,"showVariantSelector":true,"showTrustBadges":false,"animate":true,"buttonStyle":{"borderRadius":"var(--lx-radius,8px)","padding":"16px 24px","fontSize":"15px"}}}
+```
+```css
+#{{id}} [data-part="variant-btn"]{border:1px solid var(--lx-border-color);border-radius:var(--lx-radius,8px);background:transparent;color:var(--lx-text-color)}
+#{{id}} [data-part="qty"],#{{id}} [data-part="qty-btn"]{border-color:var(--lx-border-color);border-radius:var(--lx-radius,8px)}
+```
+
+**buybox/compact-dark** - single-variant product, no quantity, black square CTA with letterspaced label. Use in bundles, upsell rows, or sticky sidebars.
+```json
+{"props":{"product":"{{product}}","variant":"compact","ctaText":"{{cta.text}}","showPrice":true,"showTrustBadges":false,"animate":false,"buttonStyle":{"borderRadius":"0","padding":"18px 28px","fontSize":"13px"}}}
+```
+```css
+#{{id}} [data-part="cta"]{background:var(--lx-text-color);color:var(--lx-bg-color);text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+```
+
+**buybox/expanded-editorial** - expanded layout, pill CTA and pill variant buttons; trust badges on only when the page has no other icon set. Use for premium PDPs with a long BuyBox column.
+```json
+{"props":{"product":"{{product}}","variant":"expanded","ctaText":"{{cta.text}}","showPrice":true,"showVariantSelector":true,"showTrustBadges":"{{page.icon_set == 'none'}}","animate":true,"buttonStyle":{"borderRadius":"9999px","padding":"18px 32px","fontSize":"15px"}}}
+```
+```css
+#{{id}} [data-part="variant-btn"]{border-radius:9999px;border:1px solid var(--lx-border-color);background:transparent;padding:8px 16px;font-size:13px}
+#{{id}} [data-part="trust-badges"]{opacity:.8;font-size:13px}
+```
+
+### 3.7 StickyBar
+
+**stickybar/product-light** - page-coloured bar, hairline top, accent CTA, appears after the BuyBox section. Default PDP.
+```json
+{"props":{"product":{"title":"{{product.title}}","price":"{{product.price}}","compareAtPrice":"{{product.compare_at_price}}","image":"{{product.image_thumb}}","variantId":"{{product.default_variant_id}}"},"cta":"{{cta.text}}","showAfter":"#{{sections.buybox.id}}","animate":true}}
+```
+```css
+#{{id}} [data-part="bar"]{background:var(--lx-bg-color);color:var(--lx-text-color);border-top:1px solid var(--lx-border-color);box-shadow:none}
+#{{id}} [data-part="cta"]{border-radius:var(--lx-radius,8px)}
+#{{id}} [data-part="product-image"]{border-radius:var(--lx-radius,6px)}
+```
+
+**stickybar/product-dark** - inverted bar, no image, no animation. Use on quiet or editorial pages.
+```json
+{"props":{"product":{"title":"{{product.title}}","price":"{{product.price}}","variantId":"{{product.default_variant_id}}"},"cta":"{{cta.text}}","showAfter":"#{{sections.buybox.id}}","animate":false}}
+```
+```css
+#{{id}} [data-part="bar"]{background:var(--lx-text-color);color:var(--lx-bg-color);box-shadow:none}
+#{{id}} [data-part="cta"]{background:var(--lx-bg-color);color:var(--lx-text-color);border-radius:0}
+#{{id}} [data-part="product-price"]{color:var(--lx-bg-color);opacity:.8}
+```
+
+**stickybar/collection-light** - collection/campaign destination instead of add-to-cart. Use on listicle, gift-guide and collection landers.
+```json
+{"props":{"collection":{"label":"{{collection.cta_label}}","url":"{{collection.url}}","subtitle":"{{collection.subtitle}}"},"showAfter":"#{{sections.first_content.id}}","animate":true}}
+```
+```css
+#{{id}} [data-part="bar"]{background:var(--lx-bg-color);border-top:1px solid var(--lx-border-color);box-shadow:none}
+```
+
+### 3.8 ProductCarousel
+
+Shared flat-chrome CSS (same arrow/dot variables as the gallery):
+```css
+#{{id}}{--lx-media-carousel-arrow-bg:var(--lx-bg-color);--lx-media-carousel-arrow-border:1px solid var(--lx-border-color);--lx-media-carousel-arrow-color:var(--lx-text-color);--lx-media-carousel-arrow-shadow:none;--lx-media-carousel-arrow-radius:9999px;--lx-media-carousel-dot-color:var(--lx-border-color);--lx-media-carousel-dot-active-color:var(--lx-text-color);--lx-media-carousel-dot-shadow:none;--lx-media-carousel-radius:var(--lx-radius,8px)}
+#{{id}} [data-part="card-wrapper"]{background:transparent;border:1px solid var(--lx-border-color);border-radius:var(--lx-radius,8px);box-shadow:none;transition:none}
+#{{id}} [data-part="badge"]{border-radius:var(--lx-radius,4px);background:var(--lx-text-color);color:var(--lx-bg-color)}
+```
+
+**productcarousel/cards-quiet** - plain cards, no actions, no hover media, no entry animation; section owns the h2. Default "You may also like".
+```json
+{"props":{"products":"{{related.products}}","cardVariant":"default","showQuickAdd":false,"showLearnMore":false,"showWishlist":false,"showQuickView":false,"hoverAdvance":false,"mediaTransition":"none","animate":false}}
+```
+
+**productcarousel/cards-quickadd-light** - adds the quick-add button (requires `head.use_cart_v2:true`), fade media swap, entry fade. Use on collection and bundle pages.
+```json
+{"props":{"products":"{{related.products}}","cardVariant":"default","showQuickAdd":true,"showLearnMore":false,"showWishlist":false,"showQuickView":false,"hoverAdvance":false,"mediaTransition":"fade","animate":true}}
+```
+```css
+#{{id}} [data-part="quick-add"]{border-radius:var(--lx-radius,8px);background:var(--lx-accent-color);color:#ffffff}
+```
+
+**productcarousel/rows-compact** - list rows (image, title, price) for sidebars and "complete the set". Use with 3-5 products.
+```json
+{"props":{"products":"{{related.products}}","cardVariant":"compactRows","showQuickAdd":false,"showLearnMore":false,"hoverAdvance":false,"mediaTransition":"none","animate":false}}
+```
+```css
+#{{id}} [data-part="row"]{border-bottom:1px solid var(--lx-border-color);padding:12px 0}
+#{{id}} [data-part="row-image"]{border-radius:var(--lx-radius,6px)}
+```
+
+### 3.9 Footer
+
+**footer/columns-dark** - inverted footer, 3-4 link columns, text social links (no glyphs), no newsletter. Default.
+```json
+{"props":{"logo":{"src":"{{brand.logo_url}}","alt":"{{brand.name}}"},"tagline":"{{brand.tagline}}","columns":"{{footer.columns}}","copyright":"{{brand.copyright}}","borderStyle":"none","tileLayout":false,"style":{"layout":"columns","bgColor":"var(--lx-text-color)","textColor":"var(--lx-bg-color)","linkColor":"var(--lx-bg-color)","linkHoverColor":"var(--lx-accent-color)","headingColor":"var(--lx-bg-color)","accentColor":"var(--lx-accent-color)","borderColor":"rgba(255,255,255,.15)","fontFamily":"var(--lx-font-body)","fontSize":"14px","padding":"64px 0 32px","maxWidth":"1280px","logoHeight":"24px","logoFilter":"invert(1)"}}}
+```
+
+**footer/simple-light** - one row of links, hairline top, page background. Use on campaign landers.
+```json
+{"props":{"logo":{"src":"{{brand.logo_url}}","alt":"{{brand.name}}"},"links":"{{footer.links}}","copyright":"{{brand.copyright}}","borderStyle":"solid","style":{"layout":"simple","bgColor":"var(--lx-bg-color)","textColor":"var(--lx-text-muted)","linkColor":"var(--lx-text-color)","linkHoverColor":"var(--lx-accent-color)","borderColor":"var(--lx-border-color)","fontSize":"13px","padding":"32px 0","maxWidth":"1280px","logoHeight":"20px"}}}
+```
+
+**footer/newsletter-split-light** - newsletter on one side, columns on the other, page background with hairline. Use when the plan names email capture as a goal and no EmailCapture island is on the page.
+```json
+{"props":{"logo":{"src":"{{brand.logo_url}}","alt":"{{brand.name}}"},"columns":"{{footer.columns}}","newsletter":{"heading":"{{newsletter.heading}}","placeholder":"Email address","buttonText":"Subscribe"},"successMessage":"Thanks, you are on the list.","copyright":"{{brand.copyright}}","borderStyle":"solid","style":{"layout":"newsletterSplit","bgColor":"var(--lx-bg-color)","textColor":"var(--lx-text-color)","linkColor":"var(--lx-text-color)","linkHoverColor":"var(--lx-accent-color)","headingColor":"var(--lx-text-color)","accentColor":"var(--lx-accent-color)","borderColor":"var(--lx-border-color)","fontSize":"14px","padding":"64px 0 32px","maxWidth":"1280px","logoHeight":"24px"}}}
+```
+```css
+#{{id}} [data-part="newsletter"] input{border:1px solid var(--lx-border-color);border-radius:var(--lx-radius,8px);background:transparent}
+#{{id}} [data-part="newsletter"] button{border-radius:var(--lx-radius,8px)}
+```
+
+### 3.10 ReviewCarousel
+
+Shared flat card CSS:
+```css
+#{{id}} [data-part="card"]{background:transparent;border:1px solid var(--lx-border-color);border-radius:var(--lx-radius,12px);box-shadow:none}
+#{{id}} [data-part="nav-prev"],#{{id}} [data-part="nav-next"]{background:var(--lx-bg-color);border:1px solid var(--lx-border-color);color:var(--lx-text-color);box-shadow:none}
+#{{id}} [data-part="dot"]{background:var(--lx-border-color)}
+```
+
+**reviewcarousel/grid-flat** - all reviews visible, no motion. Default when 3-6 reviews.
+```json
+{"props":{"reviews":"{{reviews.top}}","variant":"grid","autoplay":false}}
+```
+
+**reviewcarousel/single-quiet** - one card at a time, manual arrows, no autoplay. Use when review bodies are long.
+```json
+{"props":{"reviews":"{{reviews.top}}","variant":"default","autoplay":false,"interval":6000}}
+```
+
+**reviewcarousel/strip-compact** - short strip of one-line reviews with slow rotation. Use near the BuyBox as a proof line, bodies under 60 chars.
+```json
+{"props":{"reviews":"{{reviews.short}}","variant":"compact","autoplay":true,"interval":6000}}
+```
+```css
+#{{id}} [data-part="verified"]{display:none}
+```
+
+### 3.11 InventoryIndicator
+
+**inventoryindicator/text-quiet** - inline sentence under the price, shows only below 10 units. Default.
+```json
+{"props":{"variantId":"{{product.default_variant_id}}","quantity":"{{product.inventory_quantity}}","variant":"text","showExactCount":true,"lowStockThreshold":10,"urgentThreshold":3,"listenForEvents":true}}
+```
+```css
+#{{id}} [data-part="message"]{color:var(--lx-text-muted);font-size:13px}
+#{{id}} [data-part="dot"]{background:var(--lx-accent-color)}
+```
+
+**inventoryindicator/bar-accent** - thin progress bar in the accent colour. Use for drops and limited runs.
+```json
+{"props":{"variantId":"{{product.default_variant_id}}","quantity":"{{product.inventory_quantity}}","variant":"bar","showExactCount":true,"lowStockThreshold":25,"urgentThreshold":5,"listenForEvents":true}}
+```
+```css
+#{{id}} [data-part="bar-track"]{background:var(--lx-border-color);height:4px;border-radius:9999px}
+#{{id}} [data-part="bar-fill"]{background:var(--lx-accent-color);border-radius:9999px}
+```
+
+**inventoryindicator/badge-outline** - outlined pill, no exact count. Use when stock numbers should stay private.
+```json
+{"props":{"variantId":"{{product.default_variant_id}}","quantity":"{{product.inventory_quantity}}","variant":"badge","showExactCount":false,"lowStockThreshold":5,"urgentThreshold":2,"listenForEvents":true}}
+```
+```css
+#{{id}} [data-part="root"]{background:transparent;border:1px solid var(--lx-border-color);color:var(--lx-text-color);border-radius:9999px;padding:4px 10px;font-size:12px}
+```
+
+### 3.12 DeliveryEstimate
+
+**deliveryestimate/inline-quiet** - one muted line, no icon, countdown on. Default under the BuyBox CTA.
+```json
+{"props":{"variant":"inline","estimatedDays":"{{shipping.days}}","cutoffHour":"{{shipping.cutoff_hour}}","showCountdown":true}}
+```
+```css
+#{{id}} [data-part="icon"]{display:none}
+#{{id}} [data-part="text"]{color:var(--lx-text-muted);font-size:13px}
+#{{id}} [data-part="date"]{color:var(--lx-text-color);font-weight:600}
+```
+
+**deliveryestimate/card-outline** - card variant with its surface removed, hairline border, free-shipping threshold. Use in a "shipping and returns" block.
+```json
+{"props":{"variant":"card","estimatedDays":"{{shipping.days}}","cutoffHour":"{{shipping.cutoff_hour}}","showCountdown":true,"freeShippingThreshold":"{{shipping.free_threshold_minor}}"}}
+```
+```css
+#{{id}} [data-part="root"]{background:transparent;border:1px solid var(--lx-border-color);border-radius:var(--lx-radius,12px);box-shadow:none}
+#{{id}} [data-part="icon"]{display:none}
+```
+
+`banner` variant intentionally has no preset: it paints a full-width surface, which breaks the one-background rule.
+
+## 4. Preset system proposal
+
+Goal: a plan says `BuyBox: preset buybox/compact-dark`; design applies exact props and CSS; compile and the validator can prove it. Smallest change that does this: one reference file, one line in `page-plan.md` per section, one field per manifest island. No new tool, no runtime change.
+
+### 4.1 File location and shape
+
+`skills/storefront-engine/references/island-presets.md` (loaded by `/plan-page` for `Preset:` ids and by `/design-page` next to `design-rules.md`). One `##` per island, one `###` per preset id, each with a single fenced `json` block containing the whole preset entry (props + css + metadata). Markdown keeps it human-reviewable; the fenced block is machine-extractable with the same regex the validator already uses for `<script type="application/json">`.
+
+Optionally mirror as `skills/design-page/assets/island-presets.json` (array of entries) if a script needs to load it; generate it from the `.md`, do not hand-maintain two copies.
+
+### 4.2 Preset entry schema (minimal JSON Schema)
+
+```json
+{"$schema":"https://json-schema.org/draft/2020-12/schema","title":"LexsisIslandPreset","type":"object","required":["id","island","schemaVersion","props"],"additionalProperties":false,
+ "properties":{
+  "id":{"type":"string","pattern":"^[a-z]+/[a-z0-9]+(-[a-z0-9]+)+$","description":"<island-lowercase>/<intent>-<tone>"},
+  "island":{"type":"string","description":"Exact runtime island name, e.g. BuyBox"},
+  "schemaVersion":{"type":"string","description":"island_schema version the preset was verified against, e.g. 5.1.0"},
+  "hydrate":{"type":"string","enum":["immediate","visible","idle","interaction"]},
+  "mode":{"type":"string","enum":["native","headless"],"default":"native"},
+  "props":{"type":"object","description":"Verbatim island props; string values may contain {{placeholders}}"},
+  "css":{"type":"string","description":"Section CSS scoped with #{{id}}; only [data-part] selectors and --lx-* variables"},
+  "requires":{"type":"object","properties":{"cartV2":{"type":"boolean"},"iconSet":{"type":"string","enum":["none","page"]},"fullBleedMoment":{"type":"boolean"},"minItems":{"type":"integer"}}},
+  "placeholders":{"type":"array","items":{"type":"string"},"description":"Every {{token}} used, so design can check bindings"},
+  "use":{"type":"string","description":"One line: when to pick it"},
+  "houseRules":{"type":"array","items":{"type":"string"},"description":"Rules this preset was checked against: no-emoji, no-gradient, one-background, one-icon-set, no-motion-effects"}
+ }}
+```
+
+Example entry:
+```json
+{"id":"buybox/compact-dark","island":"BuyBox","schemaVersion":"5.1.0","hydrate":"immediate","mode":"native","props":{"product":"{{product}}","variant":"compact","ctaText":"{{cta.text}}","showTrustBadges":false,"animate":false,"buttonStyle":{"borderRadius":"0","padding":"18px 28px","fontSize":"13px"}},"css":"#{{id}} [data-part=\"cta\"]{background:var(--lx-text-color);color:var(--lx-bg-color);text-transform:uppercase;letter-spacing:.08em}","requires":{"cartV2":true},"placeholders":["product","cta.text"],"use":"Single-variant product in bundles, upsell rows, sticky sidebars.","houseRules":["no-emoji","no-gradient","one-background","one-icon-set","no-motion-effects"]}
+```
+
+### 4.3 How `/plan-page` selects
+
+`plan-page/SKILL.md` today forbids island names and props in the plan. Keep that for props, relax it for preset ids: a preset id is a *design intent token*, not implementation. Add one optional line per section in `page-plan.md`:
+
+```text
+## Sections
+3. Buy
+   Purpose: convert; primary CTA.
+   Preset: buybox/compact-dark, stickybar/product-dark
+```
+
+Rules: ids must exist in `island-presets.md`; the plan lists at most one preset per island role; the plan's "Design direction" block names the tone once (`light`, `dark`, `quiet`, `editorial`) and every chosen preset's tone must match it or be listed as an explicit exception. Header and footer presets are picked in the "Design direction" block, not per section.
+
+### 4.4 How `/design-page` applies and overrides
+
+1. Read `island-presets.md`; for each `Preset:` line resolve the entry. Unknown id = stop and ask (return `PRESET_NOT_FOUND`).
+2. Check `requires`: `cartV2` -> `head.use_cart_v2:true`; `iconSet:"none"` -> the page uses no other icons; `fullBleedMoment` -> the plan names one; `minItems` -> enough products/reviews. Fail = pick the sibling preset with the same intent or return `PRESET_REQUIREMENT_UNMET`.
+3. Emit `<lx-island name="{{island}}" id="{{sectionId}}-{{islandLower}}" hydrate="{{hydrate}}">` with `props` after placeholder substitution, and append `css` (with `#{{id}}` substituted) to that section's `<style>`.
+4. Overrides: a section may add `Preset override:` lines in the plan or the designer may deviate; every deviation is recorded in the manifest as `islands[].presetOverrides` (JSON merge patch against the preset props) and in `page-plan.md` under "Design direction". No silent edits to preset props.
+5. Never edit a preset in place for one page; add a new id if a new look is needed.
+
+### 4.5 How compile validates
+
+- `lexsis_pages compile` remains the authority for prop shape; presets are pre-validated once per `schemaVersion`, so a compile error on a preset-applied island means either an override or a schema drift. Log the island `version` from `island_schema` and fail fast when it differs from `preset.schemaVersion`.
+- Extend `validate_page_workspace.py` (design phase) with three cheap checks: (a) every `islands[].preset` id exists in the preset file; (b) props in source equal preset props after substitution plus recorded `presetOverrides` (deep-equal after removing `{{...}}`-bound keys); (c) preset `css` text is present in the section's `<style>`. Emit `island_preset_mismatch` as a blocking finding in `SOURCE_PHASES`.
+- House-rule checks already in `design-rules.md` (emoji grep, distinct backgrounds) run unchanged; presets are pre-checked against them, and `houseRules` records which.
+
+### 4.6 Manifest
+
+`islands[]` already carries `{sectionId, name, schemaVersion, lifecycleStatus, mode, previewMode}`. Add:
+
+```json
+{"sectionId":"buy","name":"BuyBox","schemaVersion":"5.1.0","lifecycleStatus":"active","mode":"native","previewMode":"hydrated","preset":"buybox/compact-dark","presetOverrides":{"ctaText":"Add to bag"}}
+```
+
+`preset` is a string or `null` (custom composition, rationale in `page-plan.md`). `presetOverrides` omitted when empty. `design.stylePack` stays; a preset set is not a style pack, but when a page uses presets of a single tone, record `design.presetTone`.
+
+Source: `work/research/lexsis-island-presets.md`.
+
+---
+
 # Generation Protocol — How Pages Are Built
+
+> House rules in `storefront-engine/references/design-rules.md` override every example below.
+> Examples show structure and copy intent; their styling (gradients, hover transforms,
+> uppercase labels, pills, emoji, section fills) is illustrative and must not be copied.
+> Where an example conflicts with a house rule, the rule wins.
 
 > This is the canonical reference for how AI agents generate storefront pages using the Lexsis AI MCP. All operational skills reference this protocol.
 
@@ -1420,7 +2483,7 @@ Generate the FULL page as source-format HTML first:
 - Focus on layout, visual hierarchy, spacing, typography
 - Write all copy naturally — apostrophes/quotes need no escaping
 - Set all colors via `--lx-*` CSS variables (from `lexsis_brand.compile_theme`)
-- Mobile-first responsive; shared keyframes or `data-behavior="gsap-*"` presets for animation
+- Mobile-first responsive; shared keyframes or `data-behavior="gsap-*"` presets only for the one plan-named animation moment
 - Islands go in directly as `<lx-island name="BuyBox">` with a JSON `<script>` child — use `lexsis_design` action `island_schema` for exact prop shapes
 
 ### Phase 4b — Compile & Fix
@@ -1465,7 +2528,7 @@ Run `lexsis_pages` action `compile`:
 - **Islands** compile to `data-island="Name"` + `data-props='JSON'` attributes (in source format, write `<lx-island>` instead)
 - **Section IDs** must be unique, kebab-case: "hero", "social-proof", "faq"
 - **Section JS** is sandboxed — no fetch/XHR/eval/localStorage. Only DOM manipulation + IntersectionObserver. Runs after immediate islands mount; `lx:hydrated` / `lx:islands-ready` events signal island readiness
-- **Shared keyframes** already loaded: fadeUp, fadeIn, scaleIn, slideInLeft, slideInRight, marquee, float, shimmer, wordFade, pulseRing. GSAP presets via `data-behavior="gsap-reveal|gsap-parallax|gsap-pin|gsap-marquee-scroll"`
+- **Shared keyframes** already loaded: fadeUp, fadeIn, scaleIn, slideInLeft, slideInRight, marquee, float, shimmer, wordFade, pulseRing. GSAP presets via `data-behavior="gsap-reveal|gsap-parallax|gsap-pin|gsap-marquee-scroll"` — available, never by default; use only for the one plan-named moment
 - **No @import, no external URLs in CSS**; external JS libs go in `scripts[]`, never section HTML
 
 ### Available CSS Variables (override in theme_css)
@@ -1480,7 +2543,7 @@ Run `lexsis_pages` action `compile`:
 | `--lx-border-color` | #e5e7eb | Borders/dividers |
 | `--lx-font-heading` | system-ui | Heading font |
 | `--lx-font-body` | system-ui | Body font |
-| `--lx-surface-alt` | #f9fafb | Alternating section bg |
+| `--lx-surface-alt` | #f9fafb | Component tint (chips, hover fills, selected state); never a section background |
 | `--lx-lavender` | #c9b8e8 | Secondary accent |
 | `--lx-teal` | #5bc8c0 | Tertiary accent |
 
@@ -1584,6 +2647,11 @@ changed sections with `expected_version`, update the manifest, then repeat QA.
 
 # Source Format — HTML-Native Page Authoring (V2)
 
+> House rules in `storefront-engine/references/design-rules.md` override every example below.
+> Examples show structure and copy intent; their styling (gradients, hover transforms,
+> uppercase labels, pills, emoji, section fills) is illustrative and must not be copied.
+> Where an example conflicts with a house rule, the rule wins.
+
 > **This is the preferred way to author pages.** Write plain HTML with
 > `<lx-island>` elements; `lexsis_pages` action `compile` and
 > `lexsis_page_create` action `create` compile it deterministically. Never
@@ -1616,12 +2684,12 @@ The old path (VibePage JSON with HTML in strings and JSON inside `data-props='..
 
 <style>
   /* becomes section.css — scope selectors to this section */
-  .hero-glow { box-shadow: 0 0 40px var(--lx-accent-color); }
+  .hero-lede { max-width: 62ch; }
 </style>
 
 <script>
   /* becomes section.js — sandboxed; `section` is bound to this section's element */
-  section.querySelectorAll('.hero-glow').forEach(el => el.classList.add('ready'));
+  section.querySelectorAll('.hero-lede').forEach(el => el.classList.add('ready'));
 </script>
 
 <!-- section: faq -->
@@ -1750,13 +2818,13 @@ The compiler warns (`missing_animation_lib`) if section JS references gsap witho
 ## What NOT to do
 
 ```html
-<!-- ❌ hand-written island markers (old format — compiler rejects raw usage in source) -->
+<!-- Don't: hand-written island markers (old format — compiler rejects raw usage in source) -->
 <div data-island="FAQ" data-props='{"items":[...]}'></div>
 
-<!-- ❌ escaped HTML — never escape anything -->
+<!-- Don't: escaped HTML — never escape anything -->
 &lt;section&gt;...&lt;/section&gt;
 
-<!-- ❌ external scripts in section HTML — use the scripts param -->
+<!-- Don't: external scripts in section HTML — use the scripts param -->
 <script src="https://cdn.example.com/lib.js"></script>
 ```
 
@@ -1809,6 +2877,11 @@ later, create the minimum missing artifact and record the skipped command.
 
 # Conversion Psychology — Storefront Design Intelligence
 
+> House rules in `storefront-engine/references/design-rules.md` override every example below.
+> Examples show structure and copy intent; their styling (gradients, hover transforms,
+> uppercase labels, pills, emoji, section fills) is illustrative and must not be copied.
+> Where an example conflicts with a house rule, the rule wins.
+
 > **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
 
 > When to load: ALWAYS. Read before generating any ecommerce page.
@@ -1820,13 +2893,13 @@ Map the AIDA framework to section order. Each stage requires specific psychology
 ### Short Page (5-7 sections) — Impulse / Low-consideration products
 
 1. **Attention (1 section)**: Hero section
-   - High-contrast gradient or bold product image
+   - Product image or typographic hero on the page background. No gradient.
    - Benefit-driven headline (6-10 words)
    - `font-size: clamp(2.5rem, 5vw, 3.5rem)` for headline
    - Sticky CTA bar for persistent action
 
 2. **Interest (2 sections)**: Value props + social proof stats
-   - 3 icon-driven benefits max
+   - 3 benefits max, as a definition list or asymmetric two-column; icons only if the plan's icon decision says so
    - Numbers: customer count, star rating, review count
    - `py-8 md:py-12` spacing
 
@@ -1837,7 +2910,7 @@ Map the AIDA framework to section order. Each stage requires specific psychology
 
 4. **Action (2 sections)**: CTA + footer
    - Urgency element (countdown or inventory indicator)
-   - First-person CTA copy: "Get MY [benefit]"
+   - CTA names the action in brand voice ("Add to cart")
    - `data-island="CountdownTimer"` or `data-island="InventoryIndicator"`
 
 ### Medium Page (8-12 sections) — Considered purchase / New-to-brand
@@ -1845,9 +2918,8 @@ Map the AIDA framework to section order. Each stage requires specific psychology
 1. **Attention (1)**: Hero with video or interactive media
 2. **Interest (3)**: Value props → logo carousel → stats
    - Logo carousel = trust transfer from known brands
-   - Neutral background between hero and body
 3. **Desire (5)**: Feature grid → testimonials → before/after → reviews → comparison table
-   - 3-6 features with icons
+   - 3-6 features as a definition list or asymmetric two-column; icons only if the plan's icon decision says so
    - Transformation proof with `data-island="BeforeAfter"`
    - Compare you vs. 2 alternatives (3 columns max)
 4. **Action (3)**: FAQ → CTA → footer
@@ -1889,7 +2961,7 @@ What MUST be visible without scroll (< 900px viewport height). Violating this ki
 - Price + compare_at_price (if discounted)
 - Star rating + review count (clickable to reviews)
 - Primary CTA button
-- 1-2 trust badges (free shipping, guarantee)
+- 1-2 trust lines as plain text (free shipping, guarantee)
 
 **HTML pattern:**
 ```html
@@ -1904,26 +2976,14 @@ What MUST be visible without scroll (< 900px viewport height). Violating this ki
     <p class="text-lg md:text-xl opacity-80">One-line benefit promise that resonates</p>
     <div class="flex items-baseline gap-3">
       <span class="text-3xl font-bold" style="color:var(--lx-text-color)">$89.00</span>
+      <!-- compare-at only when Shopify has one: struck text, no pill -->
       <span class="text-lg line-through opacity-40">$129.00</span>
-      <span class="text-xs font-semibold px-2 py-1 rounded-full" style="background:var(--lx-accent-color);color:white">31% OFF</span>
     </div>
-    <div class="flex items-center gap-2">
-      <div class="flex">
-        <span class="text-yellow-400">★★★★★</span>
-      </div>
-      <span class="text-sm opacity-70">(2,847 reviews)</span>
-    </div>
-    <div data-island="BuyBox" data-props='{"productId":"gid://shopify/Product/123","ctaText":"Add to Cart — Free Shipping","showQuantity":true}'></div>
-    <div class="flex gap-4 pt-4">
-      <div class="flex items-center gap-2">
-        <span class="text-2xl">🚚</span>
-        <span class="text-sm">Free Shipping</span>
-      </div>
-      <div class="flex items-center gap-2">
-        <span class="text-2xl">💯</span>
-        <span class="text-sm">Money-Back Guarantee</span>
-      </div>
-    </div>
+    <!-- rating as plain text, only when the count is real -->
+    <p class="text-sm opacity-70">4.8 from 312 reviews</p>
+    <div data-island="BuyBox" data-props='{"productId":"gid://shopify/Product/123","ctaText":"Add to cart","showQuantity":true}'></div>
+    <!-- trust line: plain text over a 1px hairline, no icons, no emoji -->
+    <p class="text-sm pt-4 opacity-70" style="border-top:1px solid var(--lx-border-color)">Free shipping. Money-back guarantee.</p>
   </div>
 </section>
 ```
@@ -1939,23 +2999,25 @@ What MUST be visible without scroll (< 900px viewport height). Violating this ki
 
 **HTML pattern:**
 ```html
-<section class="relative min-h-screen flex items-center justify-center text-center px-4 py-20" style="background:linear-gradient(135deg, #667eea 0%, #764ba2 100%)">
+<section class="relative min-h-screen flex items-center justify-center text-center px-4 py-20" style="background:var(--lx-bg-color)">
   <div class="max-w-4xl mx-auto space-y-8">
-    <h1 class="text-5xl md:text-7xl font-extrabold leading-none text-white">
+    <h1 class="text-5xl md:text-7xl font-bold leading-none" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">
       Get Flawless Skin in 30 Days
     </h1>
-    <p class="text-xl md:text-2xl text-white/90">
+    <p class="text-xl md:text-2xl" style="color:var(--lx-text-muted)">
       Without harsh chemicals or expensive treatments. Guaranteed.
     </p>
-    <button class="px-10 py-5 text-xl font-bold rounded-lg transition-transform hover:scale-105" style="background:white;color:var(--lx-accent-color)">
-      Start MY Transformation
+    <button class="px-10 py-5 text-xl font-bold rounded-lg transition-colors hover:bg-[var(--lx-accent-color-hover)]" style="background:var(--lx-accent-color);color:white">
+      Start your transformation
     </button>
-    <p class="text-white/80 text-sm">Join 47,000+ customers who transformed their skin</p>
+    <p class="text-sm" style="color:var(--lx-text-muted)">Join 47,000+ customers who transformed their skin</p>
   </div>
   <div data-island="CountdownTimer" data-props='{"endDate":"2026-06-30T23:59:59Z","message":"Offer ends in:","urgencyThreshold":3600}'></div>
   <div data-island="SocialProofPopup" data-props='{"displayDuration":5000,"interval":15000,"maxPopups":3}'></div>
 </section>
 ```
+
+Never hardcode hex; use `--lx-*` tokens.
 
 ### Collection Page
 
@@ -1974,20 +3036,19 @@ What MUST be visible without scroll (< 900px viewport height). Violating this ki
 
 ### Anchoring (strikethrough + current)
 
-Show original price crossed out. Minimum 20% discount to be credible, optimal 30-40%.
+Show original price crossed out. The "minimum 20%, optimal 30-40%" heuristic is market-specific; never apply it to a merchant's real price list. Show compare-at only when Shopify has one. No percentage pill unless the merchant runs a named sale.
 
 ```html
 <div class="flex items-baseline gap-3">
   <span class="text-3xl font-bold" style="color:var(--lx-text-color)">$79.99</span>
   <span class="text-lg line-through opacity-40">$119.99</span>
-  <span class="text-xs font-semibold px-2 py-1 rounded-full" style="background:var(--lx-accent-color);color:white">33% OFF</span>
 </div>
 <p class="text-sm mt-2 opacity-70">Save $40 today</p>
 ```
 
 ### Charm Pricing
 
-End prices in .97, .95, or .99. Never .00 for mid-market ($50-$300). Use .00 only for premium ($500+).
+Market-specific (US DTC); never apply to a merchant's real price list. Where the merchant already prices this way: .97, .95 or .99 for mid-market ($50-$300), .00 for premium ($500+).
 
 **Examples:**
 - Low-ticket (<$50): $29.97, $14.99
@@ -1999,34 +3060,35 @@ End prices in .97, .95, or .99. Never .00 for mid-market ($50-$300). Use .00 onl
 Show per-unit savings, not just total discount.
 
 ```html
+<!-- equal cards; the recommended tier gets a 1px accent border and one sentence-case line — no scale, no caps pill, no glow -->
 <div class="grid md:grid-cols-3 gap-4">
-  <div class="p-6 border rounded-lg" style="border-color:var(--lx-border-color)">
+  <div class="p-6 rounded-lg" style="border:1px solid var(--lx-border-color)">
     <div class="text-center space-y-2">
-      <p class="text-sm uppercase tracking-wide opacity-60">Buy 1</p>
+      <p class="text-sm opacity-60">Buy 1</p>
       <p class="text-3xl font-bold" style="color:var(--lx-text-color)">$59.99</p>
       <p class="text-sm opacity-70">$59.99 each</p>
-      <button class="w-full px-4 py-2 mt-4 rounded" style="border:2px solid var(--lx-accent-color);color:var(--lx-accent-color)">
+      <button class="w-full px-4 py-2 mt-4 rounded" style="border:1px solid var(--lx-accent-color);color:var(--lx-accent-color)">
         Select
       </button>
     </div>
   </div>
-  <div class="p-6 border-2 rounded-lg relative transform scale-105" style="border-color:var(--lx-accent-color);box-shadow:0 20px 60px rgba(102,126,234,0.2)">
-    <span class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 text-xs font-semibold rounded-full text-white" style="background:var(--lx-accent-color)">BEST VALUE</span>
+  <div class="p-6 rounded-lg" style="border:1px solid var(--lx-accent-color)">
     <div class="text-center space-y-2">
-      <p class="text-sm uppercase tracking-wide opacity-60">Buy 3</p>
+      <p class="text-sm" style="color:var(--lx-accent-color)">Most chosen</p>
+      <p class="text-sm opacity-60">Buy 3</p>
       <p class="text-3xl font-bold" style="color:var(--lx-text-color)">$119.99</p>
       <p class="text-sm opacity-70">$40.00 each — Save $60</p>
-      <button class="w-full px-4 py-3 mt-4 rounded font-bold text-white" style="background:var(--lx-accent-color)">
+      <button class="w-full px-4 py-2 mt-4 rounded font-bold text-white transition-colors hover:bg-[var(--lx-accent-color-hover)]" style="background:var(--lx-accent-color)">
         Select
       </button>
     </div>
   </div>
-  <div class="p-6 border rounded-lg" style="border-color:var(--lx-border-color)">
+  <div class="p-6 rounded-lg" style="border:1px solid var(--lx-border-color)">
     <div class="text-center space-y-2">
-      <p class="text-sm uppercase tracking-wide opacity-60">Buy 2</p>
+      <p class="text-sm opacity-60">Buy 2</p>
       <p class="text-3xl font-bold" style="color:var(--lx-text-color)">$99.99</p>
       <p class="text-sm opacity-70">$50.00 each — Save $20</p>
-      <button class="w-full px-4 py-2 mt-4 rounded" style="border:2px solid var(--lx-accent-color);color:var(--lx-accent-color)">
+      <button class="w-full px-4 py-2 mt-4 rounded" style="border:1px solid var(--lx-accent-color);color:var(--lx-accent-color)">
         Select
       </button>
     </div>
@@ -2050,76 +3112,47 @@ Show "or 4 payments of $X" beneath price. Increases conversion 20-30% for $100+ 
 Always show 3 options. Middle option is the target, positioned as "most popular".
 
 ```html
+<!-- equal cards; the target tier gets a 1px accent border and a sentence-case line — no scale, no caps pill, no glow, no glyph bullets -->
 <div class="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
   <div class="p-8 rounded-lg" style="border:1px solid var(--lx-border-color)">
     <h3 class="text-2xl font-bold mb-2">Basic</h3>
     <p class="text-4xl font-bold mb-4" style="color:var(--lx-text-color)">$49.99</p>
-    <ul class="space-y-3 mb-6">
-      <li class="flex items-center gap-2">
-        <span style="color:var(--lx-accent-color)">✓</span>
-        <span>Feature A</span>
-      </li>
-      <li class="flex items-center gap-2">
-        <span style="color:var(--lx-accent-color)">✓</span>
-        <span>Feature B</span>
-      </li>
+    <ul class="space-y-3 mb-6 text-sm">
+      <li>Feature A</li>
+      <li>Feature B</li>
     </ul>
-    <button class="w-full px-6 py-3 rounded" style="border:2px solid var(--lx-accent-color);color:var(--lx-accent-color)">
-      Get Started
+    <button class="w-full px-6 py-3 rounded" style="border:1px solid var(--lx-accent-color);color:var(--lx-accent-color)">
+      Choose Basic
     </button>
   </div>
-  <div class="p-8 rounded-lg relative transform scale-105" style="border:3px solid var(--lx-accent-color);box-shadow:0 20px 60px rgba(0,0,0,0.2)">
-    <span class="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 text-sm font-semibold rounded-full text-white" style="background:var(--lx-accent-color)">MOST POPULAR</span>
+  <div class="p-8 rounded-lg" style="border:1px solid var(--lx-accent-color)">
+    <p class="text-sm mb-2" style="color:var(--lx-accent-color)">Most popular</p>
     <h3 class="text-2xl font-bold mb-2">Pro</h3>
     <div class="flex items-baseline gap-2 mb-4">
       <p class="text-4xl font-bold" style="color:var(--lx-text-color)">$89.99</p>
       <p class="text-lg line-through opacity-40">$129.99</p>
     </div>
-    <ul class="space-y-3 mb-6">
-      <li class="flex items-center gap-2">
-        <span style="color:var(--lx-accent-color)">✓</span>
-        <span>Feature A</span>
-      </li>
-      <li class="flex items-center gap-2">
-        <span style="color:var(--lx-accent-color)">✓</span>
-        <span>Feature B</span>
-      </li>
-      <li class="flex items-center gap-2">
-        <span style="color:var(--lx-accent-color)">✓</span>
-        <span>Feature C</span>
-      </li>
-      <li class="flex items-center gap-2">
-        <span style="color:var(--lx-accent-color)">✓</span>
-        <span>Feature D</span>
-      </li>
+    <ul class="space-y-3 mb-6 text-sm">
+      <li>Feature A</li>
+      <li>Feature B</li>
+      <li>Feature C</li>
+      <li>Feature D</li>
     </ul>
-    <button class="w-full px-6 py-3 rounded font-bold text-white" style="background:var(--lx-accent-color)">
-      Start Pro Trial
+    <button class="w-full px-6 py-3 rounded font-bold text-white transition-colors hover:bg-[var(--lx-accent-color-hover)]" style="background:var(--lx-accent-color)">
+      Choose Pro
     </button>
   </div>
   <div class="p-8 rounded-lg" style="border:1px solid var(--lx-border-color)">
     <h3 class="text-2xl font-bold mb-2">Premium</h3>
     <p class="text-4xl font-bold mb-4" style="color:var(--lx-text-color)">$149.99</p>
-    <ul class="space-y-3 mb-6">
-      <li class="flex items-center gap-2">
-        <span style="color:var(--lx-accent-color)">✓</span>
-        <span>Everything in Pro</span>
-      </li>
-      <li class="flex items-center gap-2">
-        <span style="color:var(--lx-accent-color)">✓</span>
-        <span>Feature E</span>
-      </li>
-      <li class="flex items-center gap-2">
-        <span style="color:var(--lx-accent-color)">✓</span>
-        <span>Feature F</span>
-      </li>
-      <li class="flex items-center gap-2">
-        <span style="color:var(--lx-accent-color)">✓</span>
-        <span>Priority Support</span>
-      </li>
+    <ul class="space-y-3 mb-6 text-sm">
+      <li>Everything in Pro</li>
+      <li>Feature E</li>
+      <li>Feature F</li>
+      <li>Priority support</li>
     </ul>
-    <button class="w-full px-6 py-3 rounded" style="border:2px solid var(--lx-accent-color);color:var(--lx-accent-color)">
-      Go Premium
+    <button class="w-full px-6 py-3 rounded" style="border:1px solid var(--lx-accent-color);color:var(--lx-accent-color)">
+      Choose Premium
     </button>
   </div>
 </div>
@@ -2136,23 +3169,24 @@ Rank order by persuasive power (highest to lowest). Use this sequence in section
 Raw metrics. Most credible when specific and large.
 
 ```html
-<section class="py-16 px-4" style="background:var(--lx-bg-surface)">
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-6xl mx-auto text-center">
+<!-- figures inline on the page background; sentence-case labels; no band, no oversized accent numerals -->
+<section class="py-16 px-4">
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-6xl mx-auto">
     <div>
-      <p class="text-5xl md:text-6xl font-extrabold" style="color:var(--lx-accent-color)">247,000+</p>
-      <p class="text-sm uppercase tracking-wide mt-2 opacity-70">Happy Customers</p>
+      <p class="text-3xl md:text-4xl font-bold" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">247,000+</p>
+      <p class="text-sm mt-2" style="color:var(--lx-text-muted)">Happy customers</p>
     </div>
     <div>
-      <p class="text-5xl md:text-6xl font-extrabold" style="color:var(--lx-accent-color)">4.8/5.0</p>
-      <p class="text-sm uppercase tracking-wide mt-2 opacity-70">Average Rating</p>
+      <p class="text-3xl md:text-4xl font-bold" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">4.8/5.0</p>
+      <p class="text-sm mt-2" style="color:var(--lx-text-muted)">Average rating</p>
     </div>
     <div>
-      <p class="text-5xl md:text-6xl font-extrabold" style="color:var(--lx-accent-color)">12,000+</p>
-      <p class="text-sm uppercase tracking-wide mt-2 opacity-70">5-Star Reviews</p>
+      <p class="text-3xl md:text-4xl font-bold" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">12,000+</p>
+      <p class="text-sm mt-2" style="color:var(--lx-text-muted)">Five-star reviews</p>
     </div>
     <div>
-      <p class="text-5xl md:text-6xl font-extrabold" style="color:var(--lx-accent-color)">94%</p>
-      <p class="text-sm uppercase tracking-wide mt-2 opacity-70">Would Recommend</p>
+      <p class="text-3xl md:text-4xl font-bold" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">94%</p>
+      <p class="text-sm mt-2" style="color:var(--lx-text-muted)">Would recommend</p>
     </div>
   </div>
 </section>
@@ -2162,46 +3196,35 @@ Raw metrics. Most credible when specific and large.
 
 ### 2. Faces (testimonial cards)
 
-Photos + quotes. Most effective for emotional products (beauty, wellness, lifestyle).
+A real person's words with their name and city. Most effective for emotional products (beauty, wellness, lifestyle).
 
 ```html
+<!-- one featured quote in the heading face; name and city muted; no stars, no avatar ring, no card -->
 <section class="py-16 px-4">
-  <div class="max-w-6xl mx-auto">
-    <h2 class="text-3xl md:text-4xl font-bold text-center mb-12" style="color:var(--lx-text-color)">What Our Customers Say</h2>
-    <div class="grid md:grid-cols-3 gap-8">
-      <div class="p-6 rounded-lg" style="background:var(--lx-bg-surface)">
-        <div class="flex items-center gap-4 mb-4">
-          <img src="/testimonials/sarah.jpg" alt="Sarah M." class="w-20 h-20 rounded-full" style="border:4px solid var(--lx-accent-color)" />
-          <div>
-            <p class="font-bold">Sarah M.</p>
-            <p class="text-sm opacity-70">Verified Buyer</p>
-            <div class="flex text-yellow-400">★★★★★</div>
-          </div>
-        </div>
-        <p class="text-lg italic leading-relaxed opacity-90">
-          "This completely changed how I approach skincare. I saw results in just 2 weeks."
-        </p>
-      </div>
-      <!-- Repeat for more testimonials -->
-    </div>
+  <div class="max-w-3xl mx-auto">
+    <blockquote class="text-2xl md:text-3xl leading-snug" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">
+      "This completely changed how I approach skincare. I saw results in just 2 weeks."
+    </blockquote>
+    <p class="mt-6 text-sm" style="color:var(--lx-text-muted)">Sarah M., Portland — verified buyer</p>
   </div>
 </section>
 ```
 
-**When to use:** After interest stage, before feature deep-dive. 3-6 testimonials max per section.
+**When to use:** After interest stage, before feature deep-dive. One featured quote per section; a plain list of 3-6 only if the plan asks for it.
 
 ### 3. Logos (logo carousel)
 
 Trust transfer from known brands. Works for B2B, press mentions, "as seen on".
 
 ```html
-<section class="py-12 px-4" style="background:var(--lx-bg-surface)">
+<!-- page background, static: no band, no hover effects -->
+<section class="py-12 px-4">
   <div class="max-w-6xl mx-auto">
-    <p class="text-center text-sm uppercase tracking-wide mb-8 opacity-70">Trusted by Leading Brands</p>
+    <p class="text-center text-sm mb-8" style="color:var(--lx-text-muted)">Trusted by leading brands</p>
     <div class="flex justify-center items-center gap-12 flex-wrap">
-      <img src="/logos/forbes.svg" alt="Forbes" class="h-10 opacity-60 hover:opacity-100 transition-opacity grayscale hover:grayscale-0" />
-      <img src="/logos/techcrunch.svg" alt="TechCrunch" class="h-10 opacity-60 hover:opacity-100 transition-opacity grayscale hover:grayscale-0" />
-      <img src="/logos/wsj.svg" alt="Wall Street Journal" class="h-10 opacity-60 hover:opacity-100 transition-opacity grayscale hover:grayscale-0" />
+      <img src="/logos/forbes.svg" alt="Forbes" class="h-10 opacity-60" />
+      <img src="/logos/techcrunch.svg" alt="TechCrunch" class="h-10 opacity-60" />
+      <img src="/logos/wsj.svg" alt="Wall Street Journal" class="h-10 opacity-60" />
     </div>
   </div>
 </section>
@@ -2235,9 +3258,8 @@ Three types. Each requires different implementation and psychology.
 Only use if actually tracking inventory. False scarcity destroys brand trust.
 
 ```html
-<div class="inline-flex items-center gap-2 px-4 py-2 rounded" style="background:#fff3cd;color:#856404">
-  <span class="font-semibold">⚠️ Only 7 left in stock</span>
-</div>
+<!-- text only: no emoji, no tinted pill -->
+<p class="text-sm font-semibold" style="color:var(--lx-text-color)">Only 7 left in stock</p>
 <div data-island="InventoryIndicator" data-props='{"threshold":10,"lowStockMessage":"Only {count} left in stock","outOfStockMessage":"Sold out — join waitlist"}'></div>
 ```
 
@@ -2248,11 +3270,9 @@ Only use if actually tracking inventory. False scarcity destroys brand trust.
 Time-limited offers. Must have real expiration.
 
 ```html
-<div class="sticky top-0 z-50 py-3 px-4 text-center text-white font-semibold text-sm" style="background:#c9302c">
-  🔥 Summer Sale: 30% Off Ends in
-  <div data-island="CountdownTimer" data-props='{"endDate":"2026-06-30T23:59:59Z","message":"","urgencyThreshold":3600}'></div>
-  <a href="#shop" class="ml-4 underline">Shop Now</a>
-</div>
+<!-- deadline bars live in the announcement bar (the only permitted band, house rule N2) and use its tokens — never a red hex fill, never emoji -->
+<div data-island="AnnouncementBar" data-props='{"message":"Summer sale: 30% off ends soon","link":"#shop","dismissible":false}'></div>
+<div data-island="CountdownTimer" data-props='{"endDate":"2026-06-30T23:59:59Z","message":"Ends in","urgencyThreshold":3600}'></div>
 ```
 
 **When to use:** Flash sales, product launches, abandoned cart recovery.
@@ -2262,13 +3282,11 @@ Time-limited offers. Must have real expiration.
 Member-only, waitlist, invite-only framing.
 
 ```html
-<section class="py-20 px-4 text-center" style="background:var(--lx-bg-surface)">
+<section class="py-20 px-4 text-center">
   <div class="max-w-2xl mx-auto space-y-6">
     <h2 class="text-4xl font-bold" style="color:var(--lx-text-color)">Join the Waitlist</h2>
     <p class="text-lg opacity-80">Limited to 500 founding members. Next batch ships August 2026.</p>
-    <div class="inline-block px-4 py-2 rounded-full text-sm font-semibold" style="background:#f0f0f0">
-      127 spots remaining
-    </div>
+    <p class="text-sm font-semibold" style="color:var(--lx-text-muted)">127 spots remaining</p>
     <div data-island="EmailCapture" data-props='{"placeholder":"Enter your email","buttonText":"Reserve Your Spot"}'></div>
   </div>
 </section>
@@ -2278,7 +3296,7 @@ Member-only, waitlist, invite-only framing.
 
 ### Anti-Patterns (Fake Urgency)
 
-| ❌ Don't | Why | ✅ Do |
+| Don't | Why | Do |
 |----------|-----|-------|
 | Evergreen countdowns (timer resets on refresh) | Users notice, trust tanks | Use real sale end dates, or remove timer |
 | "Only 2 left!" for digital products | Obvious lie | Use enrollment caps ("Only 50 spots in this cohort") |
@@ -2295,24 +3313,22 @@ Max 3 choices per section. More options = decision paralysis = abandonment.
 
 **Good (3 features):**
 ```html
+<!-- definition list, no icons -->
 <section class="py-16 px-4">
-  <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-    <div class="text-center space-y-4">
-      <span class="text-5xl">⚡</span>
-      <h3 class="text-xl font-bold">Fast Results</h3>
-      <p class="opacity-80">See improvements in 7 days or less</p>
+  <dl class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+    <div>
+      <dt class="text-xl font-bold">Fast results</dt>
+      <dd class="mt-2 opacity-80">See improvements in 7 days or less</dd>
     </div>
-    <div class="text-center space-y-4">
-      <span class="text-5xl">🛡️</span>
-      <h3 class="text-xl font-bold">Risk-Free</h3>
-      <p class="opacity-80">60-day money-back guarantee</p>
+    <div>
+      <dt class="text-xl font-bold">Risk-free</dt>
+      <dd class="mt-2 opacity-80">60-day money-back guarantee</dd>
     </div>
-    <div class="text-center space-y-4">
-      <span class="text-5xl">❤️</span>
-      <h3 class="text-xl font-bold">Love It</h3>
-      <p class="opacity-80">Join 47,000+ happy customers</p>
+    <div>
+      <dt class="text-xl font-bold">Loved by customers</dt>
+      <dd class="mt-2 opacity-80">Join 47,000+ happy customers</dd>
     </div>
-  </div>
+  </dl>
 </section>
 ```
 
@@ -2321,7 +3337,7 @@ Max 3 choices per section. More options = decision paralysis = abandonment.
 ### CompareTable (3 columns max, 5-8 rows)
 
 ```html
-<div data-island="CompareTable" data-props='{"columns":[{"name":"Competitor A","highlight":false},{"name":"You","highlight":true},{"name":"Competitor B","highlight":false}],"rows":[{"feature":"Feature 1","values":["❌","✅","❌"]},{"feature":"Feature 2","values":["✅","✅","❌"]},{"feature":"Feature 3","values":["❌","✅","✅"]}]}'></div>
+<div data-island="CompareTable" data-props='{"columns":[{"name":"Competitor A","highlight":false},{"name":"You","highlight":true},{"name":"Competitor B","highlight":false}],"rows":[{"feature":"Feature 1","values":["No","Yes","No"]},{"feature":"Feature 2","values":["Yes","Yes","No"]},{"feature":"Feature 3","values":["No","Yes","Yes"]}]}'></div>
 ```
 
 ### Progressive Disclosure (Tabs/FAQ)
@@ -2365,23 +3381,23 @@ Move visitors from low-commitment → high-commitment actions. Don't ask for the
 
 Button copy is conversion science. Every word matters.
 
-### First-Person Labels
+### Name the Action in Brand Voice
 
-**Bad (second-person):**
+**Bad (vague):**
 - "Get Started"
-- "Buy Now"
-- "Download the Guide"
+- "Submit"
+- "Download"
 
-**Good (first-person):**
-- "Start MY Free Trial"
-- "Add to MY Cart"
-- "Send ME the Guide"
+**Good (names the action, brand voice, sentence case):**
+- "Add to cart"
+- "Start free trial"
+- "Send me the guide"
 
-**Why it works:** First-person creates ownership before purchase.
+**Why it works:** The visitor knows exactly what happens next. No "MY"/"ME" caps — shouted first-person reads as template copy.
 
 ```html
 <button class="px-8 py-4 text-lg font-bold rounded-lg" style="background:var(--lx-accent-color);color:white">
-  Start MY Transformation
+  Add to cart
 </button>
 ```
 
@@ -2408,15 +3424,15 @@ Button copy is conversion science. Every word matters.
 CTA button must have 4.5:1 contrast ratio against background (WCAG AA). Use high-chroma colors.
 
 ```html
-<button class="px-8 py-4 text-lg font-bold rounded-lg shadow-lg transition-transform hover:scale-105" style="background:var(--lx-accent-color);color:white;box-shadow:0 4px 12px rgba(102,126,234,0.4)">
-  Add to Cart
+<button class="px-8 py-4 text-lg font-bold rounded-lg transition-colors hover:bg-[var(--lx-accent-color-hover)]" style="background:var(--lx-accent-color);color:white">
+  Add to cart
 </button>
 ```
 
-**Color pairs (high contrast):**
-- Blue CTA on white: `#667eea` / `#ffffff`
-- Red CTA on dark: `#c9302c` / `#1a1a1a`
-- Green CTA on light: `#28a745` / `#f9fafb`
+**Contrast pairs (tokens, never hex):**
+- Accent CTA on page: `var(--lx-accent-color)` on `var(--lx-bg-color)`
+- Inverted CTA on dark: `var(--lx-bg-color)` on `var(--lx-text-color)`
+- Check the merchant's real token values against 4.5:1; never substitute a hardcoded hex.
 
 ### Button Hierarchy
 
@@ -2491,8 +3507,8 @@ Use scale, color, and whitespace to create hierarchy.
 
 **CTA (action):**
 ```html
-<button class="px-10 py-5 text-xl font-bold rounded-lg shadow-2xl transition-transform hover:scale-105" style="background:var(--lx-accent-color);color:white;box-shadow:0 8px 24px rgba(102,126,234,0.5)">
-  Get Started
+<button class="px-10 py-5 text-xl font-bold rounded-lg transition-colors hover:bg-[var(--lx-accent-color-hover)]" style="background:var(--lx-accent-color);color:white">
+  Add to cart
 </button>
 ```
 
@@ -2510,7 +3526,7 @@ Surround CTAs with empty space (min 2rem padding).
 
 ## Anti-Patterns (Conversion Killers)
 
-| ❌ | Why | ✅ |
+| Don't | Why | Do |
 |----|-----|-----|
 | Generic headlines ("Welcome to Our Store") | No hook, no benefit | "Get [Specific Benefit] in [Timeframe]" |
 | Hidden prices ("Contact for Pricing") | Friction, distrust | Show price upfront (even if high) |
@@ -2541,25 +3557,25 @@ Surround CTAs with empty space (min 2rem padding).
 {
   "head": {
     "title": "Get the Ultimate Skincare Guide",
-    "fonts": ["https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap"]
+    "fonts": ["<from lexsis_brand.compile_theme>"]
   },
-  "theme_css": ":root { --lx-accent-color: #667eea; --lx-text-color: #1a1a1a; --lx-bg-color: #ffffff; --lx-bg-surface: #f9fafb; }",
+  "theme_css": "<output of lexsis_brand.compile_theme — never hand-written hex>",
   "sections": [
     {
       "id": "hero",
-      "html": "<section class='py-20 px-4 text-center' style='background:linear-gradient(135deg, #667eea 0%, #764ba2 100%)'><div class='max-w-3xl mx-auto space-y-6'><h1 class='text-5xl md:text-6xl font-extrabold text-white'>Get the Flawless Skin Guide</h1><p class='text-xl text-white/90'>Learn how to achieve radiant skin in 30 days. Free download.</p><div data-island='EmailCapture' data-props='{\"placeholder\":\"Enter your email\",\"buttonText\":\"Send Me the Guide\"}'></div></div></section>",
+      "html": "<section class='py-20 px-4 text-center' style='background:var(--lx-bg-color)'><div class='max-w-3xl mx-auto space-y-6'><h1 class='text-5xl md:text-6xl font-bold' style='color:var(--lx-text-color);font-family:var(--lx-font-heading)'>Get the Flawless Skin Guide</h1><p class='text-xl' style='color:var(--lx-text-muted)'>Learn how to achieve radiant skin in 30 days. Free download.</p><div data-island='EmailCapture' data-props='{\"placeholder\":\"Enter your email\",\"buttonText\":\"Send Me the Guide\"}'></div></div></section>",
       "css": "",
       "js": ""
     },
     {
       "id": "value-props",
-      "html": "<section class='py-16 px-4'><div class='grid md:grid-cols-3 gap-8 max-w-5xl mx-auto'><div class='text-center space-y-4'><span class='text-5xl'>✓</span><h3 class='text-xl font-bold'>Science-Backed Methods</h3><p class='opacity-80'>Proven techniques from dermatologists</p></div><div class='text-center space-y-4'><span class='text-5xl'>✓</span><h3 class='text-xl font-bold'>Natural Ingredients</h3><p class='opacity-80'>No harsh chemicals or side effects</p></div><div class='text-center space-y-4'><span class='text-5xl'>✓</span><h3 class='text-xl font-bold'>30-Day Results</h3><p class='opacity-80'>See visible improvements in one month</p></div></div></section>",
+      "html": "<section class='py-16 px-4'><dl class='grid md:grid-cols-3 gap-8 max-w-5xl mx-auto'><div><dt class='text-xl font-bold'>Science-backed methods</dt><dd class='mt-2 opacity-80'>Proven techniques from dermatologists</dd></div><div><dt class='text-xl font-bold'>Natural ingredients</dt><dd class='mt-2 opacity-80'>No harsh chemicals or side effects</dd></div><div><dt class='text-xl font-bold'>30-day results</dt><dd class='mt-2 opacity-80'>See visible improvements in one month</dd></div></dl></section>",
       "css": "",
       "js": ""
     },
     {
       "id": "stats",
-      "html": "<section class='py-12 px-4' style='background:var(--lx-bg-surface)'><div class='grid grid-cols-2 gap-8 max-w-4xl mx-auto text-center'><div><p class='text-5xl font-extrabold' style='color:var(--lx-accent-color)'>47,000+</p><p class='text-sm uppercase mt-2 opacity-70'>Downloads</p></div><div><p class='text-5xl font-extrabold' style='color:var(--lx-accent-color)'>4.9/5</p><p class='text-sm uppercase mt-2 opacity-70'>Rating</p></div></div></section>",
+      "html": "<section class='py-12 px-4'><div class='grid grid-cols-2 gap-8 max-w-4xl mx-auto'><div><p class='text-3xl font-bold' style='color:var(--lx-text-color);font-family:var(--lx-font-heading)'>47,000+</p><p class='text-sm mt-2' style='color:var(--lx-text-muted)'>Downloads</p></div><div><p class='text-3xl font-bold' style='color:var(--lx-text-color);font-family:var(--lx-font-heading)'>4.9/5</p><p class='text-sm mt-2' style='color:var(--lx-text-muted)'>Rating</p></div></div></section>",
       "css": "",
       "js": ""
     },
@@ -2583,7 +3599,7 @@ Surround CTAs with empty space (min 2rem padding).
   "sections": [
     {
       "id": "hero",
-      "html": "<section class='grid md:grid-cols-2 gap-8 max-w-7xl mx-auto px-4 py-8'><div><img src='/product.jpg' class='w-full rounded-lg'/></div><div class='flex flex-col justify-center space-y-6'><h1 class='text-5xl font-bold' style='color:var(--lx-text-color)'>Premium Serum</h1><p class='text-xl opacity-80'>Transform your skin in 30 days</p><div class='flex items-baseline gap-3'><span class='text-3xl font-bold' style='color:var(--lx-text-color)'>$79.99</span><span class='text-lg line-through opacity-40'>$119.99</span><span class='text-xs font-semibold px-2 py-1 rounded-full text-white' style='background:var(--lx-accent-color)'>33% OFF</span></div><div data-island='BuyBox' data-props='{\"productId\":\"gid://shopify/Product/123\",\"ctaText\":\"Add to Cart — Free Shipping\"}'></div></div></section>",
+      "html": "<section class='grid md:grid-cols-2 gap-8 max-w-7xl mx-auto px-4 py-8'><div><img src='/product.jpg' class='w-full rounded-lg'/></div><div class='flex flex-col justify-center space-y-6'><h1 class='text-5xl font-bold' style='color:var(--lx-text-color)'>Premium Serum</h1><p class='text-xl opacity-80'>Transform your skin in 30 days</p><div class='flex items-baseline gap-3'><span class='text-3xl font-bold' style='color:var(--lx-text-color)'>$79.99</span><span class='text-lg line-through opacity-40'>$119.99</span></div><div data-island='BuyBox' data-props='{\"productId\":\"gid://shopify/Product/123\",\"ctaText\":\"Add to Cart — Free Shipping\"}'></div></div></section>",
       "css": "",
       "js": ""
     }
@@ -2607,7 +3623,7 @@ Surround CTAs with empty space (min 2rem padding).
     },
     {
       "id": "logos",
-      "html": "<section class='py-12 px-4' style='background:var(--lx-bg-surface)'><p class='text-center text-sm uppercase tracking-wide mb-8 opacity-70'>Trusted by Industry Leaders</p><div class='flex justify-center gap-12 flex-wrap'><img src='/logos/company1.svg' class='h-10 opacity-60'/><img src='/logos/company2.svg' class='h-10 opacity-60'/><img src='/logos/company3.svg' class='h-10 opacity-60'/></div></section>",
+      "html": "<section class='py-12 px-4'><p class='text-center text-sm mb-8' style='color:var(--lx-text-muted)'>Trusted by industry leaders</p><div class='flex justify-center gap-12 flex-wrap'><img src='/logos/company1.svg' class='h-10 opacity-60'/><img src='/logos/company2.svg' class='h-10 opacity-60'/><img src='/logos/company3.svg' class='h-10 opacity-60'/></div></section>",
       "css": "",
       "js": ""
     }
@@ -3185,7 +4201,7 @@ Combines announcement + navbar. Uses BOTH `data-lx-header` and `data-lx-nav` tag
   <header data-lx-header="root" class="fixed top-0 w-full z-50">
     <div data-lx-header="announcement" class="bg-black text-white text-center py-2 text-xs relative">
       <span data-lx-header="announcement-text">Free shipping over $75</span>
-      <button data-lx-header="announcement-dismiss" class="absolute right-3 top-1/2 -translate-y-1/2">✕</button>
+      <button data-lx-header="announcement-dismiss" class="absolute right-3 top-1/2 -translate-y-1/2">&times;</button>
     </div>
     <nav class="bg-white border-b">
       <!-- Same data-lx-nav tags as Navbar example above -->
@@ -3226,6 +4242,11 @@ The publish validator enforces required tags when hydration mode detected:
 
 # Style Packs — Named `data-part` CSS Bundles
 
+> House rules in `storefront-engine/references/design-rules.md` override every example below.
+> Examples show structure and copy intent; their styling (gradients, hover transforms,
+> uppercase labels, pills, emoji, section fills) is illustrative and must not be copied.
+> Where an example conflicts with a house rule, the rule wins.
+
 > Pre-tested visual treatments for rendered-mode islands. Pick ONE pack per page and paste its island overrides into the relevant sections' `<style>` blocks. Packs only touch visual properties (radius, borders, shadows, typography case/tracking) via `[data-part]` selectors and `--lx-*` variables — never layout. For fully custom island markup use headless mode instead (source-format.md).
 
 ## Choosing
@@ -3262,7 +4283,7 @@ The publish validator enforces required tags when hydration mode detected:
 
 ```css
 [data-part="cta"] { border-radius: 0; border: 3px solid var(--lx-text-color); box-shadow: 4px 4px 0 var(--lx-text-color); text-transform: uppercase; font-weight: 800; }
-[data-part="cta"]:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--lx-text-color); }
+[data-part="cta"]:hover { background: var(--lx-accent-color-hover); }
 [data-part="variant-btn"] { border-radius: 0; border: 2px solid var(--lx-text-color); font-weight: 700; }
 [data-part="item"] { border: 2px solid var(--lx-text-color); border-radius: 0; box-shadow: 4px 4px 0 var(--lx-border-color); }
 [data-part="badge"] { border-radius: 0; border: 2px solid var(--lx-text-color); font-weight: 800; }
@@ -3271,8 +4292,8 @@ The publish validator enforces required tags when hydration mode detected:
 ## playful
 
 ```css
-[data-part="cta"] { border-radius: 1.25rem; font-weight: 800; padding: 1.1rem 2.5rem; transition: transform 150ms ease; }
-[data-part="cta"]:hover { transform: scale(1.04) rotate(-1deg); }
+[data-part="cta"] { border-radius: 1.25rem; font-weight: 800; padding: 1.1rem 2.5rem; transition: background-color 150ms ease; }
+[data-part="cta"]:hover { background: var(--lx-accent-color-hover); text-decoration: underline; }
 [data-part="variant-btn"] { border-radius: 1rem; border-width: 2px; font-weight: 700; }
 [data-part="item"] { border-radius: 1.5rem; border: 2px solid var(--lx-border-color); }
 [data-part="badge"] { border-radius: 9999px; font-weight: 800; }
@@ -3283,7 +4304,7 @@ The publish validator enforces required tags when hydration mode detected:
 ```css
 [data-part="cta"] { border-radius: 0.375rem; box-shadow: none; font-weight: 500; }
 [data-part="variant-btn"] { border-radius: 0.375rem; border-color: var(--lx-border-color); font-weight: 400; }
-[data-part="item"] { border: none; border-radius: 0.5rem; background: var(--lx-surface-alt); box-shadow: none; }
+[data-part="item"] { border: none; border-radius: 0.5rem; background: var(--lx-surface-alt); box-shadow: none; } /* --lx-surface-alt is a component tint, never a section background */
 [data-part="badge"] { border-radius: 0.25rem; font-weight: 500; }
 [data-part="trust-badges"] { filter: grayscale(1); opacity: 0.6; }
 ```
@@ -3294,6 +4315,7 @@ The publish validator enforces required tags when hydration mode detected:
 2. Scope to a section if two islands need different treatments: `#hero [data-part="cta"] { ... }`.
 3. Packs compose with `lexsis_brand.compile_theme` output — they reference `--lx-*` variables, never hardcode colors.
 4. Check the island's `schema.json` `parts` array before targeting a part name (`lexsis_design.island_schema`).
+5. Packs never override `design-rules.md`.
 
 ---
 
@@ -3421,7 +4443,7 @@ This ensures: the asset is stored in the brand's library, available for reuse, a
 
 ## Per-Page-Type Asset Budget
 
-| Page Type | Hero (high) | Section BGs (medium) | Lifestyle (medium) | Video | Total assets |
+| Page Type | Hero (high) | Supporting imagery (medium) | Lifestyle (medium) | Video | Total assets |
 |-----------|-------------|---------------------|--------------------|----|------|
 | PDP | 1 | 0-1 | 1 | 0-1 | 2-4 |
 | Landing | 1 | 2-3 | 0-1 | 0-1 | 3-5 |
@@ -3499,7 +4521,7 @@ only permanent verified URLs.
 2. `lexsis_workspace` action `credits` before expensive operations
 3. Prefer `quality: "medium"` — reserve `"high"` for hero only
 4. External MCP assets → `lexsis_asset_upload` action `import`
-5. CSS gradients/solid colors for sections that don't need imagery
+5. The page background for sections that don't need imagery
 6. Reuse: one hero image can serve as dimmed background for 2-3 sections
 
 ---

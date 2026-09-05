@@ -210,7 +210,7 @@ Wait — **no external URLs in CSS `url()`**. Use inline style on an element ins
 
 **Budget per page type:**
 - PDP: 1 high (hero) + 1-2 medium (lifestyle) = 2-3 assets
-- Landing: 1 high (hero) + 2-3 medium (section bgs) = 3-4 assets
+- Landing: 1 high (hero) + 2-3 medium (supporting imagery) = 3-4 assets
 - Homepage: 1 high (hero) + 1 medium (brand story) = 2 assets
 - Collection: 0-1 medium (header) — products have their own images
 
@@ -245,7 +245,7 @@ Wait — **no external URLs in CSS `url()`**. Use inline style on an element ins
 1. **Don't generate when library has it** — waste of cost and time
 2. **Don't use `url()` in section CSS** — blocked by validator. Use `<img>` or inline `style` attribute
 3. **Don't generate product shots** — always use real product images from `lexsis_catalog.list`
-4. **Don't over-generate** — 2-4 assets per page max. Use CSS gradients/colors for the rest
+4. **Don't over-generate** — 2-4 assets per page max. Use the page background for the rest
 5. **Don't use `quality: "high"` for everything** — reserve for hero/primary images only
 6. **Don't forget alt text** — decorative images get `alt="" aria-hidden="true"`, meaningful ones get descriptive alt
 

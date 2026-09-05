@@ -128,7 +128,7 @@ Navigate to the page preview URL and verify:
 | Hero (wavy edge) | none (SVG) | first | full-bleed bg + SVG wave top/bottom dividers. `preserveAspectRatio="none"` |
 | Product Showcase | ProductGallery + BuyBox | after hero | split layout, gallery left, buy right |
 | Testimonials/Reviews | ReviewCarousel | mid-page | card carousel, star ratings |
-| FAQ Accordion | FAQ | before footer | collapsible Q&A, schema.org markup |
+| FAQ | native `<details>/<summary>` | before footer | collapsible Q&A, no island; schema.org markup |
 | Trust Badge Row | TrustBadgeBar | after hero or before CTA | 3-5 icons with short labels |
 | Newsletter Signup | EmailCapture | before footer | centered, single input + button |
 | Feature Grid | none (HTML) | mid-page | 3-col, icon + heading + description |

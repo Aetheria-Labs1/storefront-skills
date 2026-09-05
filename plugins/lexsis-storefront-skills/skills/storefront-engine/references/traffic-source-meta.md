@@ -752,14 +752,14 @@ Meta traffic trusts **authentic > polished**.
 
 ### Specific Numbers > Vague Claims
 
-❌ "Thousands of happy customers"  
-✅ "47,482 customers (and counting)"
+Don't: "Thousands of happy customers"  
+Do: "47,482 customers (and counting)"
 
-❌ "Highly rated"  
-✅ "4.9/5 stars from 12,847 verified reviews"
+Don't: "Highly rated"  
+Do: "4.9/5 stars from 12,847 verified reviews"
 
-❌ "Fast shipping"  
-✅ "Ships in 24 hours • Arrives in 2-3 days"
+Don't: "Fast shipping"  
+Do: "Ships in 24 hours • Arrives in 2-3 days"
 
 ---
 
@@ -774,8 +774,8 @@ All CTAs point to the same action.
 
 ### Benefit-Driven CTA Copy
 
-❌ Generic: "Shop now" / "Buy now"  
-✅ Benefit-driven:
+Don't: Generic: "Shop now" / "Buy now"  
+Do: Benefit-driven:
 - "Get my GripFlow mat"
 - "Solve my slipping problem"
 - "Try it risk-free"
@@ -827,13 +827,13 @@ All CTAs point to the same action.
 ## Urgency for Meta Traffic (Use Sparingly)
 
 ### When to Use Urgency
-✅ Real sale with deadline  
-✅ Limited inventory (< 50 units)  
-✅ Launch window  
-✅ Seasonal cutoff
+Do: Real sale with deadline  
+Do: Limited inventory (< 50 units)  
+Do: Launch window  
+Do: Seasonal cutoff
 
-❌ Fake scarcity  
-❌ Persistent urgency
+Don't: Fake scarcity  
+Don't: Persistent urgency
 
 ### CountdownTimer
 ```html
@@ -893,51 +893,51 @@ All CTAs point to the same action.
 
 ## Anti-Patterns (Meta Killers)
 
-### ❌ Message Mismatch
+### Message Mismatch
 **What**: Ad says "40% off" → page doesn't mention sale  
 **Fix**: Ad headline = page headline
 
-### ❌ Desktop-First Design
+### Desktop-First Design
 **What**: 85% mobile traffic hits tiny text, cramped spacing  
 **Fix**: `clamp()` for all text, test on real iPhone
 
-### ❌ No Social Proof Above Fold
+### No Social Proof Above Fold
 **What**: Hero has zero trust signals  
 **Fix**: Trust bar in hero. "4.9/5 from 12,847 reviews" immediately visible
 
-### ❌ Multiple Competing CTAs
+### Multiple Competing CTAs
 **What**: "Shop now" | "Learn more" | "Watch video" | "Compare"  
 **Fix**: One goal. All CTAs → same action
 
-### ❌ Slow-Loading Hero
+### Slow-Loading Hero
 **What**: 5MB image, 3+ second load  
 **Fix**: < 200KB for hero. WebP format. Lazy-load below fold
 
-### ❌ Asking for Email Too Early
+### Asking for Email Too Early
 **What**: EmailCapture popup 2 seconds after landing  
 **Fix**: After social proof section, or exit-intent only
 
-### ❌ Generic Stock Photos
+### Generic Stock Photos
 **What**: Diverse-group-laughing-at-salad imagery  
 **Fix**: Real product photos. Real customer photos. UGC > stock
 
-### ❌ Burying the Price
+### Burying the Price
 **What**: No price until checkout  
 **Fix**: Show price in hero or BuyBox. Transparency = trust
 
-### ❌ No Mobile Sticky CTA
+### No Mobile Sticky CTA
 **What**: CTA only in hero. After scroll, no path to convert  
 **Fix**: StickyBar after 50vh
 
-### ❌ Over-Designing for Aesthetics
+### Over-Designing for Aesthetics
 **What**: Parallax, auto-play videos, carousels  
 **Fix**: Minimal animations. Fast > fancy
 
-### ❌ No Guarantee
+### No Guarantee
 **What**: "Buy now" with no mention of returns  
 **Fix**: "60-day money-back guarantee" everywhere
 
-### ❌ Feature Dumping
+### Feature Dumping
 **What**: "6mm TPE, dual-layer, eco-certified"  
 **Fix**: "6mm cushion = your knees won't hurt." Translate features → benefits
 
@@ -987,16 +987,16 @@ All CTAs point to the same action.
 
 ## TL;DR — The Meta Landing Page Checklist
 
-✅ **Message match**: Ad headline → page headline  
-✅ **Mobile-first**: `clamp()` for text/spacing, 44px tap targets  
-✅ **Trust immediately**: Star rating + review count in hero  
-✅ **Single CTA goal**: All buttons → same action  
-✅ **CTA 3x minimum**: Hero, post-social-proof, sticky bar  
-✅ **UGC > polished** (Facebook) OR **editorial > UGC** (Instagram)  
-✅ **Social proof section**: 6-8 reviews with photos  
-✅ **Urgency (if applicable)**: Real countdown, real inventory  
-✅ **FAQ section**: Top 5 objections  
-✅ **Load speed**: < 3 seconds on mobile  
-✅ **Visual continuity**: Ad colors → page colors
+- **Message match**: Ad headline → page headline  
+- **Mobile-first**: `clamp()` for text/spacing, 44px tap targets  
+- **Trust immediately**: Star rating + review count in hero  
+- **Single CTA goal**: All buttons → same action  
+- **CTA 3x minimum**: Hero, post-social-proof, sticky bar  
+- **UGC > polished** (Facebook) OR **editorial > UGC** (Instagram)  
+- **Social proof section**: 6-8 reviews with photos  
+- **Urgency (if applicable)**: Real countdown, real inventory  
+- **FAQ section**: Top 5 objections  
+- **Load speed**: < 3 seconds on mobile  
+- **Visual continuity**: Ad colors → page colors
 
 **If any are missing, the page will underperform.** Meta traffic is unforgiving.

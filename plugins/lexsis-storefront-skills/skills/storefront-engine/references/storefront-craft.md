@@ -1,5 +1,10 @@
 # Storefront Craft Guide — Start Here
 
+> House rules in `storefront-engine/references/design-rules.md` override every example below.
+> Examples show structure and copy intent; their styling (gradients, hover transforms,
+> uppercase labels, pills, emoji, section fills) is illustrative and must not be copied.
+> Where an example conflicts with a house rule, the rule wins.
+
 > **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
 
 Load this skill first on any storefront page generation task.
@@ -41,7 +46,7 @@ markers. Do not write that compiled representation by hand.
 | `craft-guide` | This file — architecture, flow, quality bar | Always first |
 | `workflow-orchestration` | Tool sequencing, parallelization, flow selection | Always — load after craft-guide |
 | `conversion-psychology` | Universal persuasion: pricing, urgency, trust, CTA psychology | Always — load for any ecommerce page |
-| `animation-system` | CSS animations, scroll-reveal, headline effects | Adding motion to sections |
+| `animation-system` | CSS animations, scroll-reveal, headline effects | Only when the plan names one motion moment |
 | `visual-craft` | Typography, spacing, color, micro-interactions | Polishing visual quality |
 | `design-enrichment` | AI image generation + compositing pipeline | Need custom images/textures |
 | `premium-patterns` | Proven high-converting section patterns in HTML | Building hero, trust, CTA sections |
@@ -87,7 +92,7 @@ All sections use these CSS custom properties (set in `theme_css`):
 | `--lx-text-color` | Primary text |
 | `--lx-text-muted` | Secondary text |
 | `--lx-bg-color` | Page background |
-| `--lx-bg-surface` | Card/section background |
+| `--lx-bg-surface` | Card background (never a section background) |
 | `--lx-border-color` | Borders and dividers |
 | `--lx-font-heading` | Heading font family |
 | `--lx-font-body` | Body font family |
@@ -104,7 +109,7 @@ Use via `style="color: var(--lx-accent-color)"` or `style="font-family: var(--lx
 - Proper heading hierarchy (h1 → h2 → h3)
 - Islands for all interactive commerce (BuyBox, Cart, Reviews)
 - Generated/library images — no broken placeholder URLs in production
-- Smooth scroll reveal on key sections
+- Zero emoji, one page background, one icon set, one bold moment
 - Trust signals near purchase points
 - Sticky add-to-cart on PDP
 
@@ -113,7 +118,7 @@ Use via `style="color: var(--lx-accent-color)"` or `style="font-family: var(--lx
 - Desktop-only layout
 - Missing islands (raw HTML buttons instead of BuyBox)
 - placeholder.co images shipped to production
-- No animations or visual rhythm
+- Emoji as icons, alternating section fills, mixed icon sets, scattered motion
 - Trust badges missing
 
 ---
@@ -123,7 +128,7 @@ Use via `style="color: var(--lx-accent-color)"` or `style="font-family: var(--lx
 1. **No `fetch()` or XHR in section JS** — blocked by hydrator security
 2. **No `eval()`, `localStorage`, `WebSocket`** — blocked
 3. **No `@import` in section CSS** — blocked
-4. **No external `url()` in CSS** — only inline gradients/colors
+4. **No external `url()` in CSS** — only inline colors via `--lx-*` tokens
 5. **No duplicate section IDs** — each must be unique kebab-case
 6. **No `<script src="...">` in HTML** — use section `js` field for vanilla JS
 7. **No framework code** — no React/Vue/Angular in section HTML (islands handle interactivity)

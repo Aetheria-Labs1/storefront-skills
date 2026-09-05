@@ -562,7 +562,7 @@ Combines announcement + navbar. Uses BOTH `data-lx-header` and `data-lx-nav` tag
   <header data-lx-header="root" class="fixed top-0 w-full z-50">
     <div data-lx-header="announcement" class="bg-black text-white text-center py-2 text-xs relative">
       <span data-lx-header="announcement-text">Free shipping over $75</span>
-      <button data-lx-header="announcement-dismiss" class="absolute right-3 top-1/2 -translate-y-1/2">✕</button>
+      <button data-lx-header="announcement-dismiss" class="absolute right-3 top-1/2 -translate-y-1/2">&times;</button>
     </div>
     <nav class="bg-white border-b">
       <!-- Same data-lx-nav tags as Navbar example above -->

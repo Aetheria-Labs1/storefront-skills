@@ -1,5 +1,10 @@
 # Source Format — HTML-Native Page Authoring (V2)
 
+> House rules in `storefront-engine/references/design-rules.md` override every example below.
+> Examples show structure and copy intent; their styling (gradients, hover transforms,
+> uppercase labels, pills, emoji, section fills) is illustrative and must not be copied.
+> Where an example conflicts with a house rule, the rule wins.
+
 > **This is the preferred way to author pages.** Write plain HTML with
 > `<lx-island>` elements; `lexsis_pages` action `compile` and
 > `lexsis_page_create` action `create` compile it deterministically. Never
@@ -32,12 +37,12 @@ The old path (VibePage JSON with HTML in strings and JSON inside `data-props='..
 
 <style>
   /* becomes section.css — scope selectors to this section */
-  .hero-glow { box-shadow: 0 0 40px var(--lx-accent-color); }
+  .hero-lede { max-width: 62ch; }
 </style>
 
 <script>
   /* becomes section.js — sandboxed; `section` is bound to this section's element */
-  section.querySelectorAll('.hero-glow').forEach(el => el.classList.add('ready'));
+  section.querySelectorAll('.hero-lede').forEach(el => el.classList.add('ready'));
 </script>
 
 <!-- section: faq -->
@@ -166,12 +171,12 @@ The compiler warns (`missing_animation_lib`) if section JS references gsap witho
 ## What NOT to do
 
 ```html
-<!-- ❌ hand-written island markers (old format — compiler rejects raw usage in source) -->
+<!-- Don't: hand-written island markers (old format — compiler rejects raw usage in source) -->
 <div data-island="FAQ" data-props='{"items":[...]}'></div>
 
-<!-- ❌ escaped HTML — never escape anything -->
+<!-- Don't: escaped HTML — never escape anything -->
 &lt;section&gt;...&lt;/section&gt;
 
-<!-- ❌ external scripts in section HTML — use the scripts param -->
+<!-- Don't: external scripts in section HTML — use the scripts param -->
 <script src="https://cdn.example.com/lib.js"></script>
 ```

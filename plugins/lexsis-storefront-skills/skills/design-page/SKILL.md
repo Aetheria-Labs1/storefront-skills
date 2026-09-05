@@ -1,6 +1,6 @@
 ---
 name: design-page
-description: Turn an approved one-page storefront plan into canonical Lexsis source and a responsive interactive preview, including the page-specific asset decision.
+description: Turn an approved one-page storefront plan into canonical Lexsis source and a responsive interactive preview, confirming any asset slots the plan left unresolved.
 ---
 
 # Design the Page
@@ -10,6 +10,8 @@ a remote draft or publish.
 
 Read:
 
+- `storefront-engine/references/design-rules.md`
+- `storefront-engine/references/island-presets.md`
 - `references/page-layout.md`
 - `references/island-preview.md`
 
@@ -27,46 +29,67 @@ discovery.
 ## Inputs
 
 Use the approved `page-plan.md` and its saved store/theme binding. The plan
-defines strategy and section intent; it must not define islands or
-implementation details.
+defines strategy, the Design direction, the Imagery and background plan, the
+asset slots and section intent; it must not define islands or implementation
+details.
 
-If the user explicitly skips `/plan-page`, write a short one-page plan and
-record the skip. Never run `/setup` or `/plan-page` automatically.
+If the user explicitly skips `/plan-page`, write a short one-page plan with
+the same blocks and record the skip. Never run `/setup` or `/plan-page`
+automatically.
 
-## Asset Decision
+## Design Direction Gate
 
-Before composing the page:
+Before writing any HTML, read the "Design direction" block in `page-plan.md`
+and `storefront-engine/references/design-rules.md`. If the plan has no design
+direction, write one now (palette of four to six named hex values, type roles
+and scale, layout concept, wireframe with slot ids, icon decision, the one
+bold moment) and record it in the plan before continuing.
 
-1. Read product media from Shopify and search the Lexsis asset library for the
-   planned media roles.
-2. Inspect identity-sensitive product or creator media.
-3. Classify the roles as `available`, `missing`, or `optional`.
-4. Present one concise summary of reusable assets, missing assets, and optional
-   enhancements.
-5. Ask once which missing or optional roles the user wants generated.
+Precedence, in order: house rules (`design-rules.md`) > merchant-stated brand
+rules (`voice_md`, owner notes) > brand-kit token values > generated design.md
+guidance > brand-kit preview blueprint and presets. A lower layer may narrow a
+higher one, never widen it. Token values win over prose for values; if a token
+value fails WCAG AA against its documented pairing, return
+`THEME_CONTEXT_CONFLICT` with both values. Style guidance never raises a
+conflict; it is overridden and recorded in `page-plan.md` under "Overrides of
+brand design.md".
 
-For approved generation:
+## Asset Gap Confirmation
 
-- Prefer Lexsis asset generation.
-- If other image-generation tools are available in the current agent context,
-  present the available providers and let the user choose before invoking one.
-- Generate independent roles in parallel where supported.
-- Import externally generated media into Lexsis before production use.
-- Use Lexsis icons, supported SVG, or CSS for ordinary interface icons. Image
-  generation is for custom artwork, imagery, banners, and illustrations.
+The plan already resolved the asset slots. Read `assets[]` from the manifest:
 
-If generation is declined or postponed, copy suitable bundled placeholders
-into the page workspace. Placeholders are allowed only in the local preview
-and cannot pass `/generate`.
+1. Slots with `status: verified` are final; use their ids and URLs as-is.
+2. List only `planned` slots. `validate_page_workspace.py --phase design`
+   reports them as `asset_slot_unresolved` warnings.
+3. Ask once whether to generate them now (Lexsis first; offer other available
+   image tools as an explicit provider choice), pick from the library or
+   Shopify media, or keep a bundled preview placeholder for local review.
+4. Import externally generated media into Lexsis before production use, verify
+   identity-sensitive imagery with `lexsis_assets.view`, and set
+   `status: verified` on each resolved slot.
+
+Use Lexsis icons, supported SVG, or CSS for ordinary interface icons; image
+generation is for imagery, banners, and illustrations only.
+
+Placeholders are allowed only in the local preview and cannot pass
+`/generate`. When a store has no usable logo image, use an accessible text
+wordmark or plain HTML header for the local design. Do not substitute a
+product image or generic logo placeholder.
 
 ## Compose
 
 1. Read the saved brand design and selected theme CSS.
 2. Use the template direction from the plan. Fetch selected section source;
    search again only when the plan has no usable template direction.
-3. Convert each planned section into responsive layout and copy.
+3. Convert each planned section into responsive layout and copy, following the
+   wireframe, the Imagery and background plan, and the slot ids.
 4. Read the compact island catalog and select only the likely interactive
    components. Do not fetch every full schema in advance.
+   When the plan names a preset (`Preset: <island>/<intent>-<tone>`), apply it
+   from `storefront-engine/references/island-presets.md` verbatim: props,
+   `hydrate`, and its scoped CSS. Check its `requires` first. Unknown id:
+   return `PRESET_NOT_FOUND`. Any deviation is recorded as
+   `islands[].presetOverrides`; never edit a preset in place for one page.
 5. Write a rough but complete `lexsis-source.html` with stable section
    delimiters, minimal island props, and the documented examples as a starting
    point.
@@ -75,12 +98,21 @@ and cannot pass `/generate`.
 7. Use LX tokens for brand values and compile-time Tailwind utilities for
    layout. Do not use a runtime Tailwind CDN.
 8. Compare explicit `NEVER`, `must`, and `non-negotiable` rules in the saved
-   brand design with matching theme tokens. On a direct contradiction, return
-   `THEME_CONTEXT_CONFLICT` with both values. Do not silently choose one.
+   brand design with matching theme tokens. On a direct value contradiction,
+   return `THEME_CONTEXT_CONFLICT` with both values. Do not silently choose one.
 9. Use ordinary HTML for static content and `<lx-island>` source for supported
    interactions. Use headless mode only with complete required hooks.
 10. Keep preview props safe and presentation-focused. Real commerce is tested
    on the hosted draft.
+
+## Parallel Section Generation
+
+If the runtime can spawn sub-agents, each may write one section's markup and
+scoped CSS from its plan line, wireframe box, slot ids and preset. The parent
+assembles `lexsis-source.html` in plan order, owns `page-theme.css`, compiles
+once, and runs the Self-Critique Gate. Sub-agents never compile, never edit
+shared CSS, and never spend credits. Without sub-agents, write the sections
+sequentially.
 
 ## Compile and Preview
 
@@ -105,7 +137,8 @@ python3 <design-page-skill>/scripts/build_page_preview.py \
   --theme-css <page-workspace>/page-theme.css
 ```
 
-Show the first compiled preview as soon as the section structure and responsive
+Do not show a preview path until the Self-Critique Gate passes. Then show the
+first compiled preview as soon as the section structure and responsive
 hierarchy are recognizable. Label it `ROUGH_PREVIEW`; asset polish and final
 validation may continue after the user can see the direction.
 
@@ -124,9 +157,43 @@ If browser automation cannot access the preview, return
 `DESIGN_PREVIEW_READY_QA_PENDING` with the preview path and the checks that still
 need manual confirmation. Never record hydration as passed without evidence.
 
-When a store has no usable logo image, use an accessible text wordmark or plain
-HTML header for the local design. Do not substitute a product image or generic
-logo placeholder.
+## Self-Critique Gate
+
+Runs after the first clean compile and before any preview path or screenshot
+is shown to the user. Output: `<page-workspace>/design-critique.md`,
+`critique-390.png`, `critique-1280.png`.
+
+1. Mechanical checks. Run
+   `python3 <design-page-skill>/scripts/design_lint.py <page-workspace>` and
+   paste its table into the critique, then run the remaining checks from
+   `design-rules.md` §2.1 and §2.2 that the script does not cover. All of N1
+   to N14 must be 0 or within the stated allowance; A3, A6, A7, A11, A12 must
+   PASS.
+
+2. Screenshots. Open `page-preview.html` in the browser tool. Capture
+   full-page screenshots at 390 x 844 and 1280 x 800. Run the N2 background
+   script and the A4 line-length script at 1280 and paste their results into
+   the critique.
+
+3. Look at both screenshots and answer each question in one line:
+   - Where does the eye land first? Is it the plan's bold moment? If not, what
+     is stealing attention?
+   - How many visually distinct horizontal bands are there between navbar and
+     footer? Must be 1, plus the named exception.
+   - Which elements would appear on any generic page of this type in this
+     vertical? Name them. Change or remove at least one.
+   - Which accessory can be removed with no loss? Remove it.
+   - Do any of the tells apply: cream page + serif + terracotta accent as the
+     only idea; identical cards; eyebrow caps; pills; arrows in CTAs; icon
+     tiles; uniform radius; scattered motion?
+   - At 390: is anything clipped, is the price above 1.5 screens, are tap
+     targets 48px?
+
+4. Fix, recompile, rerun 1 to 3. When the table has no FAIL and every question
+   in 3 has an answer, show the preview and label it `ROUGH_PREVIEW` if asset
+   polish remains. If the browser tool is unavailable, return
+   `DESIGN_PREVIEW_READY_QA_PENDING` and list the visual checks that were not
+   performed; never mark them passed.
 
 ## Approval
 
@@ -134,21 +201,23 @@ Show:
 
 ```text
 Preview: [path]
+Critique: design-critique.md (no FAIL)
 Sections: [ordered list]
 Interactive components: [islands]
-Reused assets: [roles]
-Generated assets: [roles]
-Temporary placeholders: [roles]
+Presets: [ids]
+Reused assets: [slots]
+Generated assets: [slots]
+Temporary placeholders: [slots]
 ```
 
-On approval, record only final IDs, compact island schema evidence, and source,
-theme, configuration, structure, and bundle hashes in the manifest. Do not
-store creative explanations or tool transcripts there.
+On approval, record only final IDs, compact island schema evidence, presets
+and overrides, and source, theme, configuration, structure, and bundle hashes
+in the manifest. Do not store creative explanations or tool transcripts there.
 
 Any later visible source, CSS, copy, layout, island, or asset change returns
 the design to `changes-pending-approval`.
 
 ## Return
 
-Return the source, theme, preview, compile-artifact paths, sections, selected
-islands, asset summary, and `DESIGN_APPROVED`.
+Return the source, theme, preview, critique, compile-artifact paths, sections,
+selected islands and presets, asset summary, and `DESIGN_APPROVED`.

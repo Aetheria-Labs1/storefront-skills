@@ -1,6 +1,0 @@
-{
-  "id": "sticky-bar",
-  "html": "<section class=\"fixed bottom-0 left-0 right-0 z-50\" style=\"background-color: var(--lx-accent-color)\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5\"><div class=\"flex items-center justify-center\"><div data-island=\"StickyBar\" data-props='{\"productId\":\"{{PRODUCT_ID}}\",\"cta\":\"{{CTA_TEXT}}\"}'></div></div></div></section>",
-  "css": "",
-  "js": ""
-}

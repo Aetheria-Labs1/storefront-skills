@@ -1,6 +1,0 @@
-{
-  "id": "delivery-banner",
-  "html": "<div class=\"w-full py-2 px-4 text-center text-sm\" style=\"background-color: var(--lx-surface-alt); color: var(--lx-text-color)\"><div data-island=\"DeliveryEstimate\" data-props='{\"variant\":\"banner\"}'></div></div>",
-  "css": "",
-  "js": ""
-}

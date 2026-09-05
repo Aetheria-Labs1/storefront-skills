@@ -1,6 +1,0 @@
-{
-  "id": "product-gallery",
-  "html": "<section class=\"py-8 md:py-12 overflow-hidden\"><div class=\"max-w-lg mx-auto px-4 md:max-w-none md:px-0\"><div data-island=\"ProductGallery\" data-props='{\"productId\":\"{{PRODUCT_ID}}\",\"layout\":\"horizontal\"}'></div></div></section>",
-  "css": "",
-  "js": ""
-}

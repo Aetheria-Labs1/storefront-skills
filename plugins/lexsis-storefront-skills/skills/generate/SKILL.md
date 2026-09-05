@@ -40,6 +40,9 @@ Before draft creation:
 - selected island schemas remain active
 - source, CSS, configuration, and bindings match the approved design hashes
 - local validation passes
+- `design-critique.md` exists with no FAIL and its hashes match the approved
+  source (see `storefront-engine/references/design-rules.md`)
+- no `planned` asset slot remains in the manifest
 
 If assets are unresolved, report the missing roles. The user may return to
 `/design-page`, run `/asset-prep`, or supply assets directly.

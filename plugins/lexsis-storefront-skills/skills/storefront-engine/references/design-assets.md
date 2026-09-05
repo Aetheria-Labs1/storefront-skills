@@ -17,7 +17,7 @@ Returns existing brand assets (product shots, lifestyle, textures, SVGs).
 lexsis_drafts(action: "asset_generate", args: {
   prompt: "Minimalist skincare flatlay on marble surface, soft morning light",
   style: "photography",        // photography | illustration | 3d_render | editorial | abstract
-  purpose: "hero_bg",          // hero_bg | product_lifestyle | card_bg | section_bg | icon | texture
+  purpose: "hero_bg",          // hero_bg | product_lifestyle | texture_fill | decorative_element | section_bg | card_bg | pattern_tile | product_composite
   aspect: "landscape",         // landscape | portrait | square
   quality: "medium",           // low | medium | high
   brand_colors: ["#1a1a1a", "#f5f5dc"]
@@ -30,8 +30,7 @@ lexsis_drafts(action: "asset_generate", args: {
   reference_images: ["https://cdn.example.com/asset_123.png", "https://cdn.example.com/asset_456.png"],
   prompt: "Place product bottle on the lifestyle background, natural lighting match",
   style: "photography",
-  purpose: "product_composite",
-  mode: "composite"            // composite | inpaint | style_transfer
+  purpose: "product_composite"
 })
 ```
 

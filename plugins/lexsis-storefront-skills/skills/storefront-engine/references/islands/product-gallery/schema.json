@@ -126,7 +126,9 @@
         "assetId": "?string",
         "provider": "?'cloudflare_stream' | 'cloudflare_cdn' | 'external'"
       },
-      "required": false
+      "required": false,
+      "deprecated": true,
+      "description": "Use media."
     },
     "layout": {
       "type": "enum",

@@ -1,6 +1,0 @@
-{
-  "id": "delivery-info",
-  "html": "<div class=\"rounded-lg border p-4\" style=\"border-color: var(--lx-border-color)\"><div data-island=\"DeliveryEstimate\" data-props='{\"variant\":\"card\"}'></div></div>",
-  "css": "",
-  "js": ""
-}
