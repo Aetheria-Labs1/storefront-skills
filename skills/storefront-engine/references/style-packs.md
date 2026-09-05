@@ -1,5 +1,10 @@
 # Style Packs — Named `data-part` CSS Bundles
 
+> House rules in `storefront-engine/references/design-rules.md` override every example below.
+> Examples show structure and copy intent; their styling (gradients, hover transforms,
+> uppercase labels, pills, emoji, section fills) is illustrative and must not be copied.
+> Where an example conflicts with a house rule, the rule wins.
+
 > Pre-tested visual treatments for rendered-mode islands. Pick ONE pack per page and paste its island overrides into the relevant sections' `<style>` blocks. Packs only touch visual properties (radius, borders, shadows, typography case/tracking) via `[data-part]` selectors and `--lx-*` variables — never layout. For fully custom island markup use headless mode instead (source-format.md).
 
 ## Choosing
@@ -36,7 +41,7 @@
 
 ```css
 [data-part="cta"] { border-radius: 0; border: 3px solid var(--lx-text-color); box-shadow: 4px 4px 0 var(--lx-text-color); text-transform: uppercase; font-weight: 800; }
-[data-part="cta"]:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--lx-text-color); }
+[data-part="cta"]:hover { background: var(--lx-accent-color-hover); }
 [data-part="variant-btn"] { border-radius: 0; border: 2px solid var(--lx-text-color); font-weight: 700; }
 [data-part="item"] { border: 2px solid var(--lx-text-color); border-radius: 0; box-shadow: 4px 4px 0 var(--lx-border-color); }
 [data-part="badge"] { border-radius: 0; border: 2px solid var(--lx-text-color); font-weight: 800; }
@@ -45,8 +50,8 @@
 ## playful
 
 ```css
-[data-part="cta"] { border-radius: 1.25rem; font-weight: 800; padding: 1.1rem 2.5rem; transition: transform 150ms ease; }
-[data-part="cta"]:hover { transform: scale(1.04) rotate(-1deg); }
+[data-part="cta"] { border-radius: 1.25rem; font-weight: 800; padding: 1.1rem 2.5rem; transition: background-color 150ms ease; }
+[data-part="cta"]:hover { background: var(--lx-accent-color-hover); text-decoration: underline; }
 [data-part="variant-btn"] { border-radius: 1rem; border-width: 2px; font-weight: 700; }
 [data-part="item"] { border-radius: 1.5rem; border: 2px solid var(--lx-border-color); }
 [data-part="badge"] { border-radius: 9999px; font-weight: 800; }
@@ -57,7 +62,7 @@
 ```css
 [data-part="cta"] { border-radius: 0.375rem; box-shadow: none; font-weight: 500; }
 [data-part="variant-btn"] { border-radius: 0.375rem; border-color: var(--lx-border-color); font-weight: 400; }
-[data-part="item"] { border: none; border-radius: 0.5rem; background: var(--lx-surface-alt); box-shadow: none; }
+[data-part="item"] { border: none; border-radius: 0.5rem; background: var(--lx-surface-alt); box-shadow: none; } /* --lx-surface-alt is a component tint, never a section background */
 [data-part="badge"] { border-radius: 0.25rem; font-weight: 500; }
 [data-part="trust-badges"] { filter: grayscale(1); opacity: 0.6; }
 ```
@@ -68,3 +73,4 @@
 2. Scope to a section if two islands need different treatments: `#hero [data-part="cta"] { ... }`.
 3. Packs compose with `lexsis_brand.compile_theme` output — they reference `--lx-*` variables, never hardcode colors.
 4. Check the island's `schema.json` `parts` array before targeting a part name (`lexsis_design.island_schema`).
+5. Packs never override `design-rules.md`.

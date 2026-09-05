@@ -1,5 +1,10 @@
 # Conversion Psychology — Storefront Design Intelligence
 
+> House rules in `storefront-engine/references/design-rules.md` override every example below.
+> Examples show structure and copy intent; their styling (gradients, hover transforms,
+> uppercase labels, pills, emoji, section fills) is illustrative and must not be copied.
+> Where an example conflicts with a house rule, the rule wins.
+
 > **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
 
 > When to load: ALWAYS. Read before generating any ecommerce page.
@@ -11,13 +16,13 @@ Map the AIDA framework to section order. Each stage requires specific psychology
 ### Short Page (5-7 sections) — Impulse / Low-consideration products
 
 1. **Attention (1 section)**: Hero section
-   - High-contrast gradient or bold product image
+   - Product image or typographic hero on the page background. No gradient.
    - Benefit-driven headline (6-10 words)
    - `font-size: clamp(2.5rem, 5vw, 3.5rem)` for headline
    - Sticky CTA bar for persistent action
 
 2. **Interest (2 sections)**: Value props + social proof stats
-   - 3 icon-driven benefits max
+   - 3 benefits max, as a definition list or asymmetric two-column; icons only if the plan's icon decision says so
    - Numbers: customer count, star rating, review count
    - `py-8 md:py-12` spacing
 
@@ -28,7 +33,7 @@ Map the AIDA framework to section order. Each stage requires specific psychology
 
 4. **Action (2 sections)**: CTA + footer
    - Urgency element (countdown or inventory indicator)
-   - First-person CTA copy: "Get MY [benefit]"
+   - CTA names the action in brand voice ("Add to cart")
    - `data-island="CountdownTimer"` or `data-island="InventoryIndicator"`
 
 ### Medium Page (8-12 sections) — Considered purchase / New-to-brand
@@ -36,9 +41,8 @@ Map the AIDA framework to section order. Each stage requires specific psychology
 1. **Attention (1)**: Hero with video or interactive media
 2. **Interest (3)**: Value props → logo carousel → stats
    - Logo carousel = trust transfer from known brands
-   - Neutral background between hero and body
 3. **Desire (5)**: Feature grid → testimonials → before/after → reviews → comparison table
-   - 3-6 features with icons
+   - 3-6 features as a definition list or asymmetric two-column; icons only if the plan's icon decision says so
    - Transformation proof with `data-island="BeforeAfter"`
    - Compare you vs. 2 alternatives (3 columns max)
 4. **Action (3)**: FAQ → CTA → footer
@@ -80,7 +84,7 @@ What MUST be visible without scroll (< 900px viewport height). Violating this ki
 - Price + compare_at_price (if discounted)
 - Star rating + review count (clickable to reviews)
 - Primary CTA button
-- 1-2 trust badges (free shipping, guarantee)
+- 1-2 trust lines as plain text (free shipping, guarantee)
 
 **HTML pattern:**
 ```html
@@ -95,26 +99,14 @@ What MUST be visible without scroll (< 900px viewport height). Violating this ki
     <p class="text-lg md:text-xl opacity-80">One-line benefit promise that resonates</p>
     <div class="flex items-baseline gap-3">
       <span class="text-3xl font-bold" style="color:var(--lx-text-color)">$89.00</span>
+      <!-- compare-at only when Shopify has one: struck text, no pill -->
       <span class="text-lg line-through opacity-40">$129.00</span>
-      <span class="text-xs font-semibold px-2 py-1 rounded-full" style="background:var(--lx-accent-color);color:white">31% OFF</span>
     </div>
-    <div class="flex items-center gap-2">
-      <div class="flex">
-        <span class="text-yellow-400">★★★★★</span>
-      </div>
-      <span class="text-sm opacity-70">(2,847 reviews)</span>
-    </div>
-    <div data-island="BuyBox" data-props='{"productId":"gid://shopify/Product/123","ctaText":"Add to Cart — Free Shipping","showQuantity":true}'></div>
-    <div class="flex gap-4 pt-4">
-      <div class="flex items-center gap-2">
-        <span class="text-2xl">🚚</span>
-        <span class="text-sm">Free Shipping</span>
-      </div>
-      <div class="flex items-center gap-2">
-        <span class="text-2xl">💯</span>
-        <span class="text-sm">Money-Back Guarantee</span>
-      </div>
-    </div>
+    <!-- rating as plain text, only when the count is real -->
+    <p class="text-sm opacity-70">4.8 from 312 reviews</p>
+    <div data-island="BuyBox" data-props='{"productId":"gid://shopify/Product/123","ctaText":"Add to cart","showQuantity":true}'></div>
+    <!-- trust line: plain text over a 1px hairline, no icons, no emoji -->
+    <p class="text-sm pt-4 opacity-70" style="border-top:1px solid var(--lx-border-color)">Free shipping. Money-back guarantee.</p>
   </div>
 </section>
 ```
@@ -130,23 +122,25 @@ What MUST be visible without scroll (< 900px viewport height). Violating this ki
 
 **HTML pattern:**
 ```html
-<section class="relative min-h-screen flex items-center justify-center text-center px-4 py-20" style="background:linear-gradient(135deg, #667eea 0%, #764ba2 100%)">
+<section class="relative min-h-screen flex items-center justify-center text-center px-4 py-20" style="background:var(--lx-bg-color)">
   <div class="max-w-4xl mx-auto space-y-8">
-    <h1 class="text-5xl md:text-7xl font-extrabold leading-none text-white">
+    <h1 class="text-5xl md:text-7xl font-bold leading-none" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">
       Get Flawless Skin in 30 Days
     </h1>
-    <p class="text-xl md:text-2xl text-white/90">
+    <p class="text-xl md:text-2xl" style="color:var(--lx-text-muted)">
       Without harsh chemicals or expensive treatments. Guaranteed.
     </p>
-    <button class="px-10 py-5 text-xl font-bold rounded-lg transition-transform hover:scale-105" style="background:white;color:var(--lx-accent-color)">
-      Start MY Transformation
+    <button class="px-10 py-5 text-xl font-bold rounded-lg transition-colors hover:bg-[var(--lx-accent-color-hover)]" style="background:var(--lx-accent-color);color:white">
+      Start your transformation
     </button>
-    <p class="text-white/80 text-sm">Join 47,000+ customers who transformed their skin</p>
+    <p class="text-sm" style="color:var(--lx-text-muted)">Join 47,000+ customers who transformed their skin</p>
   </div>
   <div data-island="CountdownTimer" data-props='{"endDate":"2026-06-30T23:59:59Z","message":"Offer ends in:","urgencyThreshold":3600}'></div>
   <div data-island="SocialProofPopup" data-props='{"displayDuration":5000,"interval":15000,"maxPopups":3}'></div>
 </section>
 ```
+
+Never hardcode hex; use `--lx-*` tokens.
 
 ### Collection Page
 
@@ -165,20 +159,19 @@ What MUST be visible without scroll (< 900px viewport height). Violating this ki
 
 ### Anchoring (strikethrough + current)
 
-Show original price crossed out. Minimum 20% discount to be credible, optimal 30-40%.
+Show original price crossed out. The "minimum 20%, optimal 30-40%" heuristic is market-specific; never apply it to a merchant's real price list. Show compare-at only when Shopify has one. No percentage pill unless the merchant runs a named sale.
 
 ```html
 <div class="flex items-baseline gap-3">
   <span class="text-3xl font-bold" style="color:var(--lx-text-color)">$79.99</span>
   <span class="text-lg line-through opacity-40">$119.99</span>
-  <span class="text-xs font-semibold px-2 py-1 rounded-full" style="background:var(--lx-accent-color);color:white">33% OFF</span>
 </div>
 <p class="text-sm mt-2 opacity-70">Save $40 today</p>
 ```
 
 ### Charm Pricing
 
-End prices in .97, .95, or .99. Never .00 for mid-market ($50-$300). Use .00 only for premium ($500+).
+Market-specific (US DTC); never apply to a merchant's real price list. Where the merchant already prices this way: .97, .95 or .99 for mid-market ($50-$300), .00 for premium ($500+).
 
 **Examples:**
 - Low-ticket (<$50): $29.97, $14.99
@@ -190,34 +183,35 @@ End prices in .97, .95, or .99. Never .00 for mid-market ($50-$300). Use .00 onl
 Show per-unit savings, not just total discount.
 
 ```html
+<!-- equal cards; the recommended tier gets a 1px accent border and one sentence-case line — no scale, no caps pill, no glow -->
 <div class="grid md:grid-cols-3 gap-4">
-  <div class="p-6 border rounded-lg" style="border-color:var(--lx-border-color)">
+  <div class="p-6 rounded-lg" style="border:1px solid var(--lx-border-color)">
     <div class="text-center space-y-2">
-      <p class="text-sm uppercase tracking-wide opacity-60">Buy 1</p>
+      <p class="text-sm opacity-60">Buy 1</p>
       <p class="text-3xl font-bold" style="color:var(--lx-text-color)">$59.99</p>
       <p class="text-sm opacity-70">$59.99 each</p>
-      <button class="w-full px-4 py-2 mt-4 rounded" style="border:2px solid var(--lx-accent-color);color:var(--lx-accent-color)">
+      <button class="w-full px-4 py-2 mt-4 rounded" style="border:1px solid var(--lx-accent-color);color:var(--lx-accent-color)">
         Select
       </button>
     </div>
   </div>
-  <div class="p-6 border-2 rounded-lg relative transform scale-105" style="border-color:var(--lx-accent-color);box-shadow:0 20px 60px rgba(102,126,234,0.2)">
-    <span class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 text-xs font-semibold rounded-full text-white" style="background:var(--lx-accent-color)">BEST VALUE</span>
+  <div class="p-6 rounded-lg" style="border:1px solid var(--lx-accent-color)">
     <div class="text-center space-y-2">
-      <p class="text-sm uppercase tracking-wide opacity-60">Buy 3</p>
+      <p class="text-sm" style="color:var(--lx-accent-color)">Most chosen</p>
+      <p class="text-sm opacity-60">Buy 3</p>
       <p class="text-3xl font-bold" style="color:var(--lx-text-color)">$119.99</p>
       <p class="text-sm opacity-70">$40.00 each — Save $60</p>
-      <button class="w-full px-4 py-3 mt-4 rounded font-bold text-white" style="background:var(--lx-accent-color)">
+      <button class="w-full px-4 py-2 mt-4 rounded font-bold text-white transition-colors hover:bg-[var(--lx-accent-color-hover)]" style="background:var(--lx-accent-color)">
         Select
       </button>
     </div>
   </div>
-  <div class="p-6 border rounded-lg" style="border-color:var(--lx-border-color)">
+  <div class="p-6 rounded-lg" style="border:1px solid var(--lx-border-color)">
     <div class="text-center space-y-2">
-      <p class="text-sm uppercase tracking-wide opacity-60">Buy 2</p>
+      <p class="text-sm opacity-60">Buy 2</p>
       <p class="text-3xl font-bold" style="color:var(--lx-text-color)">$99.99</p>
       <p class="text-sm opacity-70">$50.00 each — Save $20</p>
-      <button class="w-full px-4 py-2 mt-4 rounded" style="border:2px solid var(--lx-accent-color);color:var(--lx-accent-color)">
+      <button class="w-full px-4 py-2 mt-4 rounded" style="border:1px solid var(--lx-accent-color);color:var(--lx-accent-color)">
         Select
       </button>
     </div>
@@ -241,76 +235,47 @@ Show "or 4 payments of $X" beneath price. Increases conversion 20-30% for $100+ 
 Always show 3 options. Middle option is the target, positioned as "most popular".
 
 ```html
+<!-- equal cards; the target tier gets a 1px accent border and a sentence-case line — no scale, no caps pill, no glow, no glyph bullets -->
 <div class="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
   <div class="p-8 rounded-lg" style="border:1px solid var(--lx-border-color)">
     <h3 class="text-2xl font-bold mb-2">Basic</h3>
     <p class="text-4xl font-bold mb-4" style="color:var(--lx-text-color)">$49.99</p>
-    <ul class="space-y-3 mb-6">
-      <li class="flex items-center gap-2">
-        <span style="color:var(--lx-accent-color)">✓</span>
-        <span>Feature A</span>
-      </li>
-      <li class="flex items-center gap-2">
-        <span style="color:var(--lx-accent-color)">✓</span>
-        <span>Feature B</span>
-      </li>
+    <ul class="space-y-3 mb-6 text-sm">
+      <li>Feature A</li>
+      <li>Feature B</li>
     </ul>
-    <button class="w-full px-6 py-3 rounded" style="border:2px solid var(--lx-accent-color);color:var(--lx-accent-color)">
-      Get Started
+    <button class="w-full px-6 py-3 rounded" style="border:1px solid var(--lx-accent-color);color:var(--lx-accent-color)">
+      Choose Basic
     </button>
   </div>
-  <div class="p-8 rounded-lg relative transform scale-105" style="border:3px solid var(--lx-accent-color);box-shadow:0 20px 60px rgba(0,0,0,0.2)">
-    <span class="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 text-sm font-semibold rounded-full text-white" style="background:var(--lx-accent-color)">MOST POPULAR</span>
+  <div class="p-8 rounded-lg" style="border:1px solid var(--lx-accent-color)">
+    <p class="text-sm mb-2" style="color:var(--lx-accent-color)">Most popular</p>
     <h3 class="text-2xl font-bold mb-2">Pro</h3>
     <div class="flex items-baseline gap-2 mb-4">
       <p class="text-4xl font-bold" style="color:var(--lx-text-color)">$89.99</p>
       <p class="text-lg line-through opacity-40">$129.99</p>
     </div>
-    <ul class="space-y-3 mb-6">
-      <li class="flex items-center gap-2">
-        <span style="color:var(--lx-accent-color)">✓</span>
-        <span>Feature A</span>
-      </li>
-      <li class="flex items-center gap-2">
-        <span style="color:var(--lx-accent-color)">✓</span>
-        <span>Feature B</span>
-      </li>
-      <li class="flex items-center gap-2">
-        <span style="color:var(--lx-accent-color)">✓</span>
-        <span>Feature C</span>
-      </li>
-      <li class="flex items-center gap-2">
-        <span style="color:var(--lx-accent-color)">✓</span>
-        <span>Feature D</span>
-      </li>
+    <ul class="space-y-3 mb-6 text-sm">
+      <li>Feature A</li>
+      <li>Feature B</li>
+      <li>Feature C</li>
+      <li>Feature D</li>
     </ul>
-    <button class="w-full px-6 py-3 rounded font-bold text-white" style="background:var(--lx-accent-color)">
-      Start Pro Trial
+    <button class="w-full px-6 py-3 rounded font-bold text-white transition-colors hover:bg-[var(--lx-accent-color-hover)]" style="background:var(--lx-accent-color)">
+      Choose Pro
     </button>
   </div>
   <div class="p-8 rounded-lg" style="border:1px solid var(--lx-border-color)">
     <h3 class="text-2xl font-bold mb-2">Premium</h3>
     <p class="text-4xl font-bold mb-4" style="color:var(--lx-text-color)">$149.99</p>
-    <ul class="space-y-3 mb-6">
-      <li class="flex items-center gap-2">
-        <span style="color:var(--lx-accent-color)">✓</span>
-        <span>Everything in Pro</span>
-      </li>
-      <li class="flex items-center gap-2">
-        <span style="color:var(--lx-accent-color)">✓</span>
-        <span>Feature E</span>
-      </li>
-      <li class="flex items-center gap-2">
-        <span style="color:var(--lx-accent-color)">✓</span>
-        <span>Feature F</span>
-      </li>
-      <li class="flex items-center gap-2">
-        <span style="color:var(--lx-accent-color)">✓</span>
-        <span>Priority Support</span>
-      </li>
+    <ul class="space-y-3 mb-6 text-sm">
+      <li>Everything in Pro</li>
+      <li>Feature E</li>
+      <li>Feature F</li>
+      <li>Priority support</li>
     </ul>
-    <button class="w-full px-6 py-3 rounded" style="border:2px solid var(--lx-accent-color);color:var(--lx-accent-color)">
-      Go Premium
+    <button class="w-full px-6 py-3 rounded" style="border:1px solid var(--lx-accent-color);color:var(--lx-accent-color)">
+      Choose Premium
     </button>
   </div>
 </div>
@@ -327,23 +292,24 @@ Rank order by persuasive power (highest to lowest). Use this sequence in section
 Raw metrics. Most credible when specific and large.
 
 ```html
-<section class="py-16 px-4" style="background:var(--lx-bg-surface)">
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-6xl mx-auto text-center">
+<!-- figures inline on the page background; sentence-case labels; no band, no oversized accent numerals -->
+<section class="py-16 px-4">
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-6xl mx-auto">
     <div>
-      <p class="text-5xl md:text-6xl font-extrabold" style="color:var(--lx-accent-color)">247,000+</p>
-      <p class="text-sm uppercase tracking-wide mt-2 opacity-70">Happy Customers</p>
+      <p class="text-3xl md:text-4xl font-bold" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">247,000+</p>
+      <p class="text-sm mt-2" style="color:var(--lx-text-muted)">Happy customers</p>
     </div>
     <div>
-      <p class="text-5xl md:text-6xl font-extrabold" style="color:var(--lx-accent-color)">4.8/5.0</p>
-      <p class="text-sm uppercase tracking-wide mt-2 opacity-70">Average Rating</p>
+      <p class="text-3xl md:text-4xl font-bold" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">4.8/5.0</p>
+      <p class="text-sm mt-2" style="color:var(--lx-text-muted)">Average rating</p>
     </div>
     <div>
-      <p class="text-5xl md:text-6xl font-extrabold" style="color:var(--lx-accent-color)">12,000+</p>
-      <p class="text-sm uppercase tracking-wide mt-2 opacity-70">5-Star Reviews</p>
+      <p class="text-3xl md:text-4xl font-bold" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">12,000+</p>
+      <p class="text-sm mt-2" style="color:var(--lx-text-muted)">Five-star reviews</p>
     </div>
     <div>
-      <p class="text-5xl md:text-6xl font-extrabold" style="color:var(--lx-accent-color)">94%</p>
-      <p class="text-sm uppercase tracking-wide mt-2 opacity-70">Would Recommend</p>
+      <p class="text-3xl md:text-4xl font-bold" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">94%</p>
+      <p class="text-sm mt-2" style="color:var(--lx-text-muted)">Would recommend</p>
     </div>
   </div>
 </section>
@@ -353,46 +319,35 @@ Raw metrics. Most credible when specific and large.
 
 ### 2. Faces (testimonial cards)
 
-Photos + quotes. Most effective for emotional products (beauty, wellness, lifestyle).
+A real person's words with their name and city. Most effective for emotional products (beauty, wellness, lifestyle).
 
 ```html
+<!-- one featured quote in the heading face; name and city muted; no stars, no avatar ring, no card -->
 <section class="py-16 px-4">
-  <div class="max-w-6xl mx-auto">
-    <h2 class="text-3xl md:text-4xl font-bold text-center mb-12" style="color:var(--lx-text-color)">What Our Customers Say</h2>
-    <div class="grid md:grid-cols-3 gap-8">
-      <div class="p-6 rounded-lg" style="background:var(--lx-bg-surface)">
-        <div class="flex items-center gap-4 mb-4">
-          <img src="/testimonials/sarah.jpg" alt="Sarah M." class="w-20 h-20 rounded-full" style="border:4px solid var(--lx-accent-color)" />
-          <div>
-            <p class="font-bold">Sarah M.</p>
-            <p class="text-sm opacity-70">Verified Buyer</p>
-            <div class="flex text-yellow-400">★★★★★</div>
-          </div>
-        </div>
-        <p class="text-lg italic leading-relaxed opacity-90">
-          "This completely changed how I approach skincare. I saw results in just 2 weeks."
-        </p>
-      </div>
-      <!-- Repeat for more testimonials -->
-    </div>
+  <div class="max-w-3xl mx-auto">
+    <blockquote class="text-2xl md:text-3xl leading-snug" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">
+      "This completely changed how I approach skincare. I saw results in just 2 weeks."
+    </blockquote>
+    <p class="mt-6 text-sm" style="color:var(--lx-text-muted)">Sarah M., Portland — verified buyer</p>
   </div>
 </section>
 ```
 
-**When to use:** After interest stage, before feature deep-dive. 3-6 testimonials max per section.
+**When to use:** After interest stage, before feature deep-dive. One featured quote per section; a plain list of 3-6 only if the plan asks for it.
 
 ### 3. Logos (logo carousel)
 
 Trust transfer from known brands. Works for B2B, press mentions, "as seen on".
 
 ```html
-<section class="py-12 px-4" style="background:var(--lx-bg-surface)">
+<!-- page background, static: no band, no hover effects -->
+<section class="py-12 px-4">
   <div class="max-w-6xl mx-auto">
-    <p class="text-center text-sm uppercase tracking-wide mb-8 opacity-70">Trusted by Leading Brands</p>
+    <p class="text-center text-sm mb-8" style="color:var(--lx-text-muted)">Trusted by leading brands</p>
     <div class="flex justify-center items-center gap-12 flex-wrap">
-      <img src="/logos/forbes.svg" alt="Forbes" class="h-10 opacity-60 hover:opacity-100 transition-opacity grayscale hover:grayscale-0" />
-      <img src="/logos/techcrunch.svg" alt="TechCrunch" class="h-10 opacity-60 hover:opacity-100 transition-opacity grayscale hover:grayscale-0" />
-      <img src="/logos/wsj.svg" alt="Wall Street Journal" class="h-10 opacity-60 hover:opacity-100 transition-opacity grayscale hover:grayscale-0" />
+      <img src="/logos/forbes.svg" alt="Forbes" class="h-10 opacity-60" />
+      <img src="/logos/techcrunch.svg" alt="TechCrunch" class="h-10 opacity-60" />
+      <img src="/logos/wsj.svg" alt="Wall Street Journal" class="h-10 opacity-60" />
     </div>
   </div>
 </section>
@@ -426,9 +381,8 @@ Three types. Each requires different implementation and psychology.
 Only use if actually tracking inventory. False scarcity destroys brand trust.
 
 ```html
-<div class="inline-flex items-center gap-2 px-4 py-2 rounded" style="background:#fff3cd;color:#856404">
-  <span class="font-semibold">⚠️ Only 7 left in stock</span>
-</div>
+<!-- text only: no emoji, no tinted pill -->
+<p class="text-sm font-semibold" style="color:var(--lx-text-color)">Only 7 left in stock</p>
 <div data-island="InventoryIndicator" data-props='{"threshold":10,"lowStockMessage":"Only {count} left in stock","outOfStockMessage":"Sold out — join waitlist"}'></div>
 ```
 
@@ -439,11 +393,9 @@ Only use if actually tracking inventory. False scarcity destroys brand trust.
 Time-limited offers. Must have real expiration.
 
 ```html
-<div class="sticky top-0 z-50 py-3 px-4 text-center text-white font-semibold text-sm" style="background:#c9302c">
-  🔥 Summer Sale: 30% Off Ends in
-  <div data-island="CountdownTimer" data-props='{"endDate":"2026-06-30T23:59:59Z","message":"","urgencyThreshold":3600}'></div>
-  <a href="#shop" class="ml-4 underline">Shop Now</a>
-</div>
+<!-- deadline bars live in the announcement bar (the only permitted band, house rule N2) and use its tokens — never a red hex fill, never emoji -->
+<div data-island="AnnouncementBar" data-props='{"message":"Summer sale: 30% off ends soon","link":"#shop","dismissible":false}'></div>
+<div data-island="CountdownTimer" data-props='{"endDate":"2026-06-30T23:59:59Z","message":"Ends in","urgencyThreshold":3600}'></div>
 ```
 
 **When to use:** Flash sales, product launches, abandoned cart recovery.
@@ -453,13 +405,11 @@ Time-limited offers. Must have real expiration.
 Member-only, waitlist, invite-only framing.
 
 ```html
-<section class="py-20 px-4 text-center" style="background:var(--lx-bg-surface)">
+<section class="py-20 px-4 text-center">
   <div class="max-w-2xl mx-auto space-y-6">
     <h2 class="text-4xl font-bold" style="color:var(--lx-text-color)">Join the Waitlist</h2>
     <p class="text-lg opacity-80">Limited to 500 founding members. Next batch ships August 2026.</p>
-    <div class="inline-block px-4 py-2 rounded-full text-sm font-semibold" style="background:#f0f0f0">
-      127 spots remaining
-    </div>
+    <p class="text-sm font-semibold" style="color:var(--lx-text-muted)">127 spots remaining</p>
     <div data-island="EmailCapture" data-props='{"placeholder":"Enter your email","buttonText":"Reserve Your Spot"}'></div>
   </div>
 </section>
@@ -469,7 +419,7 @@ Member-only, waitlist, invite-only framing.
 
 ### Anti-Patterns (Fake Urgency)
 
-| ❌ Don't | Why | ✅ Do |
+| Don't | Why | Do |
 |----------|-----|-------|
 | Evergreen countdowns (timer resets on refresh) | Users notice, trust tanks | Use real sale end dates, or remove timer |
 | "Only 2 left!" for digital products | Obvious lie | Use enrollment caps ("Only 50 spots in this cohort") |
@@ -486,24 +436,22 @@ Max 3 choices per section. More options = decision paralysis = abandonment.
 
 **Good (3 features):**
 ```html
+<!-- definition list, no icons -->
 <section class="py-16 px-4">
-  <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-    <div class="text-center space-y-4">
-      <span class="text-5xl">⚡</span>
-      <h3 class="text-xl font-bold">Fast Results</h3>
-      <p class="opacity-80">See improvements in 7 days or less</p>
+  <dl class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+    <div>
+      <dt class="text-xl font-bold">Fast results</dt>
+      <dd class="mt-2 opacity-80">See improvements in 7 days or less</dd>
     </div>
-    <div class="text-center space-y-4">
-      <span class="text-5xl">🛡️</span>
-      <h3 class="text-xl font-bold">Risk-Free</h3>
-      <p class="opacity-80">60-day money-back guarantee</p>
+    <div>
+      <dt class="text-xl font-bold">Risk-free</dt>
+      <dd class="mt-2 opacity-80">60-day money-back guarantee</dd>
     </div>
-    <div class="text-center space-y-4">
-      <span class="text-5xl">❤️</span>
-      <h3 class="text-xl font-bold">Love It</h3>
-      <p class="opacity-80">Join 47,000+ happy customers</p>
+    <div>
+      <dt class="text-xl font-bold">Loved by customers</dt>
+      <dd class="mt-2 opacity-80">Join 47,000+ happy customers</dd>
     </div>
-  </div>
+  </dl>
 </section>
 ```
 
@@ -512,7 +460,7 @@ Max 3 choices per section. More options = decision paralysis = abandonment.
 ### CompareTable (3 columns max, 5-8 rows)
 
 ```html
-<div data-island="CompareTable" data-props='{"columns":[{"name":"Competitor A","highlight":false},{"name":"You","highlight":true},{"name":"Competitor B","highlight":false}],"rows":[{"feature":"Feature 1","values":["❌","✅","❌"]},{"feature":"Feature 2","values":["✅","✅","❌"]},{"feature":"Feature 3","values":["❌","✅","✅"]}]}'></div>
+<div data-island="CompareTable" data-props='{"columns":[{"name":"Competitor A","highlight":false},{"name":"You","highlight":true},{"name":"Competitor B","highlight":false}],"rows":[{"feature":"Feature 1","values":["No","Yes","No"]},{"feature":"Feature 2","values":["Yes","Yes","No"]},{"feature":"Feature 3","values":["No","Yes","Yes"]}]}'></div>
 ```
 
 ### Progressive Disclosure (Tabs/FAQ)
@@ -556,23 +504,23 @@ Move visitors from low-commitment → high-commitment actions. Don't ask for the
 
 Button copy is conversion science. Every word matters.
 
-### First-Person Labels
+### Name the Action in Brand Voice
 
-**Bad (second-person):**
+**Bad (vague):**
 - "Get Started"
-- "Buy Now"
-- "Download the Guide"
+- "Submit"
+- "Download"
 
-**Good (first-person):**
-- "Start MY Free Trial"
-- "Add to MY Cart"
-- "Send ME the Guide"
+**Good (names the action, brand voice, sentence case):**
+- "Add to cart"
+- "Start free trial"
+- "Send me the guide"
 
-**Why it works:** First-person creates ownership before purchase.
+**Why it works:** The visitor knows exactly what happens next. No "MY"/"ME" caps — shouted first-person reads as template copy.
 
 ```html
 <button class="px-8 py-4 text-lg font-bold rounded-lg" style="background:var(--lx-accent-color);color:white">
-  Start MY Transformation
+  Add to cart
 </button>
 ```
 
@@ -599,15 +547,15 @@ Button copy is conversion science. Every word matters.
 CTA button must have 4.5:1 contrast ratio against background (WCAG AA). Use high-chroma colors.
 
 ```html
-<button class="px-8 py-4 text-lg font-bold rounded-lg shadow-lg transition-transform hover:scale-105" style="background:var(--lx-accent-color);color:white;box-shadow:0 4px 12px rgba(102,126,234,0.4)">
-  Add to Cart
+<button class="px-8 py-4 text-lg font-bold rounded-lg transition-colors hover:bg-[var(--lx-accent-color-hover)]" style="background:var(--lx-accent-color);color:white">
+  Add to cart
 </button>
 ```
 
-**Color pairs (high contrast):**
-- Blue CTA on white: `#667eea` / `#ffffff`
-- Red CTA on dark: `#c9302c` / `#1a1a1a`
-- Green CTA on light: `#28a745` / `#f9fafb`
+**Contrast pairs (tokens, never hex):**
+- Accent CTA on page: `var(--lx-accent-color)` on `var(--lx-bg-color)`
+- Inverted CTA on dark: `var(--lx-bg-color)` on `var(--lx-text-color)`
+- Check the merchant's real token values against 4.5:1; never substitute a hardcoded hex.
 
 ### Button Hierarchy
 
@@ -682,8 +630,8 @@ Use scale, color, and whitespace to create hierarchy.
 
 **CTA (action):**
 ```html
-<button class="px-10 py-5 text-xl font-bold rounded-lg shadow-2xl transition-transform hover:scale-105" style="background:var(--lx-accent-color);color:white;box-shadow:0 8px 24px rgba(102,126,234,0.5)">
-  Get Started
+<button class="px-10 py-5 text-xl font-bold rounded-lg transition-colors hover:bg-[var(--lx-accent-color-hover)]" style="background:var(--lx-accent-color);color:white">
+  Add to cart
 </button>
 ```
 
@@ -701,7 +649,7 @@ Surround CTAs with empty space (min 2rem padding).
 
 ## Anti-Patterns (Conversion Killers)
 
-| ❌ | Why | ✅ |
+| Don't | Why | Do |
 |----|-----|-----|
 | Generic headlines ("Welcome to Our Store") | No hook, no benefit | "Get [Specific Benefit] in [Timeframe]" |
 | Hidden prices ("Contact for Pricing") | Friction, distrust | Show price upfront (even if high) |
@@ -732,25 +680,25 @@ Surround CTAs with empty space (min 2rem padding).
 {
   "head": {
     "title": "Get the Ultimate Skincare Guide",
-    "fonts": ["https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap"]
+    "fonts": ["<from lexsis_brand.compile_theme>"]
   },
-  "theme_css": ":root { --lx-accent-color: #667eea; --lx-text-color: #1a1a1a; --lx-bg-color: #ffffff; --lx-bg-surface: #f9fafb; }",
+  "theme_css": "<output of lexsis_brand.compile_theme — never hand-written hex>",
   "sections": [
     {
       "id": "hero",
-      "html": "<section class='py-20 px-4 text-center' style='background:linear-gradient(135deg, #667eea 0%, #764ba2 100%)'><div class='max-w-3xl mx-auto space-y-6'><h1 class='text-5xl md:text-6xl font-extrabold text-white'>Get the Flawless Skin Guide</h1><p class='text-xl text-white/90'>Learn how to achieve radiant skin in 30 days. Free download.</p><div data-island='EmailCapture' data-props='{\"placeholder\":\"Enter your email\",\"buttonText\":\"Send Me the Guide\"}'></div></div></section>",
+      "html": "<section class='py-20 px-4 text-center' style='background:var(--lx-bg-color)'><div class='max-w-3xl mx-auto space-y-6'><h1 class='text-5xl md:text-6xl font-bold' style='color:var(--lx-text-color);font-family:var(--lx-font-heading)'>Get the Flawless Skin Guide</h1><p class='text-xl' style='color:var(--lx-text-muted)'>Learn how to achieve radiant skin in 30 days. Free download.</p><div data-island='EmailCapture' data-props='{\"placeholder\":\"Enter your email\",\"buttonText\":\"Send Me the Guide\"}'></div></div></section>",
       "css": "",
       "js": ""
     },
     {
       "id": "value-props",
-      "html": "<section class='py-16 px-4'><div class='grid md:grid-cols-3 gap-8 max-w-5xl mx-auto'><div class='text-center space-y-4'><span class='text-5xl'>✓</span><h3 class='text-xl font-bold'>Science-Backed Methods</h3><p class='opacity-80'>Proven techniques from dermatologists</p></div><div class='text-center space-y-4'><span class='text-5xl'>✓</span><h3 class='text-xl font-bold'>Natural Ingredients</h3><p class='opacity-80'>No harsh chemicals or side effects</p></div><div class='text-center space-y-4'><span class='text-5xl'>✓</span><h3 class='text-xl font-bold'>30-Day Results</h3><p class='opacity-80'>See visible improvements in one month</p></div></div></section>",
+      "html": "<section class='py-16 px-4'><dl class='grid md:grid-cols-3 gap-8 max-w-5xl mx-auto'><div><dt class='text-xl font-bold'>Science-backed methods</dt><dd class='mt-2 opacity-80'>Proven techniques from dermatologists</dd></div><div><dt class='text-xl font-bold'>Natural ingredients</dt><dd class='mt-2 opacity-80'>No harsh chemicals or side effects</dd></div><div><dt class='text-xl font-bold'>30-day results</dt><dd class='mt-2 opacity-80'>See visible improvements in one month</dd></div></dl></section>",
       "css": "",
       "js": ""
     },
     {
       "id": "stats",
-      "html": "<section class='py-12 px-4' style='background:var(--lx-bg-surface)'><div class='grid grid-cols-2 gap-8 max-w-4xl mx-auto text-center'><div><p class='text-5xl font-extrabold' style='color:var(--lx-accent-color)'>47,000+</p><p class='text-sm uppercase mt-2 opacity-70'>Downloads</p></div><div><p class='text-5xl font-extrabold' style='color:var(--lx-accent-color)'>4.9/5</p><p class='text-sm uppercase mt-2 opacity-70'>Rating</p></div></div></section>",
+      "html": "<section class='py-12 px-4'><div class='grid grid-cols-2 gap-8 max-w-4xl mx-auto'><div><p class='text-3xl font-bold' style='color:var(--lx-text-color);font-family:var(--lx-font-heading)'>47,000+</p><p class='text-sm mt-2' style='color:var(--lx-text-muted)'>Downloads</p></div><div><p class='text-3xl font-bold' style='color:var(--lx-text-color);font-family:var(--lx-font-heading)'>4.9/5</p><p class='text-sm mt-2' style='color:var(--lx-text-muted)'>Rating</p></div></div></section>",
       "css": "",
       "js": ""
     },
@@ -774,7 +722,7 @@ Surround CTAs with empty space (min 2rem padding).
   "sections": [
     {
       "id": "hero",
-      "html": "<section class='grid md:grid-cols-2 gap-8 max-w-7xl mx-auto px-4 py-8'><div><img src='/product.jpg' class='w-full rounded-lg'/></div><div class='flex flex-col justify-center space-y-6'><h1 class='text-5xl font-bold' style='color:var(--lx-text-color)'>Premium Serum</h1><p class='text-xl opacity-80'>Transform your skin in 30 days</p><div class='flex items-baseline gap-3'><span class='text-3xl font-bold' style='color:var(--lx-text-color)'>$79.99</span><span class='text-lg line-through opacity-40'>$119.99</span><span class='text-xs font-semibold px-2 py-1 rounded-full text-white' style='background:var(--lx-accent-color)'>33% OFF</span></div><div data-island='BuyBox' data-props='{\"productId\":\"gid://shopify/Product/123\",\"ctaText\":\"Add to Cart — Free Shipping\"}'></div></div></section>",
+      "html": "<section class='grid md:grid-cols-2 gap-8 max-w-7xl mx-auto px-4 py-8'><div><img src='/product.jpg' class='w-full rounded-lg'/></div><div class='flex flex-col justify-center space-y-6'><h1 class='text-5xl font-bold' style='color:var(--lx-text-color)'>Premium Serum</h1><p class='text-xl opacity-80'>Transform your skin in 30 days</p><div class='flex items-baseline gap-3'><span class='text-3xl font-bold' style='color:var(--lx-text-color)'>$79.99</span><span class='text-lg line-through opacity-40'>$119.99</span></div><div data-island='BuyBox' data-props='{\"productId\":\"gid://shopify/Product/123\",\"ctaText\":\"Add to Cart — Free Shipping\"}'></div></div></section>",
       "css": "",
       "js": ""
     }
@@ -798,7 +746,7 @@ Surround CTAs with empty space (min 2rem padding).
     },
     {
       "id": "logos",
-      "html": "<section class='py-12 px-4' style='background:var(--lx-bg-surface)'><p class='text-center text-sm uppercase tracking-wide mb-8 opacity-70'>Trusted by Industry Leaders</p><div class='flex justify-center gap-12 flex-wrap'><img src='/logos/company1.svg' class='h-10 opacity-60'/><img src='/logos/company2.svg' class='h-10 opacity-60'/><img src='/logos/company3.svg' class='h-10 opacity-60'/></div></section>",
+      "html": "<section class='py-12 px-4'><p class='text-center text-sm mb-8' style='color:var(--lx-text-muted)'>Trusted by industry leaders</p><div class='flex justify-center gap-12 flex-wrap'><img src='/logos/company1.svg' class='h-10 opacity-60'/><img src='/logos/company2.svg' class='h-10 opacity-60'/><img src='/logos/company3.svg' class='h-10 opacity-60'/></div></section>",
       "css": "",
       "js": ""
     }

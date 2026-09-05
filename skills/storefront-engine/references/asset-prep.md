@@ -122,7 +122,7 @@ This ensures: the asset is stored in the brand's library, available for reuse, a
 
 ## Per-Page-Type Asset Budget
 
-| Page Type | Hero (high) | Section BGs (medium) | Lifestyle (medium) | Video | Total assets |
+| Page Type | Hero (high) | Supporting imagery (medium) | Lifestyle (medium) | Video | Total assets |
 |-----------|-------------|---------------------|--------------------|----|------|
 | PDP | 1 | 0-1 | 1 | 0-1 | 2-4 |
 | Landing | 1 | 2-3 | 0-1 | 0-1 | 3-5 |
@@ -200,5 +200,5 @@ only permanent verified URLs.
 2. `lexsis_workspace` action `credits` before expensive operations
 3. Prefer `quality: "medium"` — reserve `"high"` for hero only
 4. External MCP assets → `lexsis_asset_upload` action `import`
-5. CSS gradients/solid colors for sections that don't need imagery
+5. The page background for sections that don't need imagery
 6. Reuse: one hero image can serve as dimmed background for 2-3 sections

@@ -220,16 +220,16 @@ ProductGallery + ImageZoom integration for macro shots:
   <div class="container mx-auto px-6">
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
       <div class="aspect-square relative overflow-hidden group">
-        <img src="DETAIL_1_URL" alt="Clasp mechanism" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+        <img src="DETAIL_1_URL" alt="Clasp mechanism" class="w-full h-full object-cover transition-opacity duration-500 group-hover:opacity-90" />
       </div>
       <div class="aspect-square relative overflow-hidden group">
-        <img src="DETAIL_2_URL" alt="Stone setting" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+        <img src="DETAIL_2_URL" alt="Stone setting" class="w-full h-full object-cover transition-opacity duration-500 group-hover:opacity-90" />
       </div>
       <div class="aspect-square relative overflow-hidden group">
-        <img src="DETAIL_3_URL" alt="Engraving" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+        <img src="DETAIL_3_URL" alt="Engraving" class="w-full h-full object-cover transition-opacity duration-500 group-hover:opacity-90" />
       </div>
       <div class="aspect-square relative overflow-hidden group">
-        <img src="DETAIL_4_URL" alt="Texture" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+        <img src="DETAIL_4_URL" alt="Texture" class="w-full h-full object-cover transition-opacity duration-500 group-hover:opacity-90" />
       </div>
     </div>
   </div>
@@ -286,7 +286,7 @@ Explicit forbidden list with reasoning:
 5. **Comparison tables** — cheapens product to feature checklist.
 6. **Popup notifications** — "Sarah just bought this!" = aggressive.
 7. **Bright accent colors** — blues/greens/oranges destroy premium feel.
-8. **Emoji anywhere** — playful, not premium.
+8. **Emoji anywhere** — global house rule N1, not luxury-specific.
 9. **Exclamation marks** — excitement is unbecoming.
 10. **FOMO language** — "Don't miss out!", "Last chance!" = desperation.
 11. **Multiple CTAs per section** — one CTA per section max. Focus, not choice overload.
@@ -342,14 +342,14 @@ Price is **never hidden**, but **never emphasized**.
 - No "Save $X" or "X% OFF"
 
 **Payment Options:**
-- ✅ "Four interest-free payments of $300 available"
-- ✅ "Flexible payment options available"
-- ❌ "Or 4 payments of $300 with Afterpay!" (too promotional)
+- Do: "Four interest-free payments of $300 available"
+- Do: "Flexible payment options available"
+- Don't: "Or 4 payments of $300 with Afterpay!" (too promotional)
 
 **Shipping:**
-- ✅ "Complimentary shipping"
-- ✅ "Complimentary gift wrapping"
-- ❌ "FREE SHIPPING" (all caps = promotional)
+- Do: "Complimentary shipping"
+- Do: "Complimentary gift wrapping"
+- Don't: "FREE SHIPPING" (all caps = promotional)
 
 ### What Luxury Price Presentation NEVER Does
 
@@ -501,7 +501,7 @@ Full VibePage JSON for 6-section jewelry page:
     },
     {
       "id": "gallery",
-      "html": "<section class=\"relative bg-white py-32\"><div class=\"container mx-auto px-6\"><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4\"><div class=\"aspect-square relative overflow-hidden group\"><img src=\"DETAIL_1_URL\" alt=\"Clasp mechanism\" class=\"w-full h-full object-cover transition-transform duration-500 group-hover:scale-105\" /></div><div class=\"aspect-square relative overflow-hidden group\"><img src=\"DETAIL_2_URL\" alt=\"Stone setting\" class=\"w-full h-full object-cover transition-transform duration-500 group-hover:scale-105\" /></div><div class=\"aspect-square relative overflow-hidden group\"><img src=\"DETAIL_3_URL\" alt=\"Engraving\" class=\"w-full h-full object-cover transition-transform duration-500 group-hover:scale-105\" /></div><div class=\"aspect-square relative overflow-hidden group\"><img src=\"DETAIL_4_URL\" alt=\"Texture\" class=\"w-full h-full object-cover transition-transform duration-500 group-hover:scale-105\" /></div></div></div></section>",
+      "html": "<section class=\"relative bg-white py-32\"><div class=\"container mx-auto px-6\"><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4\"><div class=\"aspect-square relative overflow-hidden group\"><img src=\"DETAIL_1_URL\" alt=\"Clasp mechanism\" class=\"w-full h-full object-cover transition-opacity duration-500 group-hover:opacity-90\" /></div><div class=\"aspect-square relative overflow-hidden group\"><img src=\"DETAIL_2_URL\" alt=\"Stone setting\" class=\"w-full h-full object-cover transition-opacity duration-500 group-hover:opacity-90\" /></div><div class=\"aspect-square relative overflow-hidden group\"><img src=\"DETAIL_3_URL\" alt=\"Engraving\" class=\"w-full h-full object-cover transition-opacity duration-500 group-hover:opacity-90\" /></div><div class=\"aspect-square relative overflow-hidden group\"><img src=\"DETAIL_4_URL\" alt=\"Texture\" class=\"w-full h-full object-cover transition-opacity duration-500 group-hover:opacity-90\" /></div></div></div></section>",
       "css": "",
       "js": ""
     },
