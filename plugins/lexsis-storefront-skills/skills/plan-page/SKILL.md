@@ -1,11 +1,11 @@
 ---
 name: plan-page
-description: Turn campaign and product requirements into an approved storefront page plan. Use before visual design; this skill does not generate mockups, assets, or page source.
+description: Turn campaign and product requirements into a concise one-page storefront section plan. Use before page design; this skill does not choose islands or implementation details.
 ---
 
 # Plan a Page
 
-Create the strategy and section blueprint for one storefront page.
+Produce a concise strategy and section blueprint that can be reviewed quickly.
 
 Read:
 
@@ -13,20 +13,12 @@ Read:
 
 Use `lexsis_catalog.list`, `lexsis_catalog.get`,
 `lexsis_template_library.search_page_kits`, and
-`lexsis_template_library.search_sections`. Resolve an unfamiliar input schema
-with `lexsis_discover` using the exact router and action fields. Do not use
-natural-language discovery for these known actions. An empty directory match
-is not an MCP failure; the catalogue or template call itself determines
-availability.
-
-When the full Lexsis skill pack is installed, the optional detailed contracts
-are under `storefront-engine/references/lexsis-mcp-contract.md` and
-`storefront-engine/references/lexsis-design-capabilities.md`.
+`lexsis_template_library.search_sections`. Resolve an unfamiliar schema with
+exact router/action discovery.
 
 Read `work/storefront/setup/setup.json`, select one saved store/theme pair, and
-read its brand design and theme CSS. Prefer an explicit selection, then an
-existing page binding, then an unambiguous default. If the selection is not
-saved, stop with `Run /setup for this store and theme first.`
+read its brand design. If the selection is not saved, stop with
+`Run /setup for this store and theme first.`
 
 ## Ask Only What Is Missing
 
@@ -37,59 +29,63 @@ Collect:
 3. Audience and customer problem.
 4. Traffic source.
 5. Primary conversion goal and CTA.
-6. Required proof, claims, offers, or sections.
+6. Required proof, offer, claim, or section constraints.
 
 Ask no more than four questions at once. Read current products, variants,
-prices, and availability from `lexsis_catalog`; do not rely on setup for them.
-If a URL, screenshot, or ad is important, use the compact output from
-`/analyze-page`.
+prices, and availability from Lexsis.
 
-## Select a Template Direction
+## Choose a Direction
 
-Discover the current template actions, then search page kits using the page
-type, archetype, objective, industry, and mood. A kit is a coherent list of
-section-template IDs, not a page-instantiation action.
+Search page kits using the page type, objective, industry, and mood. If no kit
+fits, search sections for useful structural references. Record only the
+selected kit or section IDs in the manifest; put the short selection rationale
+in the plan.
 
-If no suitable kit exists, search individual sections. In a host with an
-interactive template picker, wait for the user's selection. Record evaluated
-results, the selected kit/sections, or the reason for a custom composition.
+Template selection at this stage is directional. `/design-page` owns fetching
+source, adapting layouts, selecting islands, and resolving schemas.
+The plan must not define islands.
 
-## Produce `page-plan.md`
+## Write a One-Page Plan
 
-Include:
+Keep `page-plan.md` concise enough to scan in one view. Include:
 
-- objective, buyer, traffic source, and primary CTA
-- selected workspace, store, theme, product, and collection
-- ordered section map with copy intent
-- visual rhythm and desktop/mobile behavior
-- asset roles
-- required islands
-- claims requiring evidence
-- selected template direction and adaptation intent
+- objective, audience, traffic source, product, and primary CTA
+- selected template direction
+- ordered section list
+- one sentence describing each section's purpose
+- broad media roles such as hero, product media, or lifestyle proof
+- offers and claims that require confirmation
 
-Start `page-manifest.json` using `references/page-files.md`, including the MCP,
-template, and design records. Create the page working directory and `assets/`,
-but do not write visual or production HTML.
+Do not include:
+
+- island names or schemas
+- island props or hydration modes
+- HTML, CSS, Tailwind classes, or implementation notes
+- detailed asset records
+- template search transcripts
+- QA, compilation, synchronization, or publishing state
+
+Create the page directory, `assets/`, and a compact schema-v3
+`page-manifest.json` using `references/page-files.md`. Do not create source,
+preview, compile, or QA files.
 
 ## Approval
 
-Present a compact summary:
+Present:
 
 ```text
-Page: [type]
-Goal: [conversion goal]
-Audience: [buyer]
-Sections: [ordered list]
-Islands: [list]
-Assets needed: [list]
-Claims to verify: [list]
+Page:
+Goal:
+Audience:
+Template direction:
+Sections:
+Media needed:
+Claims to confirm:
 ```
 
-Wait for approval and update the plan when requested.
+Wait for approval.
 
 ## Return
 
-Return `working_directory`, `page_plan_path`, `page_manifest_path`, and
-`PLAN_APPROVED`, plus the required MCP and template evidence. The next normal
-command is `/visual-page`, but this skill is complete after the plan is
-approved.
+Return the working directory, plan path, manifest path, and `PLAN_APPROVED`.
+The next normal command is `/design-page`.

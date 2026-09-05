@@ -6,7 +6,7 @@
 > hand-write `data-island` / `data-props` or escape HTML into JSON strings.
 
 For durable page work, store this format in `lexsis-source.html` and follow
-`source-artifact-workflow.md`. The visual workflow authors that same file,
+`source-artifact-workflow.md`. The design workflow authors that same file,
 dry-run compiles it with `page-theme.css`, and hydrates the compiled result
 through the exported island preview runtime.
 

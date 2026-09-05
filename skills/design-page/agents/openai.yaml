@@ -1,7 +1,7 @@
 interface:
-  display_name: "Create Visual Page"
-  short_description: "Create a responsive mockup with live island previews."
-  default_prompt: "Use $visual-page to turn my approved plan into a visual mockup."
+  display_name: "Design Page"
+  short_description: "Compose the real page source and interactive preview."
+  default_prompt: "Use $design-page to turn my approved plan into a responsive page design."
 dependencies:
   tools:
     - type: "mcp"

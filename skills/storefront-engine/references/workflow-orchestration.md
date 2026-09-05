@@ -7,16 +7,15 @@ Use one owning command at a time.
 ```text
 /setup
   → /plan-page
-  → /visual-page
-  → /asset-prep
+  → /design-page
   → /generate
   → /publish
 ```
 
 - Setup is normally run once and refreshed only for changed stores/themes.
-- Plan defines the campaign and page strategy.
-- Visual creates the responsive mockup and interactive island preview.
-- Asset prep replaces all temporary media.
+- Plan defines a concise campaign and section strategy without islands.
+- Design selects islands, resolves page assets, and creates the interactive
+  source preview.
 - Generate owns production source, draft creation, and hosted QA.
 - Publish is a separate explicit release.
 
@@ -26,6 +25,7 @@ later, create the minimum missing artifact and record the skipped command.
 ## Optional Routes
 
 - Use `/analyze-page` before planning when a URL, screenshot, or ad matters.
+- Use `/asset-prep` independently for standalone or replacement asset work.
 - Use `/optimize` for an existing page and a specific outcome.
 - Use `/experiment` for a measurable hypothesis.
 - Use `/cart` for cart profile configuration.

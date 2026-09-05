@@ -1,56 +1,62 @@
 ---
 name: asset-prep
-description: Replace visual-page placeholders with verified production images and video. Searches Lexsis and Shopify first, then generates or imports only what is still missing.
+description: Independently search, generate, import, or replace storefront media. Works from an asset brief or an existing page workspace and is not a required page-generation stage.
 ---
 
-# Prepare Page Assets
+# Prepare Assets
 
-Use the approved plan and canonical page source to finalize media. Do not
-create a draft.
+Use this skill for asset-only work. It does not require `/plan-page` or
+`/design-page`, and other skills must not invoke it automatically.
 
 Use `lexsis_asset_library.search`, `lexsis_catalog.list`,
 `lexsis_catalog.get`, `lexsis_workspace.credits`,
 `lexsis_drafts.asset_generate`, `lexsis_asset_upload.import`, and
-`lexsis_assets.view`. Resolve an unfamiliar schema with exact router/action
-discovery. Do not use prose discovery for these known actions, and do not
-treat an empty discovery result as an asset or catalogue outage. Report the
-concrete domain call that failed.
+`lexsis_assets.view`.
 
-The full skill pack includes optional deeper design guidance at
-`storefront-engine/references/lexsis-design-capabilities.md`.
+## Choose a Mode
 
-Read the page's saved store/theme binding. Stop if it does not match
-`work/storefront/setup/setup.json`; never run setup automatically.
+### Standalone
 
-Read the selected template section sources and island schemas. Derive media
-roles, aspect ratios, and crop guidance from those sources and the approved
-layout; do not assume template search returns a separate media-slot schema.
+Accept an asset brief containing the brand/store, roles, dimensions, crops,
+style, and intended use. Search, generate, import, and verify the requested
+media. Save results under `work/storefront-assets/<brief-name>/asset-manifest.json`.
+
+### Existing Page
+
+Read the page source and compact manifest. Work only on the requested missing,
+placeholder, or replacement roles. Do not redesign unrelated sections.
 
 ## Source Order
 
-For each asset role:
+For each role:
 
-1. Search `lexsis_asset_library`.
-2. For product media, use the real Shopify media from `lexsis_catalog`.
-3. If a non-product image is still missing, check credits and use
-   `lexsis_drafts` action `asset_generate`.
-4. If an external tool supplies media, persist it through
-   `lexsis_asset_upload` action `import`.
-5. Inspect the final asset with `lexsis_assets` action `view`.
+1. Search existing Lexsis assets.
+2. Use real Shopify product media for product identity.
+3. Ask before spending generation credits.
+4. Prefer Lexsis generation. If another image-generation tool is available,
+   offer it as an explicit provider choice.
+5. Import external-tool results into Lexsis.
+6. Inspect the final asset and verify identity-sensitive imagery.
 
-Pass the selected workspace and theme IDs whenever the current action schema
-supports them. Never generate product pack shots or infer identity from a file
-name. Creator and product imagery must be visually verified.
+Use supported icons, SVG, or CSS for ordinary interface icons. Do not generate
+raster UI icons unless the brief explicitly requires custom artwork.
 
-## Update the Mockup
+## Page Updates
 
-Replace every `preview-placeholder` asset in `lexsis-source.html` and the
-manifest with a permanent Lexsis or Shopify asset. Never create a second HTML
-source. Recompile the complete source and `page-theme.css`, update
-`compile-artifact.json`, and regenerate `visual-preview.html` so the
-composition can be checked with final media.
+When working on a page:
 
-Every manifest asset records:
+- replace the asset in `lexsis-source.html`
+- store only the final binding in `page-manifest.json`
+- recompile once after all requested assets are updated
+- regenerate `page-preview.html`
+- set `design.status` to `changes-pending-approval` for visible changes
+
+Do not create a second HTML source. Placeholders may remain for local preview,
+but `/generate` rejects them.
+
+## Asset Record
+
+Keep the machine record compact:
 
 ```json
 {
@@ -59,33 +65,15 @@ Every manifest asset records:
   "sourceType": "lexsis",
   "assetId": "...",
   "url": "https://...",
-  "width": 1600,
-  "height": 1200,
-  "desktopCrop": "center",
-  "mobileCrop": "center top",
-  "altTextIntent": "Product beside a glass",
-  "verificationStatus": "verified"
+  "status": "verified"
 }
 ```
 
-Shopify media uses `productId` and `mediaId` instead of `assetId`.
-
-## Gate
-
-Before completion, confirm:
-
-- no bundled placeholder remains
-- every URL is permanent
-- desktop and mobile crops work
-- identity-sensitive media was visually verified
-- generated media does not make unsupported product claims
-
-Asset or crop changes after approval set `visual.status` to
-`changes-pending-approval`. Refresh all visual approval hashes only after the
-user approves the final-media preview.
+Shopify media uses `productId` and `mediaId`. Put crop guidance, alt-text
+intent, prompt history, and creative reasoning in the brief or plan, not the
+page manifest.
 
 ## Return
 
-Update `page-manifest.json` and return `ASSETS_READY` with the verified roles,
-IDs, URLs, dimensions, crops, alt-text intent, template evidence, and MCP
-evidence. The next normal command is `/generate`.
+Return the final asset paths or bindings, provider used, verification result,
+and any unresolved roles.

@@ -1,7 +1,8 @@
 # Lexsis Page Design Capabilities
 
-Use this contract when planning, visualizing, preparing assets, generating, or
-structurally optimizing a Lexsis page.
+Use this contract when designing, preparing assets, generating, or
+structurally optimizing a Lexsis page. `/plan-page` does not load island or
+implementation guidance.
 
 ## Theme and Brand Context
 
@@ -119,7 +120,7 @@ compiled markup and exported Lexsis island runtime.
   product resolution, cart behavior, checkout-related behavior, and remote
   integrations.
 
-Inspect 390px, 768px, and 1280px layouts.
+Inspect 390px and 1280px during design. `/generate` adds 768px and hosted QA.
 
 ## Asset Roles
 
@@ -130,7 +131,7 @@ approved layout, and island schema.
 Use live Shopify media for product identity. Visually verify creator and
 product imagery. Temporary placeholders are visual-stage inputs only.
 
-## Manifest Evidence
+## Compact Manifest Evidence
 
 Record the design decision:
 
@@ -139,23 +140,19 @@ Record the design decision:
   "template": {
     "mode": "page-kit",
     "pageKitId": "kit-slug",
-    "sectionTemplateIds": ["hero-slug", "buy-box-slug"],
-    "evaluatedTemplates": [],
-    "selectionReason": "Matches the approved PDP structure",
-    "selectedAt": "2026-09-04T12:00:00Z"
+    "sectionTemplateIds": ["hero-slug", "buy-box-slug"]
   },
   "design": {
-    "themeId": "theme-id",
-    "themeSource": "saved-and-verified",
     "stylePack": "editorial",
     "compiledStyleManifest": null
   }
 }
 ```
 
-`template.mode` is `page-kit`, `sections`, or `custom`. Do not invent a
-template version when the live result does not expose one. After compilation,
-store the returned style manifest under `design.compiledStyleManifest`.
+`template.mode` is `page-kit`, `sections`, or `custom`. Keep selection reasons
+and evaluated alternatives in `page-plan.md`, not the manifest. After
+compilation, store the returned style manifest under
+`design.compiledStyleManifest`.
 
 `stylePack` is the selected named pack, `custom` for an intentional scoped
 treatment, or `existing-page` when adopting and preserving a remote page's

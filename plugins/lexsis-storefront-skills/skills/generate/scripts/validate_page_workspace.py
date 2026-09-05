@@ -76,7 +76,7 @@ QA_FIELDS = (
     "assets",
     "integrity",
 )
-SOURCE_PHASES = {"visual", "precompile", "adopted", "draft", "publish"}
+SOURCE_PHASES = {"design", "visual", "precompile", "adopted", "draft", "publish"}
 PRODUCTION_PHASES = {"precompile", "adopted", "draft", "publish"}
 REMOTE_READY_PHASES = {"draft", "publish"}
 
@@ -238,9 +238,11 @@ def validate_workspace(
 ) -> dict[str, Any]:
     errors: list[dict[str, str]] = []
     warnings: list[dict[str, str]] = []
-    required = ["page-plan.md", "page-manifest.json", "qa-report.md"]
+    required = ["page-plan.md", "page-manifest.json"]
     if phase in SOURCE_PHASES:
         required.extend(["lexsis-source.html", "page-theme.css"])
+    if phase in {"adopted", "draft", "publish"}:
+        required.append("qa-report.md")
     for name in required:
         if not (directory / name).is_file():
             errors.append(finding("missing_artifact", f"Missing required file: {name}", name))
@@ -255,11 +257,11 @@ def validate_workspace(
     )
 
     if manifest:
-        if manifest.get("schemaVersion") != 2:
+        if manifest.get("schemaVersion") != 3:
             errors.append(
                 finding(
                     "manifest_schema",
-                    "Manifest must use schemaVersion 2; migrate legacy workspaces first",
+                    "Manifest must use schemaVersion 3; migrate legacy workspaces first",
                     manifest_path.name,
                 )
             )
@@ -274,111 +276,27 @@ def validate_workspace(
                     manifest_path.name,
                 )
             )
-        for key in (
-            "workspaceId",
-            "storeId",
-            "themeId",
-            "setupPath",
-            "brandDesignPath",
-            "themeCssPath",
-            "pageThemeCssPath",
-        ):
+        for key in ("workspaceId", "storeId", "themeId", "setupPath"):
             if not manifest.get(key):
                 errors.append(
                     finding("manifest_binding", f"Manifest requires {key}", manifest_path.name)
                 )
-        if manifest.get("pageThemeCssPath") != "page-theme.css":
+        if not isinstance(manifest.get("sections"), list):
             errors.append(
-                finding(
-                    "page_theme_path",
-                    "pageThemeCssPath must be page-theme.css",
-                    manifest_path.name,
-                )
+                finding("manifest_sections", "Manifest sections must be an array", manifest_path.name)
             )
-        if not isinstance(manifest.get("sections"), list) or not isinstance(
-            manifest.get("islands"), list
+        products = manifest.get("products", [])
+        if not isinstance(products, list) or any(
+            not isinstance(item, dict) or not item.get("productId")
+            for item in products
         ):
             errors.append(
                 finding(
-                    "manifest_lists",
-                    "Manifest sections and islands must be arrays",
+                    "manifest_products",
+                    "Manifest products must contain compact productId bindings",
                     manifest_path.name,
                 )
             )
-        source_sync = manifest.get("sourceSync")
-        if not isinstance(source_sync, dict) or not isinstance(
-            source_sync.get("lastChangedSections"), list
-        ):
-            errors.append(
-                finding(
-                    "manifest_sync",
-                    "Manifest sourceSync requires lastChangedSections array",
-                    manifest_path.name,
-                )
-            )
-        fidelity = manifest.get("fidelity")
-        if (
-            not isinstance(fidelity, dict)
-            or not isinstance(fidelity.get("changedBindingPaths"), list)
-            or not isinstance(fidelity.get("approvedExceptions"), list)
-        ):
-            errors.append(
-                finding(
-                    "manifest_fidelity",
-                    "Manifest fidelity requires changedBindingPaths and approvedExceptions arrays",
-                    manifest_path.name,
-                )
-            )
-        if not isinstance(manifest.get("compileInputs"), dict):
-            errors.append(
-                finding(
-                    "manifest_compile_inputs",
-                    "Manifest compileInputs must contain every non-file compiler input",
-                    manifest_path.name,
-                )
-            )
-
-        mcp = manifest.get("mcp")
-        if not isinstance(mcp, dict) or mcp.get("status") != "connected":
-            errors.append(
-                finding(
-                    "mcp_status",
-                    "Standard page workflows require evidence from the Lexsis domain actions actually used",
-                    manifest_path.name,
-                )
-            )
-        elif not mcp.get("checkedAt") or not mcp.get("surfaceVersion"):
-            errors.append(
-                finding(
-                    "mcp_evidence",
-                    "Manifest MCP evidence requires checkedAt and surfaceVersion",
-                    manifest_path.name,
-                )
-            )
-        else:
-            capabilities = mcp.get("capabilities")
-            if not isinstance(capabilities, list) or not capabilities:
-                errors.append(
-                    finding(
-                        "mcp_capabilities",
-                        "Manifest MCP evidence requires the capabilities actually used",
-                        manifest_path.name,
-                    )
-                )
-            elif any(
-                not isinstance(item, dict)
-                or not item.get("router")
-                or not isinstance(item.get("actions"), list)
-                or not item.get("actions")
-                for item in capabilities
-            ):
-                errors.append(
-                    finding(
-                        "mcp_capabilities",
-                        "Every MCP capability requires a router and actions",
-                        manifest_path.name,
-                    )
-                )
 
         template = manifest.get("template")
         if not isinstance(template, dict) or template.get("mode") not in {
@@ -393,82 +311,18 @@ def validate_workspace(
                     manifest_path.name,
                 )
             )
-        else:
-            if not isinstance(template.get("evaluatedTemplates"), list):
-                errors.append(
-                    finding(
-                        "template_evidence",
-                        "Template selection requires evaluatedTemplates",
-                        manifest_path.name,
-                    )
-                )
-            if not template.get("selectionReason") or not template.get("selectedAt"):
-                errors.append(
-                    finding(
-                        "template_evidence",
-                        "Template selection requires selectionReason and selectedAt",
-                        manifest_path.name,
-                    )
-                )
-            if template.get("mode") == "page-kit" and not template.get("pageKitId"):
-                errors.append(
-                    finding(
-                        "template_page_kit",
-                        "Page-kit mode requires pageKitId",
-                        manifest_path.name,
-                    )
-                )
-            if template.get("mode") in {"page-kit", "sections"}:
-                section_template_ids = template.get("sectionTemplateIds")
-                if not isinstance(section_template_ids, list) or not section_template_ids:
-                    errors.append(
-                        finding(
-                            "template_sections",
-                            "Selected templates require sectionTemplateIds",
-                            manifest_path.name,
-                        )
-                    )
-
-        design = manifest.get("design")
-        if not isinstance(design, dict):
+        elif template.get("mode") == "page-kit" and not template.get("pageKitId"):
             errors.append(
-                finding("design_evidence", "Manifest requires a design record", manifest_path.name)
+                finding("template_page_kit", "Page-kit mode requires pageKitId", manifest_path.name)
             )
-        else:
-            if design.get("themeId") != manifest.get("themeId"):
-                errors.append(
-                    finding(
-                        "design_theme",
-                        "Design themeId must match the page themeId",
-                        manifest_path.name,
-                    )
+        elif template.get("mode") == "sections" and not template.get("sectionTemplateIds"):
+            errors.append(
+                finding(
+                    "template_sections",
+                    "Section mode requires sectionTemplateIds",
+                    manifest_path.name,
                 )
-            if not design.get("themeSource"):
-                errors.append(
-                    finding(
-                        "design_source",
-                        "Design record requires themeSource",
-                        manifest_path.name,
-                    )
-                )
-            if phase in SOURCE_PHASES and not design.get("stylePack"):
-                errors.append(
-                    finding(
-                        "design_style",
-                        "Visual and production phases require one coherent stylePack",
-                        manifest_path.name,
-                    )
-                )
-            if phase in REMOTE_READY_PHASES and not isinstance(
-                design.get("compiledStyleManifest"), dict
-            ):
-                errors.append(
-                    finding(
-                        "design_compile",
-                        "A ready draft requires the compiler style manifest",
-                        manifest_path.name,
-                    )
-                )
+            )
 
         setup_path = resolve_workspace_path(directory, manifest.get("setupPath", ""))
         if not setup_path.is_file():
@@ -501,43 +355,76 @@ def validate_workspace(
                             manifest_path.name,
                         )
                     )
-                elif not any(
-                    isinstance(item, dict)
-                    and item.get("themeId") == manifest.get("themeId")
-                    for item in selected_store.get("themes", [])
-                ):
-                    errors.append(
-                        finding(
-                            "setup_theme",
-                            "Manifest theme is not saved for the selected store",
-                            manifest_path.name,
-                        )
+                else:
+                    brand_path = resolve_workspace_path(
+                        setup_path.parent,
+                        selected_store.get("brandDesignPath", ""),
                     )
+                    if not brand_path.is_file():
+                        errors.append(
+                            finding("brand_design_missing", "Saved brand design does not exist", str(brand_path))
+                        )
+                    selected_theme = next(
+                        (
+                            item
+                            for item in selected_store.get("themes", [])
+                            if isinstance(item, dict)
+                            and item.get("themeId") == manifest.get("themeId")
+                        ),
+                        None,
+                    )
+                    if not selected_theme:
+                        errors.append(
+                            finding(
+                                "setup_theme",
+                                "Manifest theme is not saved for the selected store",
+                                manifest_path.name,
+                            )
+                        )
+                    else:
+                        theme_file = resolve_workspace_path(
+                            setup_path.parent,
+                            selected_theme.get("themeCssPath", ""),
+                        )
+                        if not theme_file.is_file():
+                            errors.append(
+                                finding("theme_css_missing", "Saved theme CSS does not exist", str(theme_file))
+                            )
 
-        for key, code in (
-            ("brandDesignPath", "brand_design_missing"),
-            ("themeCssPath", "theme_css_missing"),
-        ):
-            resolved = resolve_workspace_path(directory, manifest.get(key, ""))
-            if not resolved.is_file():
-                errors.append(finding(code, f"Manifest {key} does not exist", str(resolved)))
+        if phase in SOURCE_PHASES:
+            if not isinstance(manifest.get("config", {}), dict):
+                errors.append(
+                    finding("manifest_config", "Manifest config must be an object", manifest_path.name)
+                )
+            if not isinstance(manifest.get("assets", []), list):
+                errors.append(
+                    finding("manifest_assets", "Manifest assets must be an array", manifest_path.name)
+                )
+            if not isinstance(manifest.get("islands", []), list):
+                errors.append(
+                    finding("manifest_islands", "Manifest islands must be an array", manifest_path.name)
+                )
 
     source_path = directory / "lexsis-source.html"
     source = source_path.read_text(encoding="utf-8") if source_path.is_file() else ""
     theme_path = directory / "page-theme.css"
     theme_css = theme_path.read_text(encoding="utf-8") if theme_path.is_file() else ""
-    page_config = manifest.get("pageConfig", {}) if manifest else {}
-    compile_inputs = manifest.get("compileInputs", {}) if manifest else {}
-    if not isinstance(compile_inputs, dict):
-        compile_inputs = {}
-    if not isinstance(page_config, dict):
-        errors.append(finding("page_config", "Manifest requires pageConfig", manifest_path.name))
-        page_config = {}
-    if manifest and "themeCss" in page_config:
+    config = manifest.get("config", {}) if manifest else {}
+    if not isinstance(config, dict):
+        config = {}
+    page_config = {
+        "head": config.get("head", {}),
+        "scripts": config.get("scripts", []),
+    }
+    compile_inputs = {
+        "productBinding": config.get("productBinding", {}),
+        "commerceConfig": config.get("commerceConfig", {}),
+    }
+    if manifest and "themeCss" in config:
         errors.append(
             finding(
                 "embedded_theme_css",
-                "Store global CSS in page-theme.css, not pageConfig.themeCss",
+                "Store global CSS in page-theme.css, not manifest config",
                 manifest_path.name,
             )
         )
@@ -547,9 +434,9 @@ def validate_workspace(
         if not theme_css.strip():
             errors.append(finding("page_theme", "page-theme.css cannot be empty", theme_path.name))
         if not isinstance(page_config.get("head"), dict):
-            errors.append(finding("page_head", "pageConfig.head must be an object", manifest_path.name))
+            errors.append(finding("page_head", "config.head must be an object", manifest_path.name))
         if not isinstance(page_config.get("scripts"), list):
-            errors.append(finding("page_scripts", "pageConfig.scripts must be an array", manifest_path.name))
+            errors.append(finding("page_scripts", "config.scripts must be an array", manifest_path.name))
 
     source_sections: list[str] = []
     source_islands: list[dict[str, str]] = []
@@ -636,7 +523,7 @@ def validate_workspace(
         if INLINE_HANDLER_RE.search(source):
             errors.append(finding("inline_handler", "Source contains an inline event handler", source_path.name))
         if SCRIPT_SRC_RE.search(source):
-            errors.append(finding("script_src", "External scripts belong in pageConfig.scripts", source_path.name))
+            errors.append(finding("script_src", "External scripts belong in config.scripts", source_path.name))
         if UNSUPPORTED_JS_RE.search(source):
             errors.append(finding("unsupported_script", "Source contains unsupported JavaScript", source_path.name))
         if PLACEHOLDER_URL_RE.search(source):
@@ -741,28 +628,25 @@ def validate_workspace(
         for island in manifest_islands:
             if not isinstance(island, dict):
                 continue
-            schema = island.get("schema")
             if (
-                not isinstance(schema, dict)
-                or not schema.get("version")
-                or schema.get("lifecycleStatus") != "active"
-                or not schema.get("resolvedAt")
+                not island.get("schemaVersion")
+                or island.get("lifecycleStatus") != "active"
             ):
                 errors.append(
                     finding(
                         "island_schema_evidence",
-                        f"Island {island.get('name', '<unknown>')!r} requires an active resolved schema",
+                        f"Island {island.get('name', '<unknown>')!r} requires an active schema version",
                         manifest_path.name,
                     )
                 )
-            if phase in PRODUCTION_PHASES and island.get("productionMode") not in {
+            if phase in PRODUCTION_PHASES and island.get("mode") not in {
                 "native",
                 "headless",
             }:
                 errors.append(
                     finding(
                         "island_production_mode",
-                        f"Island {island.get('name', '<unknown>')!r} requires native or headless productionMode",
+                        f"Island {island.get('name', '<unknown>')!r} requires native or headless mode",
                         manifest_path.name,
                     )
                 )
@@ -780,59 +664,62 @@ def validate_workspace(
             )
         )
 
-    visual_state = manifest.get("visual", {}) if manifest else {}
-    visual_status = visual_state.get("status")
+    design_state = manifest.get("design", {}) if manifest else {}
+    design_status = design_state.get("status")
     skipped = manifest.get("workflow", {}).get("skippedSkills", []) if manifest else []
-    if phase in {"visual", "precompile", "draft", "publish"}:
+    if phase in {"design", "visual", "precompile", "draft", "publish"}:
         allowed_statuses = {"approved", "skipped"}
-        if visual_status not in allowed_statuses:
+        if design_status not in allowed_statuses:
             errors.append(
                 finding(
-                    "visual_status",
-                    "Visual status must be approved or explicitly skipped",
+                    "design_status",
+                    "Design status must be approved or explicitly skipped",
                     manifest_path.name,
                 )
             )
-        if visual_status == "skipped" and "visual-page" not in skipped:
+        if design_status == "skipped" and not {
+            "design-page",
+            "visual-page",
+        }.intersection(skipped):
             errors.append(
                 finding(
-                    "unrecorded_visual_skip",
-                    "Record visual-page in workflow.skippedSkills",
+                    "unrecorded_design_skip",
+                    "Record design-page in workflow.skippedSkills",
                     manifest_path.name,
                 )
             )
-    if phase == "adopted" and visual_status not in {"not-used", "skipped", "approved"}:
+    if phase == "adopted" and design_status not in {"not-used", "skipped", "approved"}:
         errors.append(
             finding(
-                "visual_status",
-                "Adopted pages require not-used, skipped, or approved visual status",
+                "design_status",
+                "Adopted pages require not-used, skipped, or approved design status",
                 manifest_path.name,
             )
         )
     approved_hash_keys = (
-        "approvedSourceHash",
-        "approvedThemeCssHash",
-        "approvedConfigHash",
-        "approvedStructureHash",
-        "approvedBundleHash",
-        "approvedCompileBundleHash",
+        "sourceHash",
+        "themeCssHash",
+        "configHash",
+        "structureHash",
+        "bundleHash",
+        "compiledBundleHash",
     )
-    if visual_status == "not-used" and any(visual_state.get(key) for key in approved_hash_keys):
+    if design_status == "not-used" and any(design_state.get(key) for key in approved_hash_keys):
         errors.append(
             finding(
-                "visual_approval_bypass",
-                "An approved visual cannot be relabelled not-used",
+                "design_approval_bypass",
+                "An approved design cannot be relabelled not-used",
                 manifest_path.name,
             )
         )
-    if visual_status == "skipped" and (
-        any(visual_state.get(key) for key in approved_hash_keys)
+    if design_status == "skipped" and (
+        any(design_state.get(key) for key in approved_hash_keys)
         or (directory / "compile-artifact.json").is_file()
     ):
         errors.append(
             finding(
-                "visual_approval_bypass",
-                "An approved visual cannot be relabelled skipped",
+                "design_approval_bypass",
+                "An approved design cannot be relabelled skipped",
                 manifest_path.name,
             )
         )
@@ -849,55 +736,53 @@ def validate_workspace(
         else None
     )
 
-    visual_preview_path = directory / str(
-        visual_state.get("previewPath") or "visual-preview.html"
-    )
-    compile_artifact_path = directory / str(
-        visual_state.get("compileArtifactPath") or "compile-artifact.json"
-    )
-    if visual_status == "approved":
-        for expected, actual, code in (
-            ("lexsis-source.html", visual_state.get("sourcePath"), "visual_source_path"),
-            ("page-theme.css", visual_state.get("themeCssPath"), "visual_theme_path"),
-            ("visual-preview.html", visual_state.get("previewPath"), "visual_preview_path"),
-            ("compile-artifact.json", visual_state.get("compileArtifactPath"), "visual_compile_path"),
-        ):
-            if actual != expected:
-                errors.append(
-                    finding(code, f"Approved visual must use {expected}", manifest_path.name)
+    page_preview_path = directory / "page-preview.html"
+    compile_artifact_path = directory / "compile-artifact.json"
+    if design_status == "approved":
+        if not design_state.get("stylePack"):
+            errors.append(
+                finding("design_style", "Approved design requires a stylePack", manifest_path.name)
+            )
+        if not isinstance(design_state.get("compiledStyleManifest"), dict):
+            errors.append(
+                finding(
+                    "design_style_manifest",
+                    "Approved design requires the compiler style manifest",
+                    manifest_path.name,
                 )
-        for name in ("visual-preview.html", "compile-artifact.json"):
+            )
+        for name in ("page-preview.html", "compile-artifact.json"):
             if not (directory / name).is_file():
                 errors.append(
                     finding(
-                        "missing_visual_artifact",
-                        f"Approved visual file is missing: {name}",
+                        "missing_design_artifact",
+                        f"Approved design file is missing: {name}",
                         name,
                     )
                 )
         for key, current, code in (
-            ("approvedSourceHash", current_source_hash, "visual_source_drift"),
-            ("approvedThemeCssHash", current_theme_hash, "visual_theme_drift"),
-            ("approvedConfigHash", current_config_hash, "visual_config_drift"),
-            ("approvedStructureHash", current_structure_hash, "visual_structure_drift"),
-            ("approvedBundleHash", current_bundle_hash, "visual_bundle_drift"),
+            ("sourceHash", current_source_hash, "design_source_drift"),
+            ("themeCssHash", current_theme_hash, "design_theme_drift"),
+            ("configHash", current_config_hash, "design_config_drift"),
+            ("structureHash", current_structure_hash, "design_structure_drift"),
+            ("bundleHash", current_bundle_hash, "design_bundle_drift"),
         ):
-            if not visual_state.get(key) or visual_state.get(key) != current:
+            if not design_state.get(key) or design_state.get(key) != current:
                 errors.append(
                     finding(code, f"Current page no longer matches {key}", manifest_path.name)
                 )
-        if visual_state.get("hydrationStatus") != "passed":
+        hydration_evidence = design_state.get("hydration")
+        if not isinstance(hydration_evidence, dict) or hydration_evidence.get("status") != "passed":
             errors.append(
                 finding(
-                    "visual_hydration",
-                    "Approved visual requires passing island hydration",
+                    "design_hydration",
+                    "Approved design requires passing island hydration",
                     manifest_path.name,
                 )
             )
         expected_hydration_keys = [
             f"{index}:{item['name']}" for index, item in enumerate(source_islands)
         ]
-        hydration_evidence = visual_state.get("hydrationEvidence")
         if (
             not isinstance(hydration_evidence, dict)
             or hydration_evidence.get("bundleHash") != current_bundle_hash
@@ -907,7 +792,7 @@ def validate_workspace(
         ):
             errors.append(
                 finding(
-                    "visual_hydration_evidence",
+                    "design_hydration_evidence",
                     "Hydration evidence must cover every expected island instance for the approved bundle",
                     manifest_path.name,
                 )
@@ -920,14 +805,14 @@ def validate_workspace(
         if fallback_islands:
             errors.append(
                 finding(
-                    "visual_island_fallback",
-                    f"Approved visual still has non-hydrated islands: {', '.join(filter(None, fallback_islands))}",
+                    "design_island_fallback",
+                    f"Approved design still has non-hydrated islands: {', '.join(filter(None, fallback_islands))}",
                     manifest_path.name,
                 )
             )
 
-        if visual_preview_path.is_file():
-            visual_preview = visual_preview_path.read_text(encoding="utf-8")
+        if page_preview_path.is_file():
+            page_preview = page_preview_path.read_text(encoding="utf-8")
             for code, marker in {
                 "preview_marker": "data-lx-visual-preview",
                 "preview_css": "https://storefront.trylexsis.com/islands/storefront.css",
@@ -936,16 +821,16 @@ def validate_workspace(
                 "preview_hydration_state": "data-lx-hydration-status",
                 "preview_status_object": "__LEXSIS_PREVIEW_STATUS__",
             }.items():
-                if marker not in visual_preview:
+                if marker not in page_preview:
                     errors.append(
-                        finding(code, f"Visual preview is missing {marker}", visual_preview_path.name)
+                        finding(code, f"Page preview is missing {marker}", page_preview_path.name)
                     )
-            if re.search(r"\{\{[A-Z0-9_]+\}\}", visual_preview):
+            if re.search(r"\{\{[A-Z0-9_]+\}\}", page_preview):
                 errors.append(
                     finding(
                         "preview_template_token",
-                        "Visual preview still contains shell template tokens",
-                        visual_preview_path.name,
+                        "Page preview still contains shell template tokens",
+                        page_preview_path.name,
                     )
                 )
 
@@ -997,7 +882,7 @@ def validate_workspace(
                 if (
                     not compiled_hash
                     or compiled_hash != derived_compiled_hash
-                    or compiled_hash != visual_state.get("approvedCompileBundleHash")
+                    or compiled_hash != design_state.get("compiledBundleHash")
                 ):
                     errors.append(
                         finding(
@@ -1025,14 +910,8 @@ def validate_workspace(
         common = (
             "role",
             "sectionId",
-            "url",
-            "width",
-            "height",
-            "desktopCrop",
-            "mobileCrop",
-            "altTextIntent",
             "sourceType",
-            "verificationStatus",
+            "status",
         )
         missing = [field for field in common if not asset.get(field)]
         if missing:
@@ -1066,7 +945,7 @@ def validate_workspace(
                     manifest_path.name,
                 )
             )
-        if asset.get("verificationStatus") != "verified":
+        if asset.get("status") != "verified":
             item = finding(
                 "unverified_asset",
                 f"Asset role {asset.get('role', '<unknown>')!r} is not verified",
@@ -1113,7 +992,7 @@ def validate_workspace(
 
     if phase == "adopted" and source:
         remote = manifest.get("remote", {})
-        sync = manifest.get("sourceSync", {})
+        sync = manifest.get("sync", {})
         if not remote.get("pageId") or remote.get("lastKnownVersion") is None:
             errors.append(
                 finding(
@@ -1133,9 +1012,8 @@ def validate_workspace(
 
     if phase in REMOTE_READY_PHASES and source:
         remote = manifest.get("remote", {})
-        sync = manifest.get("sourceSync", {})
+        sync = manifest.get("sync", {})
         qa = manifest.get("qa", {})
-        fidelity = manifest.get("fidelity", {})
         label = "Publish" if phase == "publish" else "DRAFT_READY"
         if manifest.get("status") != "qa_passed":
             errors.append(
@@ -1178,10 +1056,8 @@ def validate_workspace(
                 )
             )
         if (
-            fidelity.get("status") != "passed"
-            or fidelity.get("productionBundleHash") != current_bundle_hash
-            or fidelity.get("remoteSourceHash") != current_source_hash
-            or fidelity.get("remoteBundleHash") != current_bundle_hash
+            sync.get("remoteSourceHash") != current_source_hash
+            or sync.get("remoteBundleHash") != current_bundle_hash
         ):
             errors.append(
                 finding(
@@ -1201,8 +1077,8 @@ def validate_workspace(
         elif (
             remote_source_hash != current_source_hash
             or remote_bundle_hash != current_bundle_hash
-            or fidelity.get("remoteSourceHash") != remote_source_hash
-            or fidelity.get("remoteBundleHash") != remote_bundle_hash
+            or sync.get("remoteSourceHash") != remote_source_hash
+            or sync.get("remoteBundleHash") != remote_bundle_hash
         ):
             errors.append(
                 finding(
@@ -1211,8 +1087,9 @@ def validate_workspace(
                     manifest_path.name,
                 )
             )
+        qa_checks = qa.get("checks", {})
         if qa.get("status") != "passed" or any(
-            qa.get(field) is not True for field in QA_FIELDS
+            qa_checks.get(field) is not True for field in QA_FIELDS
         ):
             errors.append(
                 finding(
@@ -1221,7 +1098,7 @@ def validate_workspace(
                     manifest_path.name,
                 )
             )
-        if qa.get("checkedVersion") != remote.get("lastKnownVersion"):
+        if qa.get("version") != remote.get("lastKnownVersion"):
             errors.append(
                 finding(
                     "qa_version",
@@ -1229,7 +1106,7 @@ def validate_workspace(
                     manifest_path.name,
                 )
             )
-        if qa.get("checkedBundleHash") != current_bundle_hash:
+        if qa.get("bundleHash") != current_bundle_hash:
             errors.append(
                 finding(
                     "qa_bundle",
@@ -1250,7 +1127,7 @@ def validate_workspace(
             )
 
     synced_hashes = (
-        manifest.get("sourceSync", {}).get("lastSyncedSectionHashes", {})
+        manifest.get("sync", {}).get("lastSyncedSectionHashes", {})
         if manifest
         else {}
     )
@@ -1283,7 +1160,7 @@ def main() -> int:
     parser.add_argument("working_directory", type=Path)
     parser.add_argument(
         "--phase",
-        choices=["plan", "visual", "precompile", "adopted", "draft", "publish"],
+        choices=["plan", "design", "visual", "precompile", "adopted", "draft", "publish"],
         default="precompile",
     )
     parser.add_argument("--remote-version", help="Current remote page version for drift detection")

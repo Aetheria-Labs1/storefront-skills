@@ -1,8 +1,8 @@
 ---
 name: page-builder
 description: |
-  Build a Shopify storefront page through the Lexsis setup, planning, visual,
-  asset, generation, and draft-QA workflow. Never publishes without separate
+  Build a Shopify storefront page through the Lexsis setup, planning, design,
+  generation, and draft-QA workflow. Never publishes without separate
   explicit approval.
 
   <example>
@@ -19,7 +19,7 @@ color: green
 Use the public commands as distinct stages:
 
 ```text
-/setup → /plan-page → /visual-page → /asset-prep → /generate
+/setup → /plan-page → /design-page → /generate
 ```
 
 `/publish` remains a separate explicit action.
@@ -43,34 +43,27 @@ live.
 
 ## Plan
 
-Create or consume the approved `page-plan.md`. Ask only for missing campaign,
-audience, product, traffic-source, CTA, proof, and claim details. Search page
-kits and section templates before approving a custom composition.
+Create or consume a concise one-page `page-plan.md`. Ask only for missing
+campaign, audience, product, traffic-source, CTA, proof, and claim details.
+Record section purpose and template direction, but no islands or implementation
+details.
 
-## Visual
+## Design
 
-Load the exact selected theme, adapt fetched template source, use LX design
-tokens and compile-time Tailwind utilities, and write `lexsis-source.html`
-using ordinary HTML and schema-validated `<lx-island>` elements. Keep global
-page CSS in `page-theme.css`. Dry-run compile that exact bundle and place the
-compiler output in the provided island preview shell as `visual-preview.html`.
+Search existing Lexsis and Shopify assets first. Present one combined summary
+of reusable, missing, and optional media, then ask once before generation.
+Prefer Lexsis generation; offer other available image tools before using them.
 
-Use existing assets first and bundled placeholders only for missing design
-media. Use a static fallback only for an isolated island that lacks valid
-preview data or cannot compile. Real cart behavior is verified on the hosted
-draft.
-
-## Assets
-
-Replace every placeholder with visually verified Lexsis or Shopify media.
-Record permanent IDs, URLs, dimensions, crops, and alt-text intent in the
-manifest.
+Load the selected theme, adapt template source, choose and resolve islands,
+use LX tokens and compile-time Tailwind utilities, and write
+`lexsis-source.html` plus `page-theme.css`. Compile once and generate
+`page-preview.html`. Placeholders may be used for local review but cannot pass
+generation.
 
 ## Generate
 
-Promote the approved `lexsis-source.html` and `page-theme.css`, resolve live
-island schemas again, run the workspace validator, compile the exact bundle,
-and create with `publish:false`.
+Promote the approved source, reject unresolved placeholders, reuse the clean
+compile artifact when its hashes still match, and create with `publish:false`.
 
 Record page ID, version, preview URL, bundle hash, and section hashes. Verify
 390px, 768px, and 1280px layouts plus the expected variant, cart opening,

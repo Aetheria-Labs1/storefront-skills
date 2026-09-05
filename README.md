@@ -69,7 +69,7 @@ Both files are **generated** from the canonical skills by `scripts/build-distrib
 
 ## What's Included
 
-- **10 focused storefront commands** — six core workflow commands and four optional operations
+- **10 focused storefront commands** — five core workflow commands and five optional operations
 - **2 agents** (cro-analyzer, page-builder) for Claude Code
 - Shared CRO, vertical, traffic-source, workflow, and island references under `skills/storefront-engine/references/`
 - **47 active islands** plus 7 deprecated compatibility contracts under
@@ -84,9 +84,9 @@ Invoke as `/name` (Claude Code) or `$name` (Codex); most also trigger automatica
 | Skill | What it does |
 |-------|--------------|
 | `setup` | Save reusable brand and theme context for one or more stores |
-| `plan-page` | Turn campaign requirements into an approved page plan |
-| `visual-page` | Build a responsive mockup with interactive Lexsis island previews |
-| `asset-prep` | Replace temporary media with verified production assets |
+| `plan-page` | Produce a concise one-page section strategy |
+| `design-page` | Resolve assets and islands, then build the real source and preview |
+| `asset-prep` | Independently search, generate, import, or replace media |
 | `generate` | Write readable source, compile, create a draft, and run hosted QA |
 | `publish` | Release a synchronized draft only after explicit approval |
 | `analyze-page` | Analyze a URL, screenshot, ad, or existing page |
@@ -107,8 +107,7 @@ The normal page workflow is:
 ```text
 /setup
   → /plan-page
-  → /visual-page
-  → /asset-prep
+  → /design-page
   → /generate
   → /publish (separate approval)
 ```
@@ -116,9 +115,8 @@ The normal page workflow is:
 | Step | Output |
 |------|--------|
 | `/setup` | Saved store brand reference and theme CSS, indexed by store and theme |
-| `/plan-page` | Approved campaign, content, and section plan |
-| `/visual-page` | Readable visual source plus an interactive local preview |
-| `/asset-prep` | Verified final asset manifest and updated mockup |
+| `/plan-page` | Approved one-page campaign and section plan |
+| `/design-page` | Canonical source, asset decision, islands, and interactive preview |
 | `/generate` | Readable source, synchronized draft, preview URL, and QA report |
 | `/publish` | Explicit release of the reviewed page version |
 
@@ -127,7 +125,8 @@ selected `storeId` and `themeId`; it never silently switches themes. Commands
 remain independently invokable, and explicitly skipped steps are recorded in
 the page manifest.
 
-`visual-page` authors readable `<lx-island>` source, dry-run compiles it, and
+`design-page` inventories existing assets, asks once before generating missing
+media, authors readable `<lx-island>` source, dry-run compiles it, and
 loads Lexsis's exported island runtime in a safe local preview. Complex
 components such as shoppable video can therefore be reviewed before draft
 creation. Cart and checkout writes remain disabled locally and are certified
@@ -141,7 +140,7 @@ on the hosted draft created by `generate`.
 
 ## External MCPs (Optional)
 
-`asset-prep` detects and uses these when installed — none required:
+`design-page` or standalone `asset-prep` can use these when installed — none required:
 
 | MCP | Adds |
 |-----|------|
@@ -155,7 +154,7 @@ on the hosted draft created by `generate`.
 ```
 storefront-skills/
 ├── skills/                          ← CANONICAL public Agent Skills
-│   ├── visual-page/assets/          ← preview shell + neutral placeholders
+│   ├── design-page/assets/          ← preview shell + neutral placeholders
 │   └── storefront-engine/           ← shared resources, not a public command
 │       └── references/              ← workflow guidance + island schemas
 ├── .agents/skills → skills/         ← Codex + Cursor native discovery (symlink)

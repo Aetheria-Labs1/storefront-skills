@@ -13,7 +13,7 @@ SKILLS = ROOT / "skills"
 EXPECTED_PUBLIC_SKILLS = {
     "setup",
     "plan-page",
-    "visual-page",
+    "design-page",
     "asset-prep",
     "generate",
     "publish",
@@ -42,8 +42,8 @@ class PublicSkillPackTests(unittest.TestCase):
             self.assertIn("https://mcp.trylexsis.com/mcp", text, name)
 
     def test_visual_preview_assets_are_complete(self) -> None:
-        visual_assets = SKILLS / "visual-page" / "assets"
-        shell = (visual_assets / "preview-shell.html").read_text(encoding="utf-8")
+        design_assets = SKILLS / "design-page" / "assets"
+        shell = (design_assets / "preview-shell.html").read_text(encoding="utf-8")
         for token in (
             "{{THEME_CSS}}",
             "{{COMPILED_SECTION_CSS}}",
@@ -63,7 +63,7 @@ class PublicSkillPackTests(unittest.TestCase):
         self.assertNotIn("navigator.sendBeacon =", shell)
         self.assertNotIn("window.open =", shell)
 
-        placeholders = visual_assets / "placeholders"
+        placeholders = design_assets / "placeholders"
         expected = {
             "hero-landscape.svg",
             "product-square.svg",
@@ -75,10 +75,10 @@ class PublicSkillPackTests(unittest.TestCase):
 
     def test_visual_preview_builder_assembles_compiled_island_output(self) -> None:
         script_path = (
-            SKILLS / "visual-page" / "scripts" / "build_visual_preview.py"
+            SKILLS / "design-page" / "scripts" / "build_page_preview.py"
         )
         spec = importlib.util.spec_from_file_location(
-            "build_visual_preview",
+            "build_page_preview",
             script_path,
         )
         assert spec and spec.loader
@@ -152,6 +152,16 @@ class PublicSkillPackTests(unittest.TestCase):
     def test_active_skill_docs_use_one_html_source(self) -> None:
         for path in SKILLS.rglob("*.md"):
             self.assertNotIn("visual-source.html", path.read_text(encoding="utf-8"), path)
+
+    def test_plan_page_does_not_choose_islands(self) -> None:
+        text = (SKILLS / "plan-page" / "SKILL.md").read_text(encoding="utf-8")
+        self.assertIn("must not define islands", text)
+        self.assertNotIn("required islands", text.lower())
+        self.assertNotIn("island_schema", text)
+
+    def test_visual_page_was_replaced(self) -> None:
+        self.assertFalse((SKILLS / "visual-page").exists())
+        self.assertTrue((SKILLS / "design-page" / "SKILL.md").is_file())
 
     def test_discovery_is_not_a_global_blocker(self) -> None:
         checked = [

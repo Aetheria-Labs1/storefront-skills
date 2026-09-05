@@ -2,9 +2,10 @@
 
 > **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
 
-> **Inputs:** Approved page plan (from `/plan-page` workflow)
-> **Outputs:** Asset manifest (URLs + purposes + section mapping)
-> **When to load:** After page plan is approved, before HTML generation.
+> **Inputs:** A standalone asset brief or an existing page workspace
+> **Outputs:** Verified permanent asset bindings
+> **When to load:** During `/design-page` asset selection or an independent
+> `/asset-prep` request.
 
 ---
 
@@ -167,7 +168,7 @@ This ensures: the asset is stored in the brand's library, available for reuse, a
 
 ---
 
-## Asset Manifest (Output Format)
+## Compact Asset Record
 
 After sourcing, update `page-manifest.json` and return:
 
@@ -178,12 +179,7 @@ After sourcing, update `page-manifest.json` and return:
   "sourceType": "lexsis",
   "assetId": "asset-uuid",
   "url": "https://cdn.trylexsis.com/assets/abc123.jpg",
-  "width": 1600,
-  "height": 1200,
-  "desktopCrop": "center",
-  "mobileCrop": "center top",
-  "altTextIntent": "Product pouch beside a glass",
-  "verificationStatus": "verified"
+  "status": "verified"
 }
 ```
 
@@ -191,8 +187,10 @@ Shopify catalog media uses `sourceType: "shopify"` with `productId` and
 `mediaId` instead of `assetId`. Never require a Lexsis asset ID for a Shopify
 image.
 
-Asset names alone do not establish identity. Visually inspect product, creator,
-and endorsement imagery. Generation uses only permanent verified URLs.
+Keep crop guidance, alt-text intent, prompts, and creative reasoning in the
+plan or standalone asset brief. Asset names alone do not establish identity.
+Visually inspect product, creator, and endorsement imagery. Generation uses
+only permanent verified URLs.
 
 ---
 

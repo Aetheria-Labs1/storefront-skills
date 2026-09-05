@@ -1,7 +1,7 @@
 interface:
   display_name: "Prepare Page Assets"
-  short_description: "Replace temporary media with verified final assets."
-  default_prompt: "Use $asset-prep to finalize the media for my approved visual page."
+  short_description: "Search, generate, import, or replace storefront media."
+  default_prompt: "Use $asset-prep to prepare storefront assets from my brief or page workspace."
 dependencies:
   tools:
     - type: "mcp"

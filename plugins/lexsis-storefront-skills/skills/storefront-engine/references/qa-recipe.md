@@ -24,7 +24,7 @@
 - [ ] Expected Shopify variant enters the cart
 - [ ] Cart opens and quantity/subtotal update
 - [ ] Inherited header and footer are correct
-- [ ] Full-page hosted screenshots match `visual-preview.html` at all three
+- [ ] Full-page hosted screenshots match `page-preview.html` at all three
       viewports
 - [ ] Dynamic island regions preserve the approved container geometry and
       placement

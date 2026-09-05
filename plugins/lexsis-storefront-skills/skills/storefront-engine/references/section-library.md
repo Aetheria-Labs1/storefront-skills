@@ -61,7 +61,8 @@ lexsis_pages({ action: "inspect", args: { page_id } })
 
 ### 3. Read saved style context
 
-Read the manifest's `brandDesignPath` and `themeCssPath`. Confirm its theme ID
+Read `setupPath`, then resolve the selected store's brand design and selected
+theme CSS from the setup index. Confirm the manifest theme ID
 matches the remote page. Use the saved colors, fonts, spacing, and `--lx-*`
 variables; never silently use another saved theme.
 

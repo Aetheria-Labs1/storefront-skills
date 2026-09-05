@@ -19,9 +19,9 @@ The browser runtime hydrates compiled `data-island` markers, not raw
 9. Run:
 
 ```bash
-python3 skills/visual-page/scripts/build_visual_preview.py \
+python3 skills/design-page/scripts/build_page_preview.py \
   compile-artifact.json \
-  work/visual-pages/<page-handle>/visual-preview.html \
+  work/visual-pages/<page-handle>/page-preview.html \
   --theme-css work/visual-pages/<page-handle>/page-theme.css
 ```
 
@@ -49,7 +49,7 @@ read-only props or fallback HTML.
 ## Preview Boundary
 
 The shell does not add a content-security policy or replace browser network,
-form, popup, or link behavior. Keep visual-stage props presentation-focused
+form, popup, or link behavior. Keep design-stage props presentation-focused
 and avoid configuring real checkout or external navigation actions.
 
 Real product resolution, add-to-cart, cart totals, and checkout are verified

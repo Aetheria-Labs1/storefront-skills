@@ -1,147 +1,93 @@
 ---
 name: generate
-description: Turn an approved plan, visual mockup, and verified assets into readable Lexsis source, a compiled draft, and a synchronized QA report.
+description: Promote approved canonical page source into a synchronized Lexsis draft and run hosted responsive, fidelity, and commerce QA.
 ---
 
 # Generate the Draft
 
-Own production source, compilation, draft creation, and hosted interaction QA.
-Do not publish.
+Create and verify a remote draft from the approved local page. Do not redesign
+the page or publish it.
 
 Read `references/source-and-sync.md`.
 
-Use exact action slots for this run:
-`lexsis_catalog.get`, `lexsis_brand.context`, `lexsis_brand.get_theme`,
-`lexsis_design.island_schema`, `lexsis_pages.compile`,
-`lexsis_pages.edit_context`, `lexsis_pages.source`,
-`lexsis_pages.integrity`, `lexsis_page_create.create`,
-`lexsis_drafts.page_update_section`, and `lexsis_drafts.page_patch`. Resolve
-unfamiliar argument schemas with exact router/action discovery. Do not use
-prose queries for known actions. A discovery lookup miss is not a connection
-failure; only the corresponding live call proves whether that operation is
-available.
-
-When the full Lexsis skill pack is installed, also read
-`storefront-engine/references/lexsis-design-capabilities.md` for the detailed
-LX token, Tailwind, template, and island styling contract. The production
-rules below remain complete when that shared reference is unavailable.
+Use `lexsis_catalog.get`, `lexsis_design.island_schema`,
+`lexsis_pages.compile`, `lexsis_pages.edit_context`,
+`lexsis_pages.source`, `lexsis_pages.integrity`, and
+`lexsis_page_create.create`.
 
 ## Inputs
 
-Use the page workspace created by earlier commands. If the user explicitly
-skipped planning, visual design, or asset preparation, create the minimum
-replacement artifact and record that skill in `workflow.skippedSkills`.
-Never invoke another skill automatically.
+Use the local source and compact schema-v3 manifest. `/asset-prep` is optional
+and is never a required handoff. Final assets may have been selected or
+generated directly by `/design-page`, imported independently, or prepared with
+`/asset-prep`.
 
-Confirm the manifest's store/theme pair is saved in setup. Read current
-products, variants, prices, availability, permissions, credits, assets, island
-schemas, and remote versions live.
+If `/design-page` was explicitly skipped, author the canonical source once and
+record that skip without claiming design approval. Never invoke another skill
+automatically.
 
-## Promote the Approved Source
+Refresh only volatile data needed for creation: selected product variants,
+prices, availability, permissions, and the remote page version when editing.
+Do not reread unchanged setup, brand, theme, template, or asset-search context.
 
-1. Treat `lexsis-source.html` and `page-theme.css` as the approved design
-   contract. Do not recreate, simplify, or reinterpret them.
-2. Reuse the selected page kit or section-template source. When earlier skills
-   were explicitly skipped, search and fetch templates before custom
-   composition.
-3. If `/visual-page` was explicitly skipped, author the canonical source and
-   page theme once, record the skip, and continue without claiming visual
-   fidelity approval.
-4. Require `/asset-prep` to have replaced temporary media. If asset preparation
-   was explicitly skipped, verify and update assets locally before compiling.
-5. Resolve every island's current active schema again. Prefer native variants
-   and validated styling parts; use headless mode only with complete hooks.
-6. Use one `<!-- section: id -->` followed by `<section id="id">` per section.
-7. Keep island JSON readable where practical.
-8. Keep global design CSS in `page-theme.css` and section-specific CSS beside
-   its section in `lexsis-source.html`.
-9. Use LX tokens for brand values and Tailwind utilities for layout. Do not
-   depend on a runtime Tailwind CDN.
-10. Use native commerce islands; never replace BuyBox or another commerce
-   interaction with a custom button.
-11. Keep production comments to section delimiters and exclude inline handlers,
-   unsupported scripts, local paths, placeholders, and complete-page images.
+## Production Gate
 
-When a visual is approved, generation may update live binding records in the
-manifest or compiler arguments, but it must not change source, copy, classes,
-section order, island placement, or CSS. A visible source or asset change
-returns the visual to `changes-pending-approval`.
+Before draft creation:
 
-Run:
+- no preview placeholder remains
+- all media URLs are permanent
+- product and variant IDs are current
+- selected island schemas remain active
+- source, CSS, configuration, and bindings match the approved design hashes
+- local validation passes
 
-```bash
-python3 skills/generate/scripts/validate_page_workspace.py \
-  work/visual-pages/<page-handle> --phase precompile
-```
+If assets are unresolved, report the missing roles. The user may return to
+`/design-page`, run `/asset-prep`, or supply assets directly.
 
-Fix all blocking source, copy, claim, price, and asset findings.
+## Reuse the Compile Artifact
 
-## Compile and Create
+Read `compile-artifact.json`.
 
-Dry-run the exact approved bundle with `lexsis_pages` action `compile`. Confirm
-its source, theme, configuration, structure, and bundle hashes match the
-approved visual before calling `lexsis_page_create` action `create` with
-`publish: false`.
+- Reuse it when source, theme CSS, configuration, structure, and bundle hashes
+  still match and the selected live bindings have not changed.
+- Recompile only when any compile input changed or the artifact is absent,
+  invalid, or from an incompatible compiler surface.
+- Never compile the same unchanged bundle merely because a new skill started.
 
-If discovery exposes compile-artifact creation, create from the returned
-`compile_id` and pass its expected bundle hash. Otherwise submit the exact
-compiled source, CSS, head, and scripts bytes to page creation, then fetch the
-persisted remote source and content immediately. A hash mismatch is blocking;
-never accept a draft created from different input.
+Create with `publish: false`. Use a supported compile ID when available;
+otherwise submit the exact source, CSS, head, scripts, and bindings represented
+by the clean compile artifact.
 
-Store the returned page ID, version, and preview URL in the manifest. Record
-the local, compiled, persisted-source, remote-bundle, and section hashes as the
-synchronized baseline.
-Store the compiler style manifest under `design.compiledStyleManifest`.
-`lexsis-source.html` remains the editable source of truth.
+Fetch the persisted source and page state immediately. Record only the page
+ID, version, preview URL, local/remote hashes, and section hashes in the
+manifest. A hash mismatch is blocking.
 
 ## Hosted QA
 
 At 390px, 768px, and 1280px verify:
 
-- composition matches the approved mockup
-- full-page screenshots of the generated preview and hosted draft match in
-  geometry, typography, color, spacing, and media
-- no overflow, clipping, broken media, or wrong theme
+- the hosted draft matches the approved local design
+- geometry, typography, color, spacing, and media remain faithful
 - islands hydrate
-- primary CTA adds the expected Shopify variant
+- no overflow, clipping, or broken media exists
+- the primary CTA uses the expected Shopify variant
 - variant selection, cart opening, quantity, and subtotal work
-- copy, claims, assets, header, footer, and integrity pass
+- copy, claims, assets, and integrity pass
 
-Write `qa-report.md` and update the manifest's QA fields.
-Record `qa.visualRegression: true` only after the three viewport comparisons
-pass. Review dynamic island regions manually while comparing their container
-geometry and placement.
+Write detailed evidence and blockers to `qa-report.md`. Store only compact QA
+status, checked version, checked bundle hash, and check booleans in the
+manifest.
 
-Run the validator with `--phase draft` after hosted QA. Return `DRAFT_READY`
-only when fidelity, synchronization, hydration, responsive checks, and
-commerce checks pass. Pass the source and bundle hashes fetched live from the
-remote draft to `--remote-source-hash` and `--remote-bundle-hash`.
+Run the validator with `--phase draft` and live remote hashes. Return
+`DRAFT_READY` only when synchronization and all blocking QA checks pass.
 
 ## Later Edits
 
-Read the remote version and stop on unexpected drift. Change local source,
-compile the full page, identify changed section hashes, patch only those
-sections with `expected_version`, then update the manifest after success.
+Fetch the remote version and stop on drift. Change local source first, compile
+only when inputs changed, patch only changed sections with `expected_version`,
+and update local synchronization state after success.
 
 ## Return
 
-Return:
-
-```text
-working_directory
-page_plan_path
-page_manifest_path
-source_html_path
-page_theme_path
-visual_preview_path
-compile_artifact_path
-compile_result
-page_id
-page_version
-preview_url
-qa_report_path
-```
-
-Return `DRAFT_READY` only when synchronization and blocking QA checks pass.
-Include the required MCP, template, binding, fallback, and blocker evidence.
+Return the working directory, source, compile artifact, page ID, version,
+preview URL, QA report, and `DRAFT_READY`.

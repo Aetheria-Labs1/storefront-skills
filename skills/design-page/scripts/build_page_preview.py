@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build a safe local visual preview from a Lexsis compile response."""
+"""Build a local interactive page preview from a Lexsis compile response."""
 
 from __future__ import annotations
 

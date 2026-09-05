@@ -14,8 +14,9 @@
 1. Read the selected store/theme from `work/storefront/setup/setup.json`
 2. Read its saved brand design and exact theme CSS
 3. Read current products, variants, assets, permissions, and island schemas
-4. Require a valid page plan and verified assets, or record explicit skips
-5. Author complete production source
+4. Require a valid page plan and a completed design asset decision, or record
+   explicit skips
+5. Promote the approved canonical source with final production assets
 6. lexsis_pages → compile
 7. lexsis_page_create → create draft
 8. Host-agent responsive and commerce verification
@@ -37,7 +38,7 @@ permissions, analytics, and remote versions are always read live.
 > **Local source**: follow `source-artifact-workflow.md`.
 > `lexsis-source.html` is the canonical editable visual and production
 > artifact. It is dry-run compiled into an interactive local preview during
-> `/visual-page`, then promoted unchanged by `/generate`.
+> `/design-page`, then promoted unchanged by `/generate`.
 
 > **Templates**: search before drafting. Retrieve templates you intend to edit
 > with `lexsis_design` action `get_section`. Each returned `source` is ready for

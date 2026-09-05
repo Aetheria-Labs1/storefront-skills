@@ -1,16 +1,9 @@
 # Storefront Page Files
 
-Use these files to pass work between the public storefront commands without
-requiring one command to invoke another.
+Use local files to pass work between commands without depending on chat
+history.
 
-## Setup Context
-
-`/setup` saves reusable brand design and one or more theme files under
-`work/storefront/setup/`. A page binds exactly one saved store and theme.
-Products, prices, variants, assets, island schemas, permissions, analytics,
-and remote page versions remain live reads.
-
-## Page Workspace
+## Workspace
 
 ```text
 work/visual-pages/<page-handle>/
@@ -19,163 +12,126 @@ work/visual-pages/<page-handle>/
 ├── lexsis-source.html
 ├── page-theme.css
 ├── compile-artifact.json
-├── visual-preview.html
+├── page-preview.html
 ├── qa-report.md
 └── assets/
 ```
 
-- `lexsis-source.html` is the only editable HTML source from visual design
-  through publishing.
-- Section-specific CSS stays in top-level `<style>` blocks beside its section.
-- `page-theme.css` contains global tokens and page-wide custom CSS and is
-  passed as the compiler's `theme_css`.
-- `compile-artifact.json` stores the exact compile response and input hashes.
-- `visual-preview.html` is generated from that compile response and is never
-  edited or submitted as source.
+Files appear progressively. Planning creates only the plan, compact manifest,
+and assets directory. Design creates source, CSS, compile artifact, and
+preview. Generation creates the QA report and remote synchronization state.
 
-## Manifest
+## Compact Manifest
 
-Use `schemaVersion: 2`. Keep the normal MCP, template, setup, design, binding,
-asset, section, island, QA, and remote records, plus:
+Use `schemaVersion: 3`.
+
+The manifest is a machine state ledger. Store only:
+
+- page, workspace, store, and theme IDs
+- selected template and section IDs
+- compact product and final asset bindings
+- section order and compact island schema evidence
+- approved local hashes
+- remote page ID, version, hashes, and section hashes
+- compact QA status
+
+Do not store copy intent, claims research, template-search transcripts,
+omitted-component explanations, generation prompts, crop prose, or QA
+narrative. Those belong in `page-plan.md`, an asset brief, or `qa-report.md`.
+
+Do not prefill future stages with null fields.
+
+## Design State
+
+`/design-page` adds:
 
 ```json
 {
-  "schemaVersion": 2,
-  "themeCssPath": "work/storefront/setup/stores/<store-id>/themes/<theme-id>.css",
-  "pageThemeCssPath": "page-theme.css",
-  "pageConfig": {
+  "config": {
     "head": {},
-    "scripts": []
-  },
-  "compileInputs": {
+    "scripts": [],
     "productBinding": {},
     "commerceConfig": {}
   },
-  "visual": {
-    "status": "pending",
-    "sourcePath": "lexsis-source.html",
-    "themeCssPath": "page-theme.css",
-    "previewPath": "visual-preview.html",
-    "compileArtifactPath": "compile-artifact.json",
-    "approvedSourceHash": null,
-    "approvedThemeCssHash": null,
-    "approvedConfigHash": null,
-    "approvedStructureHash": null,
-    "approvedBundleHash": null,
-    "approvedCompileBundleHash": null,
-    "hydrationStatus": "pending",
-    "hydrationEvidence": null
-  },
-  "fidelity": {
-    "status": "pending",
-    "productionBundleHash": null,
-    "remoteSourceHash": null,
-    "remoteBundleHash": null,
-    "changedBindingPaths": [],
-    "approvedExceptions": []
-  },
-  "sourceSync": {
-    "lastCompiledBundleHash": null,
-    "lastSyncedBundleHash": null,
-    "lastSyncedSectionHashes": {},
-    "lastChangedSections": []
+  "assets": [],
+  "islands": [],
+  "design": {
+    "status": "approved",
+    "stylePack": "editorial",
+    "compiledStyleManifest": {},
+    "sourceHash": "...",
+    "themeCssHash": "...",
+    "configHash": "...",
+    "structureHash": "...",
+    "bundleHash": "...",
+    "compiledBundleHash": "...",
+    "hydration": {
+      "status": "passed",
+      "bundleHash": "...",
+      "expectedIslands": [],
+      "hydratedIslands": [],
+      "checkedAt": "..."
+    }
   }
 }
 ```
 
-`themeCssPath` is the reusable `/setup` source. `pageThemeCssPath` is the
-page-local compile input. Do not duplicate the full CSS inside the manifest.
+`lexsis-source.html` and `page-theme.css` are the only editable design inputs.
+`compile-artifact.json` and `page-preview.html` are generated.
 
-`visual.status` is `pending`, `changes-pending-approval`, `approved`,
-`skipped`, or `not-used`. `not-used` is reserved for adopting an existing page.
-An approved visual cannot be relabelled `not-used` to bypass fidelity checks.
+## Remote State
 
-## Compile Artifact
-
-Write:
+`/generate` adds:
 
 ```json
 {
-  "schemaVersion": 1,
-  "sourceHash": "...",
-  "themeCssHash": "...",
-  "configHash": "...",
-  "structureHash": "...",
-  "bundleHash": "...",
-  "compiledBundleHash": "...",
-  "compiledAt": "2026-09-05T12:00:00Z",
-  "response": {}
+  "sync": {
+    "lastCompiledBundleHash": "...",
+    "lastSyncedBundleHash": "...",
+    "lastSyncedSectionHashes": {},
+    "lastChangedSections": [],
+    "remoteSourceHash": "...",
+    "remoteBundleHash": "..."
+  },
+  "remote": {
+    "pageId": "...",
+    "lastKnownVersion": 1,
+    "previewUrl": "https://..."
+  },
+  "qa": {
+    "status": "passed",
+    "version": 1,
+    "bundleHash": "...",
+    "checks": {
+      "responsive": true,
+      "visualRegression": true,
+      "commerce": true,
+      "copy": true,
+      "claims": true,
+      "assets": true,
+      "integrity": true
+    }
+  }
 }
 ```
 
-`response` is the unmodified Lexsis compile result used to generate the
-preview. `compiledBundleHash` is derived from that response. The local bundle
-hash covers `lexsis-source.html`, `page-theme.css`, `pageConfig.head`,
-`pageConfig.scripts`, and every value in `compileInputs`.
+Detailed screenshots, interaction results, blockers, and publish readiness stay
+in `qa-report.md`.
 
-## Visual Approval and Assets
+## Synchronization
 
-`/visual-page` creates the canonical source and page theme, compiles them, and
-generates the preview from `compile-artifact.json`. Approval records all
-visual hashes and requires every production island instance to hydrate. Record
-the browser-observed expected and hydrated instance keys, check time, and
-approved bundle hash in `visual.hydrationEvidence`.
-
-`/asset-prep` replaces temporary media in the canonical source. Any visible
-asset or crop change sets `visual.status` to `changes-pending-approval`, then
-recompiles and regenerates the preview. Approval hashes are refreshed only
-after the final-media preview is approved.
-
-If the user explicitly skips `/visual-page`, record the skip and let
-`/generate` create the canonical source once. Do not claim visual fidelity
-approval for a skipped stage.
-
-## Generation and Synchronization
-
-`/generate` promotes the approved source. It must not change layout, classes,
-copy, section order, island placement, or CSS. Prefer live product bindings in
-compiler arguments or manifest records instead of rewriting visible source.
-
-For creation:
-
-1. Validate the local workspace.
-2. Compile the exact local bundle without saving.
-3. Confirm it matches the approved hashes.
-4. Create with `publish: false`, using a discovered `compile_id` when
-   supported or the exact compiled input bytes otherwise.
-5. Fetch the persisted remote source and page content and calculate their
-   hashes independently.
-6. Reject source or bundle hash drift.
-7. Save page ID, version, preview URL, local and remote hashes, and section
-   hashes.
-
-Run the `draft` validator with the live remote source and bundle hashes.
-Manifest values alone are not sufficient remote evidence.
+For creation, use the clean design compile artifact when its input hashes still
+match. Recompile only after an input changes. After draft creation, fetch the
+persisted source and remote bundle and reject hash drift.
 
 For editing:
 
-1. Fetch the current remote version and stop on drift.
-2. Change local source or page theme first.
-3. Recompile the complete bundle.
-4. Require renewed visual approval for visible changes.
-5. Compare section hashes and patch only changed sections with
-   `expected_version`.
-6. Update local versions and hashes only after a successful write.
+1. Fetch the remote version and stop on drift.
+2. Change local source first.
+3. Compile only if an input changed.
+4. Compare section hashes.
+5. Patch only changed sections with `expected_version`.
+6. Update synchronization state only after success.
 
-Remote content must never be the only copy of an intentional change.
-
-## Completion Gate
-
-`DRAFT_READY` requires:
-
-- approved source hashes still match, unless visual design was explicitly
-  skipped
-- preview hydration passed
-- compile and persisted remote hashes match
-- remote version is recorded
-- responsive QA passed at 390px, 768px, and 1280px
-- local preview and hosted draft visual regression passed
-- commerce, copy, claims, assets, and integrity checks passed
-
-Publishing additionally requires the current entitlement and explicit user
-approval for the synchronized page version.
+Legacy schema-v1 and schema-v2 workspaces use
+`skills/generate/scripts/migrate_page_workspace_v3.py`.

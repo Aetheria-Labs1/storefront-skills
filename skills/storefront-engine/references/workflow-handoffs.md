@@ -1,12 +1,11 @@
 # Public Storefront Workflow
 
-The customer-facing pack has ten commands. Six form the normal page journey:
+The customer-facing pack has ten commands. Five form the normal page journey:
 
 ```text
 /setup
   → /plan-page
-  → /visual-page
-  → /asset-prep
+  → /design-page
   → /generate
   → /publish
 ```
@@ -14,9 +13,8 @@ The customer-facing pack has ten commands. Six form the normal page journey:
 | Command | Owns | Main output |
 |---|---|---|
 | `setup` | Saved store and theme design context | `setup.json` and design files |
-| `plan-page` | Campaign and page strategy | approved `page-plan.md` |
-| `visual-page` | Responsive mockup and island preview | visual source and preview |
-| `asset-prep` | Final verified media | asset manifest |
+| `plan-page` | One-page campaign and section strategy | approved `page-plan.md` |
+| `design-page` | Assets, islands, source, and responsive preview | canonical source and preview |
 | `generate` | Production source, draft, and hosted QA | `DRAFT_READY` |
 | `publish` | Explicit live release | published version |
 
@@ -25,6 +23,7 @@ Four optional commands support the workflow:
 | Command | Owns |
 |---|---|
 | `analyze-page` | URL, screenshot, ad, or own-page analysis |
+| `asset-prep` | Independent asset search, generation, import, or replacement |
 | `optimize` | Outcome-led existing-page improvement |
 | `experiment` | Controlled variants and result evaluation |
 | `cart` | Cart profile inspection, assignment, and editing |

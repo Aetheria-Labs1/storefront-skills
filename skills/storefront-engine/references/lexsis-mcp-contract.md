@@ -35,8 +35,7 @@ Before live Lexsis work:
 2. When an action's arguments are unfamiliar, call `lexsis_discover` with
    `router` and `action`; never improvise a prose query for a known pair.
 3. Invoke the real domain router for the operation.
-4. Record capabilities actually used in `page-manifest.json`.
-5. Read changing products, variants, prices, availability, assets, island
+4. Read changing products, variants, prices, availability, assets, island
    schemas, permissions, analytics, and remote versions live.
 
 ## Error Handling
@@ -83,36 +82,10 @@ Examples:
 - Island schema or production compilation fails: do not mark the page
   production-ready.
 
-## Manifest Evidence
-
-Record the latest successful preflight:
-
-```json
-{
-  "mcp": {
-    "status": "connected",
-    "checkedAt": "2026-09-04T12:00:00Z",
-    "surfaceVersion": "3.0",
-    "discoveryStatus": "exact",
-    "capabilities": [
-      {
-        "router": "lexsis_template_library",
-        "actions": ["search_page_kits", "search_sections"],
-        "resolution": "discovered"
-      }
-    ]
-  }
-}
-```
-
-`discoveryStatus` may be `exact`, `degraded`, or `not-needed`. Capability
-`resolution` may be `discovered`, `tool-schema`, or `bundled-contract`. Store
-capability names, not full schemas or credentials. Update this record when
-another skill uses additional live capabilities.
-
 ## Result Evidence
 
-Every Lexsis-dependent result reports:
+When useful for diagnosis, a Lexsis-dependent command result or `qa-report.md`
+reports:
 
 - MCP connection status
 - capabilities and resolution method used
@@ -121,6 +94,10 @@ Every Lexsis-dependent result reports:
 - live product and asset bindings used
 - fallbacks used
 - blocking limitations
+
+Do not store discovery logs, capability inventories, action transcripts, or
+connection status in `page-manifest.json`. The manifest is a compact workflow
+state ledger.
 
 `setup` has no page manifest, so it returns this evidence directly with its
 saved setup paths.
