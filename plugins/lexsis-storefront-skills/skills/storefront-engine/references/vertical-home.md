@@ -396,7 +396,7 @@ Treat the page like a walk through a styled showroom: curated, cohesive, aspirat
         <img 
           src="ASSET[table-modern-farmhouse.jpg]" 
           alt="Table in modern farmhouse dining room" 
-          class="w-full h-full object-cover min-h-[500px] transition-transform duration-500 group-hover:scale-105"
+          class="w-full h-full object-cover min-h-[500px] transition-opacity duration-500 group-hover:opacity-90"
         />
         <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/60 to-transparent">
           <p class="text-white text-sm font-medium">Modern Farmhouse</p>
@@ -409,7 +409,7 @@ Treat the page like a walk through a styled showroom: curated, cohesive, aspirat
         <img 
           src="ASSET[table-midcentury.jpg]" 
           alt="Table in mid-century modern dining room" 
-          class="w-full h-full object-cover min-h-[240px] transition-transform duration-500 group-hover:scale-105"
+          class="w-full h-full object-cover min-h-[240px] transition-opacity duration-500 group-hover:opacity-90"
         />
         <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent">
           <p class="text-white text-xs font-medium">Mid-Century</p>
@@ -421,7 +421,7 @@ Treat the page like a walk through a styled showroom: curated, cohesive, aspirat
         <img 
           src="ASSET[table-scandinavian.jpg]" 
           alt="Table in Scandinavian-style dining room" 
-          class="w-full h-full object-cover min-h-[240px] transition-transform duration-500 group-hover:scale-105"
+          class="w-full h-full object-cover min-h-[240px] transition-opacity duration-500 group-hover:opacity-90"
         />
         <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent">
           <p class="text-white text-xs font-medium">Scandinavian</p>
@@ -433,7 +433,7 @@ Treat the page like a walk through a styled showroom: curated, cohesive, aspirat
         <img 
           src="ASSET[table-industrial.jpg]" 
           alt="Table in industrial loft dining room" 
-          class="w-full h-full object-cover min-h-[300px] transition-transform duration-500 group-hover:scale-105"
+          class="w-full h-full object-cover min-h-[300px] transition-opacity duration-500 group-hover:opacity-90"
         />
         <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent">
           <p class="text-white text-xs font-medium">Industrial</p>
@@ -445,7 +445,7 @@ Treat the page like a walk through a styled showroom: curated, cohesive, aspirat
         <img 
           src="ASSET[table-coastal.jpg]" 
           alt="Table in coastal-style dining room" 
-          class="w-full h-full object-cover min-h-[300px] transition-transform duration-500 group-hover:scale-105"
+          class="w-full h-full object-cover min-h-[300px] transition-opacity duration-500 group-hover:opacity-90"
         />
         <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent">
           <p class="text-white text-xs font-medium">Coastal</p>
@@ -457,7 +457,7 @@ Treat the page like a walk through a styled showroom: curated, cohesive, aspirat
         <img 
           src="ASSET[table-transitional.jpg]" 
           alt="Table in transitional dining room" 
-          class="w-full h-full object-cover min-h-[240px] transition-transform duration-500 group-hover:scale-105"
+          class="w-full h-full object-cover min-h-[240px] transition-opacity duration-500 group-hover:opacity-90"
         />
         <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent">
           <p class="text-white text-xs font-medium">Transitional</p>
@@ -633,7 +633,7 @@ Never use product photos with:
     },
     {
       "id": "room-gallery",
-      "html": "<section class=\"py-20 px-6 lg:px-16\" style=\"background:var(--lx-bg-color)\"><div class=\"max-w-7xl mx-auto\"><div class=\"text-center mb-12\"><h2 style=\"font-family:var(--lx-font-heading);font-size:clamp(1.75rem,3vw,2.25rem);font-weight:400\">Styled Six Ways</h2></div><div class=\"grid grid-cols-4 lg:grid-cols-8 gap-4\"><div class=\"col-span-4 row-span-2 relative overflow-hidden rounded-lg group\"><img src=\"ASSET[table-farmhouse.jpg]\" alt=\"Modern farmhouse\" class=\"w-full h-full object-cover min-h-[500px] transition-transform duration-500 group-hover:scale-105\"/><div class=\"absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/60 to-transparent\"><p class=\"text-white text-sm font-medium\">Modern Farmhouse</p></div></div><div class=\"col-span-2 lg:col-span-4 relative overflow-hidden rounded-lg group\"><img src=\"ASSET[table-midcentury.jpg]\" alt=\"Mid-century\" class=\"w-full h-full object-cover min-h-[240px] transition-transform duration-500 group-hover:scale-105\"/></div></div></div></section>",
+      "html": "<section class=\"py-20 px-6 lg:px-16\" style=\"background:var(--lx-bg-color)\"><div class=\"max-w-7xl mx-auto\"><div class=\"text-center mb-12\"><h2 style=\"font-family:var(--lx-font-heading);font-size:clamp(1.75rem,3vw,2.25rem);font-weight:400\">Styled Six Ways</h2></div><div class=\"grid grid-cols-4 lg:grid-cols-8 gap-4\"><div class=\"col-span-4 row-span-2 relative overflow-hidden rounded-lg group\"><img src=\"ASSET[table-farmhouse.jpg]\" alt=\"Modern farmhouse\" class=\"w-full h-full object-cover min-h-[500px] transition-opacity duration-500 group-hover:opacity-90\"/><div class=\"absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/60 to-transparent\"><p class=\"text-white text-sm font-medium\">Modern Farmhouse</p></div></div><div class=\"col-span-2 lg:col-span-4 relative overflow-hidden rounded-lg group\"><img src=\"ASSET[table-midcentury.jpg]\" alt=\"Mid-century\" class=\"w-full h-full object-cover min-h-[240px] transition-opacity duration-500 group-hover:opacity-90\"/></div></div></div></section>",
       "css": "",
       "js": ""
     },

@@ -1,0 +1,3 @@
+:root { --lx-bg-color: #F5F0E6; --lx-surface-alt: #FBE9E6; --lx-accent-color: #D52600; --lx-text-color: #1F1D24; }
+.rs-btn { border-radius: 9999px; }
+.rs-card { border-radius: 4px; box-shadow: 0 0 40px rgba(213,38,0,.4); }

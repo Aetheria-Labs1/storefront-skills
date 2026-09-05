@@ -69,6 +69,8 @@ REFERENCE_PATH_RE = re.compile(
 # follow up anyway, so operational docs matter more than raw data).
 GPT_REFERENCE_ALLOWLIST = [
     "storefront-craft",
+    "design-rules",
+    "island-presets",
     "generation-protocol",
     "source-format",
     "workflow-orchestration",

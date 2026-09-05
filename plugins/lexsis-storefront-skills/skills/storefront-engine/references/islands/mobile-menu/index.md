@@ -2,20 +2,11 @@
 
 Off-canvas or overlay navigation for mobile viewports. Triggered by hamburger icon in Navbar.
 
-## Files
-
-| File | Purpose |
-|------|---------|
-| `layouts/slide-left.json` | Off-canvas panel sliding from left, full height |
-| `layouts/full-screen.json` | Full-screen overlay with centered large links |
-| `layouts/bottom-sheet.json` | Bottom sheet sliding up, iOS-native feel |
-
 ## Quick Reference
 
 - **Variants**: none (single default)
 - **Props**: links (array), socials (array), logo (object) — 3 total
 - **Schema**: `vibe://schema/island/MobileMenu`
-- **Layouts**: `vibe://islands/mobile-menu/layouts/{name}`
 - **Contract**: follows `_contract.md` rules
 
 ## Composition

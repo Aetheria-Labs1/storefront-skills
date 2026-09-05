@@ -1,5 +1,10 @@
 # Generation Protocol — How Pages Are Built
 
+> House rules in `storefront-engine/references/design-rules.md` override every example below.
+> Examples show structure and copy intent; their styling (gradients, hover transforms,
+> uppercase labels, pills, emoji, section fills) is illustrative and must not be copied.
+> Where an example conflicts with a house rule, the rule wins.
+
 > This is the canonical reference for how AI agents generate storefront pages using the Lexsis AI MCP. All operational skills reference this protocol.
 
 > **Compiled runtime reference:** any `data-island` or `data-props` snippets in
@@ -62,7 +67,7 @@ Generate the FULL page as source-format HTML first:
 - Focus on layout, visual hierarchy, spacing, typography
 - Write all copy naturally — apostrophes/quotes need no escaping
 - Set all colors via `--lx-*` CSS variables (from `lexsis_brand.compile_theme`)
-- Mobile-first responsive; shared keyframes or `data-behavior="gsap-*"` presets for animation
+- Mobile-first responsive; shared keyframes or `data-behavior="gsap-*"` presets only for the one plan-named animation moment
 - Islands go in directly as `<lx-island name="BuyBox">` with a JSON `<script>` child — use `lexsis_design` action `island_schema` for exact prop shapes
 
 ### Phase 4b — Compile & Fix
@@ -107,7 +112,7 @@ Run `lexsis_pages` action `compile`:
 - **Islands** compile to `data-island="Name"` + `data-props='JSON'` attributes (in source format, write `<lx-island>` instead)
 - **Section IDs** must be unique, kebab-case: "hero", "social-proof", "faq"
 - **Section JS** is sandboxed — no fetch/XHR/eval/localStorage. Only DOM manipulation + IntersectionObserver. Runs after immediate islands mount; `lx:hydrated` / `lx:islands-ready` events signal island readiness
-- **Shared keyframes** already loaded: fadeUp, fadeIn, scaleIn, slideInLeft, slideInRight, marquee, float, shimmer, wordFade, pulseRing. GSAP presets via `data-behavior="gsap-reveal|gsap-parallax|gsap-pin|gsap-marquee-scroll"`
+- **Shared keyframes** already loaded: fadeUp, fadeIn, scaleIn, slideInLeft, slideInRight, marquee, float, shimmer, wordFade, pulseRing. GSAP presets via `data-behavior="gsap-reveal|gsap-parallax|gsap-pin|gsap-marquee-scroll"` — available, never by default; use only for the one plan-named moment
 - **No @import, no external URLs in CSS**; external JS libs go in `scripts[]`, never section HTML
 
 ### Available CSS Variables (override in theme_css)
@@ -122,7 +127,7 @@ Run `lexsis_pages` action `compile`:
 | `--lx-border-color` | #e5e7eb | Borders/dividers |
 | `--lx-font-heading` | system-ui | Heading font |
 | `--lx-font-body` | system-ui | Body font |
-| `--lx-surface-alt` | #f9fafb | Alternating section bg |
+| `--lx-surface-alt` | #f9fafb | Component tint (chips, hover fills, selected state); never a section background |
 | `--lx-lavender` | #c9b8e8 | Secondary accent |
 | `--lx-teal` | #5bc8c0 | Tertiary accent |
 

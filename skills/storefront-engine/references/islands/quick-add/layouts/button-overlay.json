@@ -1,6 +1,0 @@
-{
-  "id": "quick-add-overlay",
-  "html": "<div class=\"group relative\"><div class=\"aspect-[3/4] overflow-hidden rounded-lg\"><img src=\"{{IMAGE_URL}}\" alt=\"{{PRODUCT_TITLE}}\" class=\"w-full h-full object-cover\" /></div><div class=\"absolute inset-x-0 bottom-0 p-3 opacity-0 translate-y-2 transition-all duration-200 group-hover:opacity-100 group-hover:translate-y-0\"><div data-island=\"QuickAdd\" data-props='{\"product\":{\"id\":\"{{PRODUCT_ID}}\",\"title\":\"{{PRODUCT_TITLE}}\",\"availableForSale\":true,\"variants\":{{VARIANTS_JSON}}}}'></div></div></div>",
-  "css": "",
-  "js": ""
-}

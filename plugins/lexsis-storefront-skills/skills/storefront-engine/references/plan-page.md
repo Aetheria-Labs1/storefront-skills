@@ -1,5 +1,10 @@
 # Page Planning — Templates & Vocabulary
 
+> House rules in `storefront-engine/references/design-rules.md` override every example below.
+> Examples show structure and copy intent; their styling (gradients, hover transforms,
+> uppercase labels, pills, emoji, section fills) is illustrative and must not be copied.
+> Where an example conflicts with a house rule, the rule wins.
+
 Reference material for Phase 1 planning. Load when generating a page plan.
 
 ---
@@ -98,24 +103,25 @@ Templates are conversion-proven, pixel-perfect, and faster than generating from 
 
 | Effect | CSS/JS | When to Use |
 |--------|--------|-------------|
-| `fade-up` | `@keyframes fadeUp` + IntersectionObserver | Default reveal — works everywhere |
+| `fade-up` | `@keyframes fadeUp` + IntersectionObserver | Never by default; the one plan-named moment |
 | `fade-in` | `opacity 0→1` | Subtle element appearance |
 | `scale-in` | `transform: scale(0.95)→1` | Cards, images on scroll |
 | `slide-left` / `slide-right` | `translateX` | Before/after, comparison |
-| `parallax` | `transform: translateY(calc(...))` on scroll | Hero backgrounds, lifestyle images |
+| `parallax` | `transform: translateY(calc(...))` on scroll | Only a plan-named full-bleed image |
 | `sticky` | `position: sticky` | CTA bars, navigation |
-| `reveal-on-scroll` | IntersectionObserver + class toggle | Any content section |
-| `stagger` | `animation-delay: calc(index * 100ms)` | Grid items, feature lists |
+| `reveal-on-scroll` | IntersectionObserver + class toggle | Never by default; one plan-named moment at most |
+| `stagger` | `animation-delay: calc(index * 100ms)` | Never by default; only inside the one plan-named moment |
 | `counter` | JS number animation | Stats, social proof numbers |
-| `none` | — | Trust bars, CTAs (instant credibility) |
+| `none` | — | The default for every section |
 
 **Rules:**
-- Hero: `fade-up` on load (no scroll trigger — it's above fold)
+- Default is `none`. Animate nothing unless the plan names one moment
+- Hero: `fade-up` on load only if the plan names the hero as that moment
 - Trust bar: NO animation (instant credibility, never delayed)
-- Content sections: `reveal-on-scroll` with `fade-up`
-- Grids: `stagger` children
+- Content sections: `none` by default (never reveal-on-scroll per section)
+- Grids: `none` by default (never stagger children)
 - Final CTA: NO animation (urgency = instant)
-- Max 3 different animation types per page (visual coherence)
+- Max 1 orchestrated moment per page; hover/focus/open-close feedback is always fine
 
 ---
 
@@ -123,23 +129,22 @@ Templates are conversion-proven, pixel-perfect, and faster than generating from 
 
 ### Progressive Relaxation (recommended for landing pages)
 ```
-Hero: TIGHT spacing, HIGH density, WARM colors
+Hero: TIGHT spacing, HIGH density
   ↓
-Middle: MEDIUM spacing, balanced density, NEUTRAL colors
+Middle: MEDIUM spacing, balanced density
   ↓
-End: GENEROUS spacing, LOW density, WARM colors (return to brand)
+End: GENEROUS spacing, LOW density
 ```
 
-### Alternating Density (good for long pages)
+### Density Rhythm (good for long pages)
 ```
 Dense section → Spacious section → Dense → Spacious
 (content-heavy) → (breathing room) → (content) → (breathe)
 ```
 
-### Color Temperature Flow
-- **Warm open** (brand primary in hero) → **Cool middle** (neutral backgrounds) → **Warm close** (brand primary in final CTA)
-- Never put two warm-colored sections adjacent (visual fatigue)
-- White/light sections between colored ones = "breathing room"
+### One Background
+- One page background from navbar to footer; vary density and spacing, not colour.
+- Section separation is spacing, type scale and a 1px hairline.
 
 ### Spacing Scale
 - Between sections: `py-16` (mobile) / `py-24` (desktop) default
@@ -196,5 +201,5 @@ What makes users keep scrolling:
 1. **Visual hooks** — partially visible next section (cut off image, peeking headline)
 2. **Curiosity gaps** — "Here's what 10,000 customers discovered..."
 3. **Progressive disclosure** — numbered steps (1/3 visible = "where's 2 and 3?")
-4. **Contrast breaks** — dark section after light = "something new is starting"
-5. **Micro-rewards** — animation triggers on scroll = dopamine
+4. **Type-scale breaks** — a larger heading or a hairline after dense copy = "something new is starting"
+5. **Micro-rewards** — a numbered step or a revealed answer (not scroll animation)

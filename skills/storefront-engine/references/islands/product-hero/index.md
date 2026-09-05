@@ -2,21 +2,11 @@
 
 Full-viewport product launch hero with image, headline, and primary CTA.
 
-## Files
-
-| File | Purpose |
-|------|---------|
-| `layouts/split-left.json` | Product image left, headline + CTA right |
-| `layouts/split-right.json` | Headline left, product image right |
-| `layouts/full-height.json` | Full viewport height, image background, text overlay |
-| `layouts/stacked.json` | Image above, text below (mobile-native) |
-
 ## Quick Reference
 
 - **Variants**: stacked, splitLeft, splitRight, fullHeight
 - **Required prop**: `productId` (Shopify GID)
 - **Schema**: `vibe://schema/island/ProductHero`
-- **Layouts**: `vibe://islands/product-hero/layouts/{name}`
 - **Contract**: follows `_contract.md` rules
 
 ## Composition

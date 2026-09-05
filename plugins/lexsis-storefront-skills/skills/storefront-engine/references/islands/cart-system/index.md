@@ -2,20 +2,11 @@
 
 Composed cart drawer using DrawerShell + CartLines + CartCheckoutButton + CartProgressBar + CartSummary + CartCrossSell (cart profile).
 
-## Files
-
-| File | Purpose |
-|------|---------|
-| `layouts/drawer-right.json` | Standard right-side slide-out drawer |
-| `layouts/bottom-sheet.json` | Mobile bottom sheet pattern |
-| `layouts/mini-cart.json` | Dropdown mini-cart (compact, no full drawer) |
-
 ## Quick Reference
 
 - **Variants**: DrawerShell (none), CartLines (compact, full), CartCheckoutButton (filled, outline), CartProgressBar (none), CartSummary (none), CartCrossSell (horizontal, grid, stack)
 - **Required prop**: `DrawerShell.trigger` (event name, default `"cart:open"`)
 - **Schema**: `vibe://schema/island/DrawerShell`, `vibe://schema/island/CartLines`, `vibe://schema/island/CartCheckoutButton`, `vibe://schema/island/CartProgressBar`, `vibe://schema/island/CartSummary`, `vibe://schema/island/CartCrossSell`
-- **Layouts**: `vibe://islands/cart-system/layouts/{name}`
 - **Contract**: follows `_contract.md`
 
 ## Config-Driven Architecture

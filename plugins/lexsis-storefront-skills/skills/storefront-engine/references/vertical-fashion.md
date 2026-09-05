@@ -545,23 +545,23 @@ CSS vars:
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
       <!-- Large hero tile (2x2) -->
       <div class="col-span-2 row-span-2 relative aspect-[3/4] overflow-hidden group">
-        <img src="/styled-1.jpg" alt="Casual look" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+        <img src="/styled-1.jpg" alt="Casual look" class="w-full h-full object-cover transition-opacity duration-700 group-hover:opacity-90" />
         <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
       </div>
 
       <!-- Medium tile (1x2) -->
       <div class="col-span-1 row-span-2 relative aspect-[3/4] overflow-hidden group">
-        <img src="/styled-2.jpg" alt="Layered look" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+        <img src="/styled-2.jpg" alt="Layered look" class="w-full h-full object-cover transition-opacity duration-700 group-hover:opacity-90" />
       </div>
 
       <!-- Small tile (1x1) -->
       <div class="col-span-1 row-span-1 relative aspect-square overflow-hidden group">
-        <img src="/styled-3.jpg" alt="Dressed up" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+        <img src="/styled-3.jpg" alt="Dressed up" class="w-full h-full object-cover transition-opacity duration-700 group-hover:opacity-90" />
       </div>
 
       <!-- Small tile (1x1) -->
       <div class="col-span-1 row-span-1 relative aspect-square overflow-hidden group">
-        <img src="/styled-4.jpg" alt="Detail shot" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+        <img src="/styled-4.jpg" alt="Detail shot" class="w-full h-full object-cover transition-opacity duration-700 group-hover:opacity-90" />
       </div>
     </div>
   </div>
@@ -574,7 +574,7 @@ CSS vars:
 - Small: `col-span-1 row-span-1` (1x1)
 
 **Hover effects** (via CSS):
-- `group-hover:scale-105` — Zoom
+- `group-hover:opacity-90` — Dim (no transform zoom)
 - `group-hover:brightness-110` — Shimmer
 - Ken Burns: `transition-transform duration-700`
 
@@ -732,7 +732,7 @@ CSS vars:
     },
     {
       "id": "styling",
-      "html": "<section class=\"py-24 bg-white\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><h2 class=\"text-4xl font-light mb-12\">3 Ways to Wear It</h2><div class=\"grid grid-cols-2 lg:grid-cols-4 gap-4\"><div class=\"col-span-2 row-span-2 relative aspect-[3/4] overflow-hidden group\"><img src=\"/styled-1.jpg\" alt=\"Casual\" class=\"w-full h-full object-cover transition-transform duration-700 group-hover:scale-105\" /></div><div class=\"col-span-1 row-span-2 relative aspect-[3/4] overflow-hidden group\"><img src=\"/styled-2.jpg\" alt=\"Layered\" class=\"w-full h-full object-cover transition-transform duration-700 group-hover:scale-105\" /></div><div class=\"col-span-1 row-span-1 relative aspect-square overflow-hidden group\"><img src=\"/styled-3.jpg\" alt=\"Dressed up\" class=\"w-full h-full object-cover transition-transform duration-700 group-hover:scale-105\" /></div></div></div></section>",
+      "html": "<section class=\"py-24 bg-white\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><h2 class=\"text-4xl font-light mb-12\">3 Ways to Wear It</h2><div class=\"grid grid-cols-2 lg:grid-cols-4 gap-4\"><div class=\"col-span-2 row-span-2 relative aspect-[3/4] overflow-hidden group\"><img src=\"/styled-1.jpg\" alt=\"Casual\" class=\"w-full h-full object-cover transition-opacity duration-700 group-hover:opacity-90\" /></div><div class=\"col-span-1 row-span-2 relative aspect-[3/4] overflow-hidden group\"><img src=\"/styled-2.jpg\" alt=\"Layered\" class=\"w-full h-full object-cover transition-opacity duration-700 group-hover:opacity-90\" /></div><div class=\"col-span-1 row-span-1 relative aspect-square overflow-hidden group\"><img src=\"/styled-3.jpg\" alt=\"Dressed up\" class=\"w-full h-full object-cover transition-opacity duration-700 group-hover:opacity-90\" /></div></div></div></section>",
       "css": "",
       "js": ""
     },

@@ -1,6 +1,0 @@
-{
-  "id": "payment-methods",
-  "html": "<div class=\"flex items-center justify-center gap-3 py-3\"><div data-island=\"PaymentOptions\" data-props='{\"variant\":\"inline\",\"price\":{{PRICE_CENTS}}}'></div></div>",
-  "css": "",
-  "js": ""
-}

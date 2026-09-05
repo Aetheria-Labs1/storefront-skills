@@ -1,6 +1,0 @@
-{
-  "id": "email-inline",
-  "html": "<div class=\"max-w-xl mx-auto px-4\"><h3 class=\"text-lg font-semibold mb-3\" style=\"color: var(--lx-text-color); font-family: var(--lx-font-heading)\">{{HEADING}}</h3><div data-island=\"EmailCapture\" data-props='{\"variant\":\"compact\",\"placeholder\":\"Your email address\",\"buttonText\":\"{{CTA_TEXT}}\"}'></div></div>",
-  "css": "",
-  "js": ""
-}

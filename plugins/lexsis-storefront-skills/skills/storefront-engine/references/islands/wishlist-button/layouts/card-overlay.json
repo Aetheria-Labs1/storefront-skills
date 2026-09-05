@@ -1,6 +1,0 @@
-{
-  "id": "card-overlay",
-  "html": "<div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 lg:py-20\"><div class=\"grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6\"><div class=\"relative group border border-[var(--lx-border-color)] rounded-xl overflow-hidden\"><div class=\"aspect-square bg-[var(--lx-surface-alt)]\"><div class=\"w-full h-full flex items-center justify-center text-[var(--lx-text-muted)] text-xs\">Product Image</div></div><div class=\"absolute top-3 right-3 z-10\"><div data-island=\"WishlistButton\" data-props='{\"productId\":\"{{PRODUCT_ID}}\"}'></div></div><div class=\"p-4\"><p class=\"text-sm font-medium text-[var(--lx-text-color)]\">{{PRODUCT_TITLE}}</p><p class=\"text-sm text-[var(--lx-text-muted)] mt-1\">{{PRODUCT_PRICE}}</p></div></div></div></div>",
-  "css": "",
-  "js": ""
-}

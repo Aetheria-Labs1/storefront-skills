@@ -1,22 +1,23 @@
 # Animation System — Vibe-Code Reference
 
+> House rules in `storefront-engine/references/design-rules.md` override every example below.
+> Examples show structure and copy intent; their styling (gradients, hover transforms,
+> uppercase labels, pills, emoji, section fills) is illustrative and must not be copied.
+> Where an example conflicts with a house rule, the rule wins.
+
 CSS-only and vanilla JS animations for storefront pages. No framer-motion, no React — pure CSS keyframes + IntersectionObserver for scroll triggers.
 
 ---
 
 ## When to Animate vs Not
 
-**Animate:**
-- Hero headline on premium/editorial/bold brands
-- Section entrances on scroll (fade-up, slide-in)
-- Background gradients on dark/vibrant brands
-- Stats/numbers counting up
-- Floating decorative elements
+**Animate nothing unless the plan names one moment.** Motion that answers a user action (hover colour, focus, open/close) is always fine. Everything below is reference for that single plan-named moment, never a default.
 
 **Don't animate:**
-- Clinical/minimal brands (medical, simple skincare) → zero or subtle only
+- Section entrances by default → no fade-up on every section, no stagger on every grid
+- Backgrounds → no colour shift, no floating decorative elements, no counters
+- Clinical/minimal, luxury and earthy brands → zero, or one slow fade
 - Product images → never animate product shots
-- More than 3 animated sections per page → overwhelming
 - Text that needs to be read immediately (pricing, CTA copy)
 
 ---
@@ -25,7 +26,7 @@ CSS-only and vanilla JS animations for storefront pages. No framer-motion, no Re
 
 Place in section `css` field. Scoped per section.
 
-### Fade In Up (most common entrance)
+### Fade In Up (never by default; at most one orchestrated moment per page, named in the plan)
 
 ```css
 @keyframes fadeInUp {
@@ -63,7 +64,7 @@ Place in section `css` field. Scoped per section.
 .scale-in { animation: scaleIn 0.5s ease-out forwards; opacity: 0; }
 ```
 
-### Stagger Children
+### Stagger Children (never by default; only inside the one plan-named moment)
 
 ```css
 .stagger > * { opacity: 0; animation: fadeInUp 0.5s ease-out forwards; }
@@ -79,7 +80,7 @@ Place in section `css` field. Scoped per section.
 
 ## Scroll-Triggered Reveal (Section JS)
 
-Use section `js` field. IntersectionObserver fires animation on scroll.
+Never by default; at most one orchestrated moment per page, named in the plan. Do not put `[data-reveal]` on every section. Use section `js` field. IntersectionObserver fires animation on scroll.
 
 ```javascript
 (function() {
@@ -140,23 +141,6 @@ HTML: Wrap each word in `<span class="headline-word">Word</span>`
 .text-reveal { animation: textReveal 0.8s ease-out forwards; }
 ```
 
-### Gradient Text Shift
-
-```css
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-.gradient-text {
-  background: linear-gradient(90deg, var(--lx-accent-color), #8b5cf6, var(--lx-accent-color));
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gradientShift 4s ease infinite;
-}
-```
-
 ### Underline Draw
 
 ```css
@@ -181,24 +165,9 @@ HTML: Wrap each word in `<span class="headline-word">Word</span>`
 
 ---
 
-## Background Animations
+## Background & Decorative Motion (never by default)
 
-### Gradient Shift (hero/CTA backgrounds)
-
-```css
-@keyframes bgShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-.animated-bg {
-  background: linear-gradient(135deg, var(--lx-accent-color), var(--lx-bg-surface), var(--lx-accent-color));
-  background-size: 400% 400%;
-  animation: bgShift 8s ease infinite;
-}
-```
-
-### Floating Elements (decorative)
+### Floating Elements (decorative — never by default)
 
 ```css
 @keyframes float {
@@ -211,7 +180,7 @@ HTML: Wrap each word in `<span class="headline-word">Word</span>`
 .float-3 { animation: float 7s ease-in-out infinite; animation-delay: -4s; }
 ```
 
-### Parallax (scroll-based offset)
+### Parallax (only on a plan-named full-bleed image)
 
 Section JS:
 ```javascript
@@ -232,22 +201,24 @@ Section JS:
 
 ## Micro-Interactions (Tailwind transitions)
 
+Hover states change colour, underline or border-colour only. No transforms (no scale, no translate, no lift, no glow).
+
 ### Button Hover
 ```html
-<button class="transition-all duration-200 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]" style="background:var(--lx-accent-color)">
-  Shop Now
+<button class="transition-colors duration-200 hover:bg-[var(--lx-accent-color-hover)]" style="background:var(--lx-accent-color)">
+  Shop now
 </button>
 ```
 
-### Card Hover Lift
+### Card Hover
 ```html
-<div class="transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">Card</div>
+<div class="border transition-colors duration-300 hover:border-[var(--lx-accent-color)]" style="border-color:var(--lx-border-color)">Card</div>
 ```
 
-### Image Hover Zoom
+### Image Hover
 ```html
 <div class="overflow-hidden rounded-xl">
-  <img class="transition-transform duration-500 hover:scale-110" src="..." />
+  <img class="transition-opacity duration-300 hover:opacity-90" src="..." />
 </div>
 ```
 
@@ -257,12 +228,12 @@ Section JS:
 
 | Tone | Level | Recommended |
 |---|---|---|
-| Luxury/Premium | Subtle, slow | Fade-in-up (0.8s), text-reveal, gradient-text |
-| Playful/Bold | Energetic | Stagger, scale-in, floating elements, gradient-shift |
-| Clinical/Minimal | Near-zero | Simple fade (0.4s) only |
-| Editorial | Refined | Word-by-word, slide-left/right, underline-draw |
-| Earthy/Organic | Gentle | Slow fade (1s), parallax, float |
-| Tech/DTC | Snappy | Fast stagger (0.08s delay), scale-in |
+| Luxury/Premium | None or one slow fade | Fade-in (0.8s) on the one plan-named moment, or nothing |
+| Playful/Bold | One moment | Stagger or scale-in on the one plan-named moment |
+| Clinical/Minimal | Near-zero | Simple fade (0.4s) only, or nothing |
+| Editorial | Refined | Word-by-word or underline-draw on the headline only |
+| Earthy/Organic | None or one slow fade | Slow fade (1s) on the one plan-named moment, or nothing |
+| Tech/DTC | One moment | Fast stagger (0.08s delay) on the one plan-named moment |
 
 ---
 
@@ -271,7 +242,7 @@ Section JS:
 1. Only animate `transform` and `opacity` — never `width`, `height`, `margin`
 2. Add `will-change: transform` to heavily animated elements
 3. Max 10 keyframe animations per page
-4. Accessibility — always include:
+4. Accessibility — mandatory in `page-theme.css` whenever any animation exists:
 ```css
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

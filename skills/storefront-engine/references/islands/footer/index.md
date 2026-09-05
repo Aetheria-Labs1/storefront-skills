@@ -2,20 +2,11 @@
 
 Site-wide footer with links, branding, and social. Always last section on page. Max 1 per page.
 
-## Files
-
-| File | Purpose |
-|------|---------|
-| `layouts/editorial-grid.json` | Multi-column: logo + tagline left, 3 link columns right, social row |
-| `layouts/compact.json` | Single-row inline: logo + links + social. Minimal height. |
-| `layouts/multi-column.json` | 4-column grid with newsletter signup below |
-
 ## Quick Reference
 
 - **Variants**: none (single default)
 - **Props**: links, columns, logo, socialLinks, style, newsletter — 10 total
 - **Schema**: `vibe://schema/island/Footer`
-- **Layouts**: `vibe://islands/footer/layouts/{name}`
 - **Contract**: follows `_contract.md` rules
 
 ## Composition

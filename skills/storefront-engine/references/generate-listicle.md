@@ -100,7 +100,7 @@ Write 8-12 sections:
 
 **Sections 4-N: Product Entries (one per product)**
 - h2: "[Product Name] — Best for [Use Case]"
-- Product image (alternating left/right layout per entry)
+- Product image (left/right layout switches per entry)
 - 150-250 word mini-review
 - h3 sub-sections for features where needed
 - Pros/Cons as structured lists
@@ -115,7 +115,7 @@ Write 8-12 sections:
     <div class="grid md:grid-cols-2 gap-8 items-start">
       <div>
         <div class="inline-flex items-center gap-2 px-3 py-1 bg-[--lx-accent-color]/10 text-[--lx-accent-color] rounded-full text-xs font-semibold mb-3">
-          <span>★</span> Editor's Choice
+          Editor's Choice
         </div>
         <span class="text-sm font-semibold text-[--lx-accent-color] uppercase tracking-wide">#1 Pick</span>
         <h2 class="font-[--lx-font-heading] text-3xl font-bold text-[--lx-text-color] mt-2">{Product Name}</h2>

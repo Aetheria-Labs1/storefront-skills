@@ -154,12 +154,12 @@ Google traffic falls into **4 intent categories**. Each requires a different pag
     </div>
     
     <p class="text-sm flex flex-col gap-1" style="color:var(--lx-text-muted)">
-      <span>✓ Free shipping on all orders</span>
-      <span>✓ 90-day money-back guarantee</span>
-      <span>✓ Third-party lab tested</span>
+      <span>Free shipping on all orders</span>
+      <span>90-day money-back guarantee</span>
+      <span>Third-party lab tested</span>
     </p>
     
-    <button class="w-full py-4 rounded-lg font-semibold text-lg transition-transform hover:scale-105" style="background:var(--lx-accent-color);color:white">
+    <button class="w-full py-4 rounded-lg font-semibold text-lg transition-colors hover:bg-[var(--lx-accent-color-hover)]" style="background:var(--lx-accent-color);color:white">
       Add to Cart — Free Shipping
     </button>
     
@@ -221,7 +221,7 @@ Google traffic falls into **4 intent categories**. Each requires a different pag
         <div class="text-sm" style="color:var(--lx-text-muted)">per serving (vs $0.67)</div>
       </div>
       <div class="p-4 rounded-lg" style="background:var(--lx-bg-color);border:1px solid var(--lx-border-color)">
-        <div class="text-2xl font-bold mb-2" style="color:var(--lx-accent-color)">4.8★</div>
+        <div class="text-2xl font-bold mb-2" style="color:var(--lx-accent-color)">4.8/5</div>
         <div class="text-sm" style="color:var(--lx-text-muted)">from 4,847 reviews</div>
       </div>
     </div>
@@ -272,7 +272,7 @@ Google traffic falls into **4 intent categories**. Each requires a different pag
 - **5-7 rows** — key decision factors only, not feature dump
 - **Win the majority** — be honest, but pick rows where you win or tie 4+ times
 - **Specific numbers** — not "high quality", but "2,847mg per serving"
-- **Visual wins** — checkmarks (✓), crosses (✗), or color-coded cells
+- **Visual wins** — "Yes"/"No" text or color-coded cells (no glyphs, no emoji)
 
 **CompareTable island HTML:**
 ```html
@@ -288,31 +288,31 @@ Google traffic falls into **4 intent categories**. Each requires a different pag
       "rows": [
         {
           "label": "Omega-3 Per Serving",
-          "values": ["2,847mg ✓", "2,100mg", "1,200mg"]
+          "values": ["2,847mg", "2,100mg", "1,200mg"]
         },
         {
           "label": "Price Per Serving",
-          "values": ["$0.39 ✓", "$0.67", "$0.28"]
+          "values": ["$0.39", "$0.67", "$0.28"]
         },
         {
           "label": "Third-Party Tested",
-          "values": ["✓ Yes", "✓ Yes", "✗ No"]
+          "values": ["Yes", "Yes", "No"]
         },
         {
           "label": "Purity (Mercury)",
-          "values": ["<0.09ppm ✓", "<0.10ppm", "Unknown"]
+          "values": ["<0.09ppm", "<0.10ppm", "Unknown"]
         },
         {
           "label": "Money-Back Guarantee",
-          "values": ["90 days ✓", "30 days", "None"]
+          "values": ["90 days", "30 days", "None"]
         },
         {
           "label": "Free Shipping",
-          "values": ["✓ All orders", "Over $50", "✗ Never"]
+          "values": ["All orders", "Over $50", "Never"]
         },
         {
           "label": "Average Rating",
-          "values": ["4.8/5 (4,847) ✓", "4.6/5 (2,103)", "3.9/5 (847)"]
+          "values": ["4.8/5 (4,847)", "4.6/5 (2,103)", "3.9/5 (847)"]
         }
       ]
     }'></div>
@@ -480,16 +480,16 @@ FAQ is not an afterthought — it's a **conversion section** for Google traffic.
 Google searchers are **validation-driven**. They want proof.
 
 **Specific > vague:**
-- ✗ "Thousands of happy customers"
-- ✓ "4,847 verified reviews (4.8/5 average)"
+- Don't: "Thousands of happy customers"
+- Do: "4,847 verified reviews (4.8/5 average)"
 
 **Verifiable > claimed:**
-- ✗ "Highest quality"
-- ✓ "Third-party tested by ISO 17025 lab (report available)"
+- Don't: "Highest quality"
+- Do: "Third-party tested by ISO 17025 lab (report available)"
 
 **Quantified > general:**
-- ✗ "Fast shipping"
-- ✓ "Ships within 24 hours • Avg delivery: 3-5 days"
+- Don't: "Fast shipping"
+- Do: "Ships within 24 hours • Avg delivery: 3-5 days"
 
 **TrustBadgeBar HTML (below hero):**
 ```html
@@ -500,7 +500,7 @@ Google searchers are **validation-driven**. They want proof.
         {"icon": "shield-check", "label": "Third-Party Tested", "sublabel": "ISO 17025 certified lab"},
         {"icon": "truck", "label": "Free Shipping", "sublabel": "All orders • Ships in 24hrs"},
         {"icon": "refresh", "label": "90-Day Guarantee", "sublabel": "Full refund, no questions"},
-        {"icon": "award", "label": "4.8★ Rating", "sublabel": "From 4,847 reviews"}
+        {"icon": "award", "label": "4.8/5 Rating", "sublabel": "From 4,847 reviews"}
       ],
       "layout": "horizontal"
     }'></div>
@@ -571,7 +571,7 @@ Google searchers are **validation-driven**. They want proof.
         </li>
       </ul>
       
-      <button class="w-full py-4 rounded-lg font-semibold text-lg transition-transform hover:scale-105" style="background:var(--lx-accent-color);color:white">
+      <button class="w-full py-4 rounded-lg font-semibold text-lg transition-colors hover:bg-[var(--lx-accent-color-hover)]" style="background:var(--lx-accent-color);color:white">
         Add to Cart
       </button>
     </div>
@@ -640,7 +640,7 @@ Google searchers often came via **organic search** — your page should be SEO-o
   
   "head": {
     "title": "Premium Omega-3 Fish Oil (2,847mg) — $34.99 | Free Shipping",
-    "description": "Triple-strength omega-3 with 2,847mg per serving. Third-party tested for purity. 4.8★ from 4,847 reviews. 90-day guarantee. Free shipping.",
+    "description": "Triple-strength omega-3 with 2,847mg per serving. Third-party tested for purity. 4.8/5 from 4,847 reviews. 90-day guarantee. Free shipping.",
     "keywords": ["omega 3", "fish oil", "EPA DHA", "omega 3 supplement"]
   },
   
@@ -650,12 +650,12 @@ Google searchers often came via **organic search** — your page should be SEO-o
     {
       "id": "hero",
       "type": "product_info_hero",
-      "html": "<section class=\"grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-16\" style=\"background:var(--lx-bg-color)\"><div><img src=\"/images/omega3-bottle.jpg\" alt=\"Premium Omega-3 Fish Oil Bottle\" class=\"w-full rounded-xl shadow-lg\"/></div><div class=\"flex flex-col justify-center space-y-4\"><div class=\"flex items-center gap-2\"><div class=\"flex text-yellow-400\"><svg class=\"w-5 h-5 fill-current\" viewBox=\"0 0 20 20\"><path d=\"M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z\"/></svg><svg class=\"w-5 h-5 fill-current\" viewBox=\"0 0 20 20\"><path d=\"M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z\"/></svg><svg class=\"w-5 h-5 fill-current\" viewBox=\"0 0 20 20\"><path d=\"M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z\"/></svg><svg class=\"w-5 h-5 fill-current\" viewBox=\"0 0 20 20\"><path d=\"M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z\"/></svg><svg class=\"w-5 h-5 fill-current\" viewBox=\"0 0 20 20\"><path d=\"M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z\"/></svg></div><span class=\"text-sm font-medium\" style=\"color:var(--lx-text-muted)\">4.8/5 from 4,847 reviews</span></div><h1 class=\"font-bold leading-tight\" style=\"font-family:var(--lx-font-heading);font-size:clamp(1.5rem,3vw,2.25rem);color:var(--lx-text-color)\">Premium Omega-3 Fish Oil — 2,847mg Per Serving</h1><p class=\"text-base\" style=\"color:var(--lx-text-muted)\">Triple-strength formula • 90 softgels • 3-month supply</p><div class=\"flex items-baseline gap-3\"><span class=\"text-3xl font-bold\" style=\"color:var(--lx-text-color)\">$34.99</span><span class=\"text-xl line-through opacity-40\" style=\"color:var(--lx-text-muted)\">$49.99</span><span class=\"text-xs px-2 py-1 rounded-full font-semibold\" style=\"background:var(--lx-accent-color);color:white\">30% OFF</span></div><p class=\"text-sm flex flex-col gap-1\" style=\"color:var(--lx-text-muted)\"><span>✓ Free shipping on all orders</span><span>✓ 90-day money-back guarantee</span><span>✓ Third-party lab tested</span></p><button class=\"w-full py-4 rounded-lg font-semibold text-lg transition-transform hover:scale-105\" style=\"background:var(--lx-accent-color);color:white\">Add to Cart — Free Shipping</button><p class=\"text-xs text-center\" style=\"color:var(--lx-text-muted)\">In stock • Ships within 24 hours</p></div></section>"
+      "html": "<section class=\"grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-16\" style=\"background:var(--lx-bg-color)\"><div><img src=\"/images/omega3-bottle.jpg\" alt=\"Premium Omega-3 Fish Oil Bottle\" class=\"w-full rounded-xl shadow-lg\"/></div><div class=\"flex flex-col justify-center space-y-4\"><div class=\"flex items-center gap-2\"><div class=\"flex text-yellow-400\"><svg class=\"w-5 h-5 fill-current\" viewBox=\"0 0 20 20\"><path d=\"M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z\"/></svg><svg class=\"w-5 h-5 fill-current\" viewBox=\"0 0 20 20\"><path d=\"M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z\"/></svg><svg class=\"w-5 h-5 fill-current\" viewBox=\"0 0 20 20\"><path d=\"M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z\"/></svg><svg class=\"w-5 h-5 fill-current\" viewBox=\"0 0 20 20\"><path d=\"M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z\"/></svg><svg class=\"w-5 h-5 fill-current\" viewBox=\"0 0 20 20\"><path d=\"M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z\"/></svg></div><span class=\"text-sm font-medium\" style=\"color:var(--lx-text-muted)\">4.8/5 from 4,847 reviews</span></div><h1 class=\"font-bold leading-tight\" style=\"font-family:var(--lx-font-heading);font-size:clamp(1.5rem,3vw,2.25rem);color:var(--lx-text-color)\">Premium Omega-3 Fish Oil — 2,847mg Per Serving</h1><p class=\"text-base\" style=\"color:var(--lx-text-muted)\">Triple-strength formula • 90 softgels • 3-month supply</p><div class=\"flex items-baseline gap-3\"><span class=\"text-3xl font-bold\" style=\"color:var(--lx-text-color)\">$34.99</span><span class=\"text-xl line-through opacity-40\" style=\"color:var(--lx-text-muted)\">$49.99</span><span class=\"text-xs px-2 py-1 rounded-full font-semibold\" style=\"background:var(--lx-accent-color);color:white\">30% OFF</span></div><p class=\"text-sm flex flex-col gap-1\" style=\"color:var(--lx-text-muted)\"><span>Free shipping on all orders</span><span>90-day money-back guarantee</span><span>Third-party lab tested</span></p><button class=\"w-full py-4 rounded-lg font-semibold text-lg transition-colors hover:bg-[var(--lx-accent-color-hover)]\" style=\"background:var(--lx-accent-color);color:white\">Add to Cart — Free Shipping</button><p class=\"text-xs text-center\" style=\"color:var(--lx-text-muted)\">In stock • Ships within 24 hours</p></div></section>"
     },
     {
       "id": "trust-bar",
       "type": "trust_badges",
-      "html": "<section class=\"py-6 px-4\" style=\"background:var(--lx-bg-surface);border-top:1px solid var(--lx-border-color);border-bottom:1px solid var(--lx-border-color)\"><div class=\"max-w-6xl mx-auto\"><div data-island=\"TrustBadgeBar\" data-props='{\"badges\":[{\"icon\":\"shield-check\",\"label\":\"Third-Party Tested\",\"sublabel\":\"ISO 17025 certified lab\"},{\"icon\":\"truck\",\"label\":\"Free Shipping\",\"sublabel\":\"All orders • Ships in 24hrs\"},{\"icon\":\"refresh\",\"label\":\"90-Day Guarantee\",\"sublabel\":\"Full refund, no questions\"},{\"icon\":\"award\",\"label\":\"4.8★ Rating\",\"sublabel\":\"From 4,847 reviews\"}],\"layout\":\"horizontal\"}'></div></div></section>"
+      "html": "<section class=\"py-6 px-4\" style=\"background:var(--lx-bg-surface);border-top:1px solid var(--lx-border-color);border-bottom:1px solid var(--lx-border-color)\"><div class=\"max-w-6xl mx-auto\"><div data-island=\"TrustBadgeBar\" data-props='{\"badges\":[{\"icon\":\"shield-check\",\"label\":\"Third-Party Tested\",\"sublabel\":\"ISO 17025 certified lab\"},{\"icon\":\"truck\",\"label\":\"Free Shipping\",\"sublabel\":\"All orders • Ships in 24hrs\"},{\"icon\":\"refresh\",\"label\":\"90-Day Guarantee\",\"sublabel\":\"Full refund, no questions\"},{\"icon\":\"award\",\"label\":\"4.8/5 Rating\",\"sublabel\":\"From 4,847 reviews\"}],\"layout\":\"horizontal\"}'></div></div></section>"
     },
     {
       "id": "benefits",
@@ -680,7 +680,7 @@ Google searchers often came via **organic search** — your page should be SEO-o
     {
       "id": "final-cta",
       "type": "sticky_cta",
-      "html": "<section class=\"py-12 px-4\" style=\"background:var(--lx-bg-color)\"><div class=\"max-w-3xl mx-auto text-center\"><h2 class=\"font-bold mb-4\" style=\"font-family:var(--lx-font-heading);font-size:clamp(1.5rem,3vw,2rem);color:var(--lx-text-color)\">Try Risk-Free for 90 Days</h2><p class=\"text-lg mb-6\" style=\"color:var(--lx-text-muted)\">If you don't feel better in 90 days, return it for a full refund. No questions asked.</p><button class=\"px-12 py-4 rounded-lg font-semibold text-lg transition-transform hover:scale-105\" style=\"background:var(--lx-accent-color);color:white\">Add to Cart — $34.99</button><p class=\"text-sm mt-4\" style=\"color:var(--lx-text-muted)\">Free shipping • Ships within 24 hours</p></div></section>"
+      "html": "<section class=\"py-12 px-4\" style=\"background:var(--lx-bg-color)\"><div class=\"max-w-3xl mx-auto text-center\"><h2 class=\"font-bold mb-4\" style=\"font-family:var(--lx-font-heading);font-size:clamp(1.5rem,3vw,2rem);color:var(--lx-text-color)\">Try Risk-Free for 90 Days</h2><p class=\"text-lg mb-6\" style=\"color:var(--lx-text-muted)\">If you don't feel better in 90 days, return it for a full refund. No questions asked.</p><button class=\"px-12 py-4 rounded-lg font-semibold text-lg transition-colors hover:bg-[var(--lx-accent-color-hover)]\" style=\"background:var(--lx-accent-color);color:white\">Add to Cart — $34.99</button><p class=\"text-sm mt-4\" style=\"color:var(--lx-text-muted)\">Free shipping • Ships within 24 hours</p></div></section>"
     }
   ]
 }
@@ -707,12 +707,12 @@ Google searchers often came via **organic search** — your page should be SEO-o
     {
       "id": "hero",
       "type": "comparison_hero",
-      "html": "<section class=\"py-12 lg:py-20 px-4\" style=\"background:linear-gradient(135deg, var(--lx-bg-surface) 0%, var(--lx-bg-color) 100%)\"><div class=\"max-w-6xl mx-auto text-center\"><div class=\"inline-block px-4 py-1 rounded-full text-sm font-semibold mb-4\" style=\"background:var(--lx-accent-color);color:white;opacity:0.9\">The #1 Alternative to Nordic Naturals</div><h1 class=\"font-bold mb-4\" style=\"font-family:var(--lx-font-heading);font-size:clamp(1.75rem,4vw,3rem);color:var(--lx-text-color)\">30% More EPA+DHA. 40% Less Expensive.</h1><p class=\"text-lg max-w-2xl mx-auto mb-8\" style=\"color:var(--lx-text-muted)\">Trusted by over 50,000 customers who switched from premium brands — same purity standards, better value.</p><div class=\"grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto\"><div class=\"p-4 rounded-lg\" style=\"background:var(--lx-bg-color);border:1px solid var(--lx-border-color)\"><div class=\"text-2xl font-bold mb-2\" style=\"color:var(--lx-accent-color)\">2,847mg</div><div class=\"text-sm\" style=\"color:var(--lx-text-muted)\">vs Nordic's 2,100mg</div></div><div class=\"p-4 rounded-lg\" style=\"background:var(--lx-bg-color);border:1px solid var(--lx-border-color)\"><div class=\"text-2xl font-bold mb-2\" style=\"color:var(--lx-accent-color)\">$0.39</div><div class=\"text-sm\" style=\"color:var(--lx-text-muted)\">per serving (vs $0.67)</div></div><div class=\"p-4 rounded-lg\" style=\"background:var(--lx-bg-color);border:1px solid var(--lx-border-color)\"><div class=\"text-2xl font-bold mb-2\" style=\"color:var(--lx-accent-color)\">4.8★</div><div class=\"text-sm\" style=\"color:var(--lx-text-muted)\">from 4,847 reviews</div></div></div></div></section>"
+      "html": "<section class=\"py-12 lg:py-20 px-4\" style=\"background:linear-gradient(135deg, var(--lx-bg-surface) 0%, var(--lx-bg-color) 100%)\"><div class=\"max-w-6xl mx-auto text-center\"><div class=\"inline-block px-4 py-1 rounded-full text-sm font-semibold mb-4\" style=\"background:var(--lx-accent-color);color:white;opacity:0.9\">The #1 Alternative to Nordic Naturals</div><h1 class=\"font-bold mb-4\" style=\"font-family:var(--lx-font-heading);font-size:clamp(1.75rem,4vw,3rem);color:var(--lx-text-color)\">30% More EPA+DHA. 40% Less Expensive.</h1><p class=\"text-lg max-w-2xl mx-auto mb-8\" style=\"color:var(--lx-text-muted)\">Trusted by over 50,000 customers who switched from premium brands — same purity standards, better value.</p><div class=\"grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto\"><div class=\"p-4 rounded-lg\" style=\"background:var(--lx-bg-color);border:1px solid var(--lx-border-color)\"><div class=\"text-2xl font-bold mb-2\" style=\"color:var(--lx-accent-color)\">2,847mg</div><div class=\"text-sm\" style=\"color:var(--lx-text-muted)\">vs Nordic's 2,100mg</div></div><div class=\"p-4 rounded-lg\" style=\"background:var(--lx-bg-color);border:1px solid var(--lx-border-color)\"><div class=\"text-2xl font-bold mb-2\" style=\"color:var(--lx-accent-color)\">$0.39</div><div class=\"text-sm\" style=\"color:var(--lx-text-muted)\">per serving (vs $0.67)</div></div><div class=\"p-4 rounded-lg\" style=\"background:var(--lx-bg-color);border:1px solid var(--lx-border-color)\"><div class=\"text-2xl font-bold mb-2\" style=\"color:var(--lx-accent-color)\">4.8/5</div><div class=\"text-sm\" style=\"color:var(--lx-text-muted)\">from 4,847 reviews</div></div></div></div></section>"
     },
     {
       "id": "compare-table",
       "type": "comparison_table",
-      "html": "<section class=\"py-12 lg:py-20 px-4\" style=\"background:var(--lx-bg-surface)\"><div class=\"max-w-5xl mx-auto\"><h2 class=\"text-center font-bold mb-8\" style=\"font-family:var(--lx-font-heading);font-size:clamp(1.5rem,3vw,2.25rem);color:var(--lx-text-color)\">How We Compare to Leading Brands</h2><div data-island=\"CompareTable\" data-props='{\"columns\":[\"Our Brand\",\"Nordic Naturals\",\"Nature Made\"],\"highlightColumn\":0,\"rows\":[{\"label\":\"Omega-3 Per Serving\",\"values\":[\"2,847mg ✓\",\"2,100mg\",\"1,200mg\"]},{\"label\":\"Price Per Serving\",\"values\":[\"$0.39 ✓\",\"$0.67\",\"$0.28\"]},{\"label\":\"Form\",\"values\":[\"rTG (70% more bioavailable) ✓\",\"TG\",\"EE (ethyl ester)\"]},{\"label\":\"Purity (Mercury)\",\"values\":[\"<0.09ppm ✓\",\"<0.10ppm\",\"Not disclosed\"]},{\"label\":\"Third-Party Tested\",\"values\":[\"✓ Every batch\",\"✓ Yes\",\"✗ No\"]},{\"label\":\"Money-Back Guarantee\",\"values\":[\"90 days ✓\",\"30 days\",\"None\"]},{\"label\":\"Free Shipping\",\"values\":[\"✓ All orders\",\"Over $50\",\"✗ Never\"]},{\"label\":\"Average Rating\",\"values\":[\"4.8/5 (4,847) ✓\",\"4.6/5 (2,103)\",\"3.9/5 (847)\"]}]}'></div><p class=\"text-center text-sm mt-6\" style=\"color:var(--lx-text-muted)\">Data last verified: June 2026. Competitor pricing based on publicly listed prices.</p></div></section>"
+      "html": "<section class=\"py-12 lg:py-20 px-4\" style=\"background:var(--lx-bg-surface)\"><div class=\"max-w-5xl mx-auto\"><h2 class=\"text-center font-bold mb-8\" style=\"font-family:var(--lx-font-heading);font-size:clamp(1.5rem,3vw,2.25rem);color:var(--lx-text-color)\">How We Compare to Leading Brands</h2><div data-island=\"CompareTable\" data-props='{\"columns\":[\"Our Brand\",\"Nordic Naturals\",\"Nature Made\"],\"highlightColumn\":0,\"rows\":[{\"label\":\"Omega-3 Per Serving\",\"values\":[\"2,847mg\",\"2,100mg\",\"1,200mg\"]},{\"label\":\"Price Per Serving\",\"values\":[\"$0.39\",\"$0.67\",\"$0.28\"]},{\"label\":\"Form\",\"values\":[\"rTG (70% more bioavailable)\",\"TG\",\"EE (ethyl ester)\"]},{\"label\":\"Purity (Mercury)\",\"values\":[\"<0.09ppm\",\"<0.10ppm\",\"Not disclosed\"]},{\"label\":\"Third-Party Tested\",\"values\":[\"Every batch\",\"Yes\",\"No\"]},{\"label\":\"Money-Back Guarantee\",\"values\":[\"90 days\",\"30 days\",\"None\"]},{\"label\":\"Free Shipping\",\"values\":[\"All orders\",\"Over $50\",\"Never\"]},{\"label\":\"Average Rating\",\"values\":[\"4.8/5 (4,847)\",\"4.6/5 (2,103)\",\"3.9/5 (847)\"]}]}'></div><p class=\"text-center text-sm mt-6\" style=\"color:var(--lx-text-muted)\">Data last verified: June 2026. Competitor pricing based on publicly listed prices.</p></div></section>"
     },
     {
       "id": "why-we-win",
@@ -727,7 +727,7 @@ Google searchers often came via **organic search** — your page should be SEO-o
     {
       "id": "cta",
       "type": "final_cta",
-      "html": "<section class=\"py-12 px-4\" style=\"background:var(--lx-bg-color)\"><div class=\"max-w-3xl mx-auto text-center\"><h2 class=\"font-bold mb-4\" style=\"font-family:var(--lx-font-heading);font-size:clamp(1.5rem,3vw,2rem);color:var(--lx-text-color)\">Try the #1 Nordic Naturals Alternative</h2><p class=\"text-lg mb-6\" style=\"color:var(--lx-text-muted)\">90-day guarantee. If you don't prefer us, get a full refund.</p><button class=\"px-12 py-4 rounded-lg font-semibold text-lg transition-transform hover:scale-105\" style=\"background:var(--lx-accent-color);color:white\">Add to Cart — $34.99</button></div></section>"
+      "html": "<section class=\"py-12 px-4\" style=\"background:var(--lx-bg-color)\"><div class=\"max-w-3xl mx-auto text-center\"><h2 class=\"font-bold mb-4\" style=\"font-family:var(--lx-font-heading);font-size:clamp(1.5rem,3vw,2rem);color:var(--lx-text-color)\">Try the #1 Nordic Naturals Alternative</h2><p class=\"text-lg mb-6\" style=\"color:var(--lx-text-muted)\">90-day guarantee. If you don't prefer us, get a full refund.</p><button class=\"px-12 py-4 rounded-lg font-semibold text-lg transition-colors hover:bg-[var(--lx-accent-color-hover)]\" style=\"background:var(--lx-accent-color);color:white\">Add to Cart — $34.99</button></div></section>"
     }
   ]
 }

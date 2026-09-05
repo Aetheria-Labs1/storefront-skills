@@ -1,5 +1,10 @@
 # Visual Craft — Typography, Spacing, Color & Polish
 
+> House rules in `storefront-engine/references/design-rules.md` override every example below.
+> Examples show structure and copy intent; their styling (gradients, hover transforms,
+> uppercase labels, pills, emoji, section fills) is illustrative and must not be copied.
+> Where an example conflicts with a house rule, the rule wins.
+
 Techniques for making vibe-code pages look premium. Load when polishing visual quality.
 
 ---
@@ -28,15 +33,15 @@ Techniques for making vibe-code pages look premium. Load when polishing visual q
 | Section h2 | 1.5rem | 2.5rem | `text-[clamp(1.5rem,3.5vw,2.5rem)]` |
 | Card h3 | 1.125rem | 1.5rem | `text-lg lg:text-2xl` |
 | Body | 1rem | 1.125rem | `text-base lg:text-lg` |
-| Eyebrow | 0.75rem | 0.75rem | `text-xs uppercase tracking-[0.15em]` |
+| Eyebrow (optional) | 0.75rem | 0.75rem | `text-xs` sentence case |
 | Price | 1.5rem | 2rem | `text-2xl lg:text-3xl font-bold` |
 | Caption | 0.8125rem | 0.875rem | `text-[13px] lg:text-sm` |
 
-### Eyebrow Pattern
+### Eyebrow Pattern (optional, sentence case)
 
 ```html
-<p class="text-xs uppercase tracking-[0.15em] font-medium mb-3" style="color:var(--lx-accent-color)">
-  New Arrival
+<p class="text-xs font-medium mb-3" style="color:var(--lx-accent-color)">
+  New arrival
 </p>
 ```
 
@@ -105,33 +110,12 @@ Techniques for making vibe-code pages look premium. Load when polishing visual q
 ### Surface Layering
 
 ```html
-<!-- Page bg → section bg → card bg (3 layers max) -->
+<!-- One page background; cards may use --lx-bg-surface, sections never do -->
 <body style="background:var(--lx-bg-color)">
-  <section style="background:var(--lx-bg-surface)">
-    <div class="bg-white rounded-xl p-6 shadow-sm">Card</div>
+  <section>
+    <div class="rounded-xl p-6" style="background:var(--lx-bg-surface);border:1px solid var(--lx-border-color)">Card</div>
   </section>
 </body>
-```
-
-### Dark Sections (contrast rhythm)
-
-```html
-<section class="py-20" style="background:var(--lx-text-color);color:var(--lx-bg-color)">
-  <!-- Inverted: dark bg, light text -->
-  <h2 style="color:var(--lx-bg-color)">Headline</h2>
-  <p style="opacity:0.7">Muted on dark</p>
-  <button style="background:var(--lx-accent-color);color:white">CTA</button>
-</section>
-```
-
-### Gradient Patterns
-
-```html
-<!-- Subtle accent gradient (hero/CTA) -->
-<section style="background: linear-gradient(135deg, var(--lx-bg-color) 0%, var(--lx-bg-surface) 100%)">
-
-<!-- Accent fade (badges, highlights) -->
-<span style="background: linear-gradient(90deg, var(--lx-accent-color), transparent); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
 ```
 
 ---
@@ -178,16 +162,18 @@ Techniques for making vibe-code pages look premium. Load when polishing visual q
 
 ## Micro-Interactions
 
+Hover states change colour or border-colour only. No transforms, no lift, no glow.
+
 ### Button States
 
 ```html
 <button class="
   px-6 py-3 rounded-lg font-semibold text-sm
-  transition-all duration-200
-  hover:shadow-lg hover:scale-[1.02]
-  active:scale-[0.98] active:shadow-sm
+  transition-colors duration-200
+  hover:bg-[var(--lx-accent-color-hover)]
+  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
 " style="background:var(--lx-accent-color);color:white">
-  Add to Cart
+  Add to cart
 </button>
 ```
 
@@ -195,8 +181,8 @@ Techniques for making vibe-code pages look premium. Load when polishing visual q
 
 ```html
 <div class="
-  rounded-xl p-6 border transition-all duration-300
-  hover:-translate-y-1 hover:shadow-xl hover:border-transparent
+  rounded-xl p-6 border transition-colors duration-300
+  hover:border-[var(--lx-accent-color)]
 " style="border-color:var(--lx-border-color)">
   Card content
 </div>
@@ -226,7 +212,7 @@ Techniques for making vibe-code pages look premium. Load when polishing visual q
 
 ---
 
-## Glass Morphism
+## Glass Morphism (needs a plan-named reason)
 
 ```html
 <div class="backdrop-blur-md rounded-2xl p-6 border border-white/20" style="background:rgba(255,255,255,0.1)">
@@ -236,7 +222,7 @@ Techniques for making vibe-code pages look premium. Load when polishing visual q
 
 ---
 
-## Grain/Noise Texture
+## Grain/Noise Texture (needs a plan-named reason)
 
 ```css
 .grain::before {

@@ -62,7 +62,11 @@
     "bar",
     "text"
   ],
-  "css_vars": [],
+  "css_vars": [
+    "--lx-inventory-low-color",
+    "--lx-inventory-ok-color",
+    "--lx-inventory-urgent-color"
+  ],
   "parts": [
     "bar-fill",
     "bar-track",

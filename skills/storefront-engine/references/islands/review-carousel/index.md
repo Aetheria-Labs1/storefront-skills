@@ -2,19 +2,10 @@
 
 Displays customer reviews in various layouts: grid cards, horizontal scroll, or single featured quote.
 
-## Files
-
-| File | Purpose |
-|------|---------|
-| `layouts/card-grid.json` | 3-column grid of review cards (1-col mobile, 3-col desktop) |
-| `layouts/horizontal-scroll.json` | Swipeable horizontal carousel with peeking edge cards |
-| `layouts/featured-quote.json` | Single large featured review, centered, narrow container |
-
 ## Quick Reference
 
 - **Variants**: default, compact, grid, minimal
 - **Schema**: `vibe://schema/island/ReviewCarousel`
-- **Layouts**: `vibe://islands/review-carousel/layouts/{name}`
 - **Contract**: follows `_contract.md` rules
 
 ## Data Modes (backward compatible)

@@ -71,7 +71,7 @@ Both files are **generated** from the canonical skills by `scripts/build-distrib
 
 - **10 focused storefront commands** — five core workflow commands and five optional operations
 - **2 agents** (cro-analyzer, page-builder) for Claude Code
-- Shared CRO, vertical, traffic-source, workflow, and island references under `skills/storefront-engine/references/`
+- Shared CRO, vertical, traffic-source, workflow, and island references under `skills/storefront-engine/references/`, including the house `design-rules.md` and `island-presets.md`
 - **47 active islands** plus 7 deprecated compatibility contracts under
   `skills/storefront-engine/references/islands/`
 - Vertical expertise: beauty, supplements, fashion, food, luxury, home
@@ -84,8 +84,8 @@ Invoke as `/name` (Claude Code) or `$name` (Codex); most also trigger automatica
 | Skill | What it does |
 |-------|--------------|
 | `setup` | Save reusable brand and theme context for one or more stores |
-| `plan-page` | Produce a concise one-page section strategy |
-| `design-page` | Resolve assets and islands, then build the real source and preview |
+| `plan-page` | Produce a one-page plan: design direction, wireframe with asset slots, imagery plan, resolved assets |
+| `design-page` | Build the real source and preview under the house rules, with a self-critique gate |
 | `asset-prep` | Independently search, generate, import, or replace media |
 | `generate` | Write readable source, compile, create a draft, and run hosted QA |
 | `publish` | Release a synchronized draft only after explicit approval |
@@ -115,8 +115,8 @@ The normal page workflow is:
 | Step | Output |
 |------|--------|
 | `/setup` | Saved store brand reference and theme CSS, indexed by store and theme |
-| `/plan-page` | Approved one-page campaign and section plan |
-| `/design-page` | Canonical source, asset decision, islands, and interactive preview |
+| `/plan-page` | Approved one-page plan with design direction, wireframe, imagery plan, and resolved asset slots |
+| `/design-page` | Canonical source, remaining asset gaps, islands, self-critique gate, and interactive preview |
 | `/generate` | Readable source, synchronized draft, preview URL, and QA report |
 | `/publish` | Explicit release of the reviewed page version |
 

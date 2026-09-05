@@ -289,7 +289,7 @@ Beauty typography should feel **airy** and **editorial**, not bold and urgent.
       <!-- Review Card -->
       <div class="p-6 rounded-lg" style="background:var(--lx-bg-surface);border:1px solid var(--lx-border-color)">
         <div class="flex items-center gap-1 mb-3">
-          <span class="text-yellow-400">★★★★★</span>
+          <span class="text-sm font-medium">Rated 5/5</span>
         </div>
         <h3 class="font-bold mb-2" style="color:var(--lx-text-color)">
           Finally, a vitamin C that doesn't irritate
@@ -324,10 +324,10 @@ Beauty typography should feel **airy** and **editorial**, not bold and urgent.
     </p>
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       <div class="aspect-square rounded-lg overflow-hidden">
-        <img src="ugc-1.jpg" alt="Customer result" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+        <img src="ugc-1.jpg" alt="Customer result" class="w-full h-full object-cover hover:opacity-90 transition-opacity duration-300" />
       </div>
       <div class="aspect-square rounded-lg overflow-hidden">
-        <img src="ugc-2.jpg" alt="Customer result" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+        <img src="ugc-2.jpg" alt="Customer result" class="w-full h-full object-cover hover:opacity-90 transition-opacity duration-300" />
       </div>
       <!-- Repeat for more UGC -->
     </div>
@@ -371,7 +371,7 @@ Beauty typography should feel **airy** and **editorial**, not bold and urgent.
       </div>
       <div class="text-center">
         <div class="mb-3" style="font-size:clamp(3rem,6vw,5rem);font-weight:700;color:var(--lx-accent-color)">
-          4.8★
+          4.8
         </div>
         <p class="font-medium mb-2" style="color:var(--lx-text-color)">
           Average rating from 2,847 reviews
@@ -483,7 +483,7 @@ Beauty typography should feel **airy** and **editorial**, not bold and urgent.
     },
     {
       "id": "clinical-stats",
-      "html": "<section class=\"py-16 lg:py-24 px-4\" style=\"background:var(--lx-bg-surface)\"><div class=\"max-w-6xl mx-auto\"><p class=\"text-center text-xs uppercase tracking-widest mb-3\" style=\"color:var(--lx-accent-color)\">Clinical Results</p><h2 class=\"text-center mb-16 font-bold\" style=\"font-family:var(--lx-font-heading);font-size:clamp(2rem,4vw,3rem);color:var(--lx-text-color)\">Proven in Clinical Studies</h2><div class=\"grid grid-cols-1 md:grid-cols-3 gap-12\"><div class=\"text-center\"><div class=\"mb-3\" style=\"font-size:clamp(3rem,6vw,5rem);font-weight:700;color:var(--lx-accent-color)\">94%</div><p class=\"font-medium mb-2\" style=\"color:var(--lx-text-color)\">Saw brighter, more even skin tone</p><p class=\"text-sm\" style=\"color:var(--lx-text-muted)\">In 4 weeks*</p></div><div class=\"text-center\"><div class=\"mb-3\" style=\"font-size:clamp(3rem,6vw,5rem);font-weight:700;color:var(--lx-accent-color)\">87%</div><p class=\"font-medium mb-2\" style=\"color:var(--lx-text-color)\">Noticed reduced hyperpigmentation</p><p class=\"text-sm\" style=\"color:var(--lx-text-muted)\">In 8 weeks*</p></div><div class=\"text-center\"><div class=\"mb-3\" style=\"font-size:clamp(3rem,6vw,5rem);font-weight:700;color:var(--lx-accent-color)\">4.8★</div><p class=\"font-medium mb-2\" style=\"color:var(--lx-text-color)\">Average rating from 2,847 reviews</p><p class=\"text-sm\" style=\"color:var(--lx-text-muted)\">Verified purchases</p></div></div><p class=\"text-center mt-12 text-xs\" style=\"color:var(--lx-text-muted)\">*Clinical study of 50 participants using product twice daily</p></div></section>",
+      "html": "<section class=\"py-16 lg:py-24 px-4\" style=\"background:var(--lx-bg-surface)\"><div class=\"max-w-6xl mx-auto\"><p class=\"text-center text-xs uppercase tracking-widest mb-3\" style=\"color:var(--lx-accent-color)\">Clinical Results</p><h2 class=\"text-center mb-16 font-bold\" style=\"font-family:var(--lx-font-heading);font-size:clamp(2rem,4vw,3rem);color:var(--lx-text-color)\">Proven in Clinical Studies</h2><div class=\"grid grid-cols-1 md:grid-cols-3 gap-12\"><div class=\"text-center\"><div class=\"mb-3\" style=\"font-size:clamp(3rem,6vw,5rem);font-weight:700;color:var(--lx-accent-color)\">94%</div><p class=\"font-medium mb-2\" style=\"color:var(--lx-text-color)\">Saw brighter, more even skin tone</p><p class=\"text-sm\" style=\"color:var(--lx-text-muted)\">In 4 weeks*</p></div><div class=\"text-center\"><div class=\"mb-3\" style=\"font-size:clamp(3rem,6vw,5rem);font-weight:700;color:var(--lx-accent-color)\">87%</div><p class=\"font-medium mb-2\" style=\"color:var(--lx-text-color)\">Noticed reduced hyperpigmentation</p><p class=\"text-sm\" style=\"color:var(--lx-text-muted)\">In 8 weeks*</p></div><div class=\"text-center\"><div class=\"mb-3\" style=\"font-size:clamp(3rem,6vw,5rem);font-weight:700;color:var(--lx-accent-color)\">4.8</div><p class=\"font-medium mb-2\" style=\"color:var(--lx-text-color)\">Average rating from 2,847 reviews</p><p class=\"text-sm\" style=\"color:var(--lx-text-muted)\">Verified purchases</p></div></div><p class=\"text-center mt-12 text-xs\" style=\"color:var(--lx-text-muted)\">*Clinical study of 50 participants using product twice daily</p></div></section>",
       "css": "",
       "js": ""
     },
@@ -507,7 +507,7 @@ Beauty typography should feel **airy** and **editorial**, not bold and urgent.
     },
     {
       "id": "cta",
-      "html": "<section class=\"py-16 lg:py-24 px-4\" style=\"background:linear-gradient(135deg, hsl(30, 80%, 60%) 0%, hsl(30, 70%, 50%) 100%)\"><div class=\"max-w-3xl mx-auto text-center\"><h2 class=\"mb-6 font-bold text-white\" style=\"font-family:var(--lx-font-heading);font-size:clamp(2rem,4vw,3rem)\">Start Your Glass Skin Journey</h2><p class=\"mb-8 text-white/90\" style=\"font-size:clamp(1rem,2vw,1.125rem)\">Join 10,000+ others who've transformed their skin with clinical-strength vitamin C.</p><button class=\"px-10 py-5 rounded-lg font-semibold text-lg transition-all hover:scale-105\" style=\"background:white;color:hsl(30, 80%, 60%)\">Shop Vitamin C Serum</button><div class=\"flex items-center justify-center gap-8 mt-8 text-white/80 text-sm\"><span>✓ Free shipping</span><span>✓ 60-day returns</span><span>✓ Dermatologist approved</span></div></div></section>",
+      "html": "<section class=\"py-16 lg:py-24 px-4\" style=\"background:linear-gradient(135deg, hsl(30, 80%, 60%) 0%, hsl(30, 70%, 50%) 100%)\"><div class=\"max-w-3xl mx-auto text-center\"><h2 class=\"mb-6 font-bold text-white\" style=\"font-family:var(--lx-font-heading);font-size:clamp(2rem,4vw,3rem)\">Start Your Glass Skin Journey</h2><p class=\"mb-8 text-white/90\" style=\"font-size:clamp(1rem,2vw,1.125rem)\">Join 10,000+ others who've transformed their skin with clinical-strength vitamin C.</p><button class=\"px-10 py-5 rounded-lg font-semibold text-lg transition-opacity hover:opacity-90\" style=\"background:white;color:hsl(30, 80%, 60%)\">Shop Vitamin C Serum</button><div class=\"flex items-center justify-center gap-8 mt-8 text-white/80 text-sm\"><span>Free shipping</span><span>60-day returns</span><span>Dermatologist approved</span></div></div></section>",
       "css": "",
       "js": ""
     }

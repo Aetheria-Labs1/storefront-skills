@@ -632,7 +632,7 @@ Application:
 - Reduce motion for prefers-reduced-motion users
 
 **Product Image Interactions:**
-- Hover zoom: scale(1.05) on container, 200ms ease
+- Hover zoom (never by default; needs a plan-named reason): 5% container scale, 200ms ease
 - Gallery swipe: momentum-based with snap points
 - Pinch-to-zoom on mobile
 - Parallax depth on scroll (subtle, 5-15px shift)
@@ -645,11 +645,11 @@ Application:
 **Price/Discount Reveals:**
 - Crossed-out original price animates in first (200ms)
 - New price scales in with slight bounce (300ms delay, 250ms duration)
-- Savings badge pulses gently on initial reveal
+- Savings badge pulse on initial reveal (never by default)
 
 **Progress/Loading States:**
 - Skeleton screens > spinners (reduce perceived wait time)
-- Shimmer animation: linear gradient sweep at 1.5-2s cycle
+- Shimmer sweep at 1.5-2s cycle (never by default)
 - Progress bars with percentage for longer operations
 - Optimistic UI: show success state before server confirms
 
@@ -781,7 +781,7 @@ Application:
 **Category:** Established DTC casual fashion
 **Standout pattern:** Editorial + transactional hybrid (best of both)
 
-- 8-10 sections with editorial features alternating with shoppable carousels
+- 8-10 sections with editorial features interleaved with shoppable carousels
 - Dual-path hero segmentation ("New for Him" / "New for Her")
 - Quick-add from grid: hover reveals size selector (reduces clicks to purchase)
 - Curated "shops within the shop" (Espresso Edit, Hemp Shop)

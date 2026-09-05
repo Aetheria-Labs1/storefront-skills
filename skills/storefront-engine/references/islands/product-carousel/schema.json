@@ -130,7 +130,11 @@
       "required": false
     }
   },
-  "variants": null,
+  "variants": [
+    "default",
+    "compact",
+    "compactRows"
+  ],
   "css_vars": [
     "--lx-accent-color",
     "--lx-bg-surface",

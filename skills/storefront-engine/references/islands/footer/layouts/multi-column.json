@@ -1,6 +1,0 @@
-{
-  "id": "footer-multi-column",
-  "html": "<footer class=\"w-full py-16\" style=\"background-color: var(--lx-surface-alt)\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12\"><div data-island=\"Footer\" data-props='{\"logo\":{\"src\":\"{{LOGO_URL}}\",\"alt\":\"{{BRAND_NAME}}\"},\"columns\":{{COLUMNS}},\"socialLinks\":{{SOCIAL_LINKS}},\"style\":{\"variant\":\"multi-column\"},\"newsletter\":{\"enabled\":true,\"heading\":\"Stay in the loop\",\"placeholder\":\"Enter your email\",\"buttonText\":\"Subscribe\"},\"links\":{{FOOTER_LINKS}}}'></div></div><div class=\"mt-12 pt-8 border-t\" style=\"border-color: var(--lx-border-color)\"><div class=\"flex flex-col md:flex-row items-center justify-between gap-4\"><p class=\"text-xs\" style=\"color: var(--lx-text-muted)\">&copy; {{COPYRIGHT_YEAR}} {{BRAND_NAME}}. All rights reserved.</p><div class=\"flex items-center gap-4\"></div></div></div></div></footer>",
-  "css": "",
-  "js": ""
-}

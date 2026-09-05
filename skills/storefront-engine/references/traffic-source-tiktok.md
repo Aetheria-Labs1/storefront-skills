@@ -160,7 +160,7 @@
     
     <!-- Headline (quoted comment) -->
     <h1 class="text-[clamp(1.5rem,6vw,2rem)] font-bold tracking-tight leading-snug text-black italic mb-4">
-      "I was skeptical but this actually works? 😭"
+      "I was skeptical but this actually works?"
     </h1>
     
     <!-- Attribution -->
@@ -175,7 +175,7 @@
 </section>
 ```
 
-**Screenshot aesthetic:** Phone UI chrome visible, Instagram/TikTok comment format, engagement numbers, casual language with emojis.
+**Screenshot aesthetic:** Phone UI chrome visible, Instagram/TikTok comment format, engagement numbers, casual language. No emoji (house rule N1); energy comes from copy rhythm and imagery.
 
 ## Video Integration
 
@@ -234,7 +234,7 @@
 **Content format:**
 - Short punchy fragments, not sentences
 - Line breaks for emphasis
-- Emojis OK in eyebrows and trust indicators
+- No emoji (house rule N1); energy comes from copy rhythm and imagery
 - ALL CAPS for urgency elements (sparingly)
 
 **Imagery:**
@@ -262,14 +262,14 @@
 **Eyebrows (category/proof, uppercase, accent color):**
 ```html
 <div class="text-sm font-bold tracking-wider uppercase text-purple-600">
-  ✨ As Seen On TikTok
+  As Seen On TikTok
 </div>
 ```
 
 **Review text (casual, quoted, italic):**
 ```html
 <blockquote class="text-[clamp(1rem,4vw,1.125rem)] font-semibold leading-relaxed text-black italic">
-  "okay this is actually insane 😭"
+  "okay this is actually insane"
 </blockquote>
 ```
 
@@ -286,7 +286,7 @@
     <div data-island="ReviewCarousel" 
          data-props='{
            "reviews": [
-             {"text": "okay i was NOT expecting this to work but here we are 😭", "name": "Sarah M.", "handle": "@sarah.wellness", "rating": 5, "platform": "tiktok"},
+             {"text": "okay i was NOT expecting this to work but here we are", "name": "Sarah M.", "handle": "@sarah.wellness", "rating": 5, "platform": "tiktok"},
              {"text": "why did nobody tell me about this sooner??", "name": "Mike Chen", "handle": "@mikesfitness", "rating": 5, "platform": "instagram"},
              {"text": "literally changed my skin", "name": "Emma", "rating": 5, "platform": "tiktok"}
            ],
@@ -298,7 +298,7 @@
 </section>
 ```
 
-**Copy rules:** Lowercase, casual punctuation, emojis, no formal language. "this actually works" > "I'm very satisfied with this product."
+**Copy rules:** Lowercase, casual punctuation, no formal language, no emoji (house rule N1). "this actually works" > "I'm very satisfied with this product."
 
 ### Pattern 2: Star Rating with Huge Count
 
@@ -308,7 +308,6 @@
     <!-- Large star rating -->
     <div class="text-center">
       <div class="text-6xl font-black text-black mb-2">4.9</div>
-      <div class="text-3xl text-amber-400 mb-2">★★★★★</div>
       <div class="text-sm font-medium text-neutral-600">14,847 reviews</div>
     </div>
     
@@ -474,7 +473,7 @@
 ```
 Not: `<h1>Transform Your Skin In Just 7 Days</h1>`
 
-**Emojis:** OK in eyebrows ("✨ As Seen On TikTok"), trust indicators ("⚡ Free Shipping"), casual reviews. NOT in headlines or CTAs.
+**Emoji:** None anywhere (house rule N1); energy comes from copy rhythm and imagery.
 
 **Casual > formal:**
 - "this actually works" > "clinically proven results"
@@ -505,7 +504,7 @@ Not: `<h1>Transform Your Skin In Just 7 Days</h1>`
 - "Our commitment to quality is unmatched in the industry."
 
 **Review (GOOD):**
-- "okay this is actually insane 😭"
+- "okay this is actually insane"
 - "why did nobody tell me about this??"
 - "already ordered 3 more for friends"
 
@@ -535,7 +534,7 @@ Not: `<h1>Transform Your Skin In Just 7 Days</h1>`
 
 **Why it kills:** Cognitive dissonance. They came from casual UGC, landed on corporate marketing. Feels like bait-and-switch.
 
-**Fix:** Write like a creator, not a brand. Casual language, fragments, lowercase, emojis, authenticity over polish.
+**Fix:** Write like a creator, not a brand. Casual language, fragments, lowercase, authenticity over polish. No emoji (house rule N1).
 
 ### 3. Desktop-First Design
 
@@ -571,7 +570,7 @@ Not: `<h1>Transform Your Skin In Just 7 Days</h1>`
 
 **Why it kills:** "I am very satisfied" doesn't match how people actually talk. Feels scripted, fake.
 
-**Fix:** Short punchy quotes. Casual language. "this actually works 😭" > "highly recommend this product."
+**Fix:** Short punchy quotes. Casual language. "this actually works" > "highly recommend this product."
 
 ### 9. Gradients/Decorative Elements
 
@@ -595,7 +594,7 @@ Not: `<h1>Transform Your Skin In Just 7 Days</h1>`
 
 **Why it kills:** Trust is the barrier. They don't know your brand. Without immediate social proof, they assume it's a scam.
 
-**Fix:** Star rating + count in hero section. "4.9★ from 14,847 reviews" or "127K orders this month" above fold.
+**Fix:** Star rating + count in hero section. "4.9 from 14,847 reviews" or "127K orders this month" above fold.
 
 ## Complete Blueprint
 
@@ -618,13 +617,13 @@ Not: `<h1>Transform Your Skin In Just 7 Days</h1>`
     },
     {
       "id": "social-proof",
-      "html": "<section class=\"py-8 px-4 bg-neutral-50\"><div class=\"max-w-md mx-auto flex flex-col gap-6\"><div class=\"text-center\"><div class=\"text-6xl font-black text-black mb-2\">4.9</div><div class=\"text-3xl text-amber-400 mb-2\">★★★★★</div><div class=\"text-sm font-medium text-neutral-600\">14,847 reviews</div></div><div class=\"text-center border-t border-neutral-200 pt-6\"><div class=\"text-4xl font-black text-black mb-1\">2.4M</div><div class=\"text-base font-semibold text-neutral-800\">TikTok Views</div><div class=\"text-sm text-neutral-500\">This Week</div></div></div></section>",
+      "html": "<section class=\"py-8 px-4 bg-neutral-50\"><div class=\"max-w-md mx-auto flex flex-col gap-6\"><div class=\"text-center\"><div class=\"text-6xl font-black text-black mb-2\">4.9</div><div class=\"text-sm font-medium text-neutral-600\">14,847 reviews</div></div><div class=\"text-center border-t border-neutral-200 pt-6\"><div class=\"text-4xl font-black text-black mb-1\">2.4M</div><div class=\"text-base font-semibold text-neutral-800\">TikTok Views</div><div class=\"text-sm text-neutral-500\">This Week</div></div></div></section>",
       "css": "",
       "js": ""
     },
     {
       "id": "problem-solution",
-      "html": "<section class=\"py-12 px-4 bg-white\"><div class=\"max-w-lg mx-auto\"><h2 class=\"text-[clamp(1.75rem,7vw,2.25rem)] font-extrabold text-center text-black mb-8\">Smoothies That Actually Taste Good</h2><div class=\"grid grid-cols-2 gap-4\"><div class=\"bg-neutral-100 rounded-2xl p-6 text-center\"><div class=\"text-4xl mb-3\">😵</div><div class=\"font-bold text-neutral-800 mb-2\">Other Blenders</div><div class=\"text-sm text-neutral-600\">Chunky. Loud. Takes Forever.</div></div><div class=\"bg-purple-50 rounded-2xl p-6 text-center border-2 border-purple-600\"><div class=\"text-4xl mb-3\">✨</div><div class=\"font-bold text-black mb-2\">With This</div><div class=\"text-sm text-neutral-800\">Smooth. Quiet. 30 Seconds.</div></div></div></div></section>",
+      "html": "<section class=\"py-12 px-4 bg-white\"><div class=\"max-w-lg mx-auto\"><h2 class=\"text-[clamp(1.75rem,7vw,2.25rem)] font-extrabold text-center text-black mb-8\">Smoothies That Actually Taste Good</h2><div class=\"grid grid-cols-2 gap-4\"><div class=\"bg-neutral-100 rounded-2xl p-6 text-center\"><div class=\"font-bold text-neutral-800 mb-2\">Other Blenders</div><div class=\"text-sm text-neutral-600\">Chunky. Loud. Takes Forever.</div></div><div class=\"bg-purple-50 rounded-2xl p-6 text-center border-2 border-purple-600\"><div class=\"font-bold text-black mb-2\">With This</div><div class=\"text-sm text-neutral-800\">Smooth. Quiet. 30 Seconds.</div></div></div></div></section>",
       "css": "",
       "js": ""
     },
@@ -678,7 +677,7 @@ Not: `<h1>Transform Your Skin In Just 7 Days</h1>`
 **Why this blueprint works:**
 
 1. **Video hook** matches ad creative (continuity, no jarring transition)
-2. **Social proof immediate** (4.9★ + 14K reviews + 2.4M TikTok views above fold)
+2. **Social proof immediate** (4.9/5 + 14K reviews + 2.4M TikTok views above fold)
 3. **Problem/solution visual** (before/after in 2-column grid, mobile-friendly)
 4. **BuyBox at section 4** (mid-page, after trust established, not buried)
 5. **UGC reviews** (casual language, screenshot aesthetic, carousel format)

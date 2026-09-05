@@ -127,7 +127,11 @@
       "required": false
     }
   },
-  "variants": null,
+  "variants": [
+    "none",
+    "solid",
+    "dashed"
+  ],
   "css_vars": [
     "--lx-accent-color"
   ],

@@ -1,5 +1,10 @@
 # Premium Patterns — High-Converting Section Templates
 
+> House rules in `storefront-engine/references/design-rules.md` override every example below.
+> Examples show structure and copy intent; their styling (gradients, hover transforms,
+> uppercase labels, pills, emoji, section fills) is illustrative and must not be copied.
+> Where an example conflicts with a house rule, the rule wins.
+
 Copy-and-adapt HTML+Tailwind patterns for common high-converting sections. Load when building hero, trust, CTA, or social proof sections.
 
 ---
@@ -11,7 +16,7 @@ Copy-and-adapt HTML+Tailwind patterns for common high-converting sections. Load 
 ```html
 <section class="relative min-h-[80vh] flex items-center justify-center text-center px-4 overflow-hidden" style="background:var(--lx-bg-color)">
   <div class="max-w-3xl mx-auto space-y-6">
-    <p class="text-xs uppercase tracking-[0.2em] font-medium" style="color:var(--lx-accent-color)">Eyebrow Text</p>
+    <p class="text-xs font-medium" style="color:var(--lx-accent-color)">Eyebrow text (optional)</p>
     <h1 class="font-bold leading-[1.1] tracking-tight" style="font-family:var(--lx-font-heading);font-size:clamp(2.5rem,6vw,4.5rem)">
       Your Hero Headline Here
     </h1>
@@ -19,10 +24,10 @@ Copy-and-adapt HTML+Tailwind patterns for common high-converting sections. Load 
       Supporting copy that reinforces the headline and builds desire.
     </p>
     <div class="flex flex-col sm:flex-row gap-3 justify-center pt-4">
-      <a href="#buy" class="px-8 py-4 rounded-lg font-semibold text-sm transition-all hover:scale-[1.02] hover:shadow-lg" style="background:var(--lx-accent-color);color:white">
+      <a href="#buy" class="px-8 py-4 rounded-lg font-semibold text-sm transition-colors hover:bg-[var(--lx-accent-color-hover)]" style="background:var(--lx-accent-color);color:white">
         Primary CTA
       </a>
-      <a href="#learn" class="px-8 py-4 rounded-lg font-semibold text-sm border-2 transition-all hover:scale-[1.02]" style="border-color:var(--lx-accent-color);color:var(--lx-accent-color)">
+      <a href="#learn" class="px-8 py-4 rounded-lg font-semibold text-sm border transition-colors hover:bg-[var(--lx-bg-surface)]" style="border-color:var(--lx-accent-color);color:var(--lx-accent-color)">
         Secondary CTA
       </a>
     </div>
@@ -36,14 +41,14 @@ Copy-and-adapt HTML+Tailwind patterns for common high-converting sections. Load 
 <section class="grid grid-cols-1 lg:grid-cols-2 min-h-[80vh]">
   <div class="flex items-center px-6 lg:px-16 py-16 lg:py-0 order-2 lg:order-1">
     <div class="space-y-6 max-w-lg">
-      <p class="text-xs uppercase tracking-[0.2em] font-medium" style="color:var(--lx-accent-color)">Category</p>
+      <p class="text-xs font-medium" style="color:var(--lx-accent-color)">Category</p>
       <h1 class="font-bold leading-[1.1]" style="font-family:var(--lx-font-heading);font-size:clamp(2rem,4vw,3.5rem)">
         Headline
       </h1>
       <p class="text-base lg:text-lg leading-relaxed" style="color:var(--lx-text-color);opacity:0.7">
         Body copy here.
       </p>
-      <button class="px-8 py-4 rounded-lg font-semibold transition-all hover:shadow-lg" style="background:var(--lx-accent-color);color:white">
+      <button class="px-8 py-4 rounded-lg font-semibold transition-colors hover:bg-[var(--lx-accent-color-hover)]" style="background:var(--lx-accent-color);color:white">
         Shop Now
       </button>
     </div>
@@ -66,7 +71,7 @@ Copy-and-adapt HTML+Tailwind patterns for common high-converting sections. Load 
         Bold Statement
       </h1>
       <p class="text-lg opacity-90">Supporting text on dark overlay.</p>
-      <button class="px-8 py-4 rounded-lg font-semibold bg-white text-black transition-all hover:scale-[1.02]">
+      <button class="px-8 py-4 rounded-lg font-semibold bg-white text-black transition-opacity hover:opacity-90">
         Explore
       </button>
     </div>
@@ -81,7 +86,7 @@ Copy-and-adapt HTML+Tailwind patterns for common high-converting sections. Load 
 ### Horizontal Icons + Text
 
 ```html
-<section class="py-6 border-y" style="border-color:var(--lx-border-color);background:var(--lx-bg-surface)">
+<section class="py-6 border-y" style="border-color:var(--lx-border-color)">
   <div class="max-w-5xl mx-auto px-4 flex flex-wrap justify-center gap-8 lg:gap-12">
     <div class="flex items-center gap-2">
       <svg class="w-5 h-5 flex-shrink-0" style="color:var(--lx-accent-color)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"/></svg>
@@ -124,14 +129,14 @@ Copy-and-adapt HTML+Tailwind patterns for common high-converting sections. Load 
 ### Testimonial Card Grid
 
 ```html
-<section class="py-16 lg:py-24 px-4" style="background:var(--lx-bg-surface)">
+<section class="py-16 lg:py-24 px-4">
   <div class="max-w-6xl mx-auto">
     <h2 class="text-center font-bold mb-12" style="font-family:var(--lx-font-heading);font-size:clamp(1.5rem,3vw,2.5rem)">
       What Our Customers Say
     </h2>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <!-- Card -->
-      <div class="bg-white rounded-xl p-6 shadow-sm">
+      <!-- Card (a quoted review is a distinct object, so it may use --lx-bg-surface; the section stays on the page background) -->
+      <div class="rounded-xl p-6" style="background:var(--lx-bg-surface);border:1px solid var(--lx-border-color)">
         <div class="flex gap-1 mb-3">
           <!-- 5 stars SVG -->
         </div>
@@ -175,15 +180,15 @@ Copy-and-adapt HTML+Tailwind patterns for common high-converting sections. Load 
 ### Urgency CTA Section
 
 ```html
-<section class="py-12 px-4 text-center" style="background:var(--lx-accent-color)">
+<section class="py-12 px-4 text-center">
   <div class="max-w-2xl mx-auto space-y-4">
-    <p class="text-white/80 text-sm font-medium uppercase tracking-wider">Limited Time Offer</p>
-    <h2 class="text-white text-3xl lg:text-4xl font-bold" style="font-family:var(--lx-font-heading)">
-      Get 20% Off Today Only
+    <p class="text-sm font-medium" style="color:var(--lx-text-muted)">Limited time offer</p>
+    <h2 class="text-3xl lg:text-4xl font-bold" style="font-family:var(--lx-font-heading);color:var(--lx-text-color)">
+      Get 20% off today only
     </h2>
-    <p class="text-white/70 text-lg">Use code WELCOME20 at checkout</p>
-    <button class="mt-4 px-10 py-4 bg-white rounded-lg font-bold text-sm transition-all hover:scale-[1.02] hover:shadow-xl" style="color:var(--lx-accent-color)">
-      Shop Now →
+    <p class="text-lg" style="color:var(--lx-text-muted)">Use code WELCOME20 at checkout</p>
+    <button class="mt-4 px-10 py-4 rounded-lg font-bold text-sm transition-colors hover:bg-[var(--lx-accent-color-hover)]" style="background:var(--lx-accent-color);color:white">
+      Add to cart
     </button>
   </div>
 </section>
@@ -198,8 +203,8 @@ Copy-and-adapt HTML+Tailwind patterns for common high-converting sections. Load 
 ```html
 <div class="flex items-baseline gap-3">
   <span class="text-3xl font-bold" style="color:var(--lx-text-color)">₹1,299</span>
+  <!-- compare-at as struck text only (when Shopify has one); no percentage pill -->
   <span class="text-lg line-through opacity-40">₹1,799</span>
-  <span class="text-xs font-semibold px-2 py-1 rounded-full" style="background:var(--lx-accent-color);color:white">28% OFF</span>
 </div>
 ```
 
@@ -212,8 +217,8 @@ Copy-and-adapt HTML+Tailwind patterns for common high-converting sections. Load 
     <p class="text-2xl font-bold">₹1,299</p>
     <p class="text-xs opacity-50">₹1,299/unit</p>
   </div>
-  <div class="border-2 rounded-xl p-5 text-center relative" style="border-color:var(--lx-accent-color)">
-    <span class="absolute -top-3 left-1/2 -translate-x-1/2 text-[10px] font-bold px-3 py-1 rounded-full" style="background:var(--lx-accent-color);color:white">MOST POPULAR</span>
+  <div class="border rounded-xl p-5 text-center" style="border-color:var(--lx-accent-color)">
+    <p class="text-xs font-medium mb-1" style="color:var(--lx-accent-color)">Most popular</p>
     <p class="text-sm font-medium mb-1">2 Bottles</p>
     <p class="text-2xl font-bold">₹2,199</p>
     <p class="text-xs opacity-50">₹1,099/unit • Save 15%</p>
@@ -230,21 +235,23 @@ Copy-and-adapt HTML+Tailwind patterns for common high-converting sections. Load 
 
 ## Features/Benefits Pattern
 
-### Icon Grid
+### Benefits Grid
+
+Icons only if the plan's icon decision says so. When used, the SVG sits inline next to the heading text — never in a rounded tile above it.
 
 ```html
 <section class="py-16 lg:py-24 px-4">
   <div class="max-w-6xl mx-auto">
     <div class="text-center mb-12">
-      <p class="text-xs uppercase tracking-[0.2em] mb-3" style="color:var(--lx-accent-color)">Why Choose Us</p>
+      <p class="text-xs mb-3" style="color:var(--lx-accent-color)">Why choose us</p>
       <h2 class="font-bold" style="font-family:var(--lx-font-heading);font-size:clamp(1.5rem,3vw,2.5rem)">Benefits That Matter</h2>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-      <div class="text-center space-y-3">
-        <div class="w-12 h-12 mx-auto rounded-xl flex items-center justify-center" style="background:var(--lx-bg-surface)">
-          <svg class="w-6 h-6" style="color:var(--lx-accent-color)" fill="none" stroke="currentColor" viewBox="0 0 24 24">...</svg>
-        </div>
-        <h3 class="font-semibold">Benefit Title</h3>
+      <div class="space-y-2">
+        <h3 class="font-semibold flex items-center gap-2">
+          <svg class="w-5 h-5 flex-shrink-0" style="color:var(--lx-accent-color)" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">...</svg>
+          Benefit Title
+        </h3>
         <p class="text-sm leading-relaxed" style="opacity:0.7">Short description of this benefit.</p>
       </div>
       <!-- Repeat 5 more -->

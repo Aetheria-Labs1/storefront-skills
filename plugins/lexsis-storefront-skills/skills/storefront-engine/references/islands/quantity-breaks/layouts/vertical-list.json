@@ -1,6 +1,0 @@
-{
-  "id": "quantity-breaks-vertical",
-  "html": "<div class=\"rounded-lg border p-4 space-y-3\" style=\"border-color: var(--lx-border-color); background-color: var(--lx-bg-surface)\"><h3 class=\"text-sm font-semibold\" style=\"color: var(--lx-text-color)\">Quantity discounts</h3><div data-island=\"QuantityBreaks\" data-props='{\"tiers\":{{TIERS_ARRAY}},\"variantId\":\"{{VARIANT_ID}}\"}'></div></div>",
-  "css": "",
-  "js": ""
-}

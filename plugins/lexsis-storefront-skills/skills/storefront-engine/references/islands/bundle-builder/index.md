@@ -2,20 +2,11 @@
 
 Interactive bundle creation island for product bundles with tiered discounts.
 
-## Files
-
-| File | Purpose |
-|------|---------|
-| `layouts/step-based.json` | Full section with step progress (Choose, Review, Checkout) |
-| `layouts/horizontal.json` | Single row: product grid + bundle summary sidebar |
-| `layouts/compact.json` | Inline bundle widget for embedding in PDP as upsell |
-
 ## Quick Reference
 
 - **Variants**: horizontal, stacked
 - **Required prop**: `productIds` (JSON array of Shopify GIDs)
 - **Schema**: `vibe://schema/island/BundleBuilder`
-- **Layouts**: `vibe://islands/bundle-builder/layouts/{name}`
 - **Contract**: follows `_contract.md`
 
 ## Composition

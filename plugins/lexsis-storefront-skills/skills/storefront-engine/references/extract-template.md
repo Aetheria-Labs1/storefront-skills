@@ -94,9 +94,9 @@ When building the section HTML:
 Output a summary table:
 | # | Section | Type | Islands | Status |
 |---|---------|------|---------|--------|
-| 1 | Hero banner | hero | ProductHero | ✓ Created |
-| 2 | Reviews grid | reviews | ReviewCarousel | ✓ Created |
-| 3 | Custom 3D viewer | interactive | — | ⚠ Gap logged |
+| 1 | Hero banner | hero | ProductHero | Created |
+| 2 | Reviews grid | reviews | ReviewCarousel | Created |
+| 3 | Custom 3D viewer | interactive | — | Gap logged |
 
 ## Industry Detection
 

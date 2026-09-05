@@ -7,21 +7,15 @@ masonry, stacked media, mobile swipe, and an accessible lightbox.
 
 | File | Purpose |
 |------|---------|
-| `layouts/grid-2x2.json` | 2x2 image grid (4+ images, desktop PDP) |
-| `layouts/horizontal-scroll.json` | Swipeable carousel (mobile-first) |
-| `layouts/hero-thumbnails.json` | Large main + vertical thumbnail strip |
-| `layouts/editorial-asymmetric.json` | Varied sizes, luxury/editorial feel |
 | `fashion.md` | Fashion: model angles, fabric zoom, 3/4 aspect |
 | `jewelry.md` | Jewelry: close-up detail, 1/1 aspect, scale reference |
 
 ## Quick Reference
 
-- **Layouts**: horizontal, vertical, grid, collageLeft, collageRight, twoColumn, masonry, stacked
 - **Canonical media prop**: `media: MediaItem[]`
 - **Mobile modes**: swipe, stacked
 - **Lightbox**: defaults on for grid-family layouts
 - **Schema**: `vibe://schema/island/ProductGallery`
-- **Layouts**: `vibe://islands/product-gallery/layouts/{name}`
 - **Contract**: follows `_contract.md` rules
 
 ## Composition

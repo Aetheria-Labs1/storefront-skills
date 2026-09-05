@@ -42,6 +42,24 @@ Start with a compact progressive manifest:
       "productId": "...",
       "variantIds": ["..."]
     }
+  ],
+  "assets": [
+    {
+      "slotId": "A1",
+      "role": "hero_bg",
+      "sectionId": "hero",
+      "sourceType": "lexsis",
+      "assetId": "...",
+      "url": "https://...",
+      "status": "verified"
+    },
+    {
+      "slotId": "A2",
+      "role": "product_lifestyle",
+      "sectionId": "benefits",
+      "sourceType": "pending",
+      "status": "planned"
+    }
   ]
 }
 ```
@@ -50,10 +68,17 @@ Start with a compact progressive manifest:
 composition, keep the rationale in `page-plan.md`; do not store template
 search transcripts in JSON.
 
+`assets[]` holds one entry per asset slot in the plan. `sourceType` is
+`lexsis` (with `assetId`), `shopify` (with `productId` and `mediaId`),
+`preview-placeholder`, or `pending` while the slot is still `planned`.
+`status` is `verified` or `planned`.
+
 The manifest grows only when later stages have real state to record:
 
-- `/design-page` adds compact `config`, `assets`, `islands`, and `design`
-  records.
+- `/plan-page` writes `assets[]` (verified or planned).
+- `/design-page` adds compact `config`, `islands`, and `design` records,
+  resolves `planned` assets, and records `islands[].preset` and
+  `islands[].presetOverrides` when a preset is applied.
 - `/generate` adds `sync`, `remote`, and `qa`.
 
 Do not prefill null production, approval, hash, QA, or remote fields. Do not
