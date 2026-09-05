@@ -1,6 +1,0 @@
-{
-  "id": "social-proof",
-  "html": "<section class=\"hidden\" aria-hidden=\"true\"><div data-island=\"SocialProofPopup\" data-props='{\"position\":\"top-banner\",\"delayMs\":{{DELAY_MS}},\"durationMs\":{{DURATION_MS}},\"productId\":\"{{PRODUCT_ID}}\",\"showProductImage\":false}'></div></section>",
-  "css": "",
-  "js": ""
-}

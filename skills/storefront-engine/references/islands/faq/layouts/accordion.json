@@ -1,6 +1,0 @@
-{
-  "id": "faq-accordion",
-  "html": "<section style=\"background-color: var(--lx-surface-alt)\" class=\"py-12 md:py-16 lg:py-20\"><div class=\"max-w-3xl mx-auto px-4\"><h2 class=\"text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-8 md:mb-12\" style=\"font-family: var(--lx-font-heading); color: var(--lx-text-color)\">{{HEADING}}</h2><div data-island=\"FAQ\" data-props='{\"items\":{{ITEMS}},\"variant\":\"default\"}'></div></div></section>",
-  "css": "",
-  "js": ""
-}

@@ -2,20 +2,11 @@
 
 Top-of-page promotional banner for sales, shipping info, or urgency messaging. Dismissible.
 
-## Files
-
-| File | Purpose |
-|------|---------|
-| `layouts/single-message.json` | Simple single-line announcement with dismiss button |
-| `layouts/rotating.json` | Multiple messages auto-rotating with arrows |
-| `layouts/countdown.json` | Announcement with inline countdown timer for urgency |
-
 ## Quick Reference
 
 - **Variants**: none (single default)
 - **Props**: messages (array of {text, link?}) — 7 total
 - **Schema**: `vibe://schema/island/AnnouncementBar`
-- **Layouts**: `vibe://islands/announcement-bar/layouts/{name}`
 - **Contract**: follows `_contract.md` rules
 
 ## Composition

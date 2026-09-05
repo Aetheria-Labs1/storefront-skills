@@ -1,6 +1,0 @@
-{
-  "id": "swatches-size-buttons",
-  "html": "<div class=\"space-y-3\"><div class=\"flex items-center justify-between\"><label class=\"text-sm font-medium\" style=\"color: var(--lx-text-color)\">Size</label><button class=\"text-xs underline\" style=\"color: var(--lx-accent-color)\">Size guide</button></div><div data-island=\"VariantSwatches\" data-props='{\"variants\":{{VARIANTS_ARRAY}},\"values\":{{VALUES_ARRAY}},\"type\":\"size_grid\"}'></div></div>",
-  "css": "",
-  "js": ""
-}

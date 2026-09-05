@@ -1,6 +1,0 @@
-{
-  "id": "mobile-menu-bottom-sheet",
-  "html": "<div class=\"fixed inset-0 z-50 hidden\" data-mobile-menu><div class=\"absolute inset-0 bg-black/50\" data-menu-overlay></div><div class=\"absolute bottom-0 left-0 right-0 rounded-t-2xl shadow-xl transform translate-y-full transition-transform duration-300 max-h-[85vh] overflow-y-auto\" style=\"background-color: var(--lx-bg-color)\"><div class=\"flex items-center justify-center pt-3 pb-2\"><div class=\"w-10 h-1 rounded-full bg-gray-300\"></div></div><div class=\"flex items-center justify-between px-6 pb-4 border-b\" style=\"border-color: var(--lx-border-color)\"><img src=\"{{LOGO_URL}}\" alt=\"Home\" class=\"h-6 w-auto\" /><button aria-label=\"Close menu\" class=\"p-2 rounded-md hover:bg-gray-100\"><svg class=\"w-5 h-5\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M6 18L18 6M6 6l12 12\"/></svg></button></div><nav class=\"px-6 py-4\"><div data-island=\"MobileMenu\" data-props='{\"links\":{{LINKS}},\"logo\":{\"src\":\"{{LOGO_URL}}\"},\"socials\":[]}'></div></nav></div></div>",
-  "css": "",
-  "js": ""
-}

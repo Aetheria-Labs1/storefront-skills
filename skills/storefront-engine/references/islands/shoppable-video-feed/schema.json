@@ -292,19 +292,27 @@
     },
     "autoplay": {
       "type": "boolean",
-      "required": false
+      "required": false,
+      "deprecated": true,
+      "description": "Use playbackMode."
     },
     "muted": {
       "type": "boolean",
-      "required": false
+      "required": false,
+      "deprecated": true,
+      "description": "Use soundMode."
     },
     "showControls": {
       "type": "boolean",
-      "required": false
+      "required": false,
+      "deprecated": true,
+      "description": "Use controlsVisibility."
     },
     "showNavigation": {
       "type": "boolean",
-      "required": false
+      "required": false,
+      "deprecated": true,
+      "description": "Use navigationMode and mobileNavigationMode."
     }
   },
   "variants": [

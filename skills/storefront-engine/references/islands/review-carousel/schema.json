@@ -7,10 +7,9 @@
   "when_not_to_use": "For single reviews (just show the review card directly). For real-time streaming review feeds (this fetches a batch, not a live stream).",
   "defaultHydrate": "visible",
   "combine_with": [
-    "TrustBadgeBar",
     "BuyBox",
-    "PDPInfoCards",
-    "FAQ"
+    "ProductGallery",
+    "StickyBar"
   ],
   "anti_patterns": [
     "Passing more than 12 reviews in static mode (carousel becomes too long; pre-filter to top reviews by rating/helpfulness)",

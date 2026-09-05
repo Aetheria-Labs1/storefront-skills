@@ -2,13 +2,6 @@
 
 Fast add-to-cart action. Minimal UI for rapid purchase without navigating to PDP.
 
-## Files
-
-| File | Purpose |
-|------|---------|
-| `layouts/button-overlay.json` | + button overlaying product card on hover |
-| `layouts/inline-button.json` | Always-visible "Add" button below card |
-
 ## Quick Reference
 
 - **Component**: QuickAdd
@@ -16,7 +9,6 @@ Fast add-to-cart action. Minimal UI for rapid purchase without navigating to PDP
 - **Props**: 2 (product, onAdd)
 - **Required prop**: `product` (object with id, title, availableForSale)
 - **Schema**: `vibe://schema/island/QuickAdd`
-- **Layouts**: `vibe://islands/quick-add/layouts/{name}`
 - **Contract**: follows `_contract.md` rules
 
 ## Composition
