@@ -16,6 +16,10 @@ src = (W / "lexsis-source.html").read_text(encoding="utf-8")
 css_path = W / "page-theme.css"
 css = css_path.read_text(encoding="utf-8") if css_path.exists() else ""
 both = src + "\n" + css
+plan_path = W / "page-plan.md"
+plan = plan_path.read_text(encoding="utf-8") if plan_path.exists() else ""
+# N1 exception: the plan records a merchant-insisted "Emoji in copy: allowed" line.
+emoji_in_copy_allowed = bool(re.search(r"Emoji in copy\W+\s*allowed", plan, re.I))
 
 # Same ranges as the perl -CSD check in design-rules.md N1.
 EMOJI = re.compile(
@@ -33,8 +37,9 @@ radii = {
     for a, b in re.findall(r'border-radius:\s*([^;"}]+)|(rounded(?:-[a-z0-9\[\]]+)?)', both)
 }
 
+emoji_count = len(EMOJI.findall(both))
 checks = [
-    ("N1 emoji", len(EMOJI.findall(both)), 0),
+    ("N1 emoji" + (" (plan allows in copy)" if emoji_in_copy_allowed else ""), emoji_count, emoji_count if emoji_in_copy_allowed else 0),
     ("N3 stroke-width variants", max(0, len(set(re.findall(r'stroke-width="([^"]*)"', src))) - 1), 0),
     ("N3 img used as icon", count(r'<img[^>]*class="[^"]*icon', src), 0),
     ("N4 font families (<=3)", max(0, len(set(re.findall(r"family=([A-Za-z+]+)", css))) - 3), 0),
@@ -69,4 +74,6 @@ for name, n, allowed in checks:
     fails += not ok
     print(f"{name:34} {n:>5}  {'PASS' if ok else 'FAIL'}")
 print("\nBrowser checks still required: N2 (one page background), N8 (cards), N11 (proof), A4 (measure), A7 (contrast).")
+if emoji_in_copy_allowed and emoji_count:
+    print(f"N1: {emoji_count} emoji allowed by the plan; confirm on the 1280 screenshot that none acts as an icon or separator.")
 sys.exit(1 if fails else 0)

@@ -175,7 +175,7 @@
 </section>
 ```
 
-**Screenshot aesthetic:** Phone UI chrome visible, Instagram/TikTok comment format, engagement numbers, casual language. No emoji (house rule N1); energy comes from copy rhythm and imagery.
+**Screenshot aesthetic:** Phone UI chrome visible, Instagram/TikTok comment format, engagement numbers, casual language. No emoji by default (house rule N1: only in copy when the merchant insists, never as icons); energy comes from copy rhythm and imagery.
 
 ## Video Integration
 
@@ -234,7 +234,7 @@
 **Content format:**
 - Short punchy fragments, not sentences
 - Line breaks for emphasis
-- No emoji (house rule N1); energy comes from copy rhythm and imagery
+- No emoji by default (house rule N1: only in copy when the merchant insists, never as icons); energy comes from copy rhythm and imagery
 - ALL CAPS for urgency elements (sparingly)
 
 **Imagery:**
@@ -298,7 +298,7 @@
 </section>
 ```
 
-**Copy rules:** Lowercase, casual punctuation, no formal language, no emoji (house rule N1). "this actually works" > "I'm very satisfied with this product."
+**Copy rules:** Lowercase, casual punctuation, no formal language, no emoji by default (house rule N1: only in copy when the merchant insists, never as icons). "this actually works" > "I'm very satisfied with this product."
 
 ### Pattern 2: Star Rating with Huge Count
 
@@ -534,7 +534,7 @@ Not: `<h1>Transform Your Skin In Just 7 Days</h1>`
 
 **Why it kills:** Cognitive dissonance. They came from casual UGC, landed on corporate marketing. Feels like bait-and-switch.
 
-**Fix:** Write like a creator, not a brand. Casual language, fragments, lowercase, authenticity over polish. No emoji (house rule N1).
+**Fix:** Write like a creator, not a brand. Casual language, fragments, lowercase, authenticity over polish. No emoji by default (house rule N1: only in copy when the merchant insists, never as icons).
 
 ### 3. Desktop-First Design
 
