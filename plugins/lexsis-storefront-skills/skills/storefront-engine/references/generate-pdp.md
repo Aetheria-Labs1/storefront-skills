@@ -61,7 +61,8 @@ lexsis_catalog.list           → related products for cross-sell
 - Use ReviewCarousel only when at least 3 real reviews are available. With
   1-2 verified reviews, render static testimonial cards; with none, replace the
   section with product proof, guarantees, certifications, or verified press.
-  Never invent reviewers, ratings, or counts.
+  Never invent reviewers, ratings, or counts; the source is the plan's Proof
+  sources line (`lexsis_catalog` action `reviews` / `review_collections`).
 
 ## Niche Variants
 

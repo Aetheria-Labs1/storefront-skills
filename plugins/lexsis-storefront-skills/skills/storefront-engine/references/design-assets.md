@@ -6,11 +6,17 @@ Manage visual assets (search, generate, edit) and brand identity (kit, themes).
 
 Always follow this order — never generate when existing assets work:
 
-### 1. Search First
+### 1. Ask, then browse or search
 ```
-lexsis_asset_library(action: "search", args: { query: "lifestyle woman skincare" })
+lexsis_asset_library(action: "search", args: { query: "", mode: "tags", theme_id: "<theme uuid>", limit: 48 })   // browse; opens the asset picker in UI hosts
+lexsis_asset_library(action: "search", args: { query: "lifestyle woman skincare", theme_id: "<theme uuid>" })   // search when the user declines to pick
 ```
 Returns existing brand assets (product shots, lifestyle, textures, SVGs).
+`theme_id` is required. In UI hosts the picker multi-selects across pages and
+returns a `Design asset selection:` message with `asset_ids` and
+`selection_order`; wait for it before picking yourself. Tag browsing uses the
+vision vocabulary: `banner`, `lifestyle`, `social-proof`, `logo`,
+`product-shot`, `hero`, `flat-lay`, `before-after`.
 
 ### 2. Generate If Needed
 ```

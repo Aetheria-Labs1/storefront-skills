@@ -296,24 +296,27 @@ Raw metrics. Most credible when specific and large.
 <section class="py-16 px-4">
   <div class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-6xl mx-auto">
     <div>
-      <p class="text-3xl md:text-4xl font-bold" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">247,000+</p>
+      <p class="text-3xl md:text-4xl font-bold" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">{{customer_total}}</p>
       <p class="text-sm mt-2" style="color:var(--lx-text-muted)">Happy customers</p>
     </div>
     <div>
-      <p class="text-3xl md:text-4xl font-bold" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">4.8/5.0</p>
+      <p class="text-3xl md:text-4xl font-bold" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">{{average_rating}}/5</p>
       <p class="text-sm mt-2" style="color:var(--lx-text-muted)">Average rating</p>
     </div>
     <div>
-      <p class="text-3xl md:text-4xl font-bold" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">12,000+</p>
-      <p class="text-sm mt-2" style="color:var(--lx-text-muted)">Five-star reviews</p>
+      <p class="text-3xl md:text-4xl font-bold" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">{{review_total}}</p>
+      <p class="text-sm mt-2" style="color:var(--lx-text-muted)">Verified reviews</p>
     </div>
     <div>
-      <p class="text-3xl md:text-4xl font-bold" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">94%</p>
+      <p class="text-3xl md:text-4xl font-bold" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">{{recommend_pct}}</p>
       <p class="text-sm mt-2" style="color:var(--lx-text-muted)">Would recommend</p>
     </div>
   </div>
 </section>
 ```
+
+Every `{{…}}` figure is a placeholder for a value returned by `lexsis_catalog` action `reviews` (`total`, ratings) or a claim the merchant confirmed in the plan. Never type a number here; omit the figure when no source exists (house rule N11).
+
 
 **When to use:** First 3 sections. Anchor trust before storytelling.
 
@@ -362,8 +365,8 @@ Text-only reviews. Lowest impact but high volume works (10+ reviews).
 ```html
 <section class="py-16 px-4">
   <div class="max-w-6xl mx-auto">
-    <h2 class="text-3xl md:text-4xl font-bold text-center mb-12" style="color:var(--lx-text-color)">12,000+ 5-Star Reviews</h2>
-    <div data-island="ReviewCarousel" data-props='{"autoplay":true,"reviewsPerView":3,"reviews":[{"rating":5,"text":"Exceeded expectations. Results were visible in days. Highly recommend.","author":"John D.","verified":true,"date":"2026-06-15"}]}'></div>
+    <h2 class="text-3xl md:text-4xl font-bold text-center mb-12" style="color:var(--lx-text-color)">What customers say</h2>
+    <div data-island="ReviewCarousel" data-props='{"collectionId":"<active collection id from the plan>","minRating":4,"pageSize":8,"variant":"grid"}'></div>
   </div>
 </section>
 ```
