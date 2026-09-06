@@ -2,6 +2,14 @@
   "contract_version": 2,
   "name": "BundleBuilder",
   "category": "commerce",
+  "capabilities": [
+    {
+      "name": "cart:add"
+    },
+    {
+      "name": "cart:open"
+    }
+  ],
   "usage_hint": "Multi-product bundle or peer-set selector with optional discount and \"Add All to Cart\" action.",
   "when_to_use": "Use on PDP or collection pages for complementary bundles, gift sets, kits, and peer-product sets.",
   "when_not_to_use": "Not for single-product add-to-cart (use BuyBox or QuickAdd). Not for general product grids (use ProductCarousel). Not for cross-sells without bundle context (use ProductCarousel).",

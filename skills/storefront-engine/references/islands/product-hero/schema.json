@@ -2,6 +2,14 @@
   "contract_version": 2,
   "name": "ProductHero",
   "category": "commerce",
+  "capabilities": [
+    {
+      "name": "product:resolve"
+    },
+    {
+      "name": "media:carousel"
+    }
+  ],
   "usage_hint": "Premium full-height hero gallery for PDP split layouts. Supports fade/slide/zoom/kenBurns transitions, thumbnail rail, autoplay, hover-advance, and variant sync. Fully CSS-customizable via data-part attributes and --lx-hero-* properties.",
   "when_to_use": "Use for high-end PDP layouts where media occupies 50-60% of viewport height and sits alongside BuyBox. Ideal for fashion, furniture, premium goods where large immersive media is key.",
   "when_not_to_use": "Not for compact galleries (use ProductGallery). Not for hero banners on landing pages. Not for card-based media (use MediaCarousel).",

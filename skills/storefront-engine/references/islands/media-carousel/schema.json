@@ -2,6 +2,11 @@
   "contract_version": 2,
   "name": "MediaCarousel",
   "category": "media",
+  "capabilities": [
+    {
+      "name": "media:carousel"
+    }
+  ],
   "usage_hint": "Standalone image/video carousel for custom cards, editorial modules, and hero sections. One media item renders normally; multiple items add configurable arrows, dots, autoplay, hover advance, and swipe.",
   "when_to_use": "Use anywhere custom HTML needs the shared MediaItem[] contract without a product-specific layout.",
   "when_not_to_use": "Not for horizontal product scrolling (use ProductCarousel or FeaturedCollectionStage). Not for thumbnail-heavy PDP galleries (use ProductGallery).",
@@ -243,15 +248,6 @@
       "anyOf": [
         {
           "type": "boolean"
-        },
-        {
-          "type": "boolean"
-        },
-        {
-          "type": "string"
-        },
-        {
-          "type": "string"
         },
         {
           "type": "string"

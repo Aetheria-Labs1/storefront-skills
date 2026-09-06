@@ -2,6 +2,11 @@
   "contract_version": 2,
   "name": "SocialProofPopup",
   "category": "social_proof",
+  "capabilities": [
+    {
+      "name": "overlay"
+    }
+  ],
   "usage_hint": "Floating notification popup showing recent purchases (\"X from Y just bought Z\") that cycles through events, creating urgency and social proof. Supports static events array or live fetch from our social proof API.",
   "when_to_use": "On high-traffic product or collection pages where real-time purchase activity is meaningful. Two modes: static events[] array (baked in) or fetch mode (socialProofEndpoint for live data with background refresh). Supports bottom-left, bottom-right, and top-banner positions.",
   "when_not_to_use": "On checkout pages (distracts from completion). Avoid on low-traffic products (sparse events damage trust). Skip on mobile-first experiences where viewport is tight. Never show multiple SocialProofPopups on one page.",

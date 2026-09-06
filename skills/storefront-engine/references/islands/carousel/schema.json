@@ -2,6 +2,7 @@
   "contract_version": 2,
   "name": "Carousel",
   "category": "hero",
+  "capabilities": [],
   "deprecated": true,
   "replacement": "CSS scroll-snap or a specialized commerce/media island",
   "deprecation_reason": "Generic Swiper behavior is not Shopify-scoped and creates a broad CDN-backed contract that is difficult to customize safely.",

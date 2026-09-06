@@ -2,6 +2,7 @@
   "contract_version": 2,
   "name": "CartProgressBar",
   "category": "commerce",
+  "capabilities": [],
   "usage_hint": "Shows progress toward free shipping or tiered rewards. Subscribes to shared cart state.",
   "when_to_use": "Inside DrawerShell above CartLines to incentivize adding more items. Shows a visual bar and templated message.",
   "when_not_to_use": "If the store does not offer free shipping thresholds or tiered incentives.",

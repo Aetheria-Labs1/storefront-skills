@@ -2,6 +2,7 @@
   "contract_version": 2,
   "name": "BeforeAfter",
   "category": "content",
+  "capabilities": [],
   "usage_hint": "Before/after image comparison slider with draggable divider. Supports horizontal and vertical orientation.",
   "when_to_use": "For product transformations (skincare, makeup, home improvement, photo editing tools). User drags divider to reveal before/after images. Supports optional labels.",
   "when_not_to_use": "For simple image galleries use ProductImage carousel. When images don't align perfectly (different crops/angles look broken). For video comparisons use side-by-side videos instead.",

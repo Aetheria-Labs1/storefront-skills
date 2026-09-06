@@ -2,6 +2,7 @@
   "contract_version": 2,
   "name": "Countdown",
   "category": "content",
+  "capabilities": [],
   "usage_hint": "Live countdown timer for sales, launches, or deadlines. Updates every second. Three styles: simple (boxes + separators), flip (animated), circular (progress rings).",
   "when_to_use": "For flash sales, product launches, limited offers, event countdowns. Shows days/hours/minutes/seconds. Auto-hides when expired and shows expiredMessage. Supports custom CSS variables for styling.",
   "when_not_to_use": "For static \"Sale ends soon\" text use plain HTML. When deadline isn't firm (countdown creates urgency, broken promises hurt trust). For long durations (>30 days — use date instead).",

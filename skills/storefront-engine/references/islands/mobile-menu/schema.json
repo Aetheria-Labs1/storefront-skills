@@ -2,6 +2,11 @@
   "contract_version": 2,
   "name": "MobileMenu",
   "category": "navigation",
+  "capabilities": [
+    {
+      "name": "overlay"
+    }
+  ],
   "usage_hint": "Full-screen mobile navigation overlay with expandable sections and social links.",
   "when_to_use": "As a standalone mobile menu island when you need custom mobile navigation separate from desktop nav. Automatically opens on mount (controlled by parent). Supports nested link hierarchies with expand/collapse.",
   "when_not_to_use": "When Navbar or SiteHeader already provides mobile menu functionality (they have built-in mobile panels). Don't use both.",

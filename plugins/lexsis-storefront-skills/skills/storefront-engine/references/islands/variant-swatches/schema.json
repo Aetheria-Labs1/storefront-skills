@@ -2,6 +2,7 @@
   "contract_version": 2,
   "name": "VariantSwatches",
   "category": "commerce",
+  "capabilities": [],
   "usage_hint": "Visual variant selector with image/color/text/size_grid swatch types. Emits variant:changed or option:changed events for BuyBox/ProductGallery sync.",
   "when_to_use": "Use on PDP when you want a dedicated, visually rich variant selector separate from BuyBox. Common for products with color/pattern variants where images are more informative than text labels.",
   "when_not_to_use": "Not when BuyBox's built-in variant selector is sufficient. Not for single-variant products. Not for multi-axis variants unless you use axis mode per option (e.g., separate VariantSwatches for color and size).",

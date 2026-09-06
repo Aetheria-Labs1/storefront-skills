@@ -2,6 +2,11 @@
   "contract_version": 2,
   "name": "SubscriptionToggle",
   "category": "commerce",
+  "capabilities": [
+    {
+      "name": "product:resolve"
+    }
+  ],
   "usage_hint": "Subscribe-and-save toggle that switches between one-time purchase and subscription pricing. Emits subscription:changed events to BuyBox.",
   "when_to_use": "On product pages with subscription selling plans. Auto-emits state changes so BuyBox/AddToCart islands can update checkout behavior. Shows discount, frequency options, and benefits list.",
   "when_not_to_use": "For products without subscription options. For simple quantity selectors use BuyBox quantity field. For tiered pricing use QuantityBreaks instead.",

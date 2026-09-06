@@ -2,6 +2,7 @@
   "contract_version": 2,
   "name": "VariantSelector",
   "category": "commerce",
+  "capabilities": [],
   "usage_hint": "Visual variant/option selector that emits scoped variant:changed events. Supports swatches, dropdown, and button pill modes. For headless (no UI) selection, use data-behavior=\"variant-select\" instead.",
   "when_to_use": "Use inside custom product cards, quick-view modals, or anywhere you need visual variant selection with automatic event emission. Pairs with QuickAdd for full add-to-cart flow.",
   "when_not_to_use": "Not for PDP (BuyBox handles variant selection). Not for headless coordination only (use data-behavior=\"variant-select\"). Not when you need full product gallery image switching (use ProductGallery).",

@@ -2,6 +2,14 @@
   "contract_version": 2,
   "name": "ProductGallery",
   "category": "commerce",
+  "capabilities": [
+    {
+      "name": "product:resolve"
+    },
+    {
+      "name": "media:carousel"
+    }
+  ],
   "usage_hint": "PDP media gallery with thumbnail rails, editorial photo grids, mixed image/video support, lightbox viewing, and variant synchronization.",
   "when_to_use": "Use on product detail pages for horizontal/vertical thumbnail galleries or CSS-customizable grid, collage, masonry, and stacked media layouts.",
   "when_not_to_use": "Not for hero banners (use ProductHero). Not for card media (use MediaCarousel). Not for standalone image carousels (use MediaSlideshow primitive).",

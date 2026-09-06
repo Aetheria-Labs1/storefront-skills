@@ -2,6 +2,7 @@
   "contract_version": 2,
   "name": "StatCards",
   "category": "social_proof",
+  "capabilities": [],
   "deprecated": true,
   "replacement": "HTML/CSS with optional IntersectionObserver",
   "deprecation_reason": "Generic count-up presentation has no Shopify scope and should be authored in the page section.",

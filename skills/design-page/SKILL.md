@@ -12,6 +12,7 @@ Read:
 
 - `storefront-engine/references/design-rules.md`
 - `storefront-engine/references/island-presets.md`
+- `storefront-engine/references/merchant-templates.md`
 - `references/page-layout.md`
 - `references/island-preview.md`
 
@@ -24,6 +25,10 @@ Use `lexsis_brand.context`, `lexsis_brand.get_theme`,
 `lexsis_assets.view`, `lexsis_workspace.credits`,
 `lexsis_drafts.asset_generate`, `lexsis_asset_upload.import`, and
 `lexsis_pages.compile`.
+
+When the user wants one of their saved reusable sections, use
+`lexsis_template_library.list_mine` and `get_mine`. Treat its source as a
+starting section in the page, not as an inherited renderer shell.
 Resolve only unfamiliar argument schemas through exact router/action
 discovery.
 
@@ -91,6 +96,8 @@ product image or generic logo placeholder.
    direction.
 3. Convert each planned section into responsive layout and copy, following the
    wireframe, the Imagery and background plan, and the slot ids.
+   Header, Announcement, Navigation, and Footer are included here in their
+   intended source order when required.
 4. Read the compact island catalog and select only the likely interactive
    components. Do not fetch every full schema in advance.
    When the plan names a preset (`Preset: <island>/<intent>-<tone>`), apply it

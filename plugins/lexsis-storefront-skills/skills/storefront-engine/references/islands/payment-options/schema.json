@@ -2,6 +2,7 @@
   "contract_version": 2,
   "name": "PaymentOptions",
   "category": "commerce",
+  "capabilities": [],
   "usage_hint": "Buy-now-pay-later badge showing installment pricing for Klarna, Afterpay, Shop Pay, Affirm, Zip. Auto-calculates per-installment amount.",
   "when_to_use": "On product pages to show financing options. Listens for variant:changed events to update pricing. Three variants: inline (text + icons), expandable (click to show providers), icons_only (logo row).",
   "when_not_to_use": "When BNPL providers aren't enabled in your store. For subscription pricing use SubscriptionToggle. When product price is below provider minimums (usually $35-50).",

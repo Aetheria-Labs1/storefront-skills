@@ -2,6 +2,7 @@
   "contract_version": 2,
   "name": "CartLines",
   "category": "commerce",
+  "capabilities": [],
   "usage_hint": "Renders cart line items with quantity controls and remove buttons. Subscribes to shared cart state.",
   "when_to_use": "Inside DrawerShell as the main cart items list. Shows each line with image, title, variant, price, and quantity +/- controls.",
   "when_not_to_use": "Outside a cart context. If you need a static product list, use ProductCarousel instead.",

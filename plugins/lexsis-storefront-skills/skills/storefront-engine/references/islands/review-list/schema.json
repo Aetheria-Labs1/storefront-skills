@@ -2,6 +2,7 @@
   "contract_version": 2,
   "name": "ReviewList",
   "category": "social_proof",
+  "capabilities": [],
   "usage_hint": "Full interactive review list with sort, filter, pagination, demographics sidebar, media thumbnails, and helpful votes. Stamped.io-style layout for DTC landing pages.",
   "when_to_use": "When you need a paginated, sortable review section with rich content (demographics, media, helpful votes). For trust-building social proof sections on PDPs or landing pages.",
   "when_not_to_use": "For decorative review showcases (use ReviewCarousel). For single featured reviews (use a static review card in HTML). For video testimonial carousels (use existing testimonial sections).",

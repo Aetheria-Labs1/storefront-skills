@@ -87,6 +87,7 @@ GPT_REFERENCE_ALLOWLIST = [
     "visual-layout-workflow",
     "workflow-handoffs",
     "lexsis-mcp-contract",
+    "merchant-templates",
     "lexsis-design-capabilities",
 ]
 

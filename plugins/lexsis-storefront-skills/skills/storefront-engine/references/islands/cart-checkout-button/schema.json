@@ -2,6 +2,7 @@
   "contract_version": 2,
   "name": "CartCheckoutButton",
   "category": "commerce",
+  "capabilities": [],
   "usage_hint": "Checkout CTA button that navigates to the Shopify checkout URL. Subscribes to shared cart state.",
   "when_to_use": "Inside DrawerShell below CartSummary as the primary cart action button.",
   "when_not_to_use": "Outside cart context. For generic CTAs use a plain link or button element.",

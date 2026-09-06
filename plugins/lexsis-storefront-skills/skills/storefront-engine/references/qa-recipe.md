@@ -23,11 +23,21 @@
 - [ ] Interactive islands respond to clicks (FAQ accordion, BuyBox variant selection)
 - [ ] Expected Shopify variant enters the cart
 - [ ] Cart opens and quantity/subtotal update
-- [ ] Inherited header and footer are correct
+- [ ] Authored header and footer appear exactly once and in source order
+- [ ] No renderer-injected shell or duplicate navigation is present
 - [ ] Full-page hosted screenshots match `page-preview.html` at all three
       viewports
 - [ ] Dynamic island regions preserve the approved container geometry and
       placement
+- [ ] Collection cards keep titles, prices, media, options, variants, and
+      availability after hydration
+- [ ] Quick Add is anchored to media top-right
+- [ ] Desktop opens a right drawer and mobile opens a bottom sheet
+- [ ] Sold-out variants are disabled; the chosen available variant is added
+- [ ] Focus trap, Escape, and focus restoration work
+- [ ] Product grids do not blank, flicker, restart media, or shift on hydration
+- [ ] Asset thumbnails show visible media or actionable retry/unavailable state
+- [ ] Functional-looking filter/sort controls work or are absent
 - [ ] No console errors blocking render
 
 Write the result to `qa-report.md`, including source hash, remote version, copy

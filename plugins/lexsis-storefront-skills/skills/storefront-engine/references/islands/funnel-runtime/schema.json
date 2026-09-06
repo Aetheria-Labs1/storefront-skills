@@ -2,6 +2,11 @@
   "contract_version": 2,
   "name": "FunnelRuntime",
   "category": "engagement",
+  "capabilities": [
+    {
+      "name": "overlay"
+    }
+  ],
   "usage_hint": "Generic inline or popup funnel runtime for quizzes, offers, gift reveals, and lead capture.",
   "when_to_use": "Use when a storefront journey needs server-resolved steps, branching, resumable answers, or a timed overlay.",
   "when_not_to_use": "Use EmailCapture for a single email field and Modal for static overlay content without a journey.",

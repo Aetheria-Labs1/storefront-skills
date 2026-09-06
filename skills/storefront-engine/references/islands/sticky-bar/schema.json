@@ -2,6 +2,20 @@
   "contract_version": 2,
   "name": "StickyBar",
   "category": "commerce",
+  "capabilities": [
+    {
+      "name": "product:resolve"
+    },
+    {
+      "name": "cart:add"
+    },
+    {
+      "name": "cart:open"
+    },
+    {
+      "name": "overlay"
+    }
+  ],
   "usage_hint": "Sticky bottom CTA for either a bound product add-to-cart or a collection/campaign destination.",
   "when_to_use": "Use below the fold to re-surface a PDP add-to-cart or keep a collection-level shopping CTA available.",
   "when_not_to_use": "Not for initial purchase UI (use BuyBox or QuickAdd). Not if the primary CTA remains visible in the layout.",
@@ -60,15 +74,6 @@
       "anyOf": [
         {
           "type": "boolean"
-        },
-        {
-          "type": "boolean"
-        },
-        {
-          "type": "string"
-        },
-        {
-          "type": "string"
         },
         {
           "type": "string"

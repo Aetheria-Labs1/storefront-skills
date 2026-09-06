@@ -2,6 +2,11 @@
   "contract_version": 2,
   "name": "Navbar",
   "category": "navigation",
+  "capabilities": [
+    {
+      "name": "cart:open"
+    }
+  ],
   "usage_hint": "Site-wide top navigation bar with logo, links, cart, and mobile menu.",
   "when_to_use": "When you need persistent navigation across all pages. Supports both hydration mode (custom HTML with data-lx-nav tags) and legacy mode (React-rendered with props). Cart badge auto-syncs with cart state.",
   "when_not_to_use": "For announcement-only headers use AnnouncementBar. For combined announcement + nav use SiteHeader. For page-specific navigation use MobileMenu (standalone mobile sheet).",

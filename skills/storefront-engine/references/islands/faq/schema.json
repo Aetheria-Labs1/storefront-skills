@@ -2,6 +2,7 @@
   "contract_version": 2,
   "name": "FAQ",
   "category": "content",
+  "capabilities": [],
   "deprecated": true,
   "replacement": "native <details>/<summary> markup",
   "deprecation_reason": "Generic accordion behavior does not require an island and can be authored with accessible native HTML.",

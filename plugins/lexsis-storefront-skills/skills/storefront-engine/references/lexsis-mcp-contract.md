@@ -4,6 +4,21 @@ Lexsis MCP is the system of record for templates, catalogue data, assets,
 island schemas, compilation, drafts, remote versions, analytics, carts,
 experiments, and publishing.
 
+## Source and Template Authority
+
+Page source is authoritative for section order and visible page chrome.
+Headers, announcement bars, navigation, and footers are ordinary source
+sections; the renderer must not inject a hidden shell around them.
+
+Reusable user-owned sections use the merchant-template actions:
+
+- `lexsis_template_library`: `list_mine`, `get_mine`
+- `lexsis_drafts`: `template_create`, `template_update`, `template_apply`
+- `lexsis_live_ops`: `template_publish`, `template_archive`
+
+Read `merchant-templates.md` before creating, updating, or applying one. There
+is no `lexsis_styles` router or Navigation Profile workflow.
+
 MCP dependency metadata and an `.mcp.json` entry describe configuration. They
 do not prove that the server or its tools are available in the current
 session.

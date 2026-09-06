@@ -2,6 +2,14 @@
   "contract_version": 2,
   "name": "ProceedToCart",
   "category": "commerce",
+  "capabilities": [
+    {
+      "name": "cart:add"
+    },
+    {
+      "name": "cart:open"
+    }
+  ],
   "usage_hint": "Full-page CTA button that navigates to /cart or /checkout. Buy Now mode adds item + redirects; Proceed to Checkout mode is a direct link.",
   "when_to_use": "For prominent checkout CTAs on product pages (Buy Now) or as cart page footer button (Proceed to Checkout). Unlike CartDrawer which slides out, this navigates to a full page. Supports variant:changed event listening.",
   "when_not_to_use": "For add-to-cart without redirect use BuyBox or AddToCart. For slide-out cart use CartDrawer. When you want users to stay on page after adding.",

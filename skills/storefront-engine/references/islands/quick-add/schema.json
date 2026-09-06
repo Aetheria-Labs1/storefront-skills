@@ -2,27 +2,51 @@
   "contract_version": 2,
   "name": "QuickAdd",
   "category": "commerce",
-  "usage_hint": "Lightweight add-to-cart button for collection pages. Shows single-variant instant add or multi-variant dropdown selector. Used inside ProductCarousel or standalone in grids.",
-  "when_to_use": "Use on collection pages where space is limited and you need quick add-to-cart without navigating to PDP. Ideal for cards, grids, and list views.",
-  "when_not_to_use": "Not for PDP main purchase UI (use BuyBox). Not for sticky follow-up CTAs (use StickyBar). Not when you need quantity selection or detailed variant info (use BuyBox).",
+  "capabilities": [
+    {
+      "name": "product:resolve"
+    },
+    {
+      "name": "cart:add"
+    },
+    {
+      "name": "cart:open"
+    }
+  ],
+  "usage_hint": "Accessible collection-page Quick Add using instant single-variant add and a responsive multi-variant drawer or bottom sheet.",
+  "when_to_use": "Use on collection pages where customers should select a variant and add without navigating to the PDP.",
+  "when_not_to_use": "Not for the main PDP purchase form (use BuyBox) or products requiring quantity, subscriptions, or complex personalization.",
   "defaultHydrate": "interaction",
   "combine_with": [
-    "CartDrawer (REQUIRED for cart feedback)",
-    "ProductCarousel (QuickAdd is commonly used inside product grids)"
+    "Cart V2 or CartDrawer"
   ],
   "anti_patterns": [
-    "Using on PDP: wrong pattern; PDP should use BuyBox for full purchase experience",
-    "Omitting CartDrawer: users get no cart confirmation feedback",
-    "Using for products with many variants (5+): dropdown becomes unwieldy; navigate to PDP instead",
-    "Setting animate:false globally: removes dropdown scale-in and success checkmark animations"
+    "Hardcoding a variant ID for a multi-variant product",
+    "Using selector-driven custom triggers for new pages",
+    "Hiding sold-out state instead of disabling unavailable variants"
   ],
   "props": {
     "product": {
       "type": "object",
       "shape": {
-        "title": "string",
-        "variants": "array<{id: string, title: string, price: string, available: boolean}>",
-        "image": "?string"
+        "image": "?string",
+        "variants": "?array<{id: string, title: string, price: object | object, available: ?object | object, availableForSale: ?object | object, selectedOptions: ?object, image: ?object | object | object}>",
+        "id": "?string",
+        "productId": "?string",
+        "shopifyProductId": "?string",
+        "handle": "?string",
+        "title": "?string",
+        "description": "?string",
+        "subtitle": "?string",
+        "badge": "?string",
+        "productUrl": "?string",
+        "price": "?string | {amount: string, currencyCode: string}",
+        "compareAtPrice": "?unknown | string | {amount: string, currencyCode: string}",
+        "availableForSale": "?boolean | boolean",
+        "available": "?boolean | boolean",
+        "media": "?array<object | object>",
+        "options": "?array<object | object>",
+        "variantId": "?string"
       },
       "required": true
     },
@@ -41,24 +65,48 @@
       "type": "number",
       "required": false
     },
+    "label": {
+      "type": "string",
+      "required": false,
+      "default": "Quick add"
+    },
+    "openCartOnAdd": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
+    "picker": {
+      "type": "object",
+      "shape": {
+        "desktop": "?'drawer-right'",
+        "mobile": "?'bottom-sheet'",
+        "title": "?string",
+        "closeOnAdd": "?boolean | boolean"
+      },
+      "required": false
+    },
+    "config": {
+      "type": "object",
+      "shape": {
+        "enabled": "?boolean | boolean",
+        "placement": "?'media-top-right' | 'details-after' | 'custom'",
+        "label": "?string",
+        "openCartOnAdd": "?boolean | boolean",
+        "picker": "?{desktop: ?'drawer-right', mobile: ?'bottom-sheet', title: ?object, closeOnAdd: ?object | object}"
+      },
+      "required": false
+    },
     "triggerSelector": {
       "type": "string",
-      "required": false
+      "required": false,
+      "deprecated": true,
+      "description": "Use a native Quick Add trigger. Selector-driven triggers are\nretained temporarily for legacy authored pages."
     },
     "animate": {
       "type": "union",
       "anyOf": [
         {
           "type": "boolean"
-        },
-        {
-          "type": "boolean"
-        },
-        {
-          "type": "string"
-        },
-        {
-          "type": "string"
         },
         {
           "type": "string"
@@ -71,16 +119,48 @@
   "variants": null,
   "css_vars": [
     "--lx-accent-color",
-    "--lx-quickadd-bg",
-    "--lx-quickadd-color",
-    "--lx-quickadd-radius",
-    "--lx-quickadd-size"
+    "--lx-accent-contrast",
+    "--lx-bg-color",
+    "--lx-border-color",
+    "--lx-error-color",
+    "--lx-focus-color",
+    "--lx-font-heading",
+    "--lx-muted-color",
+    "--lx-quick-add-backdrop",
+    "--lx-quick-add-bg",
+    "--lx-quick-add-button-radius",
+    "--lx-quick-add-drawer-width",
+    "--lx-quick-add-icon-bg",
+    "--lx-quick-add-icon-color",
+    "--lx-quick-add-icon-shadow",
+    "--lx-quick-add-option-radius",
+    "--lx-quick-add-shadow",
+    "--lx-quick-add-sheet-height",
+    "--lx-quick-add-trigger-bg",
+    "--lx-quick-add-trigger-border",
+    "--lx-quick-add-trigger-color",
+    "--lx-quick-add-trigger-radius",
+    "--lx-quick-add-z-index",
+    "--lx-success-color",
+    "--lx-surface-alt",
+    "--lx-text-color"
   ],
   "parts": [
-    "dropdown",
-    "dropdown-label",
-    "root",
-    "variant-btn"
+    "quick-add-backdrop",
+    "quick-add-close",
+    "quick-add-drag-handle",
+    "quick-add-image",
+    "quick-add-option",
+    "quick-add-option-group",
+    "quick-add-panel",
+    "quick-add-price",
+    "quick-add-selected-variant",
+    "quick-add-sheet",
+    "quick-add-status",
+    "quick-add-submit",
+    "quick-add-variant",
+    "quick-add-variant-list",
+    "root"
   ],
   "authoring": {
     "format": "source-html",
@@ -95,27 +175,19 @@
     "headless": {
       "supported": false
     },
-    "example": "<lx-island name=\"QuickAdd\">\n  <script type=\"application/json\">\n{\n  \"product\": {\n    \"title\": \"example-title\",\n    \"variants\": []\n  }\n}\n  </script>\n</lx-island>",
+    "example": "<lx-island name=\"QuickAdd\">\n  <script type=\"application/json\">\n{\n  \"product\": {}\n}\n  </script>\n</lx-island>",
     "examples": [
       {
-        "label": "Single-variant quick add",
-        "source": "<lx-island name=\"QuickAdd\">\n  <script type=\"application/json\">{\"product\":{\"title\":\"T-Shirt\",\"variants\":[{\"id\":\"v1\",\"title\":\"Medium\",\"price\":\"$29.00\",\"available\":true}]}}</script>\n</lx-island>"
+        "label": "Canonical multi-variant quick add",
+        "source": "<lx-island name=\"QuickAdd\">\n  <script type=\"application/json\">{\"product\":{\"id\":\"gid://shopify/Product/1\",\"handle\":\"shirt\",\"title\":\"Shirt\",\"price\":{\"amount\":\"29.00\",\"currencyCode\":\"USD\"},\"availableForSale\":true,\"media\":[{\"id\":\"gid://shopify/MediaImage/1\",\"type\":\"image\",\"url\":\"https://example.com/shirt.jpg\"}],\"options\":[{\"name\":\"Size\",\"values\":[\"S\",\"M\"]}],\"variants\":[{\"id\":\"gid://shopify/ProductVariant/1\",\"title\":\"Small\",\"availableForSale\":true,\"selectedOptions\":[{\"name\":\"Size\",\"value\":\"S\"}],\"price\":{\"amount\":\"29.00\",\"currencyCode\":\"USD\"}},{\"id\":\"gid://shopify/ProductVariant/2\",\"title\":\"Medium\",\"availableForSale\":true,\"selectedOptions\":[{\"name\":\"Size\",\"value\":\"M\"}],\"price\":{\"amount\":\"29.00\",\"currencyCode\":\"USD\"}}]},\"picker\":{\"title\":\"Choose a size\"}}</script>\n</lx-island>"
       },
       {
-        "label": "Multi-variant quick add with dropdown",
-        "source": "<lx-island name=\"QuickAdd\">\n  <script type=\"application/json\">{\"product\":{\"title\":\"Sneakers\",\"variants\":[{\"id\":\"v1\",\"title\":\"Size 8\",\"price\":\"$120.00\",\"available\":true},{\"id\":\"v2\",\"title\":\"Size 9\",\"price\":\"$120.00\",\"available\":true},{\"id\":\"v3\",\"title\":\"Size 10\",\"price\":\"$120.00\",\"available\":false}],\"image\":\"https://via.placeholder.com/64\"}}</script>\n</lx-island>"
+        "label": "Legacy single-variant compatibility",
+        "source": "<lx-island name=\"QuickAdd\">\n  <script type=\"application/json\">{\"product\":{\"title\":\"Hat\",\"image\":\"https://example.com/hat.jpg\",\"variants\":[{\"id\":\"gid://shopify/ProductVariant/3\",\"title\":\"One Size\",\"price\":\"$19.00\",\"available\":true}]}}</script>\n</lx-island>"
       },
       {
-        "label": "Quick add without animations",
-        "source": "<lx-island name=\"QuickAdd\">\n  <script type=\"application/json\">{\"product\":{\"title\":\"Hat\",\"variants\":[{\"id\":\"v1\",\"title\":\"One Size\",\"price\":\"$19.00\",\"available\":true}]},\"animate\":false}</script>\n</lx-island>"
-      },
-      {
-        "label": "Icon mode quick add",
-        "source": "<lx-island name=\"QuickAdd\">\n  <script type=\"application/json\">{\"product\":{\"title\":\"T-Shirt\",\"variants\":[{\"id\":\"v1\",\"title\":\"Medium\",\"price\":\"$29.00\",\"available\":true}]},\"render\":\"icon\",\"iconSize\":40}</script>\n</lx-island>"
-      },
-      {
-        "label": "Minimal plus button",
-        "source": "<lx-island name=\"QuickAdd\">\n  <script type=\"application/json\">{\"product\":{\"title\":\"T-Shirt\",\"variants\":[{\"id\":\"v1\",\"title\":\"Medium\",\"price\":\"$29.00\",\"available\":true}]},\"render\":\"minimal\",\"iconSize\":32}</script>\n</lx-island>"
+        "label": "Compact icon trigger",
+        "source": "<lx-island name=\"QuickAdd\">\n  <script type=\"application/json\">{\"render\":\"icon\",\"iconSize\":44,\"product\":{\"title\":\"Hat\",\"variants\":[{\"id\":\"gid://shopify/ProductVariant/3\",\"title\":\"One Size\",\"price\":\"$19.00\",\"available\":true}]}}</script>\n</lx-island>"
       }
     ]
   }

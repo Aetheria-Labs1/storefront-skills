@@ -2,6 +2,20 @@
   "contract_version": 2,
   "name": "ShoppableVideoFeed",
   "category": "commerce",
+  "capabilities": [
+    {
+      "name": "product:resolve"
+    },
+    {
+      "name": "cart:add"
+    },
+    {
+      "name": "cart:open"
+    },
+    {
+      "name": "media:carousel"
+    }
+  ],
   "usage_hint": "Shoppable short-form video sequence with reel, rail, and poster-grid presentations.",
   "when_to_use": "Use for UGC, creator demonstrations, testimonials, and product videos with tagged Shopify products.",
   "when_not_to_use": "Use VideoPlayer for one non-shoppable video and ProductGallery for product-media thumbnails.",
@@ -272,18 +286,7 @@
       "required": false
     },
     "columns": {
-      "type": "union",
-      "anyOf": [
-        {
-          "type": "number"
-        },
-        {
-          "type": "number"
-        },
-        {
-          "type": "number"
-        }
-      ],
+      "type": "number",
       "required": false
     },
     "maxVisibleItems": {

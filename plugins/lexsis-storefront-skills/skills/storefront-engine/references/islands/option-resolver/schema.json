@@ -2,6 +2,11 @@
   "contract_version": 2,
   "name": "OptionResolver",
   "category": "commerce",
+  "capabilities": [
+    {
+      "name": "product:resolve"
+    }
+  ],
   "usage_hint": "Invisible resolver that listens for option:changed events and emits variant:changed with matched variant data (price, image, availability).",
   "when_to_use": "On product pages with multiple options (size, color, etc.). Place alongside VariantSelector islands. This island has no UI — it's pure logic that coordinates option selections into a resolved variant.",
   "when_not_to_use": "For single-variant products (no options). When BuyBox already handles variant resolution internally. Don't use multiple OptionResolvers on one page.",

@@ -2,6 +2,7 @@
   "contract_version": 2,
   "name": "CartDiscountInput",
   "category": "commerce",
+  "capabilities": [],
   "usage_hint": "Discount code input with apply/remove functionality. Calls Shopify cart discount API.",
   "when_to_use": "Inside DrawerShell between CartSummary and CartCheckoutButton to allow discount code entry.",
   "when_not_to_use": "If the store does not support discount codes or discounts are auto-applied only.",

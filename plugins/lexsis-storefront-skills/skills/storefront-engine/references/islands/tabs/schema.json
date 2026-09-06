@@ -2,6 +2,7 @@
   "contract_version": 2,
   "name": "Tabs",
   "category": "content",
+  "capabilities": [],
   "deprecated": true,
   "replacement": "CSS-only tabs with radio inputs or <details>",
   "deprecation_reason": "Generic tabs have no Shopify integration and can be authored with accessible HTML and CSS.",

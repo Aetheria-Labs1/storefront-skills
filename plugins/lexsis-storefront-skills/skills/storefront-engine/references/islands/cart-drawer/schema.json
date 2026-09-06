@@ -2,6 +2,14 @@
   "contract_version": 2,
   "name": "CartDrawer",
   "category": "commerce",
+  "capabilities": [
+    {
+      "name": "cart:open"
+    },
+    {
+      "name": "overlay"
+    }
+  ],
   "deprecated": true,
   "replacement": "Cart V2 via head.use_cart_v2",
   "deprecation_reason": "CartDrawer is retained only for legacy pages; new pages must use the Cart V2 profile.",
@@ -58,15 +66,6 @@
       "anyOf": [
         {
           "type": "boolean"
-        },
-        {
-          "type": "boolean"
-        },
-        {
-          "type": "string"
-        },
-        {
-          "type": "string"
         },
         {
           "type": "string"

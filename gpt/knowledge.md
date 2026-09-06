@@ -1,5 +1,5 @@
 <!-- GENERATED from skills/ by scripts/build-distributions.py — DO NOT EDIT.
-     storefront-skills v7.3.0 · 10 skills · 47 active islands -->
+     storefront-skills v7.4.0 · 10 skills · 47 active islands -->
 
 # Lexsis Storefront Skills — Knowledge Base
 
@@ -236,6 +236,7 @@ Read:
 
 - `storefront-engine/references/design-rules.md`
 - `storefront-engine/references/island-presets.md`
+- `storefront-engine/references/merchant-templates.md`
 - `references/page-layout.md`
 - `references/island-preview.md`
 
@@ -248,6 +249,10 @@ Use `lexsis_brand.context`, `lexsis_brand.get_theme`,
 `lexsis_assets.view`, `lexsis_workspace.credits`,
 `lexsis_drafts.asset_generate`, `lexsis_asset_upload.import`, and
 `lexsis_pages.compile`.
+
+When the user wants one of their saved reusable sections, use
+`lexsis_template_library.list_mine` and `get_mine`. Treat its source as a
+starting section in the page, not as an inherited renderer shell.
 Resolve only unfamiliar argument schemas through exact router/action
 discovery.
 
@@ -315,6 +320,8 @@ product image or generic logo placeholder.
    direction.
 3. Convert each planned section into responsive layout and copy, following the
    wireframe, the Imagery and background plan, and the slot ids.
+   Header, Announcement, Navigation, and Footer are included here in their
+   intended source order when required.
 4. Read the compact island catalog and select only the likely interactive
    components. Do not fetch every full schema in advance.
    When the plan names a preset (`Preset: <island>/<intent>-<tone>`), apply it
@@ -637,7 +644,12 @@ ID, launch state, current decision, and MCP evidence.
 Create and verify a remote draft from the approved local page. Do not redesign
 the page or publish it.
 
-Read `references/source-and-sync.md`.
+Read:
+
+- `references/source-and-sync.md`
+- `storefront-engine/references/page-editing.md`
+- `storefront-engine/references/merchant-templates.md`
+- `storefront-engine/references/qa-recipe.md`
 
 Use `lexsis_catalog.get`, `lexsis_design.island_schema`,
 `lexsis_pages.compile`, `lexsis_pages.edit_context`,
@@ -664,6 +676,8 @@ Do not reread unchanged setup, brand, theme, template, or asset-search context.
 Before draft creation:
 
 - no preview placeholder remains
+- Header/Footer/Announcement sections are present in canonical source when the
+  design requires them; do not rely on renderer inheritance
 - all media URLs are permanent
 - product and variant IDs are current
 - selected island schemas remain active
@@ -704,6 +718,11 @@ At 390px, 768px, and 1280px verify:
 - no overflow, clipping, or broken media exists
 - the primary CTA uses the expected Shopify variant
 - variant selection, cart opening, quantity, and subtotal work
+- Quick Add uses the current resolved variants without hardcoded variant IDs
+- product grids hydrate without blanking, flicker, carousel restart, or layout
+  shift
+- asset thumbnails and retry states work
+- authored header/footer order matches local source with no duplicate shell
 - copy, claims, assets, and integrity pass
 
 Write detailed evidence and blockers to `qa-report.md`. Store only compact QA
@@ -730,6 +749,11 @@ preview URL, QA report, and `DRAFT_READY`.
 
 `lexsis-source.html` and `page-theme.css` are the editable source of truth.
 `compile-artifact.json` and `page-preview.html` are generated.
+
+Headers, announcement bars, navigation, and footers live in
+`lexsis-source.html` like every other section. Portable bundles preserve that
+exact section order and contain no renderer-level `shell` or
+`navigation_profile`.
 
 Use `scripts/migrate_page_workspace_v3.py <working-directory>` for legacy
 manifests.
@@ -764,6 +788,10 @@ hashes with `compile-artifact.json`.
 6. Save returned version and hashes after success.
 
 Remote content must never be the only copy of an intentional change.
+
+When reusing a merchant template, apply it to the remote page only after the
+same source has been inserted into the canonical local source. Record the new
+remote version and hashes only after the apply succeeds.
 
 ---
 
@@ -4652,11 +4680,21 @@ only permanent verified URLs.
 - [ ] Interactive islands respond to clicks (FAQ accordion, BuyBox variant selection)
 - [ ] Expected Shopify variant enters the cart
 - [ ] Cart opens and quantity/subtotal update
-- [ ] Inherited header and footer are correct
+- [ ] Authored header and footer appear exactly once and in source order
+- [ ] No renderer-injected shell or duplicate navigation is present
 - [ ] Full-page hosted screenshots match `page-preview.html` at all three
       viewports
 - [ ] Dynamic island regions preserve the approved container geometry and
       placement
+- [ ] Collection cards keep titles, prices, media, options, variants, and
+      availability after hydration
+- [ ] Quick Add is anchored to media top-right
+- [ ] Desktop opens a right drawer and mobile opens a bottom sheet
+- [ ] Sold-out variants are disabled; the chosen available variant is added
+- [ ] Focus trap, Escape, and focus restoration work
+- [ ] Product grids do not blank, flicker, restart media, or shift on hydration
+- [ ] Asset thumbnails show visible media or actionable retry/unavailable state
+- [ ] Functional-looking filter/sort controls work or are absent
 - [ ] No console errors blocking render
 
 Write the result to `qa-report.md`, including source hash, remote version, copy
@@ -4827,7 +4865,8 @@ operations. Read `source-artifact-workflow.md` first.
 4. Edit `lexsis-source.html`.
 5. Run the local source gate and compile the complete source.
 6. Compare current section hashes with the synchronized baseline.
-7. Patch only changed sections with `expected_version`.
+7. Patch only changed sections with `expected_version`,
+   `expected_source_sha256`, and an idempotency key.
 8. Update manifest version/hashes after success, then run `diff` and `integrity`.
 
 For existing pages, `page_id` is authoritative. Do not require the user to
@@ -4841,7 +4880,14 @@ assertion. Service-token store/workspace scopes remain authorization boundaries.
 ```
 lexsis_drafts({
   action: "page_update_section",
-  args: { page_id, section_id, source, expected_version }
+  args: {
+    page_id,
+    section_id,
+    source,
+    expected_version,
+    expected_source_sha256,
+    idempotency_key
+  }
 })
 ```
 - Replaces the compiled section from source-format HTML
@@ -4854,7 +4900,14 @@ lexsis_drafts({
 ```
 lexsis_drafts({
   action: "page_update_section",
-  args: { page_id, source, position, expected_version }
+  args: {
+    page_id,
+    source,
+    position,
+    expected_version,
+    expected_source_sha256,
+    idempotency_key
+  }
 })
 ```
 - Position: `{ "before": "section-id" }`, `{ "after": "section-id" }`, or an
@@ -4886,7 +4939,15 @@ lexsis_drafts({ action: "page_move_section", args: { page_id, section_id, positi
 - Reference section IDs from the page data (don't guess)
 - Compile the complete local source before section patching
 - After editing, run `diff` and `integrity`
-- Batch related multi-section changes with `page_patch` so they create one version
+- Batch related multi-section changes with `page_patch` so they create one
+  version.
+- Use explicit remove operations for absent properties. `null` remains a JSON
+  value and is not deletion.
+- When changing a collection binding, setting `products` removes `productIds`
+  and setting `productIds` removes `products`; never send both.
+- Reusing an idempotency key with the same request returns the original result.
+  Reusing it with different content is an error.
+- Update local hashes and manifests only after a successful remote write.
 - Preserve existing CSS variables and island configurations
 - Don't break mobile responsiveness when editing desktop layout
 
@@ -4896,6 +4957,12 @@ it does not rerun `setup`.
 
 For published pages, `current_version` can advance while the live renderer
 remains pinned to `published_version_id`. Publish only after QA.
+
+## Applying Reusable Sections
+
+Read `merchant-templates.md`. `template_apply` follows the same edit
+preconditions and materializes source into the page. After success, fetch edit
+context, update the local source and hashes, then run `diff` and `integrity`.
 
 ---
 
@@ -5134,6 +5201,21 @@ Lexsis MCP is the system of record for templates, catalogue data, assets,
 island schemas, compilation, drafts, remote versions, analytics, carts,
 experiments, and publishing.
 
+## Source and Template Authority
+
+Page source is authoritative for section order and visible page chrome.
+Headers, announcement bars, navigation, and footers are ordinary source
+sections; the renderer must not inject a hidden shell around them.
+
+Reusable user-owned sections use the merchant-template actions:
+
+- `lexsis_template_library`: `list_mine`, `get_mine`
+- `lexsis_drafts`: `template_create`, `template_update`, `template_apply`
+- `lexsis_live_ops`: `template_publish`, `template_archive`
+
+Read `merchant-templates.md` before creating, updating, or applying one. There
+is no `lexsis_styles` router or Navigation Profile workflow.
+
 MCP dependency metadata and an `.mcp.json` entry describe configuration. They
 do not prove that the server or its tools are available in the current
 session.
@@ -5231,6 +5313,91 @@ state ledger.
 
 `setup` has no page manifest, so it returns this evidence directly with its
 saved setup paths.
+
+---
+
+# Merchant-Owned Section Templates
+
+Merchant templates are reusable, versioned source-format sections. They use the
+existing template and revision model; they are not renderer defaults, global
+shell assignments, or a separate recipe system.
+
+## Contract
+
+- A template contains exactly one compilable source section.
+- The section may be a Header, Footer, Announcement, product composition, or
+  any future supported island composition.
+- CSS remains inside canonical section source and follows the normal compiler
+  and source-format rules.
+- Applying a template copies its source into the target page and creates one
+  ordinary page version. The page does not retain a live dependency on the
+  template.
+- Updating, publishing, archiving, or deleting template metadata never mutates
+  pages that already materialized its source.
+- Listing is metadata-only. Fetch one template before reading or editing its
+  source.
+
+## MCP Actions
+
+Read:
+
+```text
+lexsis_template_library({ action: "list_mine", args: { workspace_id } })
+lexsis_template_library({ action: "get_mine", args: { workspace_id, template_id } })
+```
+
+Reversible draft operations:
+
+```text
+lexsis_drafts({
+  action: "template_create",
+  args: { workspace_id, name, source, visibility, description?, section?, tags? }
+})
+
+lexsis_drafts({
+  action: "template_update",
+  args: { workspace_id, template_id, source?, name?, description?, visibility?, section?, tags? }
+})
+
+lexsis_drafts({
+  action: "template_apply",
+  args: {
+    template_id,
+    page_id,
+    expected_version,
+    expected_source_sha256?,
+    position?,
+    section_id?,
+    idempotency_key?
+  }
+})
+```
+
+`position` is `first`, `last`, `{ "before": "<section-id>" }`, or
+`{ "after": "<section-id>" }`. `section_id` optionally renames the copied
+section so it does not collide with an existing page section.
+
+Sensitive lifecycle operations require explicit approval:
+
+```text
+lexsis_live_ops({ action: "template_publish", args: { workspace_id, template_id, revision_id? } })
+lexsis_live_ops({ action: "template_archive", args: { workspace_id, template_id } })
+```
+
+## Source Authority
+
+Header, navigation, announcement, and footer are ordinary authored sections.
+Do not:
+
+- inject them at renderer level;
+- depend on inherited header/footer flags;
+- create a `shell`, `navigation_profile`, Recipes route, or `lexsis_styles`
+  tool;
+- regenerate an entire page when a reusable section can be applied;
+- assume a template is Header/Footer-specific.
+
+Use Templates → My templates for the user-owned library. Use the Design Library
+for brand tokens and navigation/footer link data, not as a second page renderer.
 
 ---
 

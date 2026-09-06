@@ -2,6 +2,11 @@
   "contract_version": 2,
   "name": "SizeGuide",
   "category": "engagement",
+  "capabilities": [
+    {
+      "name": "overlay"
+    }
+  ],
   "usage_hint": "Modal size chart with metric/imperial toggle. Trigger button opens overlay table with size measurements.",
   "when_to_use": "On apparel, footwear, or gear product pages. Shows measurement table (chest, waist, length, etc.) in modal. Optional unit toggle (cm/inches) and measurement tip. Trigger is inline link/button.",
   "when_not_to_use": "For products without size variations. When sizes are standard (S/M/L with no measurement chart). For size recommender tools (this is static chart, not AI fitting).",

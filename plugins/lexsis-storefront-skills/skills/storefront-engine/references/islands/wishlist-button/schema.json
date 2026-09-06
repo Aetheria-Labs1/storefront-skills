@@ -2,6 +2,7 @@
   "contract_version": 2,
   "name": "WishlistButton",
   "category": "commerce",
+  "capabilities": [],
   "usage_hint": "Heart icon button that toggles wishlist/favorites for a product. Thin wrapper around WishlistButton primitive.",
   "when_to_use": "On product cards, product pages, or anywhere users can save items for later. Syncs state to localStorage or backend wishlist service. Can be sized (sm/md/lg) and styled via className.",
   "when_not_to_use": "When wishlist functionality isn't implemented in your store. For compare lists (different feature). When you need custom wishlist UI (use the primitive directly instead).",

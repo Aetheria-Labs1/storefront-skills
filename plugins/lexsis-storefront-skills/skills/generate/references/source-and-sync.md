@@ -3,6 +3,11 @@
 `lexsis-source.html` and `page-theme.css` are the editable source of truth.
 `compile-artifact.json` and `page-preview.html` are generated.
 
+Headers, announcement bars, navigation, and footers live in
+`lexsis-source.html` like every other section. Portable bundles preserve that
+exact section order and contain no renderer-level `shell` or
+`navigation_profile`.
+
 Use `scripts/migrate_page_workspace_v3.py <working-directory>` for legacy
 manifests.
 
@@ -36,3 +41,7 @@ hashes with `compile-artifact.json`.
 6. Save returned version and hashes after success.
 
 Remote content must never be the only copy of an intentional change.
+
+When reusing a merchant template, apply it to the remote page only after the
+same source has been inserted into the canonical local source. Record the new
+remote version and hashes only after the apply succeeds.

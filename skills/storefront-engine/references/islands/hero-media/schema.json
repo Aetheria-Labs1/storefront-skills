@@ -2,6 +2,7 @@
   "contract_version": 2,
   "name": "HeroMedia",
   "category": "hero",
+  "capabilities": [],
   "usage_hint": "Full-bleed background media layer for hero sections. Supports static image, carousel (fade/slide), and video modes with parallax, ken-burns, and zoom-on-scroll effects. Positioned absolute to fill its parent section container.",
   "when_to_use": "As the background media layer inside any hero section with position:relative and overflow:hidden. Use for landing page heroes, campaign headers, collection banners, and any section needing immersive full-bleed background media.",
   "when_not_to_use": "Not for inline product images (use ProductGallery). Not for thumbnail galleries (use ProductHero). Not for standalone video players (use VideoPlayer). Not for card-based carousels (use MediaCarousel).",
@@ -26,8 +27,8 @@
       "type": "enum",
       "values": [
         "image",
-        "video",
-        "carousel"
+        "carousel",
+        "video"
       ],
       "required": true
     },

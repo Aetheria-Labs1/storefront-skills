@@ -2,6 +2,7 @@
   "contract_version": 2,
   "name": "VideoPlayer",
   "category": "content",
+  "capabilities": [],
   "usage_hint": "Responsive video player with controls, autoplay, loop. Supports direct video files and YouTube/Vimeo embeds.",
   "when_to_use": "For product demos, how-to videos, brand stories. Auto-detects YouTube/Vimeo URLs and renders iframe embed. For direct videos shows custom controls (play/pause, progress, mute). Poster image for thumbnail.",
   "when_not_to_use": "For background ambient video use HTML5 video tag directly. For short animated clips consider GIF or CSS animations. When video isn't core to conversion.",

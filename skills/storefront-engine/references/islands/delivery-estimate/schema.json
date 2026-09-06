@@ -2,6 +2,7 @@
   "contract_version": 2,
   "name": "DeliveryEstimate",
   "category": "commerce",
+  "capabilities": [],
   "usage_hint": "Shipping estimate with countdown to cutoff time. Shows delivery date and \"order within X hours\" urgency message.",
   "when_to_use": "On product pages or cart to show estimated delivery. Countdown updates every minute until cutoff hour. Three variants: inline (compact), card (detailed), banner (full-width promo). Supports free shipping threshold messaging.",
   "when_not_to_use": "For international shipping with variable transit times (misleading). When you can't guarantee delivery dates. For digital products (no shipping).",

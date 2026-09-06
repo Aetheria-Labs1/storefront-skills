@@ -8,7 +8,12 @@ description: Promote approved canonical page source into a synchronized Lexsis d
 Create and verify a remote draft from the approved local page. Do not redesign
 the page or publish it.
 
-Read `references/source-and-sync.md`.
+Read:
+
+- `references/source-and-sync.md`
+- `storefront-engine/references/page-editing.md`
+- `storefront-engine/references/merchant-templates.md`
+- `storefront-engine/references/qa-recipe.md`
 
 Use `lexsis_catalog.get`, `lexsis_design.island_schema`,
 `lexsis_pages.compile`, `lexsis_pages.edit_context`,
@@ -35,6 +40,8 @@ Do not reread unchanged setup, brand, theme, template, or asset-search context.
 Before draft creation:
 
 - no preview placeholder remains
+- Header/Footer/Announcement sections are present in canonical source when the
+  design requires them; do not rely on renderer inheritance
 - all media URLs are permanent
 - product and variant IDs are current
 - selected island schemas remain active
@@ -75,6 +82,11 @@ At 390px, 768px, and 1280px verify:
 - no overflow, clipping, or broken media exists
 - the primary CTA uses the expected Shopify variant
 - variant selection, cart opening, quantity, and subtotal work
+- Quick Add uses the current resolved variants without hardcoded variant IDs
+- product grids hydrate without blanking, flicker, carousel restart, or layout
+  shift
+- asset thumbnails and retry states work
+- authored header/footer order matches local source with no duplicate shell
 - copy, claims, assets, and integrity pass
 
 Write detailed evidence and blockers to `qa-report.md`. Store only compact QA

@@ -2,6 +2,7 @@
   "contract_version": 2,
   "name": "ReviewCarousel",
   "category": "social_proof",
+  "capabilities": [],
   "usage_hint": "Rotating customer review showcase with star ratings, typically placed below product info or before FAQ on PDPs. Supports static reviews array or runtime fetch from our reviews API.",
   "when_to_use": "When you have 3+ customer reviews to display and want to build trust through social proof. Supports two modes: static reviews array (baked in) or fetch mode (reviewsEndpoint + productIds for live data from our API).",
   "when_not_to_use": "For single reviews (just show the review card directly). For real-time streaming review feeds (this fetches a batch, not a live stream).",

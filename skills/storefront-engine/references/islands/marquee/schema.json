@@ -2,6 +2,7 @@
   "contract_version": 2,
   "name": "Marquee",
   "category": "hero",
+  "capabilities": [],
   "deprecated": true,
   "replacement": "CSS animation with static HTML",
   "deprecation_reason": "This component has no Shopify integration and its behavior is expressible with HTML and CSS.",

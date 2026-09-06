@@ -2,6 +2,11 @@
   "contract_version": 2,
   "name": "SiteHeader",
   "category": "navigation",
+  "capabilities": [
+    {
+      "name": "cart:open"
+    }
+  ],
   "usage_hint": "Combined announcement bar + navigation bar in one unified header component. Announcement supports rotation, dismissal, and session persistence.",
   "when_to_use": "When you need both announcement bar and navigation in a single sticky header unit. Announcement auto-rotates messages, persists dismissal in sessionStorage. Use this OR (Navbar + AnnouncementBar separately), not both.",
   "when_not_to_use": "If you only need navigation without announcement, use Navbar alone. If announcement should scroll away while nav stays sticky, use separate AnnouncementBar + Navbar.",

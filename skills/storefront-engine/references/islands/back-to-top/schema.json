@@ -2,6 +2,7 @@
   "contract_version": 2,
   "name": "BackToTop",
   "category": "navigation",
+  "capabilities": [],
   "deprecated": true,
   "replacement": "native anchor link with CSS scroll-behavior",
   "deprecation_reason": "A page-local back-to-top control does not need an island or Shopify integration.",

@@ -2,6 +2,7 @@
   "contract_version": 2,
   "name": "EmailCapture",
   "category": "engagement",
+  "capabilities": [],
   "usage_hint": "Email signup form with validation, loading states, and success feedback — typically used in footer, modal, or dedicated newsletter sections.",
   "when_to_use": "For newsletter signups, discount code capture (pair with discount prop), product launch waitlists, or general lead capture. Works inline or nested in a Modal island for exit-intent popups.",
   "when_not_to_use": "For complex multi-field forms (name, phone, etc.; use a custom form island). Don't use for transactional email collection at checkout (Shopify handles that).",

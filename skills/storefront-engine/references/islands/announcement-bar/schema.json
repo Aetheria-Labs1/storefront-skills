@@ -2,6 +2,7 @@
   "contract_version": 2,
   "name": "AnnouncementBar",
   "category": "navigation",
+  "capabilities": [],
   "usage_hint": "Rotating announcement banner with auto-dismiss and session persistence. Sits above navigation or standalone.",
   "when_to_use": "For promotional messages, shipping notices, or time-sensitive announcements. Auto-rotates multiple messages, persists dismissal in sessionStorage. Can be sticky or inline.",
   "when_not_to_use": "If you need announcement + nav in one unit, use SiteHeader instead. For static hero banners use a hero section. For urgent alerts use a dedicated alert island (not this).",

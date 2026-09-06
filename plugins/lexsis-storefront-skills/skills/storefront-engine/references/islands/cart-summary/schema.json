@@ -2,6 +2,7 @@
   "contract_version": 2,
   "name": "CartSummary",
   "category": "commerce",
+  "capabilities": [],
   "usage_hint": "Displays cart subtotal, optional tax/shipping/discount lines. Subscribes to shared cart state.",
   "when_to_use": "Inside DrawerShell below CartLines to show order summary before checkout.",
   "when_not_to_use": "Outside cart context or on pages without cart functionality.",

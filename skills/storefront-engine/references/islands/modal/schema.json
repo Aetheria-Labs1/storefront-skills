@@ -2,6 +2,11 @@
   "contract_version": 2,
   "name": "Modal",
   "category": "engagement",
+  "capabilities": [
+    {
+      "name": "overlay"
+    }
+  ],
   "usage_hint": "Generic modal container with multiple trigger types (delay, scroll, exit-intent, click, event) and flexible content rendering via child islands or simple headline/body/image.",
   "when_to_use": "For email capture popups, size guides, video embeds, product quick-views, announcements, or any temporary overlay content. Use exit_intent trigger for lead recovery, delay trigger for timed promos, click trigger for \"View Details\" links.",
   "when_not_to_use": "For persistent navigation (use a sidebar instead). Don't use for critical checkout flows (modals can be accidentally closed). Avoid for long-form content (scrolling in modals is bad UX; use a dedicated page). Skip if mobile-first and content doesn't fit small screens.",

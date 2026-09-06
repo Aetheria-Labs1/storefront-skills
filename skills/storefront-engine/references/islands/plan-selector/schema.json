@@ -2,6 +2,11 @@
   "contract_version": 2,
   "name": "PlanSelector",
   "category": "commerce",
+  "capabilities": [
+    {
+      "name": "product:resolve"
+    }
+  ],
   "usage_hint": "Subscribe-and-save plan cards — large radio cards (Autoship vs One-Time) with per-card price, compare-at, per-unit cost, benefit checklist, and live re-pricing from a tier selector. The dominant DTC PDP purchase pattern.",
   "when_to_use": "On PDPs offering a subscription plan alongside one-time purchase, styled as prominent selectable cards. Emits subscription:changed so a BuyBox with listenForEvents picks up the selling plan and price with no extra wiring. Set listenForTiers:true to re-price cards live from a QuantityBreaks selector (emitEvents:true). Add data-island-container to the placement div to inject custom HTML (e.g. a QuantityBreaks island) inside the first plan card body.",
   "when_not_to_use": "For a lightweight inline toggle use SubscriptionToggle. For quantity-only discounts without a subscription option use QuantityBreaks alone. Not a cart CTA — pair with BuyBox or ProceedToCart for add-to-cart.",

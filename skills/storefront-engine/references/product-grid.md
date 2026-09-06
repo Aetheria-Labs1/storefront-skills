@@ -1,9 +1,11 @@
-# Product Grid & Cards — Custom HTML Pattern
+# Product Grid & Cards
 
 > **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
 
-CSS grid of product cards. Replaces EditorialProductGrid and ProductCard islands.
-No hydration needed for static display. For add-to-cart, place QuickAdd islands inside cards.
+Use static HTML only for non-commerce editorial cards. For a live collection,
+use `FeaturedCollectionStage` so product IDs resolve complete titles, prices,
+media, options, variants, and availability and so the compiler can recognize
+cart capability.
 
 ## Single Product Card
 
@@ -83,28 +85,50 @@ section.querySelectorAll('.card-carousel').forEach(carousel => {
 });
 ```
 
-## With QuickAdd (interactive add-to-cart)
+## Native Collection Quick Add
 
-Place a QuickAdd island inside the card. Use `render:"icon"` for a floating cart button, or `render:"button"` for full-width. Set `data-hydrate="interaction"` to defer hydration until user hovers.
+Author one source-format island and bind it with product IDs. Do not inject
+buttons with section JavaScript, mutation observers, or hardcoded variant IDs.
 
 ```html
-<div style="display:flex; flex-direction:column; gap:0.75rem; position:relative" data-scope="product:wireless-headphones">
-  <div style="aspect-ratio:3/4; overflow:hidden; border-radius:0.5rem">
-    <div data-island="MediaCarousel" data-hydrate="visible" data-props='{"media":[{"src":"https://cdn.shopify.com/product-front.jpg","alt":"Front"},{"src":"https://cdn.shopify.com/product-back.jpg","alt":"Back"}],"hoverAdvance":true,"showDots":true,"aspect":"3:4"}'></div>
-  </div>
-  <h3 style="font-size:0.875rem; font-weight:500; margin:0">Product Name</h3>
-  <p style="font-size:0.875rem; color:#6b7280; margin:0">$49.00</p>
-  <div style="position:absolute; bottom:5rem; right:0.75rem; z-index:5">
-    <div data-island="QuickAdd" data-hydrate="interaction" data-props='{"product":{"title":"Product Name","variants":[{"id":"gid://shopify/ProductVariant/123","title":"Default","price":"$49.00","available":true}],"image":"https://cdn.shopify.com/product-front.jpg"},"render":"icon","iconSize":36}'></div>
-  </div>
-</div>
+<lx-island name="FeaturedCollectionStage" hydrate="immediate">
+  <script type="application/json">
+    {
+      "productIds": [
+        "gid://shopify/Product/PRODUCT_ONE",
+        "gid://shopify/Product/PRODUCT_TWO",
+        "gid://shopify/Product/PRODUCT_THREE"
+      ],
+      "quickAdd": {
+        "enabled": true,
+        "placement": "media-top-right",
+        "label": "Quick add",
+        "openCartOnAdd": true,
+        "picker": {
+          "desktop": "drawer-right",
+          "mobile": "bottom-sheet",
+          "title": "Choose a size",
+          "closeOnAdd": true
+        }
+      }
+    }
+  </script>
+</lx-island>
 ```
 
-**Key points:**
-- `data-scope="product:{{handle}}"` isolates variant events per card
-- `MediaCarousel` with `data-hydrate="visible"` loads only when scrolled into view
-- `QuickAdd` with `data-hydrate="interaction"` loads only on hover/click
-- `render:"icon"` gives a small floating button instead of full-width
+Key points:
+
+- Use either `productIds` or `products`, never both.
+- Prefer `productIds` when live catalogue resolution is available.
+- `products` is a lightweight resolution input and must not replace resolved
+  title, price, media, options, variants, or availability.
+- `media-top-right` anchors the action to the media container.
+- Multi-variant products open the responsive picker; only true single-variant
+  products add directly.
+- Sold-out variants remain visible but disabled.
+- Use `immediate` for above-the-fold commerce grids. If `visible` is used
+  below the fold, the runtime must pre-hydrate before entry and retain the
+  server-rendered cards until hydration is ready.
 
 ## "Buy Together" / Upsell Grid
 
@@ -126,7 +150,7 @@ Place a QuickAdd island inside the card. Use `render:"icon"` for a floating cart
   <div style="flex:1; text-align:center">
     <div style="font-size:1.25rem; font-weight:700">$79</div>
     <div style="font-size:0.75rem; color:#10b981">Save $20</div>
-    <div data-island="QuickAdd" data-props='{"product":{"title":"Bundle","variants":[{"id":"gid://shopify/ProductVariant/bundle123","title":"Default","price":"$79.00","available":true}]},"render":"minimal"}'></div>
+    <!-- Use a supported bundle/cart island with live resolved variant data. -->
   </div>
 </div>
 ```

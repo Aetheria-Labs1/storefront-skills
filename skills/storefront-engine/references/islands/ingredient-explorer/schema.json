@@ -2,6 +2,7 @@
   "contract_version": 2,
   "name": "IngredientExplorer",
   "category": "engagement",
+  "capabilities": [],
   "usage_hint": "Expandable ingredient list with descriptions, benefits, and optional icons/images. Three layouts: grid (cards), list (accordions), editorial (image + copy).",
   "when_to_use": "For skincare, supplements, food products where ingredients matter. Each ingredient has name, description, optional benefit callout, icon/image, percentage. Grid/list layouts are interactive (click to expand), editorial is always-open rich content.",
   "when_not_to_use": "For simple ingredient lists use plain HTML. When ingredient details aren't selling points. For allergen warnings use dedicated alert component (not this).",
@@ -51,21 +52,7 @@
       "default": "grid"
     },
     "columns": {
-      "type": "union",
-      "anyOf": [
-        {
-          "type": "number"
-        },
-        {
-          "type": "number"
-        },
-        {
-          "type": "number"
-        },
-        {
-          "type": "number"
-        }
-      ],
+      "type": "number",
       "required": false,
       "default": "2"
     },

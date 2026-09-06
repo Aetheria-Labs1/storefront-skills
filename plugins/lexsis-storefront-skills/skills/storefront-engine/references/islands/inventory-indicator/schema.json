@@ -2,6 +2,11 @@
   "contract_version": 2,
   "name": "InventoryIndicator",
   "category": "commerce",
+  "capabilities": [
+    {
+      "name": "product:resolve"
+    }
+  ],
   "usage_hint": "Low stock badge/bar/text that shows inventory urgency. Listens for variant:changed events and emits inventory:updated.",
   "when_to_use": "On product pages to create urgency when stock is low. Shows \"Only X left\" or \"Out of stock\". Three variants: badge (pill), bar (progress), text (inline). Auto-hides when stock is above threshold.",
   "when_not_to_use": "For products where inventory urgency doesn't drive sales. When inventory data isn't available. For pre-order or made-to-order products (misleading).",

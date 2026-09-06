@@ -2,6 +2,7 @@
   "contract_version": 2,
   "name": "Footer",
   "category": "navigation",
+  "capabilities": [],
   "usage_hint": "Site-wide footer with links, logo, newsletter signup, social icons, and copyright. Always placed at bottom of page.",
   "when_to_use": "Every page needs a footer. Supports multiple layouts (simple, columns, centered, editorialGrid, newsletterSplit) and both hydration mode (custom HTML with data-lx-footer tags) and legacy mode (React-rendered). Hydration mode's newsletter form captures automatically — no endpoint to configure.",
   "when_not_to_use": "For minimal page templates without site-wide footer (rare). For mid-page newsletter blocks use a dedicated newsletter island.",

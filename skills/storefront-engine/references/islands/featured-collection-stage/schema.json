@@ -2,6 +2,28 @@
   "contract_version": 2,
   "name": "FeaturedCollectionStage",
   "category": "commerce",
+  "capabilities": [
+    {
+      "name": "product:resolve"
+    },
+    {
+      "name": "cart:add",
+      "when": {
+        "prop": "quickAdd.enabled",
+        "notEquals": false
+      }
+    },
+    {
+      "name": "cart:open",
+      "when": {
+        "prop": "quickAdd.enabled",
+        "notEquals": false
+      }
+    },
+    {
+      "name": "media:carousel"
+    }
+  ],
   "usage_hint": "Editorial multi-product collection stage with a shared backdrop, active-product details, image/video media, and CSS-first layout controls.",
   "when_to_use": "Use for featured collections, new arrivals, or best-seller sections where several large unframed products share one visual stage.",
   "when_not_to_use": "Not for conventional boxed product cards (use ProductCarousel) or a single product presentation (use ProductHero).",
@@ -29,31 +51,43 @@
       "items": {
         "type": "object",
         "shape": {
-          "id": "string",
-          "handle": "string",
-          "variantId": "?string",
-          "title": "string",
+          "id": "?string",
+          "productId": "?string",
+          "shopifyProductId": "?string",
+          "handle": "?string",
+          "title": "?string",
+          "description": "?string",
           "subtitle": "?string",
-          "price": "string",
-          "compareAtPrice": "?string",
           "badge": "?string",
-          "available": "?boolean | boolean",
           "productUrl": "?string",
-          "media": "array<object | object | object>"
+          "price": "?string | {amount: object, currencyCode: object}",
+          "compareAtPrice": "?unknown | string | {amount: object, currencyCode: object}",
+          "availableForSale": "?boolean | boolean",
+          "available": "?boolean | boolean",
+          "media": "?array<object | object>",
+          "options": "?array<object | object>",
+          "variants": "?array<object | object>",
+          "variantId": "?string"
         }
       },
       "shape": {
-        "id": "string",
-        "handle": "string",
-        "variantId": "?string",
-        "title": "string",
+        "id": "?string",
+        "productId": "?string",
+        "shopifyProductId": "?string",
+        "handle": "?string",
+        "title": "?string",
+        "description": "?string",
         "subtitle": "?string",
-        "price": "string",
-        "compareAtPrice": "?string",
         "badge": "?string",
-        "available": "?boolean | boolean",
         "productUrl": "?string",
-        "media": "array<{id: ?object, type: object, src: object, alt: ?object, mobileSrc: ?object, srcSet: ?object, srcSetWebp: ?object, sizes: ?object, fit: ?object, objectPosition: ?object} | {id: ?object, type: object, alt: ?object, poster: object, sources: object, preview: ?object, captionsUrl: ?object, assetId: ?object, provider: ?object, fit: ?object, objectPosition: ?object} | {id: ?object, type: ?object, src: ?object, url: ?object, alt: ?object, poster: ?object, mobileSrc: ?object, srcSet: ?object, srcSetWebp: ?object, sizes: ?object, fit: ?object, objectFit: ?object, objectPosition: ?object, sources: ?object, preview: ?object, captionsUrl: ?object, assetId: ?object, provider: ?object}>"
+        "price": "?string | {amount: string, currencyCode: string}",
+        "compareAtPrice": "?unknown | string | {amount: string, currencyCode: string}",
+        "availableForSale": "?boolean | boolean",
+        "available": "?boolean | boolean",
+        "media": "?array<object | object>",
+        "options": "?array<object | object>",
+        "variants": "?array<object | object>",
+        "variantId": "?string"
       },
       "required": false
     },
@@ -131,6 +165,26 @@
       "required": false,
       "default": "true"
     },
+    "quickAdd": {
+      "type": "union",
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "object",
+          "shape": {
+            "enabled": "?boolean | boolean",
+            "placement": "?'media-top-right' | 'details-after' | 'custom'",
+            "label": "?string",
+            "openCartOnAdd": "?boolean | boolean",
+            "picker": "?{desktop: ?object, mobile: ?object, title: ?object, closeOnAdd: ?object}"
+          }
+        }
+      ],
+      "required": false,
+      "default": "true"
+    },
     "quickAddLabel": {
       "type": "string",
       "required": false,
@@ -146,15 +200,6 @@
       "anyOf": [
         {
           "type": "boolean"
-        },
-        {
-          "type": "boolean"
-        },
-        {
-          "type": "string"
-        },
-        {
-          "type": "string"
         },
         {
           "type": "string"
@@ -176,9 +221,11 @@
   ],
   "css_vars": [
     "--lx-accent-color",
+    "--lx-accent-contrast",
     "--lx-bg-color",
     "--lx-bg-surface",
     "--lx-border-color",
+    "--lx-error-color",
     "--lx-featured-active-opacity",
     "--lx-featured-active-scale",
     "--lx-featured-arrow-bg",
@@ -274,9 +321,18 @@
     "--lx-featured-product-height",
     "--lx-featured-product-index",
     "--lx-featured-quick-add-bg",
+    "--lx-featured-quick-add-border",
     "--lx-featured-quick-add-color",
+    "--lx-featured-quick-add-media-bg",
+    "--lx-featured-quick-add-media-border",
+    "--lx-featured-quick-add-media-color",
+    "--lx-featured-quick-add-media-shadow",
+    "--lx-featured-quick-add-min-width",
     "--lx-featured-quick-add-radius",
+    "--lx-featured-quick-add-right",
+    "--lx-featured-quick-add-shadow",
     "--lx-featured-quick-add-size",
+    "--lx-featured-quick-add-top",
     "--lx-featured-radius",
     "--lx-featured-scroll-snap-align",
     "--lx-featured-stage-bg",
@@ -290,6 +346,7 @@
     "--lx-featured-title-size",
     "--lx-featured-title-weight",
     "--lx-featured-width",
+    "--lx-focus-color",
     "--lx-font-body",
     "--lx-font-heading",
     "--lx-media-carousel-arrow-bg",
@@ -314,6 +371,14 @@
     "--lx-media-carousel-placeholder",
     "--lx-media-carousel-radius",
     "--lx-muted-color",
+    "--lx-quick-add-backdrop",
+    "--lx-quick-add-bg",
+    "--lx-quick-add-button-radius",
+    "--lx-quick-add-drawer-width",
+    "--lx-quick-add-option-radius",
+    "--lx-quick-add-shadow",
+    "--lx-quick-add-sheet-height",
+    "--lx-quick-add-z-index",
     "--lx-shoppable-button-radius",
     "--lx-shoppable-control-bg",
     "--lx-shoppable-control-border",
@@ -326,6 +391,7 @@
     "--lx-shoppable-radius",
     "--lx-shoppable-video-bg",
     "--lx-shoppable-video-error-bg",
+    "--lx-surface-alt",
     "--lx-text-color",
     "--lx-video-bg",
     "--lx-video-button-bg",
@@ -391,6 +457,20 @@
     "product",
     "product-link",
     "quick-add",
+    "quick-add-backdrop",
+    "quick-add-close",
+    "quick-add-drag-handle",
+    "quick-add-image",
+    "quick-add-option",
+    "quick-add-option-group",
+    "quick-add-panel",
+    "quick-add-price",
+    "quick-add-selected-variant",
+    "quick-add-sheet",
+    "quick-add-status",
+    "quick-add-submit",
+    "quick-add-variant",
+    "quick-add-variant-list",
     "root",
     "scroll-container",
     "shell",
