@@ -22,14 +22,40 @@ hashes with `compile-artifact.json`.
 
 ## Creation
 
-1. Validate the compact manifest and canonical source.
+Draft creation and production readiness are separate states.
+
+1. Validate the compact manifest and canonical source with the
+   `draft-created` gate.
 2. Confirm no preview placeholder remains.
 3. Refresh only volatile products, variants, prices, permissions, and remote
    version data.
-4. Reuse or refresh the compile artifact.
+4. Compile the current workspace inputs once.
 5. Create with `publish: false`.
-6. Fetch persisted source and remote hashes.
-7. Save compact `sync`, `remote`, and `qa` records.
+6. Save page ID, version, preview URL, compile hash, and `status:
+   draft_created`.
+7. Return `DRAFT_CREATED` immediately.
+8. Fetch persisted source and remote hashes, then run hosted QA.
+9. Save synchronized state and `status: qa_passed` only when every
+   production-ready check succeeds.
+
+A failed post-creation check does not erase or invalidate the reversible
+draft. Report the draft and its blockers.
+
+## Intent Evidence
+
+Record the inferred mode compactly in `workflow`:
+
+```json
+{
+  "intentMode": "fast-draft",
+  "intentConfidence": "high",
+  "intentSignals": ["requested a preview", "delegated specifics"],
+  "userOverride": false
+}
+```
+
+Intent evidence explains routing; it never grants publish or paid-generation
+permission.
 
 ## Editing
 

@@ -7,6 +7,11 @@ description: Publish a synchronized and QA-passed Lexsis storefront draft. Use o
 
 Publishing is a separate, explicit action. Do not rebuild the page here.
 
+Read `references/workflow-intent.md`. Intent inference may distinguish a draft
+request from a live-release request, but it never substitutes for explicit
+approval naming the page and version. A request to preview, create, finish,
+review, or make a page production-ready is not publication approval.
+
 Use `lexsis_pages.edit_context`, `lexsis_pages.integrity`,
 `lexsis_pages.source`, `lexsis_workspace.get`, and
 `lexsis_live_ops.publish`. Resolve unfamiliar argument schemas with exact

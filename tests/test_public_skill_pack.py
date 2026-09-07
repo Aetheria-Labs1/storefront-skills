@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import importlib.util
+import json
+import re
 import subprocess
 import sys
 import tempfile
@@ -132,6 +134,32 @@ class PublicSkillPackTests(unittest.TestCase):
                 ).is_file()
             )
 
+    def test_each_public_skill_is_self_contained_for_skills_cli(self) -> None:
+        reference_re = re.compile(r"`(references/[A-Za-z0-9_./-]+\.md)`")
+        for name in EXPECTED_PUBLIC_SKILLS:
+            skill_dir = SKILLS / name
+            text = (skill_dir / "SKILL.md").read_text(encoding="utf-8")
+            self.assertNotIn("storefront-engine/references/", text, name)
+            for reference in reference_re.findall(text):
+                self.assertTrue((skill_dir / reference).is_file(), (name, reference))
+
+            for packaged_reference in (skill_dir / "references").glob("*.md"):
+                packaged_text = packaged_reference.read_text(encoding="utf-8")
+                self.assertNotIn(
+                    "storefront-engine/references/",
+                    packaged_text,
+                    packaged_reference,
+                )
+                for referenced_name in re.findall(
+                    r"(?:`|\()(?:(?:references/)?)([A-Za-z0-9_-]+\.md)(?:`|\))",
+                    packaged_text,
+                ):
+                    if (SKILLS / "storefront-engine" / "references" / referenced_name).is_file():
+                        self.assertTrue(
+                            (skill_dir / "references" / referenced_name).is_file(),
+                            (name, packaged_reference.name, referenced_name),
+                        )
+
     def test_claude_plugin_contains_materialized_skills(self) -> None:
         plugin_skills = (
             ROOT / "plugins" / "lexsis-storefront-skills" / "skills"
@@ -244,6 +272,68 @@ class PublicSkillPackTests(unittest.TestCase):
         self.assertIn("ROUGH_PREVIEW", text)
         self.assertIn("pending until their trigger", text)
         self.assertIn("DESIGN_PREVIEW_READY_QA_PENDING", text)
+
+    def test_generate_routes_intent_and_creates_before_ready_qa(self) -> None:
+        text = (SKILLS / "generate" / "SKILL.md").read_text(encoding="utf-8")
+        self.assertIn("Infer intent from the whole request and conversation", text)
+        self.assertIn("fast-draft", text)
+        self.assertIn("production-ready", text)
+        self.assertLess(
+            text.index("lexsis_page_create.create"),
+            text.index("Production-Ready Follow-Through"),
+        )
+        self.assertIn("DRAFT_CREATED", text)
+        self.assertIn("DRAFT_READY", text)
+        self.assertIn("--phase draft-created", text)
+
+    def test_workspace_compile_adapter_preserves_exact_inputs(self) -> None:
+        script_path = (
+            SKILLS / "generate" / "scripts" / "prepare_workspace_compile.py"
+        )
+        spec = importlib.util.spec_from_file_location(
+            "prepare_workspace_compile",
+            script_path,
+        )
+        assert spec and spec.loader
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = "<!-- section: hero -->\n<section id=\"hero\">Hello</section>\n"
+            theme = ":root { --lx-font-body: system-ui, sans-serif; }\n"
+            (root / "lexsis-source.html").write_text(source, encoding="utf-8")
+            (root / "page-theme.css").write_text(theme, encoding="utf-8")
+            (root / "page-manifest.json").write_text(
+                json.dumps(
+                    {
+                        "page": {
+                            "title": "Hello",
+                            "handle": "hello",
+                            "archetype": "landing",
+                        },
+                        "workspaceId": "workspace",
+                        "storeId": "store",
+                        "themeId": "theme",
+                        "config": {
+                            "head": {"title": "Hello"},
+                            "scripts": [],
+                            "productBinding": {"product_id": "product"},
+                            "commerceConfig": {},
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+            payload = module.prepare(root)
+
+        self.assertEqual(source, payload["compile"]["source"])
+        self.assertEqual(theme, payload["compile"]["theme_css"])
+        self.assertFalse(payload["create"]["publish"])
+        self.assertEqual(
+            {"product_id": "product"},
+            payload["create"]["product_binding"],
+        )
 
     def test_visual_page_was_replaced(self) -> None:
         self.assertFalse((SKILLS / "visual-page").exists())

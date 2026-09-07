@@ -10,9 +10,10 @@ a remote draft or publish.
 
 Read:
 
-- `storefront-engine/references/design-rules.md`
-- `storefront-engine/references/island-presets.md`
-- `storefront-engine/references/merchant-templates.md`
+- `references/design-rules.md`
+- `references/island-presets.md`
+- `references/merchant-templates.md`
+- `references/workflow-intent.md`
 - `references/page-layout.md`
 - `references/island-preview.md`
 
@@ -43,10 +44,30 @@ If the user explicitly skips `/plan-page`, write a short one-page plan with
 the same blocks and record the skip. Never run `/setup` or `/plan-page`
 automatically.
 
+## Infer the Design Mode
+
+Use `references/workflow-intent.md` and the manifest evidence. A correction in
+the current request overrides the saved mode.
+
+- `fast-draft`: make reasonable reversible choices, compile a coherent page,
+  and expose the first useful preview quickly. Run only the light source,
+  responsive hierarchy, hydration, font, and asset checks needed to avoid a
+  broken draft. Deeper critique is follow-up work.
+- `production-ready`: run the full Design Direction and Self-Critique gates
+  before marking the design approved.
+
+Neither mode authorizes paid generation. Ask immediately before spending
+credits when existing library, catalog, or imported assets cannot satisfy the
+page.
+
+If optional design, preset, or merchant-template guidance is unavailable, warn
+once and continue from the page plan, saved brand, live schemas, and compiler.
+Missing canonical source-format or compile-contract inputs remain blocking.
+
 ## Design Direction Gate
 
 Before writing any HTML, read the "Design direction" block in `page-plan.md`
-and `storefront-engine/references/design-rules.md`. If the plan has no design
+and `references/design-rules.md`. If the plan has no design
 direction, write one now (palette of four to six named hex values, type roles
 and scale, layout concept, wireframe with slot ids, icon decision, the one
 bold moment) and record it in the plan before continuing.
@@ -68,9 +89,11 @@ The plan already resolved the asset slots. Read `assets[]` from the manifest:
    the plan, are final; use their ids and URLs as-is.
 2. List only `planned` slots. `validate_page_workspace.py --phase design`
    reports them as `asset_slot_unresolved` warnings.
-3. Ask once whether to generate them now (Lexsis first; offer other available
-   image tools as an explicit provider choice), pick from the library or
-   Shopify media, or keep a bundled preview placeholder for local review.
+3. In `fast-draft`, resolve them from the existing library or Shopify media
+   using the plan and brand direction. Ask only before paid generation or when
+   the unresolved choice would materially change the campaign. In
+   `production-ready`, ask once whether to generate, pick existing media, or
+   keep a bundled preview placeholder for local review.
 4. Import externally generated media into Lexsis before production use, verify
    identity-sensitive imagery with `lexsis_assets.view`, and set
    `status: verified` on each resolved slot.
@@ -101,7 +124,7 @@ product image or generic logo placeholder.
 4. Read the compact island catalog and select only the likely interactive
    components. Do not fetch every full schema in advance.
    When the plan names a preset (`Preset: <island>/<intent>-<tone>`), apply it
-   from `storefront-engine/references/island-presets.md` verbatim: props,
+   from `references/island-presets.md` verbatim: props,
    `hydrate`, and its scoped CSS. Check its `requires` first. Unknown id:
    return `PRESET_NOT_FOUND`. Any deviation is recorded as
    `islands[].presetOverrides`; never edit a preset in place for one page.
@@ -157,10 +180,13 @@ python3 <design-page-skill>/scripts/build_page_preview.py \
   --theme-css <page-workspace>/page-theme.css
 ```
 
-Do not show a preview path until the Self-Critique Gate passes. Then show the
-first compiled preview as soon as the section structure and responsive
-hierarchy are recognizable. Label it `ROUGH_PREVIEW`; asset polish and final
-validation may continue after the user can see the direction.
+In `fast-draft`, show the first compiled preview as soon as the section
+structure, responsive hierarchy, expected fonts, assets, and hydration are
+recognizable. Label it `ROUGH_PREVIEW`; critique and polish may continue after
+the user can see the direction.
+
+In `production-ready`, do not mark the design approved until the
+Self-Critique Gate passes.
 
 Inspect 390px and 1280px. Confirm the expected islands hydrate and there is no
 overflow, clipping, broken hierarchy, or unusable responsive layout. Tablet,
@@ -179,8 +205,10 @@ need manual confirmation. Never record hydration as passed without evidence.
 
 ## Self-Critique Gate
 
-Runs after the first clean compile and before any preview path or screenshot
-is shown to the user. Output: `<page-workspace>/design-critique.md`,
+Required for `production-ready`. In `fast-draft`, it runs after the first
+preview and may remain pending without blocking `/generate`.
+
+Output: `<page-workspace>/design-critique.md`,
 `critique-390.png`, `critique-1280.png`.
 
 1. Mechanical checks. Run

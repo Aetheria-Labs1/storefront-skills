@@ -28,6 +28,7 @@ Use `schemaVersion: 3`.
 The manifest is a machine state ledger. Store only:
 
 - page, workspace, store, and theme IDs
+- compact inferred workflow intent and any user override
 - selected template and section IDs
 - compact product and final asset bindings
 - section order and compact island schema evidence
@@ -81,10 +82,39 @@ Do not prefill future stages with null fields.
 
 ## Remote State
 
-`/generate` adds:
+Immediately after unpublished creation, `/generate` adds:
 
 ```json
 {
+  "status": "draft_created",
+  "workflow": {
+    "intentMode": "fast-draft",
+    "intentConfidence": "high",
+    "intentSignals": ["requested a preview"],
+    "userOverride": false
+  },
+  "sync": {
+    "lastCompiledBundleHash": "..."
+  },
+  "remote": {
+    "pageId": "...",
+    "lastKnownVersion": 1,
+    "previewUrl": "https://..."
+  },
+  "qa": {
+    "status": "pending"
+  }
+}
+```
+
+This state is `DRAFT_CREATED`; it does not claim remote synchronization or
+hosted QA.
+
+After production-ready verification, `/generate` upgrades the state:
+
+```json
+{
+  "status": "qa_passed",
   "sync": {
     "lastCompiledBundleHash": "...",
     "lastSyncedBundleHash": "...",

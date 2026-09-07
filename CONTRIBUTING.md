@@ -40,8 +40,10 @@ skills/storefront-engine/
 ```
 
 `storefront-engine` is a resource directory, not a public slash command.
-Public skills may use these resources because the Lexsis pack is installed as
-one unit.
+`scripts/build-distributions.py` copies the shared documents consumed by each
+public skill into that skill's local `references/` directory. This keeps
+Skills CLI and per-skill Codex installations self-contained. Edit the shared
+source and regenerate; do not hand-edit those copied files.
 
 Command-specific validators and preview builders live under the owning skill's
 `scripts/` directory.

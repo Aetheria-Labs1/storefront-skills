@@ -1,5 +1,5 @@
 <!-- GENERATED from skills/ by scripts/build-distributions.py — DO NOT EDIT.
-     storefront-skills v7.4.0 · 10 skills · 47 active islands -->
+     storefront-skills v7.5.0 · 10 skills · 47 active islands -->
 
 # Lexsis Storefront Skills — Knowledge Base
 
@@ -234,9 +234,10 @@ a remote draft or publish.
 
 Read:
 
-- `storefront-engine/references/design-rules.md`
-- `storefront-engine/references/island-presets.md`
-- `storefront-engine/references/merchant-templates.md`
+- `references/design-rules.md`
+- `references/island-presets.md`
+- `references/merchant-templates.md`
+- `references/workflow-intent.md`
 - `references/page-layout.md`
 - `references/island-preview.md`
 
@@ -267,10 +268,30 @@ If the user explicitly skips `/plan-page`, write a short one-page plan with
 the same blocks and record the skip. Never run `/setup` or `/plan-page`
 automatically.
 
+## Infer the Design Mode
+
+Use `references/workflow-intent.md` and the manifest evidence. A correction in
+the current request overrides the saved mode.
+
+- `fast-draft`: make reasonable reversible choices, compile a coherent page,
+  and expose the first useful preview quickly. Run only the light source,
+  responsive hierarchy, hydration, font, and asset checks needed to avoid a
+  broken draft. Deeper critique is follow-up work.
+- `production-ready`: run the full Design Direction and Self-Critique gates
+  before marking the design approved.
+
+Neither mode authorizes paid generation. Ask immediately before spending
+credits when existing library, catalog, or imported assets cannot satisfy the
+page.
+
+If optional design, preset, or merchant-template guidance is unavailable, warn
+once and continue from the page plan, saved brand, live schemas, and compiler.
+Missing canonical source-format or compile-contract inputs remain blocking.
+
 ## Design Direction Gate
 
 Before writing any HTML, read the "Design direction" block in `page-plan.md`
-and `storefront-engine/references/design-rules.md`. If the plan has no design
+and `references/design-rules.md`. If the plan has no design
 direction, write one now (palette of four to six named hex values, type roles
 and scale, layout concept, wireframe with slot ids, icon decision, the one
 bold moment) and record it in the plan before continuing.
@@ -292,9 +313,11 @@ The plan already resolved the asset slots. Read `assets[]` from the manifest:
    the plan, are final; use their ids and URLs as-is.
 2. List only `planned` slots. `validate_page_workspace.py --phase design`
    reports them as `asset_slot_unresolved` warnings.
-3. Ask once whether to generate them now (Lexsis first; offer other available
-   image tools as an explicit provider choice), pick from the library or
-   Shopify media, or keep a bundled preview placeholder for local review.
+3. In `fast-draft`, resolve them from the existing library or Shopify media
+   using the plan and brand direction. Ask only before paid generation or when
+   the unresolved choice would materially change the campaign. In
+   `production-ready`, ask once whether to generate, pick existing media, or
+   keep a bundled preview placeholder for local review.
 4. Import externally generated media into Lexsis before production use, verify
    identity-sensitive imagery with `lexsis_assets.view`, and set
    `status: verified` on each resolved slot.
@@ -325,7 +348,7 @@ product image or generic logo placeholder.
 4. Read the compact island catalog and select only the likely interactive
    components. Do not fetch every full schema in advance.
    When the plan names a preset (`Preset: <island>/<intent>-<tone>`), apply it
-   from `storefront-engine/references/island-presets.md` verbatim: props,
+   from `references/island-presets.md` verbatim: props,
    `hydrate`, and its scoped CSS. Check its `requires` first. Unknown id:
    return `PRESET_NOT_FOUND`. Any deviation is recorded as
    `islands[].presetOverrides`; never edit a preset in place for one page.
@@ -381,10 +404,13 @@ python3 <design-page-skill>/scripts/build_page_preview.py \
   --theme-css <page-workspace>/page-theme.css
 ```
 
-Do not show a preview path until the Self-Critique Gate passes. Then show the
-first compiled preview as soon as the section structure and responsive
-hierarchy are recognizable. Label it `ROUGH_PREVIEW`; asset polish and final
-validation may continue after the user can see the direction.
+In `fast-draft`, show the first compiled preview as soon as the section
+structure, responsive hierarchy, expected fonts, assets, and hydration are
+recognizable. Label it `ROUGH_PREVIEW`; critique and polish may continue after
+the user can see the direction.
+
+In `production-ready`, do not mark the design approved until the
+Self-Critique Gate passes.
 
 Inspect 390px and 1280px. Confirm the expected islands hydrate and there is no
 overflow, clipping, broken hierarchy, or unusable responsive layout. Tablet,
@@ -403,8 +429,10 @@ need manual confirmation. Never record hydration as passed without evidence.
 
 ## Self-Critique Gate
 
-Runs after the first clean compile and before any preview path or screenshot
-is shown to the user. Output: `<page-workspace>/design-critique.md`,
+Required for `production-ready`. In `fast-draft`, it runs after the first
+preview and may remain pending without blocking `/generate`.
+
+Output: `<page-workspace>/design-critique.md`,
 `critique-390.png`, `critique-1280.png`.
 
 1. Mechanical checks. Run
@@ -637,111 +665,146 @@ ID, launch state, current decision, and MCP evidence.
 
 # Skill: generate
 
-> Promote approved canonical page source into a synchronized Lexsis draft and run hosted responsive, fidelity, and commerce QA.
+> Create an unpublished Lexsis storefront draft early, then synchronize and QA it to production readiness when the user's intent calls for deeper verification.
 
 # Generate the Draft
 
-Create and verify a remote draft from the approved local page. Do not redesign
-the page or publish it.
+Create a remote draft from canonical local source. Draft creation is
+reversible; publishing remains a separate explicit action.
 
 Read:
 
+- `references/workflow-intent.md`
 - `references/source-and-sync.md`
-- `storefront-engine/references/page-editing.md`
-- `storefront-engine/references/merchant-templates.md`
-- `storefront-engine/references/qa-recipe.md`
+- `references/page-editing.md` only for an existing page
+- `references/merchant-templates.md` only when reusing a merchant template
+- `references/qa-recipe.md` for production-ready QA
 
 Use `lexsis_catalog.get`, `lexsis_design.island_schema`,
 `lexsis_pages.compile`, `lexsis_pages.edit_context`,
 `lexsis_pages.source`, `lexsis_pages.integrity`, and
 `lexsis_page_create.create`.
 
-## Inputs
+## Infer the Outcome
 
-Use the local source and compact schema-v3 manifest. `/asset-prep` is optional
-and is never a required handoff. Final assets may have been selected or
-generated directly by `/design-page`, imported independently, or prepared with
-`/asset-prep`.
+Infer intent from the whole request and conversation using
+`references/workflow-intent.md`; do not require a trigger phrase.
 
-If `/design-page` was explicitly skipped, author the canonical source once and
-record that skip without claiming design approval. Never invoke another skill
-automatically.
+- `fast-draft` is the default for reversible ambiguity and requests to create,
+  try, preview, explore, or iterate.
+- `production-ready` applies when the user asks for final polish, exhaustive
+  QA, campaign handoff, or launch preparation.
+- `publish` routes to `/publish`; this skill never infers live-release
+  approval.
 
-Refresh only volatile data needed for creation: selected product variants,
-prices, availability, permissions, and the remote page version when editing.
-Do not reread unchanged setup, brand, theme, template, or asset-search context.
+State the inferred mode briefly and record compact evidence in `workflow`.
+A request to create a draft authorizes this draft-only write. Intent inference
+never authorizes paid generation, publication, deletion, or destructive
+replacement.
 
-## Production Gate
+## Inputs and Setup Reuse
 
-Before draft creation:
+Use `lexsis-source.html`, `page-theme.css`, and the compact schema-v3 manifest.
+Reuse the saved store/theme binding from `work/storefront/setup/setup.json`.
+Do not call setup again when that binding is valid.
 
-- no preview placeholder remains
-- Header/Footer/Announcement sections are present in canonical source when the
-  design requires them; do not rely on renderer inheritance
-- all media URLs are permanent
-- product and variant IDs are current
-- selected island schemas remain active
-- source, CSS, configuration, and bindings match the approved design hashes
-- local validation passes
-- `design-critique.md` exists with no FAIL and its hashes match the approved
-  source (see `storefront-engine/references/design-rules.md`)
-- no `planned` asset slot remains in the manifest
+Refresh only volatile creation data: selected products and variants, prices,
+availability, permissions, active island schemas, and an existing page's
+version. Never preserve a stale hardcoded Shopify variant ID when current
+catalog data or a dynamic product binding can resolve it.
 
-If assets are unresolved, report the missing roles. The user may return to
-`/design-page`, run `/asset-prep`, or supply assets directly.
+If `/plan-page` or `/design-page` was intentionally skipped, create the minimum
+missing local artifact, record the skip, and continue. Do not claim design
+approval that did not happen.
 
-## Reuse the Compile Artifact
+## Draft-Creation Gate
 
-Read `compile-artifact.json`.
+Before the first remote draft, require only:
 
-- Reuse it when source, theme CSS, configuration, structure, and bundle hashes
-  still match and the selected live bindings have not changed.
-- Recompile only when any compile input changed or the artifact is absent,
-  invalid, or from an incompatible compiler surface.
-- Never compile the same unchanged bundle merely because a new skill started.
+- a valid saved store/theme binding and draft-write permission
+- non-empty canonical source, theme CSS, title, and page handle
+- current product/variant bindings with no known invalid hardcoded variant
+- permanent assets rather than local or preview-placeholder URLs
+- custom fonts backed by full HTTPS stylesheet URLs in `head.fonts`, or an
+  intentional system-font stack
+- a clean compiler result
 
-Create with `publish: false`. Use a supported compile ID when available;
-otherwise submit the exact source, CSS, head, scripts, and bindings represented
-by the clean compile artifact.
+Do not block first draft creation on critique screenshots, exhaustive hashes,
+hosted responsive QA, commerce QA, or a `DRAFT_READY` validator result.
 
-Fetch the persisted source and page state immediately. Record only the page
-ID, version, preview URL, local/remote hashes, and section hashes in the
-manifest. A hash mismatch is blocking.
+Optional design or QA guidance that cannot be read produces one warning and
+does not block the draft. Missing source-format, manifest, or compile-contract
+inputs remain blocking.
 
-## Hosted QA
+## Compile from the Workspace
 
-At 390px, 768px, and 1280px verify:
+Prepare exact tool inputs with the bundled adapter:
 
-- the hosted draft matches the approved local design
-- geometry, typography, color, spacing, and media remain faithful
-- islands hydrate
-- no overflow, clipping, or broken media exists
-- the primary CTA uses the expected Shopify variant
-- variant selection, cart opening, quantity, and subtotal work
-- Quick Add uses the current resolved variants without hardcoded variant IDs
-- product grids hydrate without blanking, flicker, carousel restart, or layout
-  shift
-- asset thumbnails and retry states work
-- authored header/footer order matches local source with no duplicate shell
-- copy, claims, assets, and integrity pass
+```bash
+python3 <generate-skill>/scripts/prepare_workspace_compile.py \
+  <page-workspace> \
+  --output <page-workspace>/compile-request.json
+```
 
-Write detailed evidence and blockers to `qa-report.md`. Store only compact QA
-status, checked version, checked bundle hash, and check booleans in the
-manifest.
+Use the adapter's `compile` object as the exact arguments to
+`lexsis_pages.compile`. Use summary mode; do not request or echo the full
+compiled bundle merely to inspect it.
 
-Run the validator with `--phase draft` and live remote hashes. Return
-`DRAFT_READY` only when synchronization and all blocking QA checks pass.
+Compile once from the current files. Immediately pass the returned
+`compile_id` and the adapter's `create` fields to
+`lexsis_page_create.create` with `publish:false`.
+
+If a compile ID expires before creation, recompile the same verified inputs
+once. If the client cannot reuse the ID, create with the exact source, head,
+theme CSS, and scripts from the adapter. Expiry is not a reason to repeat
+planning, critique, asset search, or approval.
+
+## Return the Reversible Draft
+
+As soon as creation succeeds:
+
+1. Record page ID, version, preview URL, local hashes, and compile bundle hash.
+2. Set manifest `status` to `draft_created` and QA to `pending`.
+3. Run the validator with `--phase draft-created`.
+4. Surface the preview immediately as `DRAFT_CREATED`.
+
+Do not delete or conceal a working draft because later QA finds an issue.
+
+## Production-Ready Follow-Through
+
+After the preview exists, continue best-effort verification unless the user
+asked to stop at a first draft.
+
+For `production-ready`, or when upgrading an existing `DRAFT_CREATED`:
+
+1. Fetch persisted source, bundle, and version evidence.
+2. Reject remote/local hash drift and repair the draft from current local
+   source.
+3. Review the page's imagery as one campaign, not merely as individually valid
+   assets.
+4. Run hosted QA at 390px, 768px, and 1280px.
+5. Verify typography, media, hydration, overflow, responsive geometry,
+   expected Shopify variant, cart opening, quantity, subtotal, Quick Add,
+   product-grid stability, thumbnails, and authored header/footer order.
+6. Write evidence and blockers to `qa-report.md`.
+7. Set `status: qa_passed` only when all blocking checks pass, then run the
+   validator with `--phase draft` and live remote hashes.
+
+Return `DRAFT_READY` only after synchronization and every blocking QA check
+passes. Otherwise return the existing `DRAFT_CREATED` with specific blockers
+and the next repair action.
 
 ## Later Edits
 
-Fetch the remote version and stop on drift. Change local source first, compile
-only when inputs changed, patch only changed sections with `expected_version`,
-and update local synchronization state after success.
+Fetch edit context and stop on unexpected version drift. Change local source
+first, compile changed inputs once, patch only changed sections with
+`expected_version`, and update synchronization state only after success.
 
 ## Return
 
-Return the working directory, source, compile artifact, page ID, version,
-preview URL, QA report, and `DRAFT_READY`.
+Always return the working directory, source path, page ID, version, preview
+URL, inferred intent mode, and current state: `DRAFT_CREATED` or
+`DRAFT_READY`. Include the QA report when QA was attempted.
 
 ### generate reference: source-and-sync
 
@@ -769,14 +832,40 @@ hashes with `compile-artifact.json`.
 
 ## Creation
 
-1. Validate the compact manifest and canonical source.
+Draft creation and production readiness are separate states.
+
+1. Validate the compact manifest and canonical source with the
+   `draft-created` gate.
 2. Confirm no preview placeholder remains.
 3. Refresh only volatile products, variants, prices, permissions, and remote
    version data.
-4. Reuse or refresh the compile artifact.
+4. Compile the current workspace inputs once.
 5. Create with `publish: false`.
-6. Fetch persisted source and remote hashes.
-7. Save compact `sync`, `remote`, and `qa` records.
+6. Save page ID, version, preview URL, compile hash, and `status:
+   draft_created`.
+7. Return `DRAFT_CREATED` immediately.
+8. Fetch persisted source and remote hashes, then run hosted QA.
+9. Save synchronized state and `status: qa_passed` only when every
+   production-ready check succeeds.
+
+A failed post-creation check does not erase or invalidate the reversible
+draft. Report the draft and its blockers.
+
+## Intent Evidence
+
+Record the inferred mode compactly in `workflow`:
+
+```json
+{
+  "intentMode": "fast-draft",
+  "intentConfidence": "high",
+  "intentSignals": ["requested a preview", "delegated specifics"],
+  "userOverride": false
+}
+```
+
+Intent evidence explains routing; it never grants publish or paid-generation
+permission.
 
 ## Editing
 
@@ -819,8 +908,8 @@ actual live read fails, state that limitation; generic CRO guidance is not a
 substitute.
 
 The full skill pack includes optional deeper design guidance at
-`storefront-engine/references/lexsis-design-capabilities.md`. Every edit obeys
-the house rules in `storefront-engine/references/design-rules.md`; an
+`references/lexsis-design-capabilities.md`. Every edit obeys
+the house rules in `references/design-rules.md`; an
 optimization never adds emoji, gradients, hover transforms, or a section
 background.
 
@@ -999,8 +1088,9 @@ and background plan, and every asset slot on the page.
 Read:
 
 - `references/page-files.md`
-- `storefront-engine/references/design-rules.md`
-- `storefront-engine/references/island-presets.md`
+- `references/design-rules.md`
+- `references/island-presets.md`
+- `references/workflow-intent.md`
 
 Use `lexsis_catalog.list`, `lexsis_catalog.get`,
 `lexsis_template_library.search_page_kits`,
@@ -1016,6 +1106,25 @@ Read `work/storefront/setup/setup.json`, select one saved store/theme pair, and
 read its brand design. If the selection is not saved, stop with
 `Run /setup for this store and theme first.`
 
+## Infer the Planning Mode
+
+Use `references/workflow-intent.md` to infer `fast-draft` or
+`production-ready` from the whole request and conversation. Record compact
+intent evidence in `workflow`.
+
+For `fast-draft`, fill reasonable campaign, template, asset, and review
+specifics from the saved brand, live catalog, and user context. Ask only when a
+missing choice would materially change the campaign or spend credits. Do not
+require plan approval before handing the reversible first version to
+`/design-page` or `/generate`.
+
+For `production-ready`, collect and confirm the choices that affect final
+handoff quality.
+
+If a packaged design or preset reference is unavailable, warn once and
+continue from the saved brand, theme, and live catalog. A missing optional
+reference must not prevent a reversible plan.
+
 ## Ask Only What Is Missing
 
 Collect:
@@ -1028,23 +1137,24 @@ Collect:
 6. Required proof, offer, claim, or section constraints.
 
 Ask no more than four questions at once. Read current products, variants,
-prices, and availability from Lexsis.
+prices, and availability from Lexsis. Questions are conditional, not a fixed
+stage gate.
 
-When the first answers arrive, ask a second round of three questions together.
-The user picks first; the skill searches only where the user declines:
+In `production-ready` mode, or when the user clearly wants to choose the
+creative direction, offer these together. In `fast-draft`, choose them unless
+the user already expressed a preference:
 
-7. Templates: pick a page kit or sections yourself, or should I search and
-   propose?
-8. Assets: pick from your library (banners, lifestyle photos, proof, logo), or
-   should I search and propose?
+7. Templates: user-selected kit/sections or skill-selected direction.
+8. Assets: user-selected library assets or skill-selected existing assets.
 9. Reviews: which review collection should the page use (list the active ones
    with their counts), product reviews, or none?
 
 ## Choose a Direction
 
-Ask first, search second. The catalog is small (about 30 page kits, about 200
-section templates, only a few kits per page type); a person scans it faster
-than a query ranks it.
+For `production-ready`, ask first and search second. The catalog is small
+(about 30 page kits, about 200 section templates, only a few kits per page
+type); a person scans it faster than a query ranks it. For `fast-draft`, search
+and choose a coherent direction unless the user already selected one.
 
 **User picks (question 7).** Call `lexsis_template_library.search_page_kits`
 with `query: ""`, the `page_type`, `industry` and `mood` filters, and
@@ -1079,7 +1189,7 @@ Template selection at this stage is directional. `/design-page` owns fetching
 source, adapting layouts, selecting islands, and resolving schemas.
 The plan must not define islands.
 
-A preset id from `storefront-engine/references/island-presets.md` is a
+A preset id from `references/island-presets.md` is a
 design-intent token, not implementation, and may be named per section as
 `Preset: <island>/<intent>-<tone>`. At most one preset per island role; every
 preset's tone must match the tone named in the Design direction block or be
@@ -1102,7 +1212,8 @@ their output; otherwise run the same three blocks sequentially in this order.
 
 Each lane returns only its block. The parent merges them into `page-plan.md`,
 runs the generic-default check, resolves conflicts by the house rules, and asks
-the second-round questions. Lanes never write files or spend credits.
+only unresolved questions required by the inferred mode. Lanes never write
+files or spend credits.
 
 ## Write a One-Page Plan
 
@@ -1119,7 +1230,7 @@ Keep `page-plan.md` concise enough to scan in one view. Include:
 ### Design direction (required block in page-plan.md)
 
 Write this block before the section list. Read the saved brand design, the
-theme tokens and `storefront-engine/references/design-rules.md` first. Fill
+theme tokens and `references/design-rules.md` first. Fill
 every field; "none" is an answer, "TBD" is not. Then run the generic-default
 check at the end and revise anything it catches.
 
@@ -1409,6 +1520,11 @@ notes in the manifest.
 # Publish a Page
 
 Publishing is a separate, explicit action. Do not rebuild the page here.
+
+Read `references/workflow-intent.md`. Intent inference may distinguish a draft
+request from a live-release request, but it never substitutes for explicit
+approval naming the page and version. A request to preview, create, finish,
+review, or make a page production-ready is not publication approval.
 
 Use `lexsis_pages.edit_context`, `lexsis_pages.integrity`,
 `lexsis_pages.source`, `lexsis_workspace.get`, and
@@ -2975,11 +3091,17 @@ Use one owning command at a time.
 - Plan defines a concise campaign and section strategy without islands.
 - Design selects islands, resolves page assets, and creates the interactive
   source preview.
-- Generate owns production source, draft creation, and hosted QA.
+- Generate creates the unpublished draft early, then owns synchronization and
+  hosted QA.
 - Publish is a separate explicit release.
 
 Commands do not silently invoke one another. When a user intentionally starts
 later, create the minimum missing artifact and record the skipped command.
+
+Infer `fast-draft`, `production-ready`, or `publish` from the user's complete
+request and current conversation. Reversible ambiguity defaults to
+`fast-draft`; consequential ambiguity still requires clarification. Intent
+inference never authorizes publishing, paid generation, or deletion.
 
 ## Optional Routes
 
@@ -4996,6 +5118,7 @@ Use `schemaVersion: 3`.
 The manifest is a machine state ledger. Store only:
 
 - page, workspace, store, and theme IDs
+- compact inferred workflow intent and any user override
 - selected template and section IDs
 - compact product and final asset bindings
 - section order and compact island schema evidence
@@ -5049,10 +5172,39 @@ Do not prefill future stages with null fields.
 
 ## Remote State
 
-`/generate` adds:
+Immediately after unpublished creation, `/generate` adds:
 
 ```json
 {
+  "status": "draft_created",
+  "workflow": {
+    "intentMode": "fast-draft",
+    "intentConfidence": "high",
+    "intentSignals": ["requested a preview"],
+    "userOverride": false
+  },
+  "sync": {
+    "lastCompiledBundleHash": "..."
+  },
+  "remote": {
+    "pageId": "...",
+    "lastKnownVersion": 1,
+    "previewUrl": "https://..."
+  },
+  "qa": {
+    "status": "pending"
+  }
+}
+```
+
+This state is `DRAFT_CREATED`; it does not claim remote synchronization or
+hosted QA.
+
+After production-ready verification, `/generate` upgrades the state:
+
+```json
+{
+  "status": "qa_passed",
   "sync": {
     "lastCompiledBundleHash": "...",
     "lastSyncedBundleHash": "...",
@@ -5170,7 +5322,7 @@ The customer-facing pack has ten commands. Five form the normal page journey:
 | `setup` | Saved store and theme design context | `setup.json` and design files |
 | `plan-page` | One-page campaign and section strategy | approved `page-plan.md` |
 | `design-page` | Assets, islands, source, and responsive preview | canonical source and preview |
-| `generate` | Production source, draft, and hosted QA | `DRAFT_READY` |
+| `generate` | Early unpublished draft, then synchronization and hosted QA | `DRAFT_CREATED` or `DRAFT_READY` |
 | `publish` | Explicit live release | published version |
 
 Four optional commands support the workflow:
@@ -5192,6 +5344,8 @@ Four optional commands support the workflow:
 4. Every page binds one saved store/theme pair.
 5. `lexsis-source.html` is the production source of truth.
 6. Draft creation is not publishing approval.
+7. Infer fast-draft versus production-ready intent from the whole request;
+   reversible ambiguity defaults to fast-draft.
 
 ---
 

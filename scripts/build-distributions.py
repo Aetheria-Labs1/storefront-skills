@@ -41,6 +41,33 @@ SKILLS = ROOT / "skills"
 REFERENCES = SKILLS / "storefront-engine" / "references"
 CLAUDE_PLUGIN_SKILLS = ROOT / "plugins" / "lexsis-storefront-skills" / "skills"
 SHARED_RESOURCE_DIRS = {"storefront-engine"}
+SKILL_SHARED_REFERENCES = {
+    "plan-page": {
+        "design-rules.md",
+        "island-presets.md",
+        "workflow-intent.md",
+    },
+    "design-page": {
+        "design-rules.md",
+        "island-presets.md",
+        "merchant-templates.md",
+        "workflow-intent.md",
+    },
+    "generate": {
+        "design-rules.md",
+        "merchant-templates.md",
+        "page-editing.md",
+        "qa-recipe.md",
+        "workflow-intent.md",
+    },
+    "optimize": {
+        "design-rules.md",
+        "lexsis-design-capabilities.md",
+    },
+    "publish": {
+        "workflow-intent.md",
+    },
+}
 
 RETIRED_TOOLS = [
     "write_vibe_page",
@@ -62,6 +89,10 @@ STALE_GUIDANCE = {
 
 REFERENCE_PATH_RE = re.compile(
     r"((?:storefront-engine/)?references/[A-Za-z0-9_./-]+\.md)"
+)
+SHARED_REFERENCE_DEP_RE = re.compile(
+    r"(?:`|\()(?:(?:skills/)?storefront-engine/references/|references/)?"
+    r"([A-Za-z0-9_-]+\.md)(?:`|\))"
 )
 
 # References worth shipping to a custom GPT (knowledge budget is finite;
@@ -148,6 +179,53 @@ def materialize_claude_plugin_skills() -> None:
     )
 
 
+def shared_reference_closure(names: set[str]) -> set[str]:
+    pending = list(names)
+    resolved = set(names)
+    while pending:
+        name = pending.pop()
+        source = REFERENCES / name
+        if not source.is_file():
+            continue
+        for dependency in SHARED_REFERENCE_DEP_RE.findall(source.read_text()):
+            if dependency == name or not (REFERENCES / dependency).is_file():
+                continue
+            if dependency not in resolved:
+                resolved.add(dependency)
+                pending.append(dependency)
+    return resolved
+
+
+def packaged_reference_content(source: Path) -> str:
+    return (
+        source.read_text()
+        .replace("skills/storefront-engine/references/", "references/")
+        .replace("storefront-engine/references/", "references/")
+    )
+
+
+def sync_skill_shared_references(*, check: bool) -> list[str]:
+    """Materialize shared docs inside public skills for per-skill installers."""
+    changed: list[str] = []
+    for skill_name, names in sorted(SKILL_SHARED_REFERENCES.items()):
+        target_dir = SKILLS / skill_name / "references"
+        for name in sorted(shared_reference_closure(names)):
+            source = REFERENCES / name
+            target = target_dir / name
+            if not source.is_file():
+                changed.append(
+                    f"{target.relative_to(ROOT)} (missing source {source.relative_to(ROOT)})"
+                )
+                continue
+            expected = packaged_reference_content(source)
+            if not target.is_file() or target.read_text() != expected:
+                changed.append(str(target.relative_to(ROOT)))
+                if not check:
+                    target_dir.mkdir(parents=True, exist_ok=True)
+                    target.write_text(expected)
+    return changed
+
+
 def validate() -> list[str]:
     errors: list[str] = []
 
@@ -195,7 +273,6 @@ def validate() -> list[str]:
             else:
                 candidates = [
                     skill_dir / reference,
-                    REFERENCES / reference.removeprefix("references/"),
                 ]
             if not any(path.is_file() for path in candidates):
                 errors.append(
@@ -279,7 +356,12 @@ def build_gpt() -> dict[str, str]:
         parts.append(f"\n---\n\n# Skill: {fm['name']}\n\n> {fm['description']}\n\n{body.strip()}\n")
         local_references = skill_dir / "references"
         if local_references.is_dir():
+            generated_shared = shared_reference_closure(
+                SKILL_SHARED_REFERENCES.get(skill_dir.name, set())
+            )
             for reference in sorted(local_references.glob("*.md")):
+                if reference.name in generated_shared:
+                    continue
                 parts.append(
                     f"\n### {fm['name']} reference: {reference.stem}\n\n"
                     f"{reference.read_text().strip()}\n"
@@ -300,6 +382,9 @@ edit, and optimize AI-built Shopify storefront pages using the Lexsis AI MCP
 Use the normal workflow when building a page:
 setup → plan-page → design-page → generate → publish.
 Each command remains independently invokable, and explicit skips are recorded.
+Infer whether the user wants a fast reversible draft or production-ready QA
+from the whole request. Reversible ambiguity defaults to a fast draft; live
+publishing always requires explicit approval for the named page and version.
 Use the exact router/action pairs declared by each skill. Call
 lexsis_discover only for an unfamiliar argument schema, using its structured
 router and action fields. A zero-result discovery lookup is not an MCP outage;
@@ -319,6 +404,7 @@ retired tools.
 def main() -> int:
     check = "--check" in sys.argv
 
+    shared_reference_changes = sync_skill_shared_references(check=check)
     errors = validate()
     if errors:
         print(f"VALIDATION FAILED ({len(errors)}):")
@@ -334,7 +420,7 @@ def main() -> int:
             if tool in content:
                 print(f"FATAL: generated {rel} would contain retired tool {tool}")
                 return 1
-    changed = []
+    changed = list(shared_reference_changes)
     if not claude_plugin_skills_are_current():
         changed.append(str(CLAUDE_PLUGIN_SKILLS.relative_to(ROOT)))
         if not check:

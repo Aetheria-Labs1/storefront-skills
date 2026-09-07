@@ -84,10 +84,10 @@ Invoke as `/name` (Claude Code) or `$name` (Codex); most also trigger automatica
 | Skill | What it does |
 |-------|--------------|
 | `setup` | Save reusable brand and theme context for one or more stores |
-| `plan-page` | Produce a one-page plan: design direction, wireframe with asset slots, imagery plan; the user picks templates, assets and review sources first |
-| `design-page` | Build the real source and preview under the house rules, with a self-critique gate |
+| `plan-page` | Produce a one-page plan at the depth implied by the user's intent |
+| `design-page` | Build source and preview, showing a fast first pass before deeper critique when appropriate |
 | `asset-prep` | Independently search, generate, import, or replace media |
-| `generate` | Write readable source, compile, create a draft, and run hosted QA |
+| `generate` | Create an unpublished draft early, then synchronize and QA it to production readiness |
 | `publish` | Release a synchronized draft only after explicit approval |
 | `analyze-page` | Analyze a URL, screenshot, ad, or existing page |
 | `optimize` | Improve an existing page for a chosen business outcome |
@@ -115,9 +115,9 @@ The normal page workflow is:
 | Step | Output |
 |------|--------|
 | `/setup` | Saved store brand reference and theme CSS, indexed by store and theme |
-| `/plan-page` | Approved one-page plan with design direction, wireframe, imagery plan, and resolved asset slots |
-| `/design-page` | Canonical source, remaining asset gaps, islands, self-critique gate, and interactive preview |
-| `/generate` | Readable source, synchronized draft, preview URL, and QA report |
+| `/plan-page` | Intent-aware plan with design direction, wireframe, imagery plan, and asset slots |
+| `/design-page` | Canonical source, remaining asset gaps, islands, and interactive preview |
+| `/generate` | `DRAFT_CREATED` preview first; `DRAFT_READY` after synchronization and hosted QA |
 | `/publish` | Explicit release of the reviewed page version |
 
 When several saved stores or themes are available, every page records the
@@ -131,6 +131,11 @@ loads Lexsis's exported island runtime in a safe local preview. Complex
 components such as shoppable video can therefore be reviewed before draft
 creation. Cart and checkout writes remain disabled locally and are certified
 on the hosted draft created by `generate`.
+
+The workflow infers `fast-draft` versus `production-ready` from the complete
+request and conversation rather than requiring a trigger phrase. Reversible
+ambiguity defaults to an early unpublished draft. Publishing, paid generation,
+deletion, and destructive changes retain explicit authorization boundaries.
 
 ## MCP Server
 
@@ -169,8 +174,9 @@ One source of truth: edit `skills/`, run `python3 scripts/build-distributions.py
 
 The full Claude/Codex plugins and GPT distribution package the shared
 `storefront-engine/references/` corpus. Public skill entrypoints remain
-self-contained so clients that install only selected skill folders do not
-depend on a missing shared directory.
+self-contained: the build copies each consumed shared reference into that
+skill's own `references/` directory. Clients that install individual skills
+therefore do not depend on a missing sibling `storefront-engine` directory.
 
 > **Windows note:** `.agents/skills` is a convenience symlink for local agent
 > discovery. The published Claude plugin uses real copied files and does not

@@ -16,11 +16,17 @@ Use one owning command at a time.
 - Plan defines a concise campaign and section strategy without islands.
 - Design selects islands, resolves page assets, and creates the interactive
   source preview.
-- Generate owns production source, draft creation, and hosted QA.
+- Generate creates the unpublished draft early, then owns synchronization and
+  hosted QA.
 - Publish is a separate explicit release.
 
 Commands do not silently invoke one another. When a user intentionally starts
 later, create the minimum missing artifact and record the skipped command.
+
+Infer `fast-draft`, `production-ready`, or `publish` from the user's complete
+request and current conversation. Reversible ambiguity defaults to
+`fast-draft`; consequential ambiguity still requires clarification. Intent
+inference never authorizes publishing, paid generation, or deletion.
 
 ## Optional Routes
 

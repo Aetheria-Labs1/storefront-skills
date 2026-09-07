@@ -259,6 +259,94 @@ class WorkspaceValidatorTests(unittest.TestCase):
         self.assertTrue(VALIDATOR.validate_workspace(root, "draft", **evidence)["ok"])
         self.assertTrue(VALIDATOR.validate_workspace(root, "publish", **evidence)["ok"])
 
+    def test_draft_created_requires_only_creation_evidence(self) -> None:
+        root = self.make_workspace()
+        manifest = self.manifest(root)
+        manifest["status"] = "draft_created"
+        manifest["workflow"].update(
+            {
+                "intentMode": "fast-draft",
+                "intentConfidence": "high",
+                "intentSignals": ["requested a preview"],
+                "userOverride": False,
+            }
+        )
+        manifest["qa"] = {"status": "pending"}
+        manifest["sync"] = {
+            "lastCompiledBundleHash": manifest["design"]["bundleHash"],
+        }
+        manifest["design"]["sourceHash"] = "stale-design-hash"
+        self.write_manifest(root, manifest)
+        (root / "page-preview.html").unlink()
+        (root / "compile-artifact.json").unlink()
+        (root / "qa-report.md").unlink()
+
+        result = VALIDATOR.validate_workspace(root, "draft-created")
+        self.assertTrue(result["ok"], result["errors"])
+
+    def test_draft_created_rejects_invalid_intent_evidence(self) -> None:
+        root = self.make_workspace()
+        manifest = self.manifest(root)
+        manifest["status"] = "draft_created"
+        manifest["workflow"].update(
+            {
+                "intentMode": "guess",
+                "intentConfidence": "certain",
+                "intentSignals": "preview",
+                "userOverride": "no",
+            }
+        )
+        manifest["qa"] = {"status": "pending"}
+        self.write_manifest(root, manifest)
+
+        codes = self.codes(root, "draft-created")
+        self.assertTrue(
+            {
+                "intent_mode",
+                "intent_confidence",
+                "intent_signals",
+                "intent_override",
+            }.issubset(codes)
+        )
+
+    def test_custom_font_requires_stylesheet_or_system_stack(self) -> None:
+        root = self.make_workspace()
+        (root / "page-theme.css").write_text(
+            ":root { --lx-font-heading: 'Soehne', Arial, sans-serif; }\n",
+            encoding="utf-8",
+        )
+        self.assertIn(
+            "custom_font_unhosted",
+            self.codes(root, "draft-created"),
+        )
+
+        manifest = self.manifest(root)
+        manifest["config"]["head"]["fonts"] = [
+            "https://fonts.example.com/soehne.css"
+        ]
+        page_config = {
+            "head": manifest["config"]["head"],
+            "scripts": manifest["config"]["scripts"],
+        }
+        compile_inputs = {
+            "productBinding": manifest["config"]["productBinding"],
+            "commerceConfig": manifest["config"]["commerceConfig"],
+        }
+        manifest["sync"]["lastCompiledBundleHash"] = VALIDATOR.bundle_hash(
+            SOURCE,
+            page_config,
+            (root / "page-theme.css").read_text(encoding="utf-8"),
+            compile_inputs,
+        )
+        manifest["status"] = "draft_created"
+        manifest["qa"] = {"status": "pending"}
+        self.write_manifest(root, manifest)
+        result = VALIDATOR.validate_workspace(root, "draft-created")
+        self.assertNotIn(
+            "custom_font_unhosted",
+            {item["code"] for item in result["errors"]},
+        )
+
     def test_progressive_plan_manifest_needs_no_design_state(self) -> None:
         root = self.make_workspace()
         for name in (

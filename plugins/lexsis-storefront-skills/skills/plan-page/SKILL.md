@@ -13,8 +13,9 @@ and background plan, and every asset slot on the page.
 Read:
 
 - `references/page-files.md`
-- `storefront-engine/references/design-rules.md`
-- `storefront-engine/references/island-presets.md`
+- `references/design-rules.md`
+- `references/island-presets.md`
+- `references/workflow-intent.md`
 
 Use `lexsis_catalog.list`, `lexsis_catalog.get`,
 `lexsis_template_library.search_page_kits`,
@@ -30,6 +31,25 @@ Read `work/storefront/setup/setup.json`, select one saved store/theme pair, and
 read its brand design. If the selection is not saved, stop with
 `Run /setup for this store and theme first.`
 
+## Infer the Planning Mode
+
+Use `references/workflow-intent.md` to infer `fast-draft` or
+`production-ready` from the whole request and conversation. Record compact
+intent evidence in `workflow`.
+
+For `fast-draft`, fill reasonable campaign, template, asset, and review
+specifics from the saved brand, live catalog, and user context. Ask only when a
+missing choice would materially change the campaign or spend credits. Do not
+require plan approval before handing the reversible first version to
+`/design-page` or `/generate`.
+
+For `production-ready`, collect and confirm the choices that affect final
+handoff quality.
+
+If a packaged design or preset reference is unavailable, warn once and
+continue from the saved brand, theme, and live catalog. A missing optional
+reference must not prevent a reversible plan.
+
 ## Ask Only What Is Missing
 
 Collect:
@@ -42,23 +62,24 @@ Collect:
 6. Required proof, offer, claim, or section constraints.
 
 Ask no more than four questions at once. Read current products, variants,
-prices, and availability from Lexsis.
+prices, and availability from Lexsis. Questions are conditional, not a fixed
+stage gate.
 
-When the first answers arrive, ask a second round of three questions together.
-The user picks first; the skill searches only where the user declines:
+In `production-ready` mode, or when the user clearly wants to choose the
+creative direction, offer these together. In `fast-draft`, choose them unless
+the user already expressed a preference:
 
-7. Templates: pick a page kit or sections yourself, or should I search and
-   propose?
-8. Assets: pick from your library (banners, lifestyle photos, proof, logo), or
-   should I search and propose?
+7. Templates: user-selected kit/sections or skill-selected direction.
+8. Assets: user-selected library assets or skill-selected existing assets.
 9. Reviews: which review collection should the page use (list the active ones
    with their counts), product reviews, or none?
 
 ## Choose a Direction
 
-Ask first, search second. The catalog is small (about 30 page kits, about 200
-section templates, only a few kits per page type); a person scans it faster
-than a query ranks it.
+For `production-ready`, ask first and search second. The catalog is small
+(about 30 page kits, about 200 section templates, only a few kits per page
+type); a person scans it faster than a query ranks it. For `fast-draft`, search
+and choose a coherent direction unless the user already selected one.
 
 **User picks (question 7).** Call `lexsis_template_library.search_page_kits`
 with `query: ""`, the `page_type`, `industry` and `mood` filters, and
@@ -93,7 +114,7 @@ Template selection at this stage is directional. `/design-page` owns fetching
 source, adapting layouts, selecting islands, and resolving schemas.
 The plan must not define islands.
 
-A preset id from `storefront-engine/references/island-presets.md` is a
+A preset id from `references/island-presets.md` is a
 design-intent token, not implementation, and may be named per section as
 `Preset: <island>/<intent>-<tone>`. At most one preset per island role; every
 preset's tone must match the tone named in the Design direction block or be
@@ -116,7 +137,8 @@ their output; otherwise run the same three blocks sequentially in this order.
 
 Each lane returns only its block. The parent merges them into `page-plan.md`,
 runs the generic-default check, resolves conflicts by the house rules, and asks
-the second-round questions. Lanes never write files or spend credits.
+only unresolved questions required by the inferred mode. Lanes never write
+files or spend credits.
 
 ## Write a One-Page Plan
 
@@ -133,7 +155,7 @@ Keep `page-plan.md` concise enough to scan in one view. Include:
 ### Design direction (required block in page-plan.md)
 
 Write this block before the section list. Read the saved brand design, the
-theme tokens and `storefront-engine/references/design-rules.md` first. Fill
+theme tokens and `references/design-rules.md` first. Fill
 every field; "none" is an answer, "TBD" is not. Then run the generic-default
 check at the end and revise anything it catches.
 

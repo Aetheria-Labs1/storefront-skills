@@ -76,9 +76,52 @@ QA_FIELDS = (
     "assets",
     "integrity",
 )
-SOURCE_PHASES = {"design", "visual", "precompile", "adopted", "draft", "publish"}
-PRODUCTION_PHASES = {"precompile", "adopted", "draft", "publish"}
+SOURCE_PHASES = {
+    "design",
+    "visual",
+    "precompile",
+    "adopted",
+    "draft-created",
+    "draft",
+    "publish",
+}
+PRODUCTION_PHASES = {
+    "precompile",
+    "adopted",
+    "draft-created",
+    "draft",
+    "publish",
+}
 REMOTE_READY_PHASES = {"draft", "publish"}
+DESIGN_EVIDENCE_PHASES = {"design", "visual", "precompile", "draft", "publish"}
+INTENT_MODES = {"fast-draft", "production-ready", "publish"}
+INTENT_CONFIDENCE = {"low", "medium", "high"}
+FONT_STACK_RE = re.compile(
+    r"--lx-font-(?:heading|body)\s*:\s*([^;}{]+)",
+    re.IGNORECASE,
+)
+SYSTEM_FONT_FAMILIES = {
+    "-apple-system",
+    "arial",
+    "arial black",
+    "blinkmacsystemfont",
+    "courier",
+    "courier new",
+    "georgia",
+    "helvetica",
+    "impact",
+    "monospace",
+    "sans-serif",
+    "serif",
+    "system-ui",
+    "tahoma",
+    "times new roman",
+    "trebuchet ms",
+    "ui-monospace",
+    "ui-sans-serif",
+    "ui-serif",
+    "verdana",
+}
 
 
 def sha256(text: str) -> str:
@@ -197,6 +240,15 @@ def visible_text(source: str) -> str:
     )
     text = re.sub(r"<[^>]+>", " ", text)
     return re.sub(r"\s+", " ", html.unescape(text)).strip()
+
+
+def custom_font_families(theme_css: str) -> set[str]:
+    custom: set[str] = set()
+    for stack in FONT_STACK_RE.findall(theme_css):
+        first = stack.split(",", 1)[0].strip().strip("'\"").casefold()
+        if first and first not in SYSTEM_FONT_FAMILIES:
+            custom.add(first)
+    return custom
 
 
 def finding(code: str, message: str, path: str | None = None) -> dict[str, str]:
@@ -329,6 +381,59 @@ def validate_workspace(
                 errors.append(
                     finding("manifest_binding", f"Manifest requires {key}", manifest_path.name)
                 )
+        workflow = manifest.get("workflow", {})
+        if not isinstance(workflow, dict):
+            errors.append(
+                finding(
+                    "manifest_workflow",
+                    "Manifest workflow must be an object",
+                    manifest_path.name,
+                )
+            )
+        else:
+            intent_fields = {
+                "intentMode",
+                "intentConfidence",
+                "intentSignals",
+                "userOverride",
+            }
+            if intent_fields.intersection(workflow):
+                if workflow.get("intentMode") not in INTENT_MODES:
+                    errors.append(
+                        finding(
+                            "intent_mode",
+                            "workflow.intentMode must be fast-draft, production-ready, or publish",
+                            manifest_path.name,
+                        )
+                    )
+                if workflow.get("intentConfidence") not in INTENT_CONFIDENCE:
+                    errors.append(
+                        finding(
+                            "intent_confidence",
+                            "workflow.intentConfidence must be low, medium, or high",
+                            manifest_path.name,
+                        )
+                    )
+                signals = workflow.get("intentSignals")
+                if (
+                    not isinstance(signals, list)
+                    or any(not isinstance(item, str) or not item.strip() for item in signals)
+                ):
+                    errors.append(
+                        finding(
+                            "intent_signals",
+                            "workflow.intentSignals must be an array of short strings",
+                            manifest_path.name,
+                        )
+                    )
+                if not isinstance(workflow.get("userOverride"), bool):
+                    errors.append(
+                        finding(
+                            "intent_override",
+                            "workflow.userOverride must be boolean",
+                            manifest_path.name,
+                        )
+                    )
         if not isinstance(manifest.get("sections"), list):
             errors.append(
                 finding("manifest_sections", "Manifest sections must be an array", manifest_path.name)
@@ -485,6 +590,31 @@ def validate_workspace(
             errors.append(finding("page_head", "config.head must be an object", manifest_path.name))
         if not isinstance(page_config.get("scripts"), list):
             errors.append(finding("page_scripts", "config.scripts must be an array", manifest_path.name))
+        head_config = page_config.get("head")
+        fonts = head_config.get("fonts", []) if isinstance(head_config, dict) else []
+        if fonts is not None and (
+            not isinstance(fonts, list)
+            or any(
+                not isinstance(item, str) or not item.startswith("https://")
+                for item in fonts
+            )
+        ):
+            errors.append(
+                finding(
+                    "font_stylesheet_url",
+                    "config.head.fonts must contain only full HTTPS stylesheet URLs",
+                    manifest_path.name,
+                )
+            )
+        custom_fonts = custom_font_families(theme_css)
+        if custom_fonts and not fonts:
+            item = finding(
+                "custom_font_unhosted",
+                "Custom font families require an HTTPS stylesheet URL or an intentional system-font stack: "
+                + ", ".join(sorted(custom_fonts)),
+                theme_path.name,
+            )
+            (errors if phase in PRODUCTION_PHASES else warnings).append(item)
 
     source_sections: list[str] = []
     source_islands: list[dict[str, str]] = []
@@ -755,7 +885,14 @@ def validate_workspace(
     design_state = manifest.get("design", {}) if manifest else {}
     design_status = design_state.get("status")
     skipped = manifest.get("workflow", {}).get("skippedSkills", []) if manifest else []
-    if phase in {"design", "visual", "precompile", "draft", "publish"}:
+    if phase in {
+        "design",
+        "visual",
+        "precompile",
+        "draft-created",
+        "draft",
+        "publish",
+    }:
         allowed_statuses = {"approved", "skipped"}
         if design_status not in allowed_statuses:
             errors.append(
@@ -826,7 +963,7 @@ def validate_workspace(
 
     page_preview_path = directory / "page-preview.html"
     compile_artifact_path = directory / "compile-artifact.json"
-    if design_status == "approved":
+    if design_status == "approved" and phase in DESIGN_EVIDENCE_PHASES:
         if not design_state.get("stylePack"):
             errors.append(
                 finding("design_style", "Approved design requires a stylePack", manifest_path.name)
@@ -1106,6 +1243,47 @@ def validate_workspace(
                 )
             )
 
+    if phase == "draft-created" and source:
+        remote = manifest.get("remote", {})
+        sync = manifest.get("sync", {})
+        qa = manifest.get("qa", {})
+        if manifest.get("status") not in {"draft_created", "qa_passed"}:
+            errors.append(
+                finding(
+                    "draft_created_status",
+                    "DRAFT_CREATED requires status draft_created or qa_passed",
+                    manifest_path.name,
+                )
+            )
+        if (
+            not remote.get("pageId")
+            or remote.get("lastKnownVersion") is None
+            or not remote.get("previewUrl")
+        ):
+            errors.append(
+                finding(
+                    "draft_created_remote",
+                    "DRAFT_CREATED requires page ID, version, and preview URL",
+                    manifest_path.name,
+                )
+            )
+        if sync.get("lastCompiledBundleHash") != current_bundle_hash:
+            errors.append(
+                finding(
+                    "draft_created_compile",
+                    "DRAFT_CREATED must record the current clean compile hash",
+                    manifest_path.name,
+                )
+            )
+        if qa and qa.get("status") not in {"pending", "failed", "passed"}:
+            errors.append(
+                finding(
+                    "draft_created_qa",
+                    "Draft QA status must be pending, failed, or passed",
+                    manifest_path.name,
+                )
+            )
+
     if phase in REMOTE_READY_PHASES and source:
         remote = manifest.get("remote", {})
         sync = manifest.get("sync", {})
@@ -1256,7 +1434,16 @@ def main() -> int:
     parser.add_argument("working_directory", type=Path)
     parser.add_argument(
         "--phase",
-        choices=["plan", "design", "visual", "precompile", "adopted", "draft", "publish"],
+        choices=[
+            "plan",
+            "design",
+            "visual",
+            "precompile",
+            "adopted",
+            "draft-created",
+            "draft",
+            "publish",
+        ],
         default="precompile",
     )
     parser.add_argument("--remote-version", help="Current remote page version for drift detection")

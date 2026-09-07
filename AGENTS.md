@@ -28,3 +28,7 @@ independently invokable; explicit skips are recorded in the page manifest.
 - Shared reference docs live in `skills/storefront-engine/references/`; the
   `storefront-engine` directory is not a public skill. Island schemas live in
   `references/islands/<name>/schema.json`. Do not invent island names or props.
+- Public skills installed individually must remain self-contained.
+  `scripts/build-distributions.py` materializes the shared references declared
+  in `SKILL_SHARED_REFERENCES` into each consuming skill's `references/`
+  directory. Edit the shared source, never the generated local copy.

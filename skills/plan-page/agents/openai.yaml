@@ -1,7 +1,7 @@
 interface:
   display_name: "Plan Storefront Page"
-  short_description: "Create an approved storefront page blueprint before generation."
-  default_prompt: "Use $plan-page to turn this campaign brief into an approved storefront plan."
+  short_description: "Plan a storefront at the depth the request needs."
+  default_prompt: "Use $plan-page to infer whether this needs a fast draft plan or a production-ready plan."
 dependencies:
   tools:
     - type: "mcp"

@@ -15,7 +15,7 @@ The customer-facing pack has ten commands. Five form the normal page journey:
 | `setup` | Saved store and theme design context | `setup.json` and design files |
 | `plan-page` | One-page campaign and section strategy | approved `page-plan.md` |
 | `design-page` | Assets, islands, source, and responsive preview | canonical source and preview |
-| `generate` | Production source, draft, and hosted QA | `DRAFT_READY` |
+| `generate` | Early unpublished draft, then synchronization and hosted QA | `DRAFT_CREATED` or `DRAFT_READY` |
 | `publish` | Explicit live release | published version |
 
 Four optional commands support the workflow:
@@ -37,3 +37,5 @@ Four optional commands support the workflow:
 4. Every page binds one saved store/theme pair.
 5. `lexsis-source.html` is the production source of truth.
 6. Draft creation is not publishing approval.
+7. Infer fast-draft versus production-ready intent from the whole request;
+   reversible ambiguity defaults to fast-draft.

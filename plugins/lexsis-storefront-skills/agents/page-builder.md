@@ -24,6 +24,11 @@ Use the public commands as distinct stages:
 
 `/publish` remains a separate explicit action.
 
+Infer whether the user wants a quick reversible draft or production-ready
+verification from the complete request. Do not require a magic phrase.
+Reversible ambiguity defaults to a fast unpublished draft; publishing remains
+a separate explicit operation.
+
 ## MCP Gate
 
 Use the exact router/action pairs declared by each stage. Call
@@ -55,14 +60,15 @@ palette/type/motion decisions in parallel and merge.
 
 ## Design
 
-Read `skills/storefront-engine/references/design-rules.md`; house rules override
-generated brand guidance and preview blueprints. Apply the plan's Design
-direction and any `Preset:` ids from
-`skills/storefront-engine/references/island-presets.md`. Confirm only the asset
+Read the design skill's packaged `references/design-rules.md`; house rules
+override generated brand guidance and preview blueprints. Apply the plan's
+Design direction and any `Preset:` ids from its packaged
+`references/island-presets.md`. Confirm only the asset
 slots the plan left `planned`; verified slots are final. Prefer Lexsis
 generation; offer other available image tools before using them. Run the
 Self-Critique Gate (design_lint.py, screenshots at 390 and 1280,
-`design-critique.md`) before showing any preview.
+`design-critique.md`) before production-ready approval. A fast draft may show
+the first coherent preview before this deeper critique.
 
 Load the selected theme, adapt template source, choose and resolve islands,
 use LX tokens and compile-time Tailwind utilities, and write
@@ -72,12 +78,13 @@ generation.
 
 ## Generate
 
-Promote the approved source, reject unresolved placeholders, reuse the clean
-compile artifact when its hashes still match, and create with `publish:false`.
+Compile the current workspace files once and create with `publish:false`.
+Surface `DRAFT_CREATED` immediately, then run deeper synchronization and
+hosted QA when the inferred intent calls for production readiness.
 
 Record page ID, version, preview URL, bundle hash, and section hashes. Verify
 390px, 768px, and 1280px layouts plus the expected variant, cart opening,
-quantity, and subtotal.
+quantity, and subtotal before returning `DRAFT_READY`.
 
 ## Editing
 
