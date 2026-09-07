@@ -1,5 +1,5 @@
 <!-- GENERATED from skills/ by scripts/build-distributions.py — DO NOT EDIT.
-     storefront-skills v7.5.0 · 10 skills · 47 active islands -->
+     storefront-skills v7.6.0 · 12 skills · 47 active islands -->
 
 # Lexsis Storefront Skills — Knowledge Base
 
@@ -167,6 +167,86 @@ and any unresolved roles.
 
 ---
 
+# Skill: build
+
+> Create the fastest useful unpublished Lexsis storefront draft from a prompt, optional template URL, or automatically selected page kit. Use for first versions and rapid iteration; use generate for production-ready QA.
+
+# Build a Fast Draft
+
+Create an unpublished draft without requiring the full planning and visual
+approval workflow.
+
+Read:
+
+- `references/fast-build.md`
+- `references/workflow-intent.md`
+
+Use `lexsis_catalog.list`, `lexsis_catalog.get`,
+`lexsis_template_library.search_page_kits`,
+`lexsis_template_library.search_sections`,
+`lexsis_template_library.get_kit`, `lexsis_design.get_section`,
+`lexsis_design.islands`, `lexsis_design.island_schema`,
+`lexsis_asset_library.search`, `lexsis_brand.context`,
+`lexsis_brand.get_theme`, `lexsis_pages.compile`, and
+`lexsis_page_create.create`.
+
+Use `lexsis_workspace.credits`, `lexsis_assets.capabilities`,
+`lexsis_assets.view`, and `lexsis_drafts.asset_generate` only when existing
+media cannot satisfy a required production slot. Confirm before paid
+generation unless the user already explicitly authorized it.
+
+Infer the complete request:
+
+- A supplied template or page-kit URL is authoritative.
+- Without a template, select the best coherent page kit for `fast-draft`
+  intent.
+- If the user asks to choose among templates, show the picker and wait.
+- If the user asks for a visual mockup before source, route to
+  `/design-page`'s concept-first path instead.
+- If the user asks to publish live, route to `/publish`; this skill creates
+  with `publish:false` only.
+
+Follow `references/fast-build.md`. Compile once, permit one targeted repair,
+create the draft, and return `DRAFT_CREATED` immediately. Do not run design
+critique, hosted QA, commerce QA, hash reconciliation, or full workspace
+validation before returning the preview.
+
+---
+
+# Skill: build-with-template
+
+> Create an unpublished Lexsis storefront draft directly from a supplied page-kit or section-template URL. Use when the template is already chosen and visual design approval should be skipped.
+
+# Build with a Chosen Template
+
+Require a page-kit or section-template URL, slug, or id. If none is supplied,
+ask for it or route a general fast-build request to `/build`.
+
+Read:
+
+- `references/fast-build.md`
+- `references/workflow-intent.md`
+
+Use `lexsis_template_library.get_kit`, `lexsis_design.get_section`,
+`lexsis_catalog.get`, `lexsis_design.islands`,
+`lexsis_design.island_schema`, `lexsis_asset_library.search`,
+`lexsis_brand.context`, `lexsis_brand.get_theme`,
+`lexsis_pages.compile`, and `lexsis_page_create.create`.
+
+Use `lexsis_workspace.credits`, `lexsis_assets.capabilities`,
+`lexsis_assets.view`, and `lexsis_drafts.asset_generate` only for required
+production gaps and only after credit authorization.
+
+Treat the supplied template direction as authoritative. Follow
+`references/fast-build.md`, skip the visual-concept and design-approval stages,
+compile once with at most one targeted repair, create with `publish:false`, and
+return `DRAFT_CREATED`.
+
+This skill never publishes live and never upgrades the result to
+`DRAFT_READY`; use `/generate` and `/publish` for those outcomes.
+
+---
+
 # Skill: cart
 
 > Inspect, assign, or edit Lexsis cart profiles for a storefront page. Covers offers, shipping goals, subscriptions, responsive behavior, and scoped cart styling.
@@ -238,6 +318,8 @@ Read:
 - `references/island-presets.md`
 - `references/merchant-templates.md`
 - `references/workflow-intent.md`
+- `references/design-concepts.md` only when the user wants a visual concept
+  before source authoring
 - `references/page-layout.md`
 - `references/island-preview.md`
 
@@ -247,7 +329,8 @@ Use `lexsis_brand.context`, `lexsis_brand.get_theme`,
 `lexsis_design.islands`, `lexsis_design.island_schema`,
 `lexsis_design.get_section`, `lexsis_template_library.get_kit`,
 `lexsis_asset_library.search`, `lexsis_catalog.get`, `lexsis_catalog.reviews`,
-`lexsis_assets.view`, `lexsis_workspace.credits`,
+`lexsis_assets.capabilities`, `lexsis_assets.view`,
+`lexsis_workspace.credits`,
 `lexsis_drafts.asset_generate`, `lexsis_asset_upload.import`, and
 `lexsis_pages.compile`.
 
@@ -287,6 +370,32 @@ page.
 If optional design, preset, or merchant-template guidance is unavailable, warn
 once and continue from the page plan, saved brand, live schemas, and compiler.
 Missing canonical source-format or compile-contract inputs remain blocking.
+
+## Choose the Visual Route
+
+Infer this from the request rather than always presenting a gate:
+
+- Use the concept-first path when the user asks for a mockup, wants to approve
+  the appearance before implementation, or explicitly chooses visual
+  exploration.
+- Continue directly to source for fast-draft, template-first, and
+  build-the-page requests.
+- If the user genuinely has not indicated whether they want visual approval,
+  offer two choices in one line: generate a mobile-first concept, or continue
+  directly to the interactive page preview.
+- A supplied template URL plus a request for the fastest draft should route to
+  `/build` or `/build-with-template`, not through this skill.
+
+For concept-first work, follow `references/design-concepts.md`. Use the
+existing Lexsis image generator, show mobile first, and return
+`CONCEPT_READY`. Generate the desktop adaptation after the mobile direction is
+approved unless the user requested both together. The concept is design
+evidence only: keep it out of production `assets[]` and never use its URL in
+page source.
+
+After concept approval, derive the real production asset gaps, confirm any
+remaining paid generation batch, resolve those slots, and continue with the
+ordinary Design Direction, Compose, Compile, Preview, and Approval stages.
 
 ## Design Direction Gate
 
@@ -480,6 +589,7 @@ Presets: [ids]
 Reused assets: [slots]
 Generated assets: [slots]
 Temporary placeholders: [slots]
+Concept: [not requested | asset ids and approval]
 ```
 
 On approval, record only final IDs, compact island schema evidence, presets
@@ -1121,6 +1231,17 @@ require plan approval before handing the reversible first version to
 For `production-ready`, collect and confirm the choices that affect final
 handoff quality.
 
+Choose the next route from intent:
+
+- `concept-first` when the user wants to see or approve a mockup before source;
+- `direct-design` for the normal responsive source preview;
+- `fast-build` when the user supplies a template direction and asks for the
+  fastest first draft.
+
+Record the route in `page-plan.md`. Do not force every user to choose among all
+three. Paid visual-concept generation is confirmed in `/design-page`;
+`fast-build` hands off to `/build` or `/build-with-template`.
+
 If a packaged design or preset reference is unavailable, warn once and
 continue from the saved brand, theme, and live catalog. A missing optional
 reference must not prevent a reversible plan.
@@ -1401,14 +1522,18 @@ Asset slots: <n verified / m planned>
 Planned slots (unresolved):
 Proof sources:
 Claims to confirm:
+Next route: <concept-first | direct-design | fast-build>
 ```
 
-Wait for approval.
+For `production-ready`, wait for approval. For `fast-draft`, present the
+summary and continue to the inferred reversible route unless the user asked to
+review the plan first or the route requires paid generation.
 
 ## Return
 
 Return the working directory, plan path, manifest path, the asset slot
-summary, and `PLAN_APPROVED`. The next normal command is `/design-page`.
+summary, inferred next route, and `PLAN_APPROVED`. The next command is
+`/design-page`, `/build`, or `/build-with-template` according to that route.
 
 ### plan-page reference: page-files
 
@@ -2687,6 +2812,17 @@ Source: `work/research/lexsis-island-presets.md`.
 Setup provides slow-changing design context. Commerce, assets, schemas,
 permissions, analytics, and remote versions are always read live.
 
+For a first draft explicitly routed through `/build` or
+`/build-with-template`, create the minimum plan and source artifacts, record
+`plan-page` and `design-page` in `workflow.skippedSkills`, compile once with at
+most one targeted repair, and create with `publish:false`. Return
+`DRAFT_CREATED` before critique, hosted QA, commerce QA, or hash
+reconciliation. Those checks belong to a later `/generate` upgrade.
+
+An optional visual concept inside `/design-page` uses existing Lexsis image
+generation and remains design evidence only. Never insert the concept image
+into page source or treat generated text inside it as factual copy.
+
 > **Brand kit ↔ design.md precedence**: exact tokens normally come from the
 > saved theme, while design.md supplies style philosophy and component guidance.
 > Before authoring, compare any explicit `NEVER`, `must`, or `non-negotiable`
@@ -3107,6 +3243,12 @@ inference never authorizes publishing, paid generation, or deletion.
 
 - Use `/analyze-page` before planning when a URL, screenshot, or ad matters.
 - Use `/asset-prep` independently for standalone or replacement asset work.
+- Use `/design-page` concept-first when the user wants a mobile-first mockup
+  approved before source authoring.
+- Use `/build` for the fastest unpublished draft from a prompt or an
+  automatically selected page kit.
+- Use `/build-with-template` when the user already supplied the page-kit or
+  section-template URL.
 - Use `/optimize` for an existing page and a specific outcome.
 - Use `/experiment` for a measurable hypothesis.
 - Use `/cart` for cart profile configuration.
@@ -3120,6 +3262,8 @@ inference never authorizes publishing, paid generation, or deletion.
 - Resolve island schemas before authoring.
 - Keep production changes local-first and stop on version drift.
 - Create drafts with `publish:false`.
+- Keep concept images out of production source and asset slots.
+- Limit fast-build compilation to one initial attempt and one targeted repair.
 - Publish only after current QA and explicit approval.
 
 ---
@@ -5307,7 +5451,8 @@ required handoff. Any visible replacement returns the design to
 
 # Public Storefront Workflow
 
-The customer-facing pack has ten commands. Five form the normal page journey:
+The customer-facing pack has twelve commands. Five form the normal page
+journey:
 
 ```text
 /setup
@@ -5325,7 +5470,7 @@ The customer-facing pack has ten commands. Five form the normal page journey:
 | `generate` | Early unpublished draft, then synchronization and hosted QA | `DRAFT_CREATED` or `DRAFT_READY` |
 | `publish` | Explicit live release | published version |
 
-Four optional commands support the workflow:
+Seven optional commands support the workflow:
 
 | Command | Owns |
 |---|---|
@@ -5334,6 +5479,8 @@ Four optional commands support the workflow:
 | `optimize` | Outcome-led existing-page improvement |
 | `experiment` | Controlled variants and result evaluation |
 | `cart` | Cart profile inspection, assignment, and editing |
+| `build` | Fast unpublished draft from a prompt or selected/automatic page kit |
+| `build-with-template` | Fast unpublished draft from an explicit template URL |
 
 ## Rules
 
@@ -5346,6 +5493,10 @@ Four optional commands support the workflow:
 6. Draft creation is not publishing approval.
 7. Infer fast-draft versus production-ready intent from the whole request;
    reversible ambiguity defaults to fast-draft.
+8. A visual concept is optional evidence inside `design-page`, not production
+   page media.
+9. Fast build creates `DRAFT_CREATED`; `generate` owns upgrading it to
+   `DRAFT_READY`.
 
 ---
 

@@ -46,6 +46,17 @@ require plan approval before handing the reversible first version to
 For `production-ready`, collect and confirm the choices that affect final
 handoff quality.
 
+Choose the next route from intent:
+
+- `concept-first` when the user wants to see or approve a mockup before source;
+- `direct-design` for the normal responsive source preview;
+- `fast-build` when the user supplies a template direction and asks for the
+  fastest first draft.
+
+Record the route in `page-plan.md`. Do not force every user to choose among all
+three. Paid visual-concept generation is confirmed in `/design-page`;
+`fast-build` hands off to `/build` or `/build-with-template`.
+
 If a packaged design or preset reference is unavailable, warn once and
 continue from the saved brand, theme, and live catalog. A missing optional
 reference must not prevent a reversible plan.
@@ -326,11 +337,15 @@ Asset slots: <n verified / m planned>
 Planned slots (unresolved):
 Proof sources:
 Claims to confirm:
+Next route: <concept-first | direct-design | fast-build>
 ```
 
-Wait for approval.
+For `production-ready`, wait for approval. For `fast-draft`, present the
+summary and continue to the inferred reversible route unless the user asked to
+review the plan first or the route requires paid generation.
 
 ## Return
 
 Return the working directory, plan path, manifest path, the asset slot
-summary, and `PLAN_APPROVED`. The next normal command is `/design-page`.
+summary, inferred next route, and `PLAN_APPROVED`. The next command is
+`/design-page`, `/build`, or `/build-with-template` according to that route.

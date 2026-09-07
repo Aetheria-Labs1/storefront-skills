@@ -30,6 +30,21 @@ required. A previous request for a preview or first pass also counts.
    destructive replacement.
 6. A user correction overrides the inference immediately.
 
+## Page-Build Route
+
+After inferring the mode, choose the shortest route that matches the requested
+review depth:
+
+| Route | Signals | Outcome |
+|---|---|---|
+| `concept-first` | mockup, visualize it, show mobile first, approve the look | `/design-page` generates a visual concept before source |
+| `direct-design` | design it, make the interactive preview, production-ready | `/design-page` creates source and responsive preview |
+| `fast-build` | fastest draft, template URL, build this now, skip design | `/build` or `/build-with-template` creates `DRAFT_CREATED` |
+
+Do not ask users to choose a route when their request already makes it clear.
+Concept generation remains credit-gated. A template URL does not by itself
+force fast-build when the user explicitly asks to review the design first.
+
 ## Manifest Evidence
 
 Record compact evidence under `workflow`:
@@ -39,10 +54,10 @@ Record compact evidence under `workflow`:
   "intentMode": "fast-draft",
   "intentConfidence": "high",
   "intentSignals": ["asked to create a preview", "delegated specifics"],
+  "buildRoute": "fast-build",
   "userOverride": false
 }
 ```
 
 Use `high`, `medium`, or `low` confidence. Keep signals short and derived from
 the request; do not store private chain-of-thought or long conversation text.
-

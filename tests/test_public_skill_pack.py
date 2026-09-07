@@ -27,6 +27,8 @@ EXPECTED_PUBLIC_SKILLS = {
     "optimize",
     "experiment",
     "cart",
+    "build",
+    "build-with-template",
 }
 
 
@@ -285,6 +287,36 @@ class PublicSkillPackTests(unittest.TestCase):
         self.assertIn("DRAFT_CREATED", text)
         self.assertIn("DRAFT_READY", text)
         self.assertIn("--phase draft-created", text)
+
+    def test_design_page_supports_optional_existing_tool_concepts(self) -> None:
+        text = (SKILLS / "design-page" / "SKILL.md").read_text(encoding="utf-8")
+        self.assertIn("## Choose the Visual Route", text)
+        self.assertIn("CONCEPT_READY", text)
+        self.assertIn("references/design-concepts.md", text)
+        reference = (
+            SKILLS / "storefront-engine" / "references" / "design-concepts.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("lexsis_drafts` action `asset_generate", reference)
+        self.assertIn("lexsis_assets` action `view", reference)
+        self.assertIn("never page media", reference)
+
+    def test_fast_build_commands_are_bounded_draft_only_workflows(self) -> None:
+        for name in ("build", "build-with-template"):
+            text = (SKILLS / name / "SKILL.md").read_text(encoding="utf-8")
+            self.assertIn("publish:false", text)
+            self.assertIn("DRAFT_CREATED", text)
+            self.assertIn("one targeted repair", text)
+            self.assertIn("references/fast-build.md", text)
+
+        reference = (
+            SKILLS / "storefront-engine" / "references" / "fast-build.md"
+        ).read_text(encoding="utf-8")
+        self.assertLess(
+            reference.index("lexsis_page_create"),
+            reference.index("## After the First Draft"),
+        )
+        self.assertIn("workflow.skippedSkills", reference)
+        self.assertIn("Do not run repeated repair loops", reference)
 
     def test_workspace_compile_adapter_preserves_exact_inputs(self) -> None:
         script_path = (

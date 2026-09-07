@@ -1,6 +1,7 @@
 # Public Storefront Workflow
 
-The customer-facing pack has ten commands. Five form the normal page journey:
+The customer-facing pack has twelve commands. Five form the normal page
+journey:
 
 ```text
 /setup
@@ -18,7 +19,7 @@ The customer-facing pack has ten commands. Five form the normal page journey:
 | `generate` | Early unpublished draft, then synchronization and hosted QA | `DRAFT_CREATED` or `DRAFT_READY` |
 | `publish` | Explicit live release | published version |
 
-Four optional commands support the workflow:
+Seven optional commands support the workflow:
 
 | Command | Owns |
 |---|---|
@@ -27,6 +28,8 @@ Four optional commands support the workflow:
 | `optimize` | Outcome-led existing-page improvement |
 | `experiment` | Controlled variants and result evaluation |
 | `cart` | Cart profile inspection, assignment, and editing |
+| `build` | Fast unpublished draft from a prompt or selected/automatic page kit |
+| `build-with-template` | Fast unpublished draft from an explicit template URL |
 
 ## Rules
 
@@ -39,3 +42,7 @@ Four optional commands support the workflow:
 6. Draft creation is not publishing approval.
 7. Infer fast-draft versus production-ready intent from the whole request;
    reversible ambiguity defaults to fast-draft.
+8. A visual concept is optional evidence inside `design-page`, not production
+   page media.
+9. Fast build creates `DRAFT_CREATED`; `generate` owns upgrading it to
+   `DRAFT_READY`.

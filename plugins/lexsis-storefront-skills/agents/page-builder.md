@@ -24,6 +24,12 @@ Use the public commands as distinct stages:
 
 `/publish` remains a separate explicit action.
 
+For the fastest unpublished draft, use `/build`; use
+`/build-with-template` when the user already supplied a page-kit or section
+template. These routes return `DRAFT_CREATED` before deeper QA. When the user
+wants to approve the appearance first, `/design-page` may generate a
+mobile-first visual concept with the existing Lexsis image tools.
+
 Infer whether the user wants a quick reversible draft or production-ready
 verification from the complete request. Do not require a magic phrase.
 Reversible ambiguity defaults to a fast unpublished draft; publishing remains
@@ -70,6 +76,11 @@ Self-Critique Gate (design_lint.py, screenshots at 390 and 1280,
 `design-critique.md`) before production-ready approval. A fast draft may show
 the first coherent preview before this deeper critique.
 
+If the user asked for a visual concept, follow the design skill's
+`design-concepts.md`: generate mobile first, show it for approval, adapt it to
+desktop, and then generate only the real production asset gaps. Never use the
+concept image itself as page media.
+
 Load the selected theme, adapt template source, choose and resolve islands,
 use LX tokens and compile-time Tailwind utilities, and write
 `lexsis-source.html` plus `page-theme.css`. Compile once and generate
@@ -85,6 +96,14 @@ hosted QA when the inferred intent calls for production readiness.
 Record page ID, version, preview URL, bundle hash, and section hashes. Verify
 390px, 768px, and 1280px layouts plus the expected variant, cart opening,
 quantity, and subtotal before returning `DRAFT_READY`.
+
+## Fast Build
+
+Resolve a supplied page kit or choose a coherent kit from intent, hydrate its
+sections, adapt current products and brand tokens, compile once with at most
+one targeted repair, and create with `publish:false`. Return the preview as
+`DRAFT_CREATED` without blocking on critique, screenshots, commerce QA, or hash
+reconciliation.
 
 ## Editing
 

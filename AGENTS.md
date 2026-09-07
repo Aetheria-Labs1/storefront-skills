@@ -10,8 +10,9 @@ https://agentskills.io) and are also exposed at `.agents/skills/` for agents
 that discover that path natively. Invoke by name, or let your agent select from
 each skill's description.
 
-The normal customer workflow is Setup → Plan → Design → Generate → Publish.
-Asset Prep is an optional standalone utility. The ten public commands remain
+The normal reviewed workflow is Setup → Plan → Design → Generate → Publish.
+Build and Build with Template provide fast unpublished-draft routes. Asset Prep
+is an optional standalone utility. The twelve public commands remain
 independently invokable; explicit skips are recorded in the page manifest.
 
 ## Rules for agents working IN this repo
