@@ -53,8 +53,9 @@ read the current Lexsis schema before changing examples.
 
 ## Generated Files
 
-Do not edit `gpt/instructions.md`, `gpt/knowledge.md`, or
-`plugins/lexsis-storefront-skills/skills/` directly.
+Do not edit `gpt/instructions.md` or `gpt/knowledge.md` directly. The Claude
+plugin consumes canonical `skills/` from the repository root; do not create a
+second materialized skill tree under `plugins/`.
 
 After changing a skill or shared reference, run:
 

@@ -178,17 +178,21 @@ storefront-skills/
 │   ├── design-page/assets/          ← preview shell + neutral placeholders
 │   └── storefront-engine/           ← shared resources, not a public command
 │       └── references/              ← workflow guidance + island schemas
+├── .claude-plugin/                  ← marketplace + Claude plugin manifests
+├── agents/                          ← Claude page-builder and CRO agents
+├── .mcp.json                        ← Claude plugin MCP configuration
 ├── .agents/skills → skills/         ← Codex + Cursor native discovery (symlink)
-├── plugins/lexsis-storefront-skills/← Claude plugin (generated skill copy, agents, MCP config)
 ├── codex/                           ← Codex plugin manifest + MCP config
 ├── gpt/                             ← GENERATED — custom GPT instructions + knowledge
 ├── cursor/                          ← pointer README (Cursor needs no copies)
 └── scripts/build-distributions.py   ← regenerates Claude/GPT outputs and validates everything
 ```
 
-One source of truth: edit `skills/`, run `python3 scripts/build-distributions.py`, commit. CI fails on drift.
+One source of truth: edit `skills/`, run `python3 scripts/build-distributions.py`,
+commit. The repository root is also the Claude plugin package, preventing
+duplicate skill paths during `npx skills update`. CI fails on drift.
 
-The full Claude/Codex plugins and GPT distribution package the shared
+The Claude and Codex plugins plus the GPT distribution package the shared
 `storefront-engine/references/` corpus. Public skill entrypoints remain
 self-contained: the build copies each consumed shared reference into that
 skill's own `references/` directory. Clients that install individual skills

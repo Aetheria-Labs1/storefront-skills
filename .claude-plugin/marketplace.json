@@ -13,7 +13,7 @@
       "author": {
         "name": "Aetheria Labs"
       },
-      "source": "./plugins/lexsis-storefront-skills",
+      "source": "./",
       "category": "development",
       "homepage": "https://trylexsis.com"
     }

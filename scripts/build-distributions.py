@@ -8,13 +8,10 @@ skills/storefront-engine/references/.
 Everything else is DERIVED:
   gpt/knowledge.md      — concatenation of skill bodies + curated references
   gpt/instructions.md   — persona template with version injected
-  plugins/lexsis-storefront-skills/skills/
-                        — materialized Claude plugin skill tree
 
-Claude marketplace packages must contain real skill directories. Git symlinks
-that point outside the plugin root are not a reliable distribution format.
-Codex and Cursor continue to discover the canonical tree through
-`.agents/skills`.
+The repository root is the Claude plugin package, so Claude, Codex, Cursor,
+and skills.sh all consume the same canonical `skills/` tree. Codex and Cursor
+also discover it through `.agents/skills`.
 
 Also validates:
   - spec frontmatter on every skill (name == dirname, <=64 chars, description
@@ -39,7 +36,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 SKILLS = ROOT / "skills"
 REFERENCES = SKILLS / "storefront-engine" / "references"
-CLAUDE_PLUGIN_SKILLS = ROOT / "plugins" / "lexsis-storefront-skills" / "skills"
+LEGACY_CLAUDE_PLUGIN_ROOT = ROOT / "plugins" / "lexsis-storefront-skills"
 SHARED_RESOURCE_DIRS = {"storefront-engine"}
 SKILL_SHARED_REFERENCES = {
     "plan-page": {
@@ -148,47 +145,24 @@ def parse_frontmatter(path: Path) -> tuple[dict, str]:
 
 
 def plugin_version() -> str:
-    pj = json.loads((ROOT / "plugins/lexsis-storefront-skills/.claude-plugin/plugin.json").read_text())
+    pj = json.loads((ROOT / ".claude-plugin/plugin.json").read_text())
     return pj["version"]
 
 
-def tree_snapshot(root: Path) -> dict[str, tuple[bytes, int]]:
-    if not root.is_dir() or root.is_symlink():
-        return {}
-    snapshot: dict[str, tuple[bytes, int]] = {}
-    for path in sorted(root.rglob("*")):
-        if (
-            not path.is_file()
-            or "__pycache__" in path.parts
-            or path.suffix == ".pyc"
-            or path.name == ".DS_Store"
-        ):
-            continue
-        snapshot[str(path.relative_to(root))] = (
-            path.read_bytes(),
-            path.stat().st_mode & 0o111,
-        )
-    return snapshot
-
-
-def claude_plugin_skills_are_current() -> bool:
-    return (
-        CLAUDE_PLUGIN_SKILLS.is_dir()
-        and not CLAUDE_PLUGIN_SKILLS.is_symlink()
-        and tree_snapshot(CLAUDE_PLUGIN_SKILLS) == tree_snapshot(SKILLS)
-    )
-
-
-def materialize_claude_plugin_skills() -> None:
-    if CLAUDE_PLUGIN_SKILLS.is_symlink() or CLAUDE_PLUGIN_SKILLS.is_file():
-        CLAUDE_PLUGIN_SKILLS.unlink()
-    elif CLAUDE_PLUGIN_SKILLS.is_dir():
-        shutil.rmtree(CLAUDE_PLUGIN_SKILLS)
-    shutil.copytree(
-        SKILLS,
-        CLAUDE_PLUGIN_SKILLS,
-        ignore=shutil.ignore_patterns("__pycache__", "*.pyc", ".DS_Store"),
-    )
+def remove_legacy_claude_plugin(*, check: bool) -> list[str]:
+    """Remove the old duplicate Claude package that confused skills update."""
+    if not LEGACY_CLAUDE_PLUGIN_ROOT.exists():
+        return []
+    changed = [str(LEGACY_CLAUDE_PLUGIN_ROOT.relative_to(ROOT))]
+    if not check:
+        if LEGACY_CLAUDE_PLUGIN_ROOT.is_dir():
+            shutil.rmtree(LEGACY_CLAUDE_PLUGIN_ROOT)
+        else:
+            LEGACY_CLAUDE_PLUGIN_ROOT.unlink()
+        plugins_dir = LEGACY_CLAUDE_PLUGIN_ROOT.parent
+        if plugins_dir.is_dir() and not any(plugins_dir.iterdir()):
+            plugins_dir.rmdir()
+    return changed
 
 
 def shared_reference_closure(names: set[str]) -> set[str]:
@@ -421,6 +395,7 @@ def main() -> int:
     check = "--check" in sys.argv
 
     shared_reference_changes = sync_skill_shared_references(check=check)
+    legacy_plugin_changes = remove_legacy_claude_plugin(check=check)
     errors = validate()
     if errors:
         print(f"VALIDATION FAILED ({len(errors)}):")
@@ -436,11 +411,7 @@ def main() -> int:
             if tool in content:
                 print(f"FATAL: generated {rel} would contain retired tool {tool}")
                 return 1
-    changed = list(shared_reference_changes)
-    if not claude_plugin_skills_are_current():
-        changed.append(str(CLAUDE_PLUGIN_SKILLS.relative_to(ROOT)))
-        if not check:
-            materialize_claude_plugin_skills()
+    changed = [*shared_reference_changes, *legacy_plugin_changes]
     for rel, content in outputs.items():
         path = ROOT / rel
         if not path.exists() or path.read_text() != content:
