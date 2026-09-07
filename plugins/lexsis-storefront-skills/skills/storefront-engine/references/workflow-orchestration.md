@@ -32,8 +32,15 @@ inference never authorizes publishing, paid generation, or deletion.
 
 - Use `/analyze-page` before planning when a URL, screenshot, or ad matters.
 - Use `/asset-prep` independently for standalone or replacement asset work.
+- Use `/design-page` concept-first when the user wants a mobile-first mockup
+  approved before source authoring.
+- Use `/build` for the fastest unpublished draft from a prompt or an
+  automatically selected page kit.
+- Use `/build-with-template` when the user already supplied the page-kit or
+  section-template URL.
 - Use `/optimize` for an existing page and a specific outcome.
-- Use `/experiment` for a measurable hypothesis.
+- Use `/ab-test` to inspect a live Lexsis URL, build controlled variants, and
+  create or evaluate an experiment.
 - Use `/cart` for cart profile configuration.
 
 ## Shared Safety
@@ -45,4 +52,6 @@ inference never authorizes publishing, paid generation, or deletion.
 - Resolve island schemas before authoring.
 - Keep production changes local-first and stop on version drift.
 - Create drafts with `publish:false`.
+- Keep concept images out of production source and asset slots.
+- Limit fast-build compilation to one initial attempt and one targeted repair.
 - Publish only after current QA and explicit approval.

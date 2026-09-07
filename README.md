@@ -69,7 +69,7 @@ Both files are **generated** from the canonical skills by `scripts/build-distrib
 
 ## What's Included
 
-- **10 focused storefront commands** — five core workflow commands and five optional operations
+- **12 focused storefront commands** — five reviewed-workflow commands and seven optional or fast-path operations
 - **2 agents** (cro-analyzer, page-builder) for Claude Code
 - Shared CRO, vertical, traffic-source, workflow, and island references under `skills/storefront-engine/references/`, including the house `design-rules.md` and `island-presets.md`
 - **47 active islands** plus 7 deprecated compatibility contracts under
@@ -86,12 +86,14 @@ Invoke as `/name` (Claude Code) or `$name` (Codex); most also trigger automatica
 | `setup` | Save reusable brand and theme context for one or more stores |
 | `plan-page` | Produce a one-page plan at the depth implied by the user's intent |
 | `design-page` | Build source and preview, showing a fast first pass before deeper critique when appropriate |
+| `build` | Create the fastest unpublished draft from a prompt or automatically selected template |
+| `build-with-template` | Create an unpublished draft directly from a supplied template URL |
 | `asset-prep` | Independently search, generate, import, or replace media |
 | `generate` | Create an unpublished draft early, then synchronize and QA it to production readiness |
 | `publish` | Release a synchronized draft only after explicit approval |
 | `analyze-page` | Analyze a URL, screenshot, ad, or existing page |
 | `optimize` | Improve an existing page for a chosen business outcome |
-| `experiment` | Create and evaluate focused storefront experiments |
+| `ab-test` | Analyze a Lexsis page URL, build verified challengers, and create or evaluate a draft A/B test |
 | `cart` | Inspect, assign, and edit cart profiles |
 
 ## Workflow Sequence
@@ -112,11 +114,20 @@ The normal page workflow is:
   → /publish (separate approval)
 ```
 
+The fast unpublished-draft routes are:
+
+```text
+/build <prompt or optional template URL>
+/build-with-template <template URL> <prompt>
+```
+
 | Step | Output |
 |------|--------|
 | `/setup` | Saved store brand reference and theme CSS, indexed by store and theme |
 | `/plan-page` | Intent-aware plan with design direction, wireframe, imagery plan, and asset slots |
 | `/design-page` | Canonical source, remaining asset gaps, islands, and interactive preview |
+| `/build` | `DRAFT_CREATED` with planning and visual approval recorded as skipped |
+| `/build-with-template` | `DRAFT_CREATED` from the supplied template direction |
 | `/generate` | `DRAFT_CREATED` preview first; `DRAFT_READY` after synchronization and hosted QA |
 | `/publish` | Explicit release of the reviewed page version |
 
@@ -125,8 +136,11 @@ selected `storeId` and `themeId`; it never silently switches themes. Commands
 remain independently invokable, and explicitly skipped steps are recorded in
 the page manifest.
 
-`design-page` inventories existing assets, asks once before generating missing
-media, authors readable `<lx-island>` source, dry-run compiles it, and
+`design-page` can first generate a mobile-first visual concept with the
+existing Lexsis image tools when the user wants to approve the look. Concept
+images remain non-production evidence. It then inventories existing assets,
+asks once before generating missing media, authors readable `<lx-island>`
+source, dry-run compiles it, and
 loads Lexsis's exported island runtime in a safe local preview. Complex
 components such as shoppable video can therefore be reviewed before draft
 creation. Cart and checkout writes remain disabled locally and are certified
@@ -136,6 +150,8 @@ The workflow infers `fast-draft` versus `production-ready` from the complete
 request and conversation rather than requiring a trigger phrase. Reversible
 ambiguity defaults to an early unpublished draft. Publishing, paid generation,
 deletion, and destructive changes retain explicit authorization boundaries.
+Fast build limits compilation to one initial attempt and one targeted repair;
+full QA and synchronization remain an explicit `/generate` upgrade.
 
 ## MCP Server
 

@@ -25,8 +25,10 @@ EXPECTED_PUBLIC_SKILLS = {
     "publish",
     "analyze-page",
     "optimize",
-    "experiment",
+    "ab-test",
     "cart",
+    "build",
+    "build-with-template",
 }
 
 
@@ -285,6 +287,51 @@ class PublicSkillPackTests(unittest.TestCase):
         self.assertIn("DRAFT_CREATED", text)
         self.assertIn("DRAFT_READY", text)
         self.assertIn("--phase draft-created", text)
+
+    def test_design_page_supports_optional_existing_tool_concepts(self) -> None:
+        text = (SKILLS / "design-page" / "SKILL.md").read_text(encoding="utf-8")
+        self.assertIn("## Choose the Visual Route", text)
+        self.assertIn("CONCEPT_READY", text)
+        self.assertIn("references/design-concepts.md", text)
+        reference = (
+            SKILLS / "storefront-engine" / "references" / "design-concepts.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("lexsis_drafts` action `asset_generate", reference)
+        self.assertIn("lexsis_assets` action `view", reference)
+        self.assertIn("never page media", reference)
+
+    def test_fast_build_commands_are_bounded_draft_only_workflows(self) -> None:
+        for name in ("build", "build-with-template"):
+            text = (SKILLS / name / "SKILL.md").read_text(encoding="utf-8")
+            self.assertIn("publish:false", text)
+            self.assertIn("DRAFT_CREATED", text)
+            self.assertIn("one targeted repair", text)
+            self.assertIn("references/fast-build.md", text)
+
+        reference = (
+            SKILLS / "storefront-engine" / "references" / "fast-build.md"
+        ).read_text(encoding="utf-8")
+        self.assertLess(
+            reference.index("lexsis_page_create"),
+            reference.index("## After the First Draft"),
+        )
+        self.assertIn("workflow.skippedSkills", reference)
+        self.assertIn("Do not run repeated repair loops", reference)
+
+    def test_ab_test_is_url_first_local_first_and_draft_only(self) -> None:
+        text = (SKILLS / "ab-test" / "SKILL.md").read_text(encoding="utf-8")
+        self.assertIn("supplied URL", text)
+        self.assertIn("page_duplicate", text)
+        self.assertIn("experiment_create", text)
+        self.assertIn("Do not use `page_variation`", text)
+        reference = (
+            SKILLS / "storefront-engine" / "references" / "ab-testing.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("AB_TEST_PLAN_READY", reference)
+        self.assertIn("AB_VARIANTS_READY", reference)
+        self.assertIn("AB_TEST_DRAFT_CREATED", reference)
+        self.assertIn("Sub-agents never spend credits", reference)
+        self.assertFalse((SKILLS / "experiment").exists())
 
     def test_workspace_compile_adapter_preserves_exact_inputs(self) -> None:
         script_path = (

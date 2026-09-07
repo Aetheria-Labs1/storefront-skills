@@ -89,7 +89,7 @@ unless the user approved changing them.
 ## Experiment Handoff
 
 When the value of a change is uncertain and traffic supports measurement,
-return a focused hypothesis for `/experiment` instead of presenting the change
+return a focused hypothesis for `/ab-test` instead of presenting the change
 as proven.
 
 ## Return

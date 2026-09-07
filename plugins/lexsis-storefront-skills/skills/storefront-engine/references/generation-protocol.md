@@ -30,6 +30,17 @@
 Setup provides slow-changing design context. Commerce, assets, schemas,
 permissions, analytics, and remote versions are always read live.
 
+For a first draft explicitly routed through `/build` or
+`/build-with-template`, create the minimum plan and source artifacts, record
+`plan-page` and `design-page` in `workflow.skippedSkills`, compile once with at
+most one targeted repair, and create with `publish:false`. Return
+`DRAFT_CREATED` before critique, hosted QA, commerce QA, or hash
+reconciliation. Those checks belong to a later `/generate` upgrade.
+
+An optional visual concept inside `/design-page` uses existing Lexsis image
+generation and remains design evidence only. Never insert the concept image
+into page source or treat generated text inside it as factual copy.
+
 > **Brand kit ↔ design.md precedence**: exact tokens normally come from the
 > saved theme, while design.md supplies style philosophy and component guidance.
 > Before authoring, compare any explicit `NEVER`, `must`, or `non-negotiable`

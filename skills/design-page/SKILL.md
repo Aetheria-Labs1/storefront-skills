@@ -14,6 +14,8 @@ Read:
 - `references/island-presets.md`
 - `references/merchant-templates.md`
 - `references/workflow-intent.md`
+- `references/design-concepts.md` only when the user wants a visual concept
+  before source authoring
 - `references/page-layout.md`
 - `references/island-preview.md`
 
@@ -23,7 +25,8 @@ Use `lexsis_brand.context`, `lexsis_brand.get_theme`,
 `lexsis_design.islands`, `lexsis_design.island_schema`,
 `lexsis_design.get_section`, `lexsis_template_library.get_kit`,
 `lexsis_asset_library.search`, `lexsis_catalog.get`, `lexsis_catalog.reviews`,
-`lexsis_assets.view`, `lexsis_workspace.credits`,
+`lexsis_assets.capabilities`, `lexsis_assets.view`,
+`lexsis_workspace.credits`,
 `lexsis_drafts.asset_generate`, `lexsis_asset_upload.import`, and
 `lexsis_pages.compile`.
 
@@ -63,6 +66,32 @@ page.
 If optional design, preset, or merchant-template guidance is unavailable, warn
 once and continue from the page plan, saved brand, live schemas, and compiler.
 Missing canonical source-format or compile-contract inputs remain blocking.
+
+## Choose the Visual Route
+
+Infer this from the request rather than always presenting a gate:
+
+- Use the concept-first path when the user asks for a mockup, wants to approve
+  the appearance before implementation, or explicitly chooses visual
+  exploration.
+- Continue directly to source for fast-draft, template-first, and
+  build-the-page requests.
+- If the user genuinely has not indicated whether they want visual approval,
+  offer two choices in one line: generate a mobile-first concept, or continue
+  directly to the interactive page preview.
+- A supplied template URL plus a request for the fastest draft should route to
+  `/build` or `/build-with-template`, not through this skill.
+
+For concept-first work, follow `references/design-concepts.md`. Use the
+existing Lexsis image generator, show mobile first, and return
+`CONCEPT_READY`. Generate the desktop adaptation after the mobile direction is
+approved unless the user requested both together. The concept is design
+evidence only: keep it out of production `assets[]` and never use its URL in
+page source.
+
+After concept approval, derive the real production asset gaps, confirm any
+remaining paid generation batch, resolve those slots, and continue with the
+ordinary Design Direction, Compose, Compile, Preview, and Approval stages.
 
 ## Design Direction Gate
 
@@ -256,6 +285,7 @@ Presets: [ids]
 Reused assets: [slots]
 Generated assets: [slots]
 Temporary placeholders: [slots]
+Concept: [not requested | asset ids and approval]
 ```
 
 On approval, record only final IDs, compact island schema evidence, presets

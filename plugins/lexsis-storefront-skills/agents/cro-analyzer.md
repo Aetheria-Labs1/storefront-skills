@@ -75,4 +75,4 @@ Evidence limits:
 
 When edits are approved, hand this brief to the local-first `/optimize`
 workflow. When the proposed change is uncertain and measurable, recommend
-`/experiment`.
+`/ab-test`.
