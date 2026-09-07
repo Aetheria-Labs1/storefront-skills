@@ -62,6 +62,9 @@ SKILL_SHARED_REFERENCES = {
         "fast-build.md",
         "workflow-intent.md",
     },
+    "ab-test": {
+        "ab-testing.md",
+    },
     "generate": {
         "design-rules.md",
         "merchant-templates.md",

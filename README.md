@@ -93,7 +93,7 @@ Invoke as `/name` (Claude Code) or `$name` (Codex); most also trigger automatica
 | `publish` | Release a synchronized draft only after explicit approval |
 | `analyze-page` | Analyze a URL, screenshot, ad, or existing page |
 | `optimize` | Improve an existing page for a chosen business outcome |
-| `experiment` | Create and evaluate focused storefront experiments |
+| `ab-test` | Analyze a Lexsis page URL, build verified challengers, and create or evaluate a draft A/B test |
 | `cart` | Inspect, assign, and edit cart profiles |
 
 ## Workflow Sequence

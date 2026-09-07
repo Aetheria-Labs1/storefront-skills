@@ -1,0 +1,12 @@
+interface:
+  display_name: "Create A/B Test"
+  short_description: "Analyze a landing page and build a controlled A/B test."
+  default_prompt: "Use $ab-test to inspect this Lexsis landing-page URL, plan a focused test, build the challengers, and create a draft experiment."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "lexsis-ai"
+      description: "Lexsis AI storefront MCP server"
+      transport: "streamable_http"
+      url: "https://mcp.trylexsis.com/mcp"
+

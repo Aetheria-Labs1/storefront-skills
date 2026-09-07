@@ -25,7 +25,7 @@ EXPECTED_PUBLIC_SKILLS = {
     "publish",
     "analyze-page",
     "optimize",
-    "experiment",
+    "ab-test",
     "cart",
     "build",
     "build-with-template",
@@ -317,6 +317,21 @@ class PublicSkillPackTests(unittest.TestCase):
         )
         self.assertIn("workflow.skippedSkills", reference)
         self.assertIn("Do not run repeated repair loops", reference)
+
+    def test_ab_test_is_url_first_local_first_and_draft_only(self) -> None:
+        text = (SKILLS / "ab-test" / "SKILL.md").read_text(encoding="utf-8")
+        self.assertIn("supplied URL", text)
+        self.assertIn("page_duplicate", text)
+        self.assertIn("experiment_create", text)
+        self.assertIn("Do not use `page_variation`", text)
+        reference = (
+            SKILLS / "storefront-engine" / "references" / "ab-testing.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("AB_TEST_PLAN_READY", reference)
+        self.assertIn("AB_VARIANTS_READY", reference)
+        self.assertIn("AB_TEST_DRAFT_CREATED", reference)
+        self.assertIn("Sub-agents never spend credits", reference)
+        self.assertFalse((SKILLS / "experiment").exists())
 
     def test_workspace_compile_adapter_preserves_exact_inputs(self) -> None:
         script_path = (

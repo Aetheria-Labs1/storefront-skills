@@ -39,7 +39,8 @@ inference never authorizes publishing, paid generation, or deletion.
 - Use `/build-with-template` when the user already supplied the page-kit or
   section-template URL.
 - Use `/optimize` for an existing page and a specific outcome.
-- Use `/experiment` for a measurable hypothesis.
+- Use `/ab-test` to inspect a live Lexsis URL, build controlled variants, and
+  create or evaluate an experiment.
 - Use `/cart` for cart profile configuration.
 
 ## Shared Safety

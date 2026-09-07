@@ -26,7 +26,7 @@ Seven optional commands support the workflow:
 | `analyze-page` | URL, screenshot, ad, or own-page analysis |
 | `asset-prep` | Independent asset search, generation, import, or replacement |
 | `optimize` | Outcome-led existing-page improvement |
-| `experiment` | Controlled variants and result evaluation |
+| `ab-test` | URL-first controlled variants and experiment evaluation |
 | `cart` | Cart profile inspection, assignment, and editing |
 | `build` | Fast unpublished draft from a prompt or selected/automatic page kit |
 | `build-with-template` | Fast unpublished draft from an explicit template URL |

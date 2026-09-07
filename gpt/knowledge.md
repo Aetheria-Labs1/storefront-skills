@@ -7,6 +7,48 @@
 
 ---
 
+# Skill: ab-test
+
+> Analyze an editable Lexsis landing-page URL, plan one controlled change, build verified challenger pages, and create or evaluate a draft A/B test. Use for URL-first storefront experimentation, not ordinary page editing.
+
+# Create or Evaluate an A/B Test
+
+Read `references/ab-testing.md`.
+
+Use the host's available browser capability to inspect the supplied URL at
+desktop and mobile widths. For Lexsis state, use
+`lexsis_pages.find`, `lexsis_pages.get`, `lexsis_pages.edit_context`,
+`lexsis_pages.source`, `lexsis_pages.compile`, `lexsis_pages.integrity`,
+`lexsis_analytics.page`, `lexsis_analytics.experiment`,
+`lexsis_workspace.credits`, `lexsis_drafts.page_duplicate`,
+`lexsis_drafts.page_replace`, `lexsis_drafts.page_update_section`, and
+`lexsis_drafts.experiment_create`.
+
+Use `lexsis_live_ops.publish` and `lexsis_live_ops.scale_winner` only after
+explicit approval. Resolve unfamiliar or newly available start/pause arguments
+through exact router/action discovery.
+
+Follow `references/ab-testing.md`:
+
+1. Open and visually inspect the supplied Lexsis or custom-domain URL.
+2. Resolve it to an editable Lexsis page and current source.
+3. Ask what the user wants to test after presenting evidence-based candidates.
+4. Write and approve one focused `ab-test-plan.md`.
+5. Confirm duplicate credits.
+6. Build challengers locally, using isolated sub-agents when available.
+7. Compile, duplicate, apply, and verify every challenger.
+8. Create the draft experiment only after variant approval.
+
+Default to one control and one challenger. Do not use `page_variation`, do not
+let sub-agents perform paid or remote writes, and do not publish or start live
+traffic merely because the user approved the test plan.
+
+Return the control URL and page id, plan path, variant source and preview
+paths, remote page and blueprint ids, experiment id, current state, and
+remaining activation or evaluation steps.
+
+---
+
 # Skill: analyze-page
 
 > Analyze a URL, screenshot, or ad into a safe storefront brief. Use for inspiration, message-match, or existing-page diagnosis; this skill does not generate page source.
@@ -699,80 +741,6 @@ compiled bundle. `/generate` promotes this source instead of recreating it.
 
 ---
 
-# Skill: experiment
-
-> Create or evaluate a focused Lexsis storefront experiment from a clear hypothesis. Keeps every variant synchronized with its own local source before remote writes.
-
-# Run a Storefront Experiment
-
-Use this for a measurable comparison, not ordinary page editing.
-
-Use `lexsis_pages.edit_context`, `lexsis_pages.source`,
-`lexsis_pages.compile`, `lexsis_pages.integrity`, `lexsis_analytics.page`,
-`lexsis_analytics.experiment`, `lexsis_drafts.page_duplicate`,
-`lexsis_drafts.page_variation`, and `lexsis_drafts.experiment_create`.
-Resolve unfamiliar argument schemas with exact router/action discovery. Do
-not interpret an empty discovery result as a page or analytics outage. Report
-any failure from the actual read or mutation and do not claim that operation
-succeeded.
-
-Confirm the base page's store/theme binding exists in
-`work/storefront/setup/setup.json`. If it is missing, stop and ask the user to
-run `/setup`; never invoke setup automatically.
-
-## Define the Test
-
-Confirm:
-
-- page and current baseline version
-- one primary hypothesis
-- primary metric and guardrail metrics
-- intended audience or traffic segment
-- approved traffic split and stopping rule
-
-Change as few elements as needed to test the hypothesis. If several unrelated
-ideas are bundled together, split them into separate tests.
-
-## Local-First Variants
-
-Before duplicating or changing a remote page:
-
-1. Confirm the base page has synchronized local source and manifest.
-2. Create a separate local directory, source file, and manifest for each
-   variant.
-3. Apply the variant change locally.
-4. Validate and compile the complete variant source.
-5. Create or update the remote variant with the expected base version.
-6. Store every returned page ID and version locally.
-7. Run integrity, responsive, and affected commerce checks.
-
-Never let a remote variant become the only copy of a change.
-
-## Launch
-
-Use the currently discovered Lexsis experiment actions and schemas. Confirm
-entitlement and credits before creation. Do not publish a base page or variant
-without explicit approval.
-
-## Evaluate
-
-Read the experiment's current status and results from Lexsis. Report:
-
-- sample sizes and exposure split
-- primary and guardrail metric movement
-- whether the configured decision rule has been reached
-- data-quality or targeting concerns
-- recommended action: continue, stop, promote, or discard
-
-Do not call a winner from directional movement alone.
-
-## Return
-
-Return the hypothesis, local variant paths, remote page/version IDs, experiment
-ID, launch state, current decision, and MCP evidence.
-
----
-
 # Skill: generate
 
 > Create an unpublished Lexsis storefront draft early, then synchronize and QA it to production readiness when the user's intent calls for deeper verification.
@@ -1084,7 +1052,7 @@ unless the user approved changing them.
 ## Experiment Handoff
 
 When the value of a change is uncertain and traffic supports measurement,
-return a focused hypothesis for `/experiment` instead of presenting the change
+return a focused hypothesis for `/ab-test` instead of presenting the change
 as proven.
 
 ## Return
@@ -3250,7 +3218,8 @@ inference never authorizes publishing, paid generation, or deletion.
 - Use `/build-with-template` when the user already supplied the page-kit or
   section-template URL.
 - Use `/optimize` for an existing page and a specific outcome.
-- Use `/experiment` for a measurable hypothesis.
+- Use `/ab-test` to inspect a live Lexsis URL, build controlled variants, and
+  create or evaluate an experiment.
 - Use `/cart` for cart profile configuration.
 
 ## Shared Safety
@@ -5477,7 +5446,7 @@ Seven optional commands support the workflow:
 | `analyze-page` | URL, screenshot, ad, or own-page analysis |
 | `asset-prep` | Independent asset search, generation, import, or replacement |
 | `optimize` | Outcome-led existing-page improvement |
-| `experiment` | Controlled variants and result evaluation |
+| `ab-test` | URL-first controlled variants and experiment evaluation |
 | `cart` | Cart profile inspection, assignment, and editing |
 | `build` | Fast unpublished draft from a prompt or selected/automatic page kit |
 | `build-with-template` | Fast unpublished draft from an explicit template URL |

@@ -1,6 +1,6 @@
 {
   "name": "lexsis-storefront-skills",
-  "description": "AI-powered Shopify storefront builder. 12 focused commands, 2 agents, and 55 island contracts.",
+  "description": "AI-powered Shopify storefront builder with 12 focused commands for generation, A/B testing, CRO, carts, and publishing.",
   "version": "7.6.0",
   "author": {
     "name": "Aetheria Labs",
