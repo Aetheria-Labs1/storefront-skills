@@ -14,7 +14,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILLS = ROOT / "skills"
-PLUGIN_AGENTS = ROOT / "plugins" / "lexsis-storefront-skills" / "agents"
+PLUGIN_AGENTS = ROOT / "agents"
 
 EXPECTED_PUBLIC_SKILLS = {
     "setup",
@@ -125,7 +125,7 @@ class PublicSkillPackTests(unittest.TestCase):
     def test_full_pack_discovery_includes_shared_resources(self) -> None:
         for root in (
             ROOT / ".agents" / "skills",
-            ROOT / "plugins" / "lexsis-storefront-skills" / "skills",
+            ROOT / "skills",
         ):
             self.assertTrue(
                 (
@@ -162,29 +162,16 @@ class PublicSkillPackTests(unittest.TestCase):
                             (name, packaged_reference.name, referenced_name),
                         )
 
-    def test_claude_plugin_contains_materialized_skills(self) -> None:
-        plugin_skills = (
-            ROOT / "plugins" / "lexsis-storefront-skills" / "skills"
+    def test_claude_plugin_uses_the_canonical_skill_tree(self) -> None:
+        self.assertTrue((ROOT / ".claude-plugin" / "plugin.json").is_file())
+        self.assertTrue((ROOT / ".mcp.json").is_file())
+        self.assertTrue((ROOT / "agents" / "page-builder.md").is_file())
+        self.assertTrue((ROOT / "agents" / "cro-analyzer.md").is_file())
+        self.assertFalse((ROOT / "plugins" / "lexsis-storefront-skills").exists())
+        marketplace = json.loads(
+            (ROOT / ".claude-plugin" / "marketplace.json").read_text()
         )
-        self.assertTrue(plugin_skills.is_dir())
-        self.assertFalse(plugin_skills.is_symlink())
-        self.assertEqual(
-            EXPECTED_PUBLIC_SKILLS,
-            {
-                path.parent.name
-                for path in plugin_skills.glob("*/SKILL.md")
-            },
-        )
-        for source in SKILLS.rglob("*"):
-            if (
-                not source.is_file()
-                or "__pycache__" in source.parts
-                or source.suffix == ".pyc"
-            ):
-                continue
-            packaged = plugin_skills / source.relative_to(SKILLS)
-            self.assertTrue(packaged.is_file(), source)
-            self.assertEqual(source.read_bytes(), packaged.read_bytes(), source)
+        self.assertEqual("./", marketplace["plugins"][0]["source"])
 
     def test_active_skill_docs_use_one_html_source(self) -> None:
         for path in SKILLS.rglob("*.md"):
