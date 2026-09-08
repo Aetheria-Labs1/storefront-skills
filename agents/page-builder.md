@@ -56,6 +56,10 @@ live.
 
 Create or consume a concise one-page `page-plan.md`. Ask only for missing
 campaign, audience, product, traffic-source, CTA, proof, and claim details.
+Use the packaged consumer-behavior reference to classify visitor mode, write
+the top three shopper decision questions, and select at most three relevant
+patterns. Inspect gallery coverage before asking about custom imagery; name
+the exact missing image jobs and placements.
 Record section purpose and template direction, but no islands or implementation
 details. The plan carries the Design direction block, the wireframe with a slot
 id on every media box, the Imagery and background plan, and the resolved Asset
@@ -71,10 +75,9 @@ override generated brand guidance and preview blueprints. Apply the plan's
 Design direction and any `Preset:` ids from its packaged
 `references/island-presets.md`. Confirm only the asset
 slots the plan left `planned`; verified slots are final. Prefer Lexsis
-generation; offer other available image tools before using them. Run the
-Self-Critique Gate (design_lint.py, screenshots at 390 and 1280,
-`design-critique.md`) before production-ready approval. A fast draft may show
-the first coherent preview before this deeper critique.
+generation; offer other available image tools before using them. Create the
+hosted draft first. For production-ready approval, run design lint and hosted
+screenshots at 390 and 1280 and record the result in `qa-report.md`.
 
 If the user asked for a visual concept, follow the design skill's
 `design-concepts.md`: generate mobile first, show it for approval, adapt it to
@@ -83,13 +86,14 @@ concept image itself as page media.
 
 Load the selected theme, adapt template source, choose and resolve islands,
 use LX tokens and compile-time Tailwind utilities, and write
-`lexsis-source.html` plus `page-theme.css`. Compile once and generate
-`page-preview.html`. Placeholders may be used for local review but cannot pass
-generation.
+`lexsis-source.html` plus `page-theme.css`. Compile once and create one
+unpublished hosted draft. Do not create a local renderer or use placeholder
+assets.
 
 ## Generate
 
-Compile the current workspace files once and create with `publish:false`.
+Reuse the draft created by design when its page ID is present. Otherwise
+compile the current workspace files once and create with `publish:false`.
 Surface `DRAFT_CREATED` immediately, then run deeper synchronization and
 hosted QA when the inferred intent calls for production readiness.
 

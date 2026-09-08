@@ -47,7 +47,8 @@ coherent page.
 Create the ordinary page workspace with:
 
 - a concise `page-plan.md` containing objective, audience, product, CTA,
-  template direction, section order, design direction, and asset decisions;
+  template direction, section order, design direction, asset decisions, and a
+  minimum Consumer decision model from `consumer-behavior-cro.md`;
 - a compact schema-v3 `page-manifest.json`;
 - `lexsis-source.html`;
 - `page-theme.css`.
@@ -68,7 +69,13 @@ only changes needed to satisfy the prompt and current store:
 - preserve the kit's coherent structure unless the prompt requires a change.
 
 Paid asset generation is not part of the implicit fast path. Reuse catalog and
-library media, or ask once before generating the unresolved production gaps.
+library media. Map the current gallery to its relevant decision jobs first; ask
+once before generating specific unresolved production gaps.
+
+Select at most two behavioral patterns for the first draft. Prefer a complete
+first decision area and one page-specific uncertainty over adding many CRO
+modules. Guided merchandising uses two or three products, a named
+relationship, and a reason for every recommendation.
 
 ## One-Pass Draft Creation
 
@@ -97,4 +104,3 @@ draft.
 Keep the working draft visible even when later review finds an issue. Use
 `/generate` to upgrade it to `DRAFT_READY`, and `/publish` only after explicit
 approval for the named page and version.
-

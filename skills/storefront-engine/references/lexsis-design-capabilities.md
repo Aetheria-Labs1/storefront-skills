@@ -116,21 +116,17 @@ page.
 
 Do not replace BuyBox or another commerce island with a custom button.
 
-## Visual Preview
+## Hosted Preview
 
-The design-stage source is compiled without saving. The local preview uses the
-compiled markup and exported Lexsis island runtime.
+The design-stage source is compiled and then saved as one unpublished hosted
+draft. That hosted renderer is the only interactive preview.
 
-- Use real compiled islands when schema-valid preview data exists.
-- Shoppable video, galleries, accordions, and similar islands should run in
-  the preview when their media and props are valid.
-- A static fallback is permitted only for the affected island when it cannot
-  compile or lacks safe preview data.
-- Local interaction demonstrates presentation; hosted-draft QA certifies real
-  product resolution, cart behavior, checkout-related behavior, and remote
-  integrations.
-
-Inspect 390px and 1280px during design. `/generate` adds 768px and hosted QA.
+- Use current schemas and real product/media bindings before creation.
+- Shoppable video, galleries, accordions, and similar islands are reviewed in
+  the same runtime merchants will receive.
+- Do not build a local renderer shell or record local hydration evidence.
+- `/design-page` inspects 390px and 1280px when approval is requested.
+- `/generate` adds 768px, synchronization evidence, and full commerce QA.
 
 ## Asset Roles
 
@@ -139,7 +135,7 @@ roles, aspect ratios, and crop guidance from the selected section source,
 approved layout, and island schema.
 
 Use live Shopify media for product identity. Visually verify creator and
-product imagery. Temporary placeholders are visual-stage inputs only.
+product imagery. Temporary or local placeholders never enter page source.
 
 ## Compact Manifest Evidence
 

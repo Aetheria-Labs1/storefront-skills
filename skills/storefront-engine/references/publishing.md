@@ -10,8 +10,7 @@ Manage page publishing, previews, and lifecycle.
 4. `lexsis_page_create` action `create` with `publish:false`
 5. Fetch persisted source/content and record matching local and remote hashes
 6. `lexsis_pages` action `integrity`
-7. Compare the compiled local preview and hosted draft at 390px, 768px, and
-   1280px, then run commerce QA
+7. Verify the hosted draft at 390px, 768px, and 1280px, then run commerce QA
 8. Recheck remote version and local synchronization
 9. `lexsis_live_ops` action `publish` after explicit approval
 

@@ -25,8 +25,8 @@
 - [ ] Cart opens and quantity/subtotal update
 - [ ] Authored header and footer appear exactly once and in source order
 - [ ] No renderer-injected shell or duplicate navigation is present
-- [ ] Full-page hosted screenshots match `page-preview.html` at all three
-      viewports
+- [ ] Full-page hosted screenshots preserve the approved hierarchy and
+      composition at all three viewports
 - [ ] Dynamic island regions preserve the approved container geometry and
       placement
 - [ ] Collection cards keep titles, prices, media, options, variants, and

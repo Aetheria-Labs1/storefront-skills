@@ -51,11 +51,10 @@ When working on a page:
 - replace the asset in `lexsis-source.html`
 - store only the final binding in `page-manifest.json`
 - recompile once after all requested assets are updated
-- regenerate `page-preview.html`
 - set `design.status` to `changes-pending-approval` for visible changes
 
-Do not create a second HTML source. Placeholders may remain for local preview,
-but `/generate` rejects them.
+Do not create a second HTML source or local preview. Page source must use
+permanent Lexsis or Shopify media.
 
 ## Asset Record
 

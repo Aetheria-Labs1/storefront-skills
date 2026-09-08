@@ -5,7 +5,8 @@ description: Analyze an editable Lexsis landing-page URL, plan one controlled ch
 
 # Create or Evaluate an A/B Test
 
-Read `references/ab-testing.md`.
+Read `references/ab-testing.md` and
+`references/consumer-behavior-cro.md`.
 
 Use the host's available browser capability to inspect the supplied URL at
 desktop and mobile widths. For Lexsis state, use
@@ -24,7 +25,8 @@ Follow `references/ab-testing.md`:
 
 1. Open and visually inspect the supplied Lexsis or custom-domain URL.
 2. Resolve it to an editable Lexsis page and current source.
-3. Ask what the user wants to test after presenting evidence-based candidates.
+3. Present evidence-based candidates tied to one shopper uncertainty or
+   behavioral pattern, then ask what the user wants to test.
 4. Write and approve one focused `ab-test-plan.md`.
 5. Confirm duplicate credits.
 6. Build challengers locally, using isolated sub-agents when available.
@@ -38,4 +40,3 @@ traffic merely because the user approved the test plan.
 Return the control URL and page id, plan path, variant source and preview
 paths, remote page and blueprint ids, experiment id, current state, and
 remaining activation or evaluation steps.
-

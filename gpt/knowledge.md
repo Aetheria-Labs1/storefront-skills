@@ -1,5 +1,5 @@
 <!-- GENERATED from skills/ by scripts/build-distributions.py — DO NOT EDIT.
-     storefront-skills v7.6.1 · 12 skills · 47 active islands -->
+     storefront-skills v7.7.0 · 12 skills · 47 active islands -->
 
 # Lexsis Storefront Skills — Knowledge Base
 
@@ -13,7 +13,8 @@
 
 # Create or Evaluate an A/B Test
 
-Read `references/ab-testing.md`.
+Read `references/ab-testing.md` and
+`references/consumer-behavior-cro.md`.
 
 Use the host's available browser capability to inspect the supplied URL at
 desktop and mobile widths. For Lexsis state, use
@@ -32,7 +33,8 @@ Follow `references/ab-testing.md`:
 
 1. Open and visually inspect the supplied Lexsis or custom-domain URL.
 2. Resolve it to an editable Lexsis page and current source.
-3. Ask what the user wants to test after presenting evidence-based candidates.
+3. Present evidence-based candidates tied to one shopper uncertainty or
+   behavioral pattern, then ask what the user wants to test.
 4. Write and approve one focused `ab-test-plan.md`.
 5. Confirm duplicate credits.
 6. Build challengers locally, using isolated sub-agents when available.
@@ -177,11 +179,10 @@ When working on a page:
 - replace the asset in `lexsis-source.html`
 - store only the final binding in `page-manifest.json`
 - recompile once after all requested assets are updated
-- regenerate `page-preview.html`
 - set `design.status` to `changes-pending-approval` for visible changes
 
-Do not create a second HTML source. Placeholders may remain for local preview,
-but `/generate` rejects them.
+Do not create a second HTML source or local preview. Page source must use
+permanent Lexsis or Shopify media.
 
 ## Asset Record
 
@@ -221,6 +222,7 @@ approval workflow.
 Read:
 
 - `references/fast-build.md`
+- `references/consumer-behavior-cro.md`
 - `references/workflow-intent.md`
 
 Use `lexsis_catalog.list`, `lexsis_catalog.get`,
@@ -267,6 +269,7 @@ ask for it or route a general fast-build request to `/build`.
 Read:
 
 - `references/fast-build.md`
+- `references/consumer-behavior-cro.md`
 - `references/workflow-intent.md`
 
 Use `lexsis_template_library.get_kit`, `lexsis_design.get_section`,
@@ -347,23 +350,23 @@ publication in Lexsis.
 
 # Skill: design-page
 
-> Turn an approved one-page storefront plan into canonical Lexsis source and a responsive interactive preview, confirming any asset slots the plan left unresolved.
+> Turn an approved one-page storefront plan into canonical Lexsis source and an unpublished hosted draft, confirming any asset slots the plan left unresolved.
 
 # Design the Page
 
-Create the real page source and its browser-reviewable preview. Do not create
-a remote draft or publish.
+Create the real page source, compile it, and create one unpublished hosted
+draft for review. Never publish.
 
 Read:
 
 - `references/design-rules.md`
+- `references/consumer-behavior-cro.md`
 - `references/island-presets.md`
 - `references/merchant-templates.md`
 - `references/workflow-intent.md`
 - `references/design-concepts.md` only when the user wants a visual concept
   before source authoring
 - `references/page-layout.md`
-- `references/island-preview.md`
 
 Use `lexsis_brand.context`, `lexsis_brand.get_theme`,
 `lexsis_template_library.search_page_kits`,
@@ -374,7 +377,7 @@ Use `lexsis_brand.context`, `lexsis_brand.get_theme`,
 `lexsis_assets.capabilities`, `lexsis_assets.view`,
 `lexsis_workspace.credits`,
 `lexsis_drafts.asset_generate`, `lexsis_asset_upload.import`, and
-`lexsis_pages.compile`.
+`lexsis_pages.compile`, and `lexsis_page_create.create`.
 
 When the user wants one of their saved reusable sections, use
 `lexsis_template_library.list_mine` and `get_mine`. Treat its source as a
@@ -389,6 +392,12 @@ defines strategy, the Design direction, the Imagery and background plan, the
 asset slots and section intent; it must not define islands or implementation
 details.
 
+Implement the plan's Consumer decision model without adding generic CRO
+modules. Preserve its visitor mode, top decision questions, selected patterns,
+gallery jobs, merchandising relationship, risk treatment, mobile context, and
+metric. Reopen a decision only when live catalog, asset, or policy evidence
+contradicts the plan.
+
 If the user explicitly skips `/plan-page`, write a short one-page plan with
 the same blocks and record the skip. Never run `/setup` or `/plan-page`
 automatically.
@@ -399,15 +408,15 @@ Use `references/workflow-intent.md` and the manifest evidence. A correction in
 the current request overrides the saved mode.
 
 - `fast-draft`: make reasonable reversible choices, compile a coherent page,
-  and expose the first useful preview quickly. Run only the light source,
-  responsive hierarchy, hydration, font, and asset checks needed to avoid a
-  broken draft. Deeper critique is follow-up work.
-- `production-ready`: run the full Design Direction and Self-Critique gates
-  before marking the design approved.
+  create the unpublished draft, and expose the hosted preview immediately.
+  Deeper critique is follow-up work.
+- `production-ready`: create the hosted draft first, then run the hosted
+  Design Review before marking the design approved.
 
-Neither mode authorizes paid generation. Ask immediately before spending
-credits when existing library, catalog, or imported assets cannot satisfy the
-page.
+An explicit `/design-page` request authorizes one page-creation credit for the
+named page. It does not authorize paid asset generation, a duplicate page, or
+publishing. Ask immediately before spending asset-generation credits when
+existing library, catalog, or imported assets cannot satisfy the page.
 
 If optional design, preset, or merchant-template guidance is unavailable, warn
 once and continue from the page plan, saved brand, live schemas, and compiler.
@@ -424,7 +433,7 @@ Infer this from the request rather than always presenting a gate:
   build-the-page requests.
 - If the user genuinely has not indicated whether they want visual approval,
   offer two choices in one line: generate a mobile-first concept, or continue
-  directly to the interactive page preview.
+  directly to the hosted draft.
 - A supplied template URL plus a request for the fastest draft should route to
   `/build` or `/build-with-template`, not through this skill.
 
@@ -437,7 +446,7 @@ page source.
 
 After concept approval, derive the real production asset gaps, confirm any
 remaining paid generation batch, resolve those slots, and continue with the
-ordinary Design Direction, Compose, Compile, Preview, and Approval stages.
+ordinary Design Direction, Compose, Compile, Hosted Draft, and Approval stages.
 
 ## Design Direction Gate
 
@@ -467,8 +476,7 @@ The plan already resolved the asset slots. Read `assets[]` from the manifest:
 3. In `fast-draft`, resolve them from the existing library or Shopify media
    using the plan and brand direction. Ask only before paid generation or when
    the unresolved choice would materially change the campaign. In
-   `production-ready`, ask once whether to generate, pick existing media, or
-   keep a bundled preview placeholder for local review.
+   `production-ready`, ask once whether to generate or pick existing media.
 4. Import externally generated media into Lexsis before production use, verify
    identity-sensitive imagery with `lexsis_assets.view`, and set
    `status: verified` on each resolved slot.
@@ -479,10 +487,9 @@ plan's Icons decision names a set to generate, generate one monochrome SVG set
 appear only where the plan's "Emoji in copy" line allows them, inside running
 text. Image generation is otherwise for imagery, banners, and illustrations.
 
-Placeholders are allowed only in the local preview and cannot pass
-`/generate`. When a store has no usable logo image, use an accessible text
-wordmark or plain HTML header for the local design. Do not substitute a
-product image or generic logo placeholder.
+Do not use local or temporary placeholder assets. When a store has no usable
+logo image, use an accessible text wordmark or plain HTML header. Do not
+substitute a product image or generic logo placeholder.
 
 ## Compose
 
@@ -520,19 +527,21 @@ product image or generic logo placeholder.
    return `THEME_CONTEXT_CONFLICT` with both values. Do not silently choose one.
 10. Use ordinary HTML for static content and `<lx-island>` source for supported
    interactions. Use headless mode only with complete required hooks.
-11. Keep preview props safe and presentation-focused. Real commerce is tested
-   on the hosted draft.
+11. Keep island props schema-valid and use current product bindings. Real
+    commerce is tested on the hosted draft.
+12. For guided merchandising, show two or three relevant choices by default,
+    name the relationship, show why each item belongs, and preserve the primary
+    product decision. Never use an unlabeled generic recommendation carousel.
 
 ## Parallel Section Generation
 
 If the runtime can spawn sub-agents, each may write one section's markup and
 scoped CSS from its plan line, wireframe box, slot ids and preset. The parent
 assembles `lexsis-source.html` in plan order, owns `page-theme.css`, compiles
-once, and runs the Self-Critique Gate. Sub-agents never compile, never edit
-shared CSS, and never spend credits. Without sub-agents, write the sections
-sequentially.
+once, and creates the draft. Sub-agents never compile, never edit shared CSS,
+and never spend credits. Without sub-agents, write the sections sequentially.
 
-## Compile and Preview
+## Compile and Create the Draft
 
 Compile the rough complete source, CSS, head, scripts, and bindings early. The
 compiler is the authoritative compatibility check.
@@ -544,61 +553,30 @@ compiler is the authoritative compatibility check.
 4. Recompile until blocking errors are clear.
 5. Save the exact clean response and input hashes in `compile-artifact.json`.
 
-Build the preview with the script bundled beside this skill. Resolve its path
-from the loaded skill directory rather than assuming the repository is the
-current working directory:
+Create with the exact clean compile ID and current source fields using
+`lexsis_page_create.create` with `publish:false`. Record page ID, version,
+preview URL, local hashes, compile bundle hash, `status: draft_created`,
+`design.status: pending-approval`, and `qa.status: pending`.
 
-```bash
-python3 <design-page-skill>/scripts/build_page_preview.py \
-  <page-workspace>/compile-artifact.json \
-  <page-workspace>/page-preview.html \
-  --theme-css <page-workspace>/page-theme.css
-```
+If the compile ID expires, recompile the same unchanged inputs once. If the
+manifest already contains a page ID, do not spend another creation credit:
+fetch its current version and edit that draft through `/generate`.
 
-In `fast-draft`, show the first compiled preview as soon as the section
-structure, responsive hierarchy, expected fonts, assets, and hydration are
-recognizable. Label it `ROUGH_PREVIEW`; critique and polish may continue after
-the user can see the direction.
+Return the hosted preview immediately as `DRAFT_CREATED`. A failed later
+review never erases or conceals the working draft.
 
-In `production-ready`, do not mark the design approved until the
-Self-Critique Gate passes.
+## Hosted Design Review
 
-Inspect 390px and 1280px. Confirm the expected islands hydrate and there is no
-overflow, clipping, broken hierarchy, or unusable responsive layout. Tablet,
-hosted visual comparison, and real cart behavior belong to `/generate`.
+Required for `production-ready` and whenever the user asks to approve the
+design. It is optional follow-up for `fast-draft`.
 
-The local hydration check must respect each island's strategy:
+Use the hosted preview at 390px and 1280px. Run
+`python3 <design-page-skill>/scripts/design_lint.py <page-workspace>` and then
+check real renderer output for fonts, media, hydration, overflow, clipping,
+hierarchy, and usable responsive layout. Tablet and full commerce QA remain
+owned by `/generate`.
 
-- `immediate` must hydrate during initial readiness.
-- `visible`, `idle`, and `interaction` may remain pending until their trigger.
-- Browser QA should scroll through visible islands and exercise interaction
-  islands before final approval.
-
-If browser automation cannot access the preview, return
-`DESIGN_PREVIEW_READY_QA_PENDING` with the preview path and the checks that still
-need manual confirmation. Never record hydration as passed without evidence.
-
-## Self-Critique Gate
-
-Required for `production-ready`. In `fast-draft`, it runs after the first
-preview and may remain pending without blocking `/generate`.
-
-Output: `<page-workspace>/design-critique.md`,
-`critique-390.png`, `critique-1280.png`.
-
-1. Mechanical checks. Run
-   `python3 <design-page-skill>/scripts/design_lint.py <page-workspace>` and
-   paste its table into the critique, then run the remaining checks from
-   `design-rules.md` §2.1 and §2.2 that the script does not cover. All of N1
-   to N14 must be 0 or within the stated allowance; A3, A6, A7, A11, A12 must
-   PASS.
-
-2. Screenshots. Open `page-preview.html` in the browser tool. Capture
-   full-page screenshots at 390 x 844 and 1280 x 800. Run the N2 background
-   script and the A4 line-length script at 1280 and paste their results into
-   the critique.
-
-3. Look at both screenshots and answer each question in one line:
+Look at both hosted screenshots and answer each question in one line:
    - Where does the eye land first? Is it the plan's bold moment? If not, what
      is stealing attention?
    - How many visually distinct horizontal bands are there between navbar and
@@ -612,98 +590,44 @@ Output: `<page-workspace>/design-critique.md`,
    - At 390: is anything clipped, is the price above 1.5 screens, are tap
      targets 48px?
 
-4. Fix, recompile, rerun 1 to 3. When the table has no FAIL and every question
-   in 3 has an answer, show the preview and label it `ROUGH_PREVIEW` if asset
-   polish remains. If the browser tool is unavailable, return
-   `DESIGN_PREVIEW_READY_QA_PENDING` and list the visual checks that were not
-   performed; never mark them passed.
+Write results to `qa-report.md` when review is attempted. Fix local source,
+compile once, update the existing draft with expected-version protection, and
+rerun only failed checks. Never create a replacement draft for a visual fix.
+
+If browser automation is unavailable, return the hosted preview URL with
+`DRAFT_CREATED` and state that hosted design QA remains pending. Never mark
+design approval or hydration as passed without hosted evidence.
 
 ## Approval
 
 Show:
 
 ```text
-Preview: [path]
-Critique: design-critique.md (no FAIL)
+Hosted preview: [url]
+Draft: [page id] version [version]
+Hosted review: [not requested | pending | passed]
 Sections: [ordered list]
 Interactive components: [islands]
 Presets: [ids]
 Reused assets: [slots]
 Generated assets: [slots]
-Temporary placeholders: [slots]
+Unresolved assets: [slots]
 Concept: [not requested | asset ids and approval]
 ```
 
-On approval, record only final IDs, compact island schema evidence, presets
-and overrides, and source, theme, configuration, structure, and bundle hashes
-in the manifest. Do not store creative explanations or tool transcripts there.
+On approval, set `design.status: approved`. Record only final IDs, compact
+island schema evidence, presets and overrides, and source, theme,
+configuration, structure, and bundle hashes in the manifest. Do not store
+creative explanations or tool transcripts there.
 
 Any later visible source, CSS, copy, layout, island, or asset change returns
 the design to `changes-pending-approval`.
 
 ## Return
 
-Return the source, theme, preview, critique, compile-artifact paths, sections,
-selected islands and presets, asset summary, and `DESIGN_APPROVED`.
-
-### design-page reference: island-preview
-
-# Island Preview
-
-The browser runtime hydrates compiled `data-island` markers, not raw
-`<lx-island>` authoring tags.
-
-## Build
-
-1. Resolve the live island schema.
-2. Confirm active lifecycle status, required props, native variants, styling
-   parts, and any headless hooks.
-3. Prefer native mode and style only schema-listed parts.
-4. Add readable `<lx-island>` source with preview props to
-   `lexsis-source.html`.
-5. Include a direct `data-lx-island-fallback` child.
-6. Dry-run compile the complete canonical source with `page-theme.css`.
-7. Require no missing Tailwind candidates.
-8. Save the compile response and exact input hashes in
-   `compile-artifact.json`.
-9. Run:
-
-```bash
-python3 skills/design-page/scripts/build_page_preview.py \
-  compile-artifact.json \
-  work/visual-pages/<page-handle>/page-preview.html \
-  --theme-css work/visual-pages/<page-handle>/page-theme.css
-```
-
-The builder uses the bundled shell, the exported Lexsis island runtime, and
-the compiled section markup. Never hand-author `data-island` or `data-props`.
-
-## Preview Data
-
-Prefer real read-only product and media data. Use direct poster/video sources
-and complete product objects when supported. If valid safe data is unavailable,
-leave the fallback visible and record `previewMode: "fallback"`.
-
-After opening the preview, require `data-lx-hydration-status="passed"` and
-`window.__LEXSIS_PREVIEW_STATUS__.state === "passed"`. Fallback mode is useful
-while iterating, but a required production island in fallback mode blocks
-visual approval.
-
-An island fallback is local to that island. It never authorizes replacing the
-production island with custom controls.
-
-ShoppableVideoFeed can run with real media while using a presentation mode
-that does not navigate or write. Commerce and navigation islands should use
-read-only props or fallback HTML.
-
-## Preview Boundary
-
-The shell does not add a content-security policy or replace browser network,
-form, popup, or link behavior. Keep design-stage props presentation-focused
-and avoid configuring real checkout or external navigation actions.
-
-Real product resolution, add-to-cart, cart totals, and checkout are verified
-only on the hosted Lexsis draft.
+Return the source, theme, compile-artifact path, page ID, version, hosted
+preview URL, sections, selected islands and presets, asset summary, and
+`DRAFT_CREATED`. After explicit hosted approval, return `DESIGN_APPROVED`.
 
 ### design-page reference: page-layout
 
@@ -718,11 +642,10 @@ Write:
 - `lexsis-source.html` — the canonical readable page source
 - `page-theme.css` — global theme tokens and page-wide custom CSS
 - `compile-artifact.json` — exact compile response and input hashes
-- `page-preview.html` — generated browser preview; never edit it directly
 
-Use ordinary HTML for static content and active Lexsis islands only for useful
-interaction previews. A supporting composition image may guide art direction,
-but it must never become the page.
+Use ordinary HTML for static content and active Lexsis islands for useful
+interactions. A supporting composition image may guide art direction, but it
+must never become the page.
 
 Start from the selected page kit or section templates. Use the selected
 theme's `--lx-*` tokens and Tailwind utilities rather than rebuilding the
@@ -730,11 +653,11 @@ brand system inside each section. Record one coherent style treatment in the
 manifest.
 
 Search existing store and product assets first, show one combined asset
-summary, and ask once before generating missing or optional media. When
-generation is postponed, copy a bundled placeholder into the page workspace
-and record it as `sourceType: "preview-placeholder"`.
+summary, and ask once before generating missing or optional media. Every asset
+used in source must have a permanent Lexsis or Shopify URL.
 
-Review at 390px and 1280px. `/generate` owns tablet and hosted-draft QA.
+Create the unpublished hosted draft after a clean compile. Review that hosted
+draft at 390px and 1280px. `/generate` owns tablet and full commerce QA.
 
 Approval hashes the exact source, page theme, head, scripts, structure, and
 compiled bundle. `/generate` promotes this source instead of recreating it.
@@ -754,6 +677,7 @@ Read:
 
 - `references/workflow-intent.md`
 - `references/source-and-sync.md`
+- `references/consumer-behavior-cro.md` when planning or design was skipped
 - `references/page-editing.md` only for an existing page
 - `references/merchant-templates.md` only when reusing a merchant template
 - `references/qa-recipe.md` for production-ready QA
@@ -776,9 +700,9 @@ Infer intent from the whole request and conversation using
   approval.
 
 State the inferred mode briefly and record compact evidence in `workflow`.
-A request to create a draft authorizes this draft-only write. Intent inference
-never authorizes paid generation, publication, deletion, or destructive
-replacement.
+A request to create a draft authorizes one page-creation credit for the named
+page. Intent inference never authorizes a duplicate page, paid asset
+generation, publication, deletion, or destructive replacement.
 
 ## Inputs and Setup Reuse
 
@@ -792,8 +716,10 @@ version. Never preserve a stale hardcoded Shopify variant ID when current
 catalog data or a dynamic product binding can resolve it.
 
 If `/plan-page` or `/design-page` was intentionally skipped, create the minimum
-missing local artifact, record the skip, and continue. Do not claim design
-approval that did not happen.
+missing local artifact, record the skip, and continue. Use
+`references/consumer-behavior-cro.md` to record a minimum visitor mode, top
+decision questions, at most two relevant patterns, gallery gaps, and primary
+metric. Do not claim design approval that did not happen.
 
 ## Draft-Creation Gate
 
@@ -802,7 +728,7 @@ Before the first remote draft, require only:
 - a valid saved store/theme binding and draft-write permission
 - non-empty canonical source, theme CSS, title, and page handle
 - current product/variant bindings with no known invalid hardcoded variant
-- permanent assets rather than local or preview-placeholder URLs
+- permanent assets rather than local URLs
 - custom fonts backed by full HTTPS stylesheet URLs in `head.fonts`, or an
   intentional system-font stack
 - a clean compiler result
@@ -828,8 +754,13 @@ Use the adapter's `compile` object as the exact arguments to
 `lexsis_pages.compile`. Use summary mode; do not request or echo the full
 compiled bundle merely to inspect it.
 
-Compile once from the current files. Immediately pass the returned
-`compile_id` and the adapter's `create` fields to
+If `remote.pageId`, `remote.lastKnownVersion`, and `remote.previewUrl` already
+exist, fetch the current edit context and reuse that draft. Do not call
+`lexsis_page_create.create` again. Compile only when local inputs changed, then
+patch the existing draft with expected-version protection.
+
+When no remote draft exists, compile once from the current files. Immediately
+pass the returned `compile_id` and the adapter's `create` fields to
 `lexsis_page_create.create` with `publish:false`.
 
 If a compile ID expires before creation, recompile the same verified inputs
@@ -837,16 +768,17 @@ once. If the client cannot reuse the ID, create with the exact source, head,
 theme CSS, and scripts from the adapter. Expiry is not a reason to repeat
 planning, critique, asset search, or approval.
 
-## Return the Reversible Draft
+## Return or Reuse the Reversible Draft
 
-As soon as creation succeeds:
+As soon as creation succeeds, or after an existing draft is confirmed current:
 
 1. Record page ID, version, preview URL, local hashes, and compile bundle hash.
 2. Set manifest `status` to `draft_created` and QA to `pending`.
 3. Run the validator with `--phase draft-created`.
 4. Surface the preview immediately as `DRAFT_CREATED`.
 
-Do not delete or conceal a working draft because later QA finds an issue.
+Do not delete, replace, or conceal a working draft because later QA finds an
+issue.
 
 ## Production-Ready Follow-Through
 
@@ -889,7 +821,8 @@ URL, inferred intent mode, and current state: `DRAFT_CREATED` or
 # Production Source and Synchronization
 
 `lexsis-source.html` and `page-theme.css` are the editable source of truth.
-`compile-artifact.json` and `page-preview.html` are generated.
+`compile-artifact.json` is generated. The hosted draft is the only interactive
+preview.
 
 Headers, announcement bars, navigation, and footers live in
 `lexsis-source.html` like every other section. Portable bundles preserve that
@@ -912,18 +845,22 @@ hashes with `compile-artifact.json`.
 
 Draft creation and production readiness are separate states.
 
-1. Validate the compact manifest and canonical source with the
+1. Inspect `remote.pageId`, version, and preview URL.
+2. If they exist, fetch edit context and reuse that draft; never create a
+   duplicate page merely because another skill or conversation began.
+3. Validate the compact manifest and canonical source with the
    `draft-created` gate.
-2. Confirm no preview placeholder remains.
-3. Refresh only volatile products, variants, prices, permissions, and remote
+4. Refresh only volatile products, variants, prices, permissions, and remote
    version data.
-4. Compile the current workspace inputs once.
-5. Create with `publish: false`.
-6. Save page ID, version, preview URL, compile hash, and `status:
+5. Compile the current workspace inputs once when no matching clean artifact
+   exists.
+6. Create with `publish: false` only when no remote draft exists; otherwise
+   patch changed sections with expected-version protection.
+7. Save page ID, version, preview URL, compile hash, and `status:
    draft_created`.
-7. Return `DRAFT_CREATED` immediately.
-8. Fetch persisted source and remote hashes, then run hosted QA.
-9. Save synchronized state and `status: qa_passed` only when every
+8. Return `DRAFT_CREATED` immediately.
+9. Fetch persisted source and remote hashes, then run hosted QA.
+10. Save synchronized state and `status: qa_passed` only when every
    production-ready check succeeds.
 
 A failed post-creation check does not erase or invalidate the reversible
@@ -971,6 +908,7 @@ remote version and hashes only after the apply succeeds.
 Read:
 
 - `references/evidence-led-cro.md`
+- `references/consumer-behavior-cro.md`
 
 Use the needed exact actions from
 `lexsis_pages.edit_context`, `lexsis_pages.source`,
@@ -1023,12 +961,17 @@ behavior as stronger evidence than generic patterns.
    compare them with the current structure. Do not force template comparison
    for copy-only, offer-only, metadata, or minor visual changes.
 5. Classify proposed changes as keep, improve, replace, remove, or test.
-6. Present an optimization brief:
+6. Use the consumer-behavior framework to identify the visitor mode, top
+   unanswered decision question, and the smallest relevant behavioral
+   hypothesis. Analytics and observed behavior override generic guidance.
+7. Present an optimization brief:
 
 ```text
 Outcome:
 Evidence:
 Main friction:
+Visitor mode:
+Behavioral hypothesis:
 Proposed sections:
 Protected elements:
 Expected measurement:
@@ -1166,6 +1109,7 @@ and background plan, and every asset slot on the page.
 Read:
 
 - `references/page-files.md`
+- `references/consumer-behavior-cro.md`
 - `references/design-rules.md`
 - `references/island-presets.md`
 - `references/workflow-intent.md`
@@ -1202,7 +1146,7 @@ handoff quality.
 Choose the next route from intent:
 
 - `concept-first` when the user wants to see or approve a mockup before source;
-- `direct-design` for the normal responsive source preview;
+- `direct-design` for the normal source and hosted-draft review;
 - `fast-build` when the user supplies a template direction and asks for the
   fastest first draft.
 
@@ -1225,9 +1169,12 @@ Collect:
 5. Primary conversion goal and CTA.
 6. Required proof, offer, claim, or section constraints.
 
-Ask no more than four questions at once. Read current products, variants,
-prices, and availability from Lexsis. Questions are conditional, not a fixed
-stage gate.
+Ask no more than three questions at once. Read current products, variants,
+prices, availability, media, and reviews from Lexsis. Questions are
+conditional, not a fixed stage gate. Use
+`references/consumer-behavior-cro.md` to inspect likely shopper uncertainty
+before asking. Do not ask about custom imagery until the existing gallery has
+been mapped to its relevant decision jobs and a specific gap is visible.
 
 In `production-ready` mode, or when the user clearly wants to choose the
 creative direction, offer these together. In `fast-draft`, choose them unless
@@ -1290,8 +1237,10 @@ Design direction block, not per section.
 If the runtime can spawn sub-agents, fan out three read-only lanes and merge
 their output; otherwise run the same three blocks sequentially in this order.
 
-1. Hierarchy and wireframe: section order, buy-box position, media share, the
-   ASCII wireframe at 1280 and 390 with a slot id on every media box.
+1. Consumer decision model, hierarchy and wireframe: primary visitor mode,
+   top decision questions, at most three behavioral patterns, section order,
+   buy-box position, media share, and the ASCII wireframe at 1280 and 390 with
+   a slot id on every media box.
 2. Imagery, background plan, asset slots and proof sources: search the asset
    library and catalog media only for slots the user did not pick; read
    `lexsis_catalog.reviews_status` and `lexsis_catalog.review_collections`;
@@ -1312,6 +1261,8 @@ Keep `page-plan.md` concise enough to scan in one view. Include:
 - selected template direction
 - ordered section list
 - one sentence describing each section's purpose
+- the Consumer decision model block from
+  `references/consumer-behavior-cro.md`
 - the Design direction, Imagery and background plan, and Asset slots blocks
   defined below
 - offers and claims that require confirmation
@@ -1386,6 +1337,12 @@ Write one line per imagery section:
 Every imagery section maps to at least one slot. The single full-bleed
 exception is the bold moment named above. Sections without imagery are
 separated by spacing and a hairline, not colour.
+
+Before finalizing the imagery plan, map the existing gallery to the relevant
+jobs in `references/consumer-behavior-cro.md`: identity, detail, scale/fit,
+texture/finish, context, variation, setup/sequence, and sourced proof. Create
+slots only for decision-critical missing jobs. If paid generation would fill
+them, ask once with the exact jobs, count, aspects, and placements.
 
 ### Asset slots
 
@@ -1489,6 +1446,8 @@ Sections:
 Asset slots: <n verified / m planned>
 Planned slots (unresolved):
 Proof sources:
+Consumer decision model:
+Behavioral hypothesis:
 Claims to confirm:
 Next route: <concept-first | direct-design | fast-build>
 ```
@@ -1583,8 +1542,8 @@ composition, keep the rationale in `page-plan.md`; do not store template
 search transcripts in JSON.
 
 `assets[]` holds one entry per asset slot in the plan. `sourceType` is
-`lexsis` (with `assetId`), `shopify` (with `productId` and `mediaId`),
-`preview-placeholder`, or `pending` while the slot is still `planned`.
+`lexsis` (with `assetId`), `shopify` (with `productId` and `mediaId`), or
+`pending` while the slot is still `planned`.
 `status` is `verified` or `planned`.
 
 `reviews` records the plan's Proof sources line: `source` is `collection`,
@@ -1595,10 +1554,10 @@ page has no review section.
 The manifest grows only when later stages have real state to record:
 
 - `/plan-page` writes `assets[]` (verified or planned) and `reviews`.
-- `/design-page` adds compact `config`, `islands`, and `design` records,
-  resolves `planned` assets, and records `islands[].preset` and
-  `islands[].presetOverrides` when a preset is applied.
-- `/generate` adds `sync`, `remote`, and `qa`.
+- `/design-page` resolves `planned` assets and adds compact `config`,
+  `islands`, `design`, `sync`, `remote`, and pending `qa` records.
+- `/generate` creates a draft only when none exists; otherwise it updates
+  synchronization and QA state.
 
 Do not prefill null production, approval, hash, QA, or remote fields. Do not
 store copy intent, claims, occasion research, omitted components, or creative
@@ -1942,7 +1901,7 @@ guidance and brand-kit preview blueprints. Record every override in
 `page-plan.md` under "Overrides of brand design.md".
 
 Loaded by `/plan-page` (Design direction block), `/design-page` (Design Direction
-Gate and Self-Critique Gate), `/generate` (Production Gate) and `/optimize`.
+Gate and hosted review), `/generate` (Production Gate) and `/optimize`.
 `design-page/scripts/design_lint.py <workspace>` runs the static checks and prints
 the results table.
 
@@ -1964,7 +1923,7 @@ Rules for applying it:
 
 ## 2. Design rules for generated storefront pages
 
-Format per rule: imperative sentence; rationale; a check the agent can run. Checks are written for macOS (BSD grep has no `-P`; use `perl -CSD`). `$W` is the page workspace, e.g. `work/visual-pages/<handle>`. Browser checks run in the preview via the browser tool's evaluate call.
+Format per rule: imperative sentence; rationale; a check the agent can run. Checks are written for macOS (BSD grep has no `-P`; use `perl -CSD`). `$W` is the page workspace, e.g. `work/visual-pages/<handle>`. Browser checks run in the hosted draft via the browser tool's evaluate call.
 
 ### 2.1 NEVER
 
@@ -2119,9 +2078,9 @@ A9. Always spend boldness once. Name the single memorable element in the plan; e
 Rationale: one element can be remembered; the mirror test, remove one accessory (frontend-design; Chanel).
 Check: the 1280 screenshot has exactly one element that a squint test isolates; it matches the plan's bold moment.
 
-A10. Always run the self-critique gate (section 3.2) with screenshots at 390 and 1280 and write `design-critique.md` before showing any preview path.
-Rationale: a picture catches what grep cannot: banding, hierarchy, an eye that lands in the wrong place.
-Check: `$W/design-critique.md` exists, has a results table with no FAIL, and references two screenshot files.
+A10. For production-ready work, always run the hosted design review at 390 and 1280 before recording design approval. Fast drafts return `DRAFT_CREATED` first and may leave this review pending.
+Rationale: the real renderer catches banding, hierarchy, hydration, and media problems without maintaining a second preview runtime.
+Check: `$W/qa-report.md` records the hosted preview URL, tested version, both viewports, and no blocking design failure before `design.status` becomes `approved`.
 
 A11. Always ship the quality floor without announcing it: `:focus-visible` styles, `prefers-reduced-motion` handling, 48px minimum tap targets, alt text on product media, `lang` attributes on non-Latin text.
 Check: `grep -c ':focus-visible' $W/page-theme.css` >= 1; `grep -c 'prefers-reduced-motion'` >= 1 when animation exists; `grep -c 'lang="'` >= 1 when Devanagari is present.
@@ -2359,9 +2318,13 @@ Gotchas: `card` and `banner` variants paint their own surface, which violates th
 
 #### Shared notes for section 2
 
-- **Fallback child.** `design-page/references/island-preview.md` asks for a direct `data-lx-island-fallback` child inside `<lx-island>`; `build_page_preview.py` does not reference that attribute, so its runtime handling is unconfirmed. Keep fallback markup simple, class-free or Tailwind-only (every class must compile), and free of interactive controls that could be mistaken for the island.
+- **Fallback child.** A direct `data-lx-island-fallback` child inside
+  `<lx-island>` may provide readable server-rendered content until the hosted
+  island hydrates. Keep it simple, class-free or Tailwind-only (every class
+  must compile), and free of interactive controls that could be mistaken for
+  the island.
 - **`animate` type.** Schema shows `boolean|boolean|string|string|string` for BuyBox, StickyBar, ProductCarousel; accepted string values are undocumented. Presets use booleans only.
-- **Manifest evidence per island** (from `validate_page_workspace.py`): `{sectionId, name, schemaVersion, lifecycleStatus:"active", mode:"native"|"headless", previewMode:"hydrated"|"fallback"}`, in source order.
+- **Manifest evidence per island** (from `validate_page_workspace.py`): `{sectionId, name, schemaVersion, lifecycleStatus:"active", mode:"native"|"headless"}`, in source order.
 
 ## 3. Presets
 
@@ -2736,10 +2699,10 @@ Rules: ids must exist in `island-presets.md`; the plan lists at most one preset 
 
 ### 4.6 Manifest
 
-`islands[]` already carries `{sectionId, name, schemaVersion, lifecycleStatus, mode, previewMode}`. Add:
+`islands[]` already carries `{sectionId, name, schemaVersion, lifecycleStatus, mode}`. Add:
 
 ```json
-{"sectionId":"buy","name":"BuyBox","schemaVersion":"5.1.0","lifecycleStatus":"active","mode":"native","previewMode":"hydrated","preset":"buybox/compact-dark","presetOverrides":{"ctaText":"Add to bag"}}
+{"sectionId":"buy","name":"BuyBox","schemaVersion":"5.1.0","lifecycleStatus":"active","mode":"native","preset":"buybox/compact-dark","presetOverrides":{"ctaText":"Add to bag"}}
 ```
 
 `preset` is a string or `null` (custom composition, rationale in `page-plan.md`). `presetOverrides` omitted when empty. `design.stylePack` stays; a preset set is not a style pack, but when a page uses presets of a single tone, record `design.presetTone`.
@@ -2809,8 +2772,8 @@ into page source or treat generated text inside it as factual copy.
 
 > **Local source**: follow `source-artifact-workflow.md`.
 > `lexsis-source.html` is the canonical editable visual and production
-> artifact. It is dry-run compiled into an interactive local preview during
-> `/design-page`, then promoted unchanged by `/generate`.
+> artifact. It is compiled and saved as one unpublished hosted draft during
+> `/design-page`; `/generate` reuses that draft for deeper QA.
 
 > **Templates**: search before drafting. Retrieve templates you intend to edit
 > with `lexsis_design` action `get_section`. Each returned `source` is ready for
@@ -2841,9 +2804,9 @@ Run `lexsis_pages` action `compile`:
   source later with `lexsis_pages` action `source`
 
 ### Why Two-Phase?
-- Compiled visual source runs in the reusable local island preview shell
 - Compile is instant and deterministic — validation before anything persists
-- Separates design decisions from data-wiring decisions
+- The hosted draft is the one renderer source of truth
+- Separates source compatibility from hosted visual and commerce QA
 - Escaping failures are impossible: the compiler, not the model, writes `data-props`
 
 ---
@@ -3193,10 +3156,10 @@ Use one owning command at a time.
 
 - Setup is normally run once and refreshed only for changed stores/themes.
 - Plan defines a concise campaign and section strategy without islands.
-- Design selects islands, resolves page assets, and creates the interactive
-  source preview.
-- Generate creates the unpublished draft early, then owns synchronization and
-  hosted QA.
+- Design selects islands, resolves page assets, compiles source, and creates
+  one unpublished hosted draft.
+- Generate reuses that draft when present, then owns synchronization and
+  production-ready hosted QA.
 - Publish is a separate explicit release.
 
 Commands do not silently invoke one another. When a user intentionally starts
@@ -3999,6 +3962,182 @@ Surround CTAs with empty space (min 2rem padding).
 ---
 
 **End of conversion-psychology.md**
+
+---
+
+# Consumer Behavior and CRO Decision Framework
+
+Use this reference to turn shopper behavior into page decisions. It is a
+hypothesis library, not a checklist. A page should usually activate two or
+three relevant patterns, not every pattern below.
+
+## Decision Protocol
+
+Before asking the merchant or choosing a module:
+
+1. Read the product, variants, price, inventory, existing media, reviews,
+   policies, audience, traffic source, and available analytics.
+2. Classify the visitor's likely primary mode:
+   - **confirm** — knows the product and wants confidence to buy;
+   - **compare** — deciding between options or alternatives;
+   - **explore** — needs inspiration or use-case education;
+   - **complete** — wants the full solution, routine, or setup;
+   - **replenish** — returning for a refill, replacement, or repeat order.
+3. Write the three most important questions the shopper must answer before
+   buying.
+4. Select at most three behavioral patterns that answer those questions.
+5. Map each selected pattern to evidence, one page response, any required
+   asset, and one primary metric.
+
+Do not add a carousel, bundle, urgency treatment, sticky CTA, quiz, or proof
+module merely because the pattern exists. Every module must reduce a named
+uncertainty or decision cost.
+
+## Merchant Questions
+
+Inspect available evidence first. Ask only when the answer changes the page,
+requires unavailable business knowledge, or spends credits. Group no more than
+three questions in one turn.
+
+Useful conditional questions include:
+
+- **Gallery gap:** “The current media shows the pack and texture, but not scale
+  or in-use context. Should I use existing media only, or generate two custom
+  gallery images for those jobs?”
+- **Relationship:** “Should the recommendation help shoppers complete the
+  routine, compare alternatives, replenish later, or should this page avoid
+  recommendations?”
+- **Compatibility:** “Do you have a verified model, size, shade, ingredient,
+  room-dimension, or usage mapping for these add-ons?”
+- **Risk:** “Which verified shipping, returns, trial, warranty, cancellation,
+  or guarantee terms can appear beside the purchase decision?”
+- **Audience state:** “Is this primarily a first purchase, an experienced
+  buyer, or a returning/replenishment visit?”
+- **Traffic context:** “Which promise or creative brought this traffic here,
+  if the page must preserve message match?”
+
+Never ask “Do you want custom images?” without first identifying the missing
+decision job, proposed image count, purpose, and likely placement. Paid image
+generation remains separately credit-gated.
+
+## Behavioral Pattern Library
+
+| Pattern | Shopper signal or uncertainty | Page response | Primary measurement |
+|---|---|---|---|
+| Scan-first decision packet | High-intent visitor wants to verify and act quickly | Make product identity, promise, price, variants, availability, delivery/returns cue, proof summary, and primary CTA scannable in the first decision area | Add-to-cart rate, time to CTA |
+| Visual investigation | Product appearance materially affects choice | Give the gallery clear next-image cues and cover product, detail, in-use, scale, variation, included items, and result/proof jobs where relevant | Gallery engagement, conversion |
+| Scale, fit, and sensory confidence | Size, fit, texture, finish, shade, or quantity is hard to judge | Add dimension diagrams, familiar-object scale, model measurements, texture close-ups, swatches, or use-context imagery | Returns, fit questions, conversion |
+| Information scent | Shoppers need detail but will not parse a wall of copy | Lead with benefit and decision fact, then expose specifications, ingredients, care, or methodology through clear progressive disclosure | Detail interaction, conversion |
+| Choice reduction | Too many variants, bundles, or recommendations compete | Prioritize the likely default, explain differences, and keep the first recommendation set to two or three choices | Variant completion, conversion |
+| Guided comparison | Visitor is deciding between products or tiers | Compare only decision-driving attributes; state “best for” and meaningful trade-offs without manufacturing a winner | Comparison interaction, product selection |
+| Compatibility confidence | Add-on usefulness depends on model, shade, size, ingredient, room, or regimen fit | Show the verified fit reason beside each recommendation and suppress incompatible or unavailable items | Attach rate, support questions, returns |
+| Solution completeness | The hero SKU is only one part of the shopper's job | Present the minimum complete outfit, routine, stack, recipe, room, setup, care kit, or commissioning kit with individually selectable items | Attach rate, AOV, revenue per visitor |
+| Sequence and next step | Products are understood as stages or order of use | Show when, how, and in what order products are used; distinguish morning/evening, setup/use/care, or beginner/advanced | Bundle attach rate, education engagement |
+| Context and mental simulation | Shopper cannot picture ownership or final use | Show the product in the actual scene, occasion, room, routine, task, or before/after context using truthful media | Context-image engagement, conversion |
+| Replenishment and continuity | Consumable, maintenance item, size progression, or replacement cycle exists | Explain serving/use count, refill timing, cadence, compatible replacement, or easy reorder without inventing depletion dates | Repeat purchase, subscription opt-in |
+| Returning-customer shortcut | Existing buyers need less education and more continuity | Prefer refill, reorder, saved configuration, compatible replacement, or “what changed” paths when reliable customer context exists | Repeat conversion, time to purchase |
+| Proof proximity | A claim creates doubt at a specific decision point | Place sourced review excerpts, customer media, certification, test evidence, or expert proof beside the claim it supports | Proof interaction, conversion |
+| Risk reversal | Delivery, fit, efficacy expectations, warranty, returns, or subscription cancellation creates hesitation | Put verified policy and guarantee language beside the relevant CTA or choice; make conditions legible | Checkout progression, support contacts |
+| Price comprehension | Shopper cannot understand total value or recurring cost | Show current price, factual compare-at price, unit/cost-per-use where accurate, bundle contents, cadence, and savings calculation without deceptive anchoring | Conversion, AOV, margin |
+| Effort reduction | Selecting an add-on or completing the setup requires navigation and rework | Allow inline selection, preserve the primary product choice, and avoid forcing page exits for two or three simple additions | Attach rate, abandonment |
+| Commitment and ownership | Configuration increases relevance but can also create work | Use short builders, quizzes, or progress only when answers materially change the recommendation; show editable selections and a clear result | Builder completion, conversion |
+| Mobile context preservation | Long scrolling hides product identity and purchase state | Keep gallery cues visible, repeat concise product context at major decision points, use short sections, and use a non-obstructive sticky CTA only when helpful | Mobile conversion, CTA usage |
+| Message match | Visitor arrives from a specific ad, search, creator, or campaign promise | Repeat the same product, outcome, offer, and visual context early; do not make cold traffic reconstruct the premise | Bounce, conversion by source |
+| Ethical urgency | Real stock, cutoff, launch, or event timing matters | Show only verified availability or deadlines, explain the consequence plainly, and remove stale urgency automatically | Conversion, cancellations, trust |
+| Post-purchase clarity | Shopper worries about what happens after payment | Explain delivery, setup, first use, support, returns, warranty, subscription management, or expected next step | Checkout completion, support questions |
+| Cognitive and performance ease | Heavy media or many modules slow comprehension or rendering | Keep one primary action per decision area, remove duplicate modules, optimize media, and preserve fast visual stability | Core Web Vitals, bounce, conversion |
+
+## Relationship-Based Merchandising
+
+Name the customer's job instead of using a generic “Recommended for You.”
+Start with two or three relevant products and show why each belongs.
+
+| Vertical | Useful relationship names and jobs |
+|---|---|
+| Fashion | Complete the Look, Shop the Occasion, Three Ways to Wear It, Fit Kit, Care for This |
+| Beauty | Complete Your Routine, Morning vs Evening, Solve the Concern, Shade Companion, Starter vs Refill |
+| Supplements | Build Your Stack, Goal Protocol, Time-of-Day Stack, 30-Day Start, Refill the Stack |
+| Food | Pair It With, Shop the Recipe, Make It a Meal, Flavor Flight, Occasion Box |
+| Home | Complete the Room, Shop the Scene, Finish the Surface, Install and Protect, Match the Finish |
+| Electronics | Make It Work, Compatibility Check, Protect It, Creator Kit, Replace the Consumable |
+| Pet | Complete Their Care Routine, Life-Stage Bundle, Enrichment Set, Refill Reminder |
+| Baby | Set Up the Station, Feeding Stage Kit, Size-Up Reminder, Daycare Pack |
+| Travel | Complete the Packing System, Trip Type Kit, Destination Weather Kit, Carry-On Kit |
+| B2B | Commissioning Kit, Compatible Parts, Maintenance Kit, Reorder This Set, Job-Specific Kit |
+
+The relationship may be complementary, compatible, sequential, protective,
+replenishing, substitutive, occasion-based, or an upgrade. Record which one it
+is. Do not infer medical compatibility, technical compatibility, shade match,
+or safety from visual similarity.
+
+## Gallery Job Coverage
+
+Treat the gallery as decision support. Check only jobs relevant to the product:
+
+- identity and every included item;
+- multiple angles and important detail;
+- scale, dimensions, fit, or model reference;
+- texture, material, finish, shade, or consistency;
+- in-use context and the intended environment;
+- variation across color, size, flavor, or configuration;
+- installation, sequence, routine, or setup;
+- sourced result, proof, or customer media.
+
+Existing media wins. When a decision-critical job is missing, create a planned
+asset slot with the job as its purpose. Ask once whether to use existing media,
+import a supplied asset, or generate the named gaps. Never generate a
+replacement product identity image when verified Shopify media exists.
+
+## Plan Handoff
+
+Add this compact block to `page-plan.md`:
+
+```markdown
+## Consumer decision model
+
+**Primary visitor mode.** confirm | compare | explore | complete | replenish
+**Top decision questions.** Three shopper questions this page must answer.
+**Selected behavioral patterns.** At most three, each with observed evidence.
+**First decision area.** Facts, proof, and action visible before deeper detail.
+**Gallery jobs.** covered; missing; asset slots created for missing jobs.
+**Guided merchandising.** relationship name, reason, 2–3 products or none.
+**Risk and trust.** sourced proof/policy placed beside the relevant decision.
+**Mobile context.** what remains visible or is repeated during long scroll.
+**Hypothesis and metric.** one primary behavior change and measurement.
+```
+
+`/design-page` implements this block without reopening settled choices.
+`/build` creates the minimum version from available evidence. `/optimize` and
+`/ab-test` use it to form one controlled, measurable hypothesis.
+
+## Guardrails
+
+- Treat every pattern as a testable hypothesis, not a guaranteed lift.
+- Protect primary-product conversion when introducing cross-sells.
+- Measure attach rate, AOV or revenue per visitor, conversion, margin,
+  returns/refunds, and support questions as appropriate.
+- Segment meaningful results by device, traffic source, new/returning status,
+  and product family when data supports it.
+- Never fabricate reviews, customer counts, scarcity, compatibility, savings,
+  clinical outcomes, delivery promises, or personalization.
+- Avoid dark patterns: preselected paid add-ons, hidden recurring terms,
+  obstructive sticky controls, fake countdowns, confirmshaming, or difficult
+  opt-out.
+
+## Evidence Foundation
+
+This framework synthesizes merchant-provided Shopify CRO research with:
+
+- Baymard product-page, image-gallery, description, cross-sell, and mobile UX
+  research: `https://baymard.com/research/product-page`
+- Shopify related and complementary recommendation guidance:
+  `https://shopify.dev/docs/apps/build/product-merchandising/recommendations`
+- Shopify Search & Discovery recommendation guidance:
+  `https://help.shopify.com/en/manual/online-store/search-and-discovery/product-recommendations`
+- Nielsen Norman Group progressive-disclosure guidance:
+  `https://www.nngroup.com/articles/progressive-disclosure/`
+- UK Competition and Markets Authority guidance on urgency and price-reduction
+  claims: `https://www.gov.uk/government/publications/online-choice-architecture-how-digital-design-can-harm-competition-and-consumers`
 
 ---
 
@@ -4917,8 +5056,8 @@ only permanent verified URLs.
 - [ ] Cart opens and quantity/subtotal update
 - [ ] Authored header and footer appear exactly once and in source order
 - [ ] No renderer-injected shell or duplicate navigation is present
-- [ ] Full-page hosted screenshots match `page-preview.html` at all three
-      viewports
+- [ ] Full-page hosted screenshots preserve the approved hierarchy and
+      composition at all three viewports
 - [ ] Dynamic island regions preserve the approved container geometry and
       placement
 - [ ] Collection cards keep titles, prices, media, options, variants, and
@@ -4966,8 +5105,7 @@ Manage page publishing, previews, and lifecycle.
 4. `lexsis_page_create` action `create` with `publish:false`
 5. Fetch persisted source/content and record matching local and remote hashes
 6. `lexsis_pages` action `integrity`
-7. Compare the compiled local preview and hosted draft at 390px, 768px, and
-   1280px, then run commerce QA
+7. Verify the hosted draft at 390px, 768px, and 1280px, then run commerce QA
 8. Recheck remote version and local synchronization
 9. `lexsis_live_ops` action `publish` after explicit approval
 
@@ -5215,14 +5353,14 @@ work/visual-pages/<page-handle>/
 ├── lexsis-source.html
 ├── page-theme.css
 ├── compile-artifact.json
-├── page-preview.html
 ├── qa-report.md
 └── assets/
 ```
 
 Files appear progressively. Planning creates only the plan, compact manifest,
-and assets directory. Design creates source, CSS, compile artifact, and
-preview. Generation creates the QA report and remote synchronization state.
+and assets directory. Design creates source, CSS, a compile artifact, and the
+unpublished hosted draft. Generation creates or updates the QA report and
+remote synchronization state.
 
 ## Compact Manifest
 
@@ -5260,7 +5398,7 @@ Do not prefill future stages with null fields.
   "assets": [],
   "islands": [],
   "design": {
-    "status": "approved",
+    "status": "pending-approval",
     "stylePack": "editorial",
     "compiledStyleManifest": {},
     "sourceHash": "...",
@@ -5268,24 +5406,19 @@ Do not prefill future stages with null fields.
     "configHash": "...",
     "structureHash": "...",
     "bundleHash": "...",
-    "compiledBundleHash": "...",
-    "hydration": {
-      "status": "passed",
-      "bundleHash": "...",
-      "expectedIslands": [],
-      "hydratedIslands": [],
-      "checkedAt": "..."
-    }
+    "compiledBundleHash": "..."
   }
 }
 ```
 
 `lexsis-source.html` and `page-theme.css` are the only editable design inputs.
-`compile-artifact.json` and `page-preview.html` are generated.
+`compile-artifact.json` is generated. The hosted draft is the only interactive
+preview and the renderer source of truth.
 
 ## Remote State
 
-Immediately after unpublished creation, `/generate` adds:
+Immediately after unpublished creation, `/design-page`, `/build`, or
+`/generate` adds:
 
 ```json
 {
@@ -5367,35 +5500,16 @@ For editing:
 6. Update synchronization state only after success.
 
 Legacy schema-v1 and schema-v2 workspaces use
-`skills/generate/scripts/migrate_page_workspace_v3.py`.
-
----
-
-# Island Preview
-
-Use this during `/design-page`.
-
-1. Resolve the selected island's active schema.
-2. Author readable `<lx-island>` source with safe preview data.
-3. Compile the complete canonical page.
-4. Save the response and input hashes in `compile-artifact.json`.
-5. Run `design-page/scripts/build_page_preview.py`.
-6. Save `page-preview.html`.
-7. Confirm every required island hydrates before design approval.
-
-The preview uses compiled renderer markup and the exported Lexsis island
-runtime. Never hand-author `data-island` or `data-props`.
-
-Fallback HTML may keep an isolated component visible while iterating, but a
-required production island in fallback mode blocks approval. Real product
-resolution and cart behavior are verified on the hosted draft.
+`skills/generate/scripts/migrate_page_workspace_v3.py`. Existing local preview
+files and hydration fields are ignored for compatibility; they are never
+required or regenerated.
 
 ---
 
 # Design Page Workflow
 
 `/design-page` turns an approved one-page section plan into canonical Lexsis
-source and an interactive local preview.
+source and one unpublished hosted draft.
 
 It owns:
 
@@ -5403,14 +5517,14 @@ It owns:
 - responsive layout and copy composition
 - island selection and schema resolution
 - `lexsis-source.html` and `page-theme.css`
-- one clean compile artifact and `page-preview.html`
-- 390px and 1280px approval
+- one clean compile artifact and hosted preview URL
+- hosted 390px and 1280px approval
 
-The plan supplies section intent, not islands. `/generate` supplies tablet,
-hosted-fidelity, and real-commerce QA.
+The plan supplies section intent, not islands. `/generate` supplies tablet and
+full real-commerce QA.
 
-Placeholders are allowed while reviewing the local design. They are recorded
-as `sourceType: "preview-placeholder"` and cannot pass production validation.
+Local and temporary placeholder assets are not allowed. Source must use
+permanent Lexsis or Shopify media before draft creation.
 
 An optional `/asset-prep` run may replace or improve media, but it is not a
 required handoff. Any visible replacement returns the design to
@@ -5435,8 +5549,8 @@ journey:
 |---|---|---|
 | `setup` | Saved store and theme design context | `setup.json` and design files |
 | `plan-page` | One-page campaign and section strategy | approved `page-plan.md` |
-| `design-page` | Assets, islands, source, and responsive preview | canonical source and preview |
-| `generate` | Early unpublished draft, then synchronization and hosted QA | `DRAFT_CREATED` or `DRAFT_READY` |
+| `design-page` | Assets, islands, source, compile, and hosted design review | `DRAFT_CREATED` or `DESIGN_APPROVED` |
+| `generate` | Draft creation when needed, then synchronization and hosted QA | `DRAFT_CREATED` or `DRAFT_READY` |
 | `publish` | Explicit live release | published version |
 
 Seven optional commands support the workflow:
@@ -5464,8 +5578,8 @@ Seven optional commands support the workflow:
    reversible ambiguity defaults to fast-draft.
 8. A visual concept is optional evidence inside `design-page`, not production
    page media.
-9. Fast build creates `DRAFT_CREATED`; `generate` owns upgrading it to
-   `DRAFT_READY`.
+9. Design and fast-build routes create `DRAFT_CREATED`; `generate` reuses that
+   draft and owns upgrading it to `DRAFT_READY`.
 
 ---
 
@@ -5793,21 +5907,17 @@ page.
 
 Do not replace BuyBox or another commerce island with a custom button.
 
-## Visual Preview
+## Hosted Preview
 
-The design-stage source is compiled without saving. The local preview uses the
-compiled markup and exported Lexsis island runtime.
+The design-stage source is compiled and then saved as one unpublished hosted
+draft. That hosted renderer is the only interactive preview.
 
-- Use real compiled islands when schema-valid preview data exists.
-- Shoppable video, galleries, accordions, and similar islands should run in
-  the preview when their media and props are valid.
-- A static fallback is permitted only for the affected island when it cannot
-  compile or lacks safe preview data.
-- Local interaction demonstrates presentation; hosted-draft QA certifies real
-  product resolution, cart behavior, checkout-related behavior, and remote
-  integrations.
-
-Inspect 390px and 1280px during design. `/generate` adds 768px and hosted QA.
+- Use current schemas and real product/media bindings before creation.
+- Shoppable video, galleries, accordions, and similar islands are reviewed in
+  the same runtime merchants will receive.
+- Do not build a local renderer shell or record local hydration evidence.
+- `/design-page` inspects 390px and 1280px when approval is requested.
+- `/generate` adds 768px, synchronization evidence, and full commerce QA.
 
 ## Asset Roles
 
@@ -5816,7 +5926,7 @@ roles, aspect ratios, and crop guidance from the selected section source,
 approved layout, and island schema.
 
 Use live Shopify media for product identity. Visually verify creator and
-product imagery. Temporary placeholders are visual-stage inputs only.
+product imagery. Temporary or local placeholders never enter page source.
 
 ## Compact Manifest Evidence
 

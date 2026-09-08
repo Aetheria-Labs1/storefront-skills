@@ -11,6 +11,7 @@ approval workflow.
 Read:
 
 - `references/fast-build.md`
+- `references/consumer-behavior-cro.md`
 - `references/workflow-intent.md`
 
 Use `lexsis_catalog.list`, `lexsis_catalog.get`,
@@ -42,4 +43,3 @@ Follow `references/fast-build.md`. Compile once, permit one targeted repair,
 create the draft, and return `DRAFT_CREATED` immediately. Do not run design
 critique, hosted QA, commerce QA, hash reconciliation, or full workspace
 validation before returning the preview.
-

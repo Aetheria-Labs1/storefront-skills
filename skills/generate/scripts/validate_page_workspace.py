@@ -47,10 +47,6 @@ PLACEHOLDER_TOKEN_RE = re.compile(
     r"\b(?:PRODUCT|VARIANT|PAGE_SHORT|WORKSPACE|STORE|THEME|ASSET|IMAGE|VIDEO)_ID\b)",
     re.IGNORECASE,
 )
-PREVIEW_PLACEHOLDER_RE = re.compile(
-    r"(?:assets/placeholders/|preview-placeholder|PREVIEW PLACEHOLDER)",
-    re.IGNORECASE,
-)
 UNSUPPORTED_JS_RE = re.compile(
     r"\b(?:fetch|XMLHttpRequest|eval|localStorage|WebSocket)\s*(?:\(|\.)",
     re.IGNORECASE,
@@ -93,7 +89,20 @@ PRODUCTION_PHASES = {
     "publish",
 }
 REMOTE_READY_PHASES = {"draft", "publish"}
-DESIGN_EVIDENCE_PHASES = {"design", "visual", "precompile", "draft", "publish"}
+DESIGN_EVIDENCE_PHASES = {
+    "design",
+    "visual",
+    "precompile",
+    "draft-created",
+    "draft",
+    "publish",
+}
+DESIGN_EVIDENCE_STATUSES = {
+    "compiled",
+    "pending-approval",
+    "approved",
+    "changes-pending-approval",
+}
 INTENT_MODES = {"fast-draft", "production-ready", "publish"}
 INTENT_CONFIDENCE = {"low", "medium", "high"}
 FONT_STACK_RE = re.compile(
@@ -768,14 +777,6 @@ def validate_workspace(
                 )
 
         if phase in PRODUCTION_PHASES:
-            if PREVIEW_PLACEHOLDER_RE.search(source):
-                errors.append(
-                    finding(
-                        "placeholder_in_source",
-                        "Replace visual placeholders before production",
-                        source_path.name,
-                    )
-                )
             if LOCAL_PATH_RE.search(source):
                 errors.append(finding("local_path", "Production source contains a local path", source_path.name))
             for value in [
@@ -885,6 +886,41 @@ def validate_workspace(
     design_state = manifest.get("design", {}) if manifest else {}
     design_status = design_state.get("status")
     skipped = manifest.get("workflow", {}).get("skippedSkills", []) if manifest else []
+    if phase in {"design", "visual", "precompile"}:
+        allowed_statuses = {*DESIGN_EVIDENCE_STATUSES, "skipped"}
+        if design_status not in allowed_statuses:
+            errors.append(
+                finding(
+                    "design_status",
+                    "Design status must be compiled, pending approval, approved, or explicitly skipped",
+                    manifest_path.name,
+                )
+            )
+    if phase == "draft-created":
+        allowed_statuses = {
+            "pending-approval",
+            "approved",
+            "changes-pending-approval",
+            "skipped",
+        }
+        if design_status not in allowed_statuses:
+            errors.append(
+                finding(
+                    "design_status",
+                    "DRAFT_CREATED requires pending, approved, changed, or explicitly skipped design state",
+                    manifest_path.name,
+                )
+            )
+    if phase in {"draft", "publish"}:
+        allowed_statuses = {"approved", "skipped"}
+        if design_status not in allowed_statuses:
+            errors.append(
+                finding(
+                    "design_status",
+                    "DRAFT_READY and publish require approved or explicitly skipped design state",
+                    manifest_path.name,
+                )
+            )
     if phase in {
         "design",
         "visual",
@@ -893,15 +929,6 @@ def validate_workspace(
         "draft",
         "publish",
     }:
-        allowed_statuses = {"approved", "skipped"}
-        if design_status not in allowed_statuses:
-            errors.append(
-                finding(
-                    "design_status",
-                    "Design status must be approved or explicitly skipped",
-                    manifest_path.name,
-                )
-            )
         if design_status == "skipped" and not {
             "design-page",
             "visual-page",
@@ -937,9 +964,8 @@ def validate_workspace(
                 manifest_path.name,
             )
         )
-    if design_status == "skipped" and (
-        any(design_state.get(key) for key in approved_hash_keys)
-        or (directory / "compile-artifact.json").is_file()
+    if design_status == "skipped" and any(
+        design_state.get(key) for key in approved_hash_keys
     ):
         errors.append(
             finding(
@@ -961,30 +987,31 @@ def validate_workspace(
         else None
     )
 
-    page_preview_path = directory / "page-preview.html"
     compile_artifact_path = directory / "compile-artifact.json"
-    if design_status == "approved" and phase in DESIGN_EVIDENCE_PHASES:
+    if (
+        design_status in DESIGN_EVIDENCE_STATUSES
+        and phase in DESIGN_EVIDENCE_PHASES
+    ):
         if not design_state.get("stylePack"):
             errors.append(
-                finding("design_style", "Approved design requires a stylePack", manifest_path.name)
+                finding("design_style", "Compiled design requires a stylePack", manifest_path.name)
             )
         if not isinstance(design_state.get("compiledStyleManifest"), dict):
             errors.append(
                 finding(
                     "design_style_manifest",
-                    "Approved design requires the compiler style manifest",
+                    "Compiled design requires the compiler style manifest",
                     manifest_path.name,
                 )
             )
-        for name in ("page-preview.html", "compile-artifact.json"):
-            if not (directory / name).is_file():
-                errors.append(
-                    finding(
-                        "missing_design_artifact",
-                        f"Approved design file is missing: {name}",
-                        name,
-                    )
+        if not compile_artifact_path.is_file():
+            errors.append(
+                finding(
+                    "missing_design_artifact",
+                    "Compiled design file is missing: compile-artifact.json",
+                    compile_artifact_path.name,
                 )
+            )
         for key, current, code in (
             ("sourceHash", current_source_hash, "design_source_drift"),
             ("themeCssHash", current_theme_hash, "design_theme_drift"),
@@ -995,68 +1022,6 @@ def validate_workspace(
             if not design_state.get(key) or design_state.get(key) != current:
                 errors.append(
                     finding(code, f"Current page no longer matches {key}", manifest_path.name)
-                )
-        hydration_evidence = design_state.get("hydration")
-        if not isinstance(hydration_evidence, dict) or hydration_evidence.get("status") != "passed":
-            errors.append(
-                finding(
-                    "design_hydration",
-                    "Approved design requires passing island hydration",
-                    manifest_path.name,
-                )
-            )
-        expected_hydration_keys = [
-            f"{index}:{item['name']}" for index, item in enumerate(source_islands)
-        ]
-        if (
-            not isinstance(hydration_evidence, dict)
-            or hydration_evidence.get("bundleHash") != current_bundle_hash
-            or hydration_evidence.get("expectedIslands") != expected_hydration_keys
-            or hydration_evidence.get("hydratedIslands") != expected_hydration_keys
-            or not hydration_evidence.get("checkedAt")
-        ):
-            errors.append(
-                finding(
-                    "design_hydration_evidence",
-                    "Hydration evidence must cover every expected island instance for the approved bundle",
-                    manifest_path.name,
-                )
-            )
-        fallback_islands = [
-            item.get("name")
-            for item in manifest_islands
-            if isinstance(item, dict) and item.get("previewMode") != "hydrated"
-        ]
-        if fallback_islands:
-            errors.append(
-                finding(
-                    "design_island_fallback",
-                    f"Approved design still has non-hydrated islands: {', '.join(filter(None, fallback_islands))}",
-                    manifest_path.name,
-                )
-            )
-
-        if page_preview_path.is_file():
-            page_preview = page_preview_path.read_text(encoding="utf-8")
-            for code, marker in {
-                "preview_marker": "data-lx-visual-preview",
-                "preview_css": "https://storefront.trylexsis.com/islands/storefront.css",
-                "preview_runtime": "https://storefront.trylexsis.com/islands/islands.js",
-                "preview_hydration": "LexsisIslands.hydrateIslands",
-                "preview_hydration_state": "data-lx-hydration-status",
-                "preview_status_object": "__LEXSIS_PREVIEW_STATUS__",
-            }.items():
-                if marker not in page_preview:
-                    errors.append(
-                        finding(code, f"Page preview is missing {marker}", page_preview_path.name)
-                    )
-            if re.search(r"\{\{[A-Z0-9_]+\}\}", page_preview):
-                errors.append(
-                    finding(
-                        "preview_template_token",
-                        "Page preview still contains shell template tokens",
-                        page_preview_path.name,
-                    )
                 )
 
         if compile_artifact_path.is_file():
@@ -1168,16 +1133,8 @@ def validate_workspace(
                 )
             )
         source_type = asset.get("sourceType")
-        if source_type not in {"lexsis", "shopify", "preview-placeholder"}:
+        if source_type not in {"lexsis", "shopify"}:
             errors.append(finding("asset_source", "Unknown asset source type", manifest_path.name))
-        if source_type == "preview-placeholder" and phase in PRODUCTION_PHASES:
-            errors.append(
-                finding(
-                    "preview_asset_in_production",
-                    "Replace preview placeholder assets before production",
-                    manifest_path.name,
-                )
-            )
         if asset.get("status") != "verified":
             item = finding(
                 "unverified_asset",
@@ -1189,16 +1146,7 @@ def validate_workspace(
             else:
                 warnings.append(item)
         url = str(asset.get("url", ""))
-        if source_type == "preview-placeholder":
-            if not url:
-                errors.append(
-                    finding(
-                        "asset_url",
-                        "Preview placeholder lacks a local asset path",
-                        manifest_path.name,
-                    )
-                )
-        elif (
+        if (
             not url
             or not url.startswith("https://")
             or PLACEHOLDER_URL_RE.search(url)

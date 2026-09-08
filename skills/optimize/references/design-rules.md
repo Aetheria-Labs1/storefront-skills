@@ -5,7 +5,7 @@ guidance and brand-kit preview blueprints. Record every override in
 `page-plan.md` under "Overrides of brand design.md".
 
 Loaded by `/plan-page` (Design direction block), `/design-page` (Design Direction
-Gate and Self-Critique Gate), `/generate` (Production Gate) and `/optimize`.
+Gate and hosted review), `/generate` (Production Gate) and `/optimize`.
 `design-page/scripts/design_lint.py <workspace>` runs the static checks and prints
 the results table.
 
@@ -27,7 +27,7 @@ Rules for applying it:
 
 ## 2. Design rules for generated storefront pages
 
-Format per rule: imperative sentence; rationale; a check the agent can run. Checks are written for macOS (BSD grep has no `-P`; use `perl -CSD`). `$W` is the page workspace, e.g. `work/visual-pages/<handle>`. Browser checks run in the preview via the browser tool's evaluate call.
+Format per rule: imperative sentence; rationale; a check the agent can run. Checks are written for macOS (BSD grep has no `-P`; use `perl -CSD`). `$W` is the page workspace, e.g. `work/visual-pages/<handle>`. Browser checks run in the hosted draft via the browser tool's evaluate call.
 
 ### 2.1 NEVER
 
@@ -182,9 +182,9 @@ A9. Always spend boldness once. Name the single memorable element in the plan; e
 Rationale: one element can be remembered; the mirror test, remove one accessory (frontend-design; Chanel).
 Check: the 1280 screenshot has exactly one element that a squint test isolates; it matches the plan's bold moment.
 
-A10. Always run the self-critique gate (section 3.2) with screenshots at 390 and 1280 and write `design-critique.md` before showing any preview path.
-Rationale: a picture catches what grep cannot: banding, hierarchy, an eye that lands in the wrong place.
-Check: `$W/design-critique.md` exists, has a results table with no FAIL, and references two screenshot files.
+A10. For production-ready work, always run the hosted design review at 390 and 1280 before recording design approval. Fast drafts return `DRAFT_CREATED` first and may leave this review pending.
+Rationale: the real renderer catches banding, hierarchy, hydration, and media problems without maintaining a second preview runtime.
+Check: `$W/qa-report.md` records the hosted preview URL, tested version, both viewports, and no blocking design failure before `design.status` becomes `approved`.
 
 A11. Always ship the quality floor without announcing it: `:focus-visible` styles, `prefers-reduced-motion` handling, 48px minimum tap targets, alt text on product media, `lang` attributes on non-Latin text.
 Check: `grep -c ':focus-visible' $W/page-theme.css` >= 1; `grep -c 'prefers-reduced-motion'` >= 1 when animation exists; `grep -c 'lang="'` >= 1 when Devanagari is present.

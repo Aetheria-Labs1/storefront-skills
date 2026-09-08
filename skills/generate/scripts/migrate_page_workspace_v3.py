@@ -37,24 +37,7 @@ def compact_island(island: dict[str, Any]) -> dict[str, Any]:
         "lifecycleStatus": island.get("lifecycleStatus")
         or schema.get("lifecycleStatus"),
         "mode": island.get("mode") or island.get("productionMode"),
-        "previewMode": island.get("previewMode"),
     }
-
-
-def rename_preview(directory: Path) -> None:
-    old_path = directory / "visual-preview.html"
-    new_path = directory / "page-preview.html"
-    if not old_path.is_file():
-        return
-    if new_path.is_file():
-        if old_path.read_bytes() != new_path.read_bytes():
-            raise ValueError(
-                "visual-preview.html and page-preview.html differ; choose the "
-                "approved preview before migration"
-            )
-        old_path.unlink()
-        return
-    old_path.rename(new_path)
 
 
 def canonicalize_v1_source(directory: Path, manifest: dict[str, Any]) -> None:
@@ -99,7 +82,6 @@ def migrate(directory: Path) -> dict[str, Any]:
 
     if version == 1:
         canonicalize_v1_source(directory, old)
-    rename_preview(directory)
 
     skipped = [
         "design-page" if item == "visual-page" else item
@@ -167,12 +149,6 @@ def migrate(directory: Path) -> dict[str, Any]:
     if old_status == "approved":
         old_status = "changes-pending-approval"
     if (directory / "lexsis-source.html").is_file() or old_visual or old_design:
-        hydration = old_visual.get("hydrationEvidence")
-        if isinstance(hydration, dict):
-            hydration = {
-                "status": old_visual.get("hydrationStatus", "pending"),
-                **hydration,
-            }
         new["design"] = {
             "status": old_status,
             "stylePack": old_design.get("stylePack"),
@@ -183,7 +159,6 @@ def migrate(directory: Path) -> dict[str, Any]:
             "structureHash": old_visual.get("approvedStructureHash"),
             "bundleHash": old_visual.get("approvedBundleHash"),
             "compiledBundleHash": old_visual.get("approvedCompileBundleHash"),
-            "hydration": hydration,
         }
 
     old_sync = old.get("sourceSync", {}) if isinstance(old.get("sourceSync"), dict) else {}

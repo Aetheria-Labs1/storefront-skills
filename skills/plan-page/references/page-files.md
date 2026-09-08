@@ -76,8 +76,8 @@ composition, keep the rationale in `page-plan.md`; do not store template
 search transcripts in JSON.
 
 `assets[]` holds one entry per asset slot in the plan. `sourceType` is
-`lexsis` (with `assetId`), `shopify` (with `productId` and `mediaId`),
-`preview-placeholder`, or `pending` while the slot is still `planned`.
+`lexsis` (with `assetId`), `shopify` (with `productId` and `mediaId`), or
+`pending` while the slot is still `planned`.
 `status` is `verified` or `planned`.
 
 `reviews` records the plan's Proof sources line: `source` is `collection`,
@@ -88,10 +88,10 @@ page has no review section.
 The manifest grows only when later stages have real state to record:
 
 - `/plan-page` writes `assets[]` (verified or planned) and `reviews`.
-- `/design-page` adds compact `config`, `islands`, and `design` records,
-  resolves `planned` assets, and records `islands[].preset` and
-  `islands[].presetOverrides` when a preset is applied.
-- `/generate` adds `sync`, `remote`, and `qa`.
+- `/design-page` resolves `planned` assets and adds compact `config`,
+  `islands`, `design`, `sync`, `remote`, and pending `qa` records.
+- `/generate` creates a draft only when none exists; otherwise it updates
+  synchronization and QA state.
 
 Do not prefill null production, approval, hash, QA, or remote fields. Do not
 store copy intent, claims, occasion research, omitted components, or creative

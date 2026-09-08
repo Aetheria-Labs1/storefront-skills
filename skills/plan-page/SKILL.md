@@ -13,6 +13,7 @@ and background plan, and every asset slot on the page.
 Read:
 
 - `references/page-files.md`
+- `references/consumer-behavior-cro.md`
 - `references/design-rules.md`
 - `references/island-presets.md`
 - `references/workflow-intent.md`
@@ -49,7 +50,7 @@ handoff quality.
 Choose the next route from intent:
 
 - `concept-first` when the user wants to see or approve a mockup before source;
-- `direct-design` for the normal responsive source preview;
+- `direct-design` for the normal source and hosted-draft review;
 - `fast-build` when the user supplies a template direction and asks for the
   fastest first draft.
 
@@ -72,9 +73,12 @@ Collect:
 5. Primary conversion goal and CTA.
 6. Required proof, offer, claim, or section constraints.
 
-Ask no more than four questions at once. Read current products, variants,
-prices, and availability from Lexsis. Questions are conditional, not a fixed
-stage gate.
+Ask no more than three questions at once. Read current products, variants,
+prices, availability, media, and reviews from Lexsis. Questions are
+conditional, not a fixed stage gate. Use
+`references/consumer-behavior-cro.md` to inspect likely shopper uncertainty
+before asking. Do not ask about custom imagery until the existing gallery has
+been mapped to its relevant decision jobs and a specific gap is visible.
 
 In `production-ready` mode, or when the user clearly wants to choose the
 creative direction, offer these together. In `fast-draft`, choose them unless
@@ -137,8 +141,10 @@ Design direction block, not per section.
 If the runtime can spawn sub-agents, fan out three read-only lanes and merge
 their output; otherwise run the same three blocks sequentially in this order.
 
-1. Hierarchy and wireframe: section order, buy-box position, media share, the
-   ASCII wireframe at 1280 and 390 with a slot id on every media box.
+1. Consumer decision model, hierarchy and wireframe: primary visitor mode,
+   top decision questions, at most three behavioral patterns, section order,
+   buy-box position, media share, and the ASCII wireframe at 1280 and 390 with
+   a slot id on every media box.
 2. Imagery, background plan, asset slots and proof sources: search the asset
    library and catalog media only for slots the user did not pick; read
    `lexsis_catalog.reviews_status` and `lexsis_catalog.review_collections`;
@@ -159,6 +165,8 @@ Keep `page-plan.md` concise enough to scan in one view. Include:
 - selected template direction
 - ordered section list
 - one sentence describing each section's purpose
+- the Consumer decision model block from
+  `references/consumer-behavior-cro.md`
 - the Design direction, Imagery and background plan, and Asset slots blocks
   defined below
 - offers and claims that require confirmation
@@ -233,6 +241,12 @@ Write one line per imagery section:
 Every imagery section maps to at least one slot. The single full-bleed
 exception is the bold moment named above. Sections without imagery are
 separated by spacing and a hairline, not colour.
+
+Before finalizing the imagery plan, map the existing gallery to the relevant
+jobs in `references/consumer-behavior-cro.md`: identity, detail, scale/fit,
+texture/finish, context, variation, setup/sequence, and sourced proof. Create
+slots only for decision-critical missing jobs. If paid generation would fill
+them, ask once with the exact jobs, count, aspects, and placements.
 
 ### Asset slots
 
@@ -336,6 +350,8 @@ Sections:
 Asset slots: <n verified / m planned>
 Planned slots (unresolved):
 Proof sources:
+Consumer decision model:
+Behavioral hypothesis:
 Claims to confirm:
 Next route: <concept-first | direct-design | fast-build>
 ```
