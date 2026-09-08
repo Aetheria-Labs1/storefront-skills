@@ -1284,7 +1284,7 @@ def validate_workspace(
             errors.append(
                 finding(
                     "fidelity_failed",
-                    "Local compile and persisted remote hashes must match",
+                    "Compiled workspace and persisted remote hashes must match",
                     manifest_path.name,
                 )
             )

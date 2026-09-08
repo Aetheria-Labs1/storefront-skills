@@ -165,7 +165,6 @@ class PublicSkillPackTests(unittest.TestCase):
         for name in (
             "storefront-craft",
             "conversion-psychology",
-            "animation-system",
             "visual-craft",
             "premium-patterns",
             "plan-page",
@@ -174,6 +173,8 @@ class PublicSkillPackTests(unittest.TestCase):
             text = (references / f"{name}.md").read_text(encoding="utf-8")
             self.assertIn("House rules in `storefront-engine/references/design-rules.md`", text, name)
             self.assertNotIn("hover:scale", text, name)
+        motion = (references / "animation-system.md").read_text(encoding="utf-8")
+        self.assertIn("The active storefront design rules override every example below.", motion)
         self.assertNotIn(
             "Color Temperature Flow",
             (references / "plan-page.md").read_text(encoding="utf-8"),
@@ -365,12 +366,12 @@ class PublicSkillPackTests(unittest.TestCase):
         self.assertFalse((SKILLS / "visual-page").exists())
         self.assertTrue((SKILLS / "design-page" / "SKILL.md").is_file())
 
-    def test_release_version_is_7_7_0(self) -> None:
+    def test_release_version_is_7_8_1(self) -> None:
         for path in (
             ROOT / ".claude-plugin" / "plugin.json",
             ROOT / "codex" / ".codex-plugin" / "plugin.json",
         ):
-            self.assertEqual("7.7.0", json.loads(path.read_text())["version"])
+            self.assertEqual("7.8.1", json.loads(path.read_text())["version"])
 
     def test_discovery_is_not_a_global_blocker(self) -> None:
         checked = [

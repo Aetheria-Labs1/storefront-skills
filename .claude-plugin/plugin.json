@@ -1,7 +1,7 @@
 {
   "name": "lexsis-storefront-skills",
   "description": "AI-powered Shopify storefront builder with 12 focused commands for generation, A/B testing, CRO, carts, and publishing.",
-  "version": "7.8.0",
+  "version": "7.8.1",
   "author": {
     "name": "Aetheria Labs",
     "email": "hello@trylexsis.com"
