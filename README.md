@@ -72,6 +72,9 @@ Both files are **generated** from the canonical skills by `scripts/build-distrib
 - **12 focused storefront commands** — five reviewed-workflow commands and seven optional or fast-path operations
 - **2 agents** (cro-analyzer, page-builder) for Claude Code
 - Shared CRO, vertical, traffic-source, workflow, and island references under `skills/storefront-engine/references/`, including the house `design-rules.md` and `island-presets.md`
+- A consumer-behavior CRO framework that turns shopper uncertainty, gallery
+  gaps, compatibility, solution completion, trust, and mobile context into
+  page-specific hypotheses instead of generic conversion modules
 - **47 active islands** plus 7 deprecated compatibility contracts under
   `skills/storefront-engine/references/islands/`
 - Vertical expertise: beauty, supplements, fashion, food, luxury, home
@@ -85,7 +88,7 @@ Invoke as `/name` (Claude Code) or `$name` (Codex); most also trigger automatica
 |-------|--------------|
 | `setup` | Save reusable brand and theme context for one or more stores |
 | `plan-page` | Produce a one-page plan at the depth implied by the user's intent |
-| `design-page` | Build source and preview, showing a fast first pass before deeper critique when appropriate |
+| `design-page` | Build source, compile it, and create one unpublished hosted draft |
 | `build` | Create the fastest unpublished draft from a prompt or automatically selected template |
 | `build-with-template` | Create an unpublished draft directly from a supplied template URL |
 | `asset-prep` | Independently search, generate, import, or replace media |
@@ -125,7 +128,7 @@ The fast unpublished-draft routes are:
 |------|--------|
 | `/setup` | Saved store brand reference and theme CSS, indexed by store and theme |
 | `/plan-page` | Intent-aware plan with design direction, wireframe, imagery plan, and asset slots |
-| `/design-page` | Canonical source, remaining asset gaps, islands, and interactive preview |
+| `/design-page` | Canonical source, islands, and `DRAFT_CREATED` hosted preview |
 | `/build` | `DRAFT_CREATED` with planning and visual approval recorded as skipped |
 | `/build-with-template` | `DRAFT_CREATED` from the supplied template direction |
 | `/generate` | `DRAFT_CREATED` preview first; `DRAFT_READY` after synchronization and hosted QA |
@@ -140,11 +143,9 @@ the page manifest.
 existing Lexsis image tools when the user wants to approve the look. Concept
 images remain non-production evidence. It then inventories existing assets,
 asks once before generating missing media, authors readable `<lx-island>`
-source, dry-run compiles it, and
-loads Lexsis's exported island runtime in a safe local preview. Complex
-components such as shoppable video can therefore be reviewed before draft
-creation. Cart and checkout writes remain disabled locally and are certified
-on the hosted draft created by `generate`.
+source, compiles it, and creates one unpublished hosted draft. The hosted
+renderer is the only interactive preview. `/generate` reuses that draft for
+tablet, synchronization, and commerce QA.
 
 The workflow infers `fast-draft` versus `production-ready` from the complete
 request and conversation rather than requiring a trigger phrase. Reversible
@@ -175,7 +176,7 @@ full QA and synchronization remain an explicit `/generate` upgrade.
 ```
 storefront-skills/
 ├── skills/                          ← CANONICAL public Agent Skills
-│   ├── design-page/assets/          ← preview shell + neutral placeholders
+│   ├── design-page/                 ← source composition + hosted draft workflow
 │   └── storefront-engine/           ← shared resources, not a public command
 │       └── references/              ← workflow guidance + island schemas
 ├── .claude-plugin/                  ← marketplace + Claude plugin manifests

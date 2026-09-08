@@ -1,7 +1,7 @@
 interface:
   display_name: "Plan Storefront Page"
-  short_description: "Plan a storefront at the depth the request needs."
-  default_prompt: "Use $plan-page to infer whether this needs a fast draft plan or a production-ready plan."
+  short_description: "Plan a storefront around shopper decisions."
+  default_prompt: "Use $plan-page to create an intent-aware page plan grounded in shopper behavior and current store evidence."
 dependencies:
   tools:
     - type: "mcp"

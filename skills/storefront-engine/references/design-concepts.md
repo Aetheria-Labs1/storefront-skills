@@ -10,7 +10,7 @@ generation is available.
   before it is built, or explicitly asks to approve the visual direction.
 - Skip it for fast-build, template-first, or direct-draft requests.
 - When intent is genuinely unclear, offer two concise choices: generate a
-  visual concept first, or continue directly to the interactive page preview.
+  visual concept first, or continue directly to the unpublished hosted draft.
 - A concept request authorizes the workflow, not an unpriced credit charge.
   Check capabilities and credits and confirm immediately before paid
   generation unless the user already explicitly authorized that generation.
@@ -62,4 +62,3 @@ After the concept is approved:
 Do not crop the concept into production assets, use the concept URL in page
 source, trust product text rendered inside it, or generate replacement product
 shots when current Shopify product media exists.
-

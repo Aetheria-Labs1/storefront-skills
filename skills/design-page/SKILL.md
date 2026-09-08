@@ -1,23 +1,23 @@
 ---
 name: design-page
-description: Turn an approved one-page storefront plan into canonical Lexsis source and a responsive interactive preview, confirming any asset slots the plan left unresolved.
+description: Turn an approved one-page storefront plan into canonical Lexsis source and an unpublished hosted draft, confirming any asset slots the plan left unresolved.
 ---
 
 # Design the Page
 
-Create the real page source and its browser-reviewable preview. Do not create
-a remote draft or publish.
+Create the real page source, compile it, and create one unpublished hosted
+draft for review. Never publish.
 
 Read:
 
 - `references/design-rules.md`
+- `references/consumer-behavior-cro.md`
 - `references/island-presets.md`
 - `references/merchant-templates.md`
 - `references/workflow-intent.md`
 - `references/design-concepts.md` only when the user wants a visual concept
   before source authoring
 - `references/page-layout.md`
-- `references/island-preview.md`
 
 Use `lexsis_brand.context`, `lexsis_brand.get_theme`,
 `lexsis_template_library.search_page_kits`,
@@ -28,7 +28,7 @@ Use `lexsis_brand.context`, `lexsis_brand.get_theme`,
 `lexsis_assets.capabilities`, `lexsis_assets.view`,
 `lexsis_workspace.credits`,
 `lexsis_drafts.asset_generate`, `lexsis_asset_upload.import`, and
-`lexsis_pages.compile`.
+`lexsis_pages.compile`, and `lexsis_page_create.create`.
 
 When the user wants one of their saved reusable sections, use
 `lexsis_template_library.list_mine` and `get_mine`. Treat its source as a
@@ -43,6 +43,12 @@ defines strategy, the Design direction, the Imagery and background plan, the
 asset slots and section intent; it must not define islands or implementation
 details.
 
+Implement the plan's Consumer decision model without adding generic CRO
+modules. Preserve its visitor mode, top decision questions, selected patterns,
+gallery jobs, merchandising relationship, risk treatment, mobile context, and
+metric. Reopen a decision only when live catalog, asset, or policy evidence
+contradicts the plan.
+
 If the user explicitly skips `/plan-page`, write a short one-page plan with
 the same blocks and record the skip. Never run `/setup` or `/plan-page`
 automatically.
@@ -53,15 +59,15 @@ Use `references/workflow-intent.md` and the manifest evidence. A correction in
 the current request overrides the saved mode.
 
 - `fast-draft`: make reasonable reversible choices, compile a coherent page,
-  and expose the first useful preview quickly. Run only the light source,
-  responsive hierarchy, hydration, font, and asset checks needed to avoid a
-  broken draft. Deeper critique is follow-up work.
-- `production-ready`: run the full Design Direction and Self-Critique gates
-  before marking the design approved.
+  create the unpublished draft, and expose the hosted preview immediately.
+  Deeper critique is follow-up work.
+- `production-ready`: create the hosted draft first, then run the hosted
+  Design Review before marking the design approved.
 
-Neither mode authorizes paid generation. Ask immediately before spending
-credits when existing library, catalog, or imported assets cannot satisfy the
-page.
+An explicit `/design-page` request authorizes one page-creation credit for the
+named page. It does not authorize paid asset generation, a duplicate page, or
+publishing. Ask immediately before spending asset-generation credits when
+existing library, catalog, or imported assets cannot satisfy the page.
 
 If optional design, preset, or merchant-template guidance is unavailable, warn
 once and continue from the page plan, saved brand, live schemas, and compiler.
@@ -78,7 +84,7 @@ Infer this from the request rather than always presenting a gate:
   build-the-page requests.
 - If the user genuinely has not indicated whether they want visual approval,
   offer two choices in one line: generate a mobile-first concept, or continue
-  directly to the interactive page preview.
+  directly to the hosted draft.
 - A supplied template URL plus a request for the fastest draft should route to
   `/build` or `/build-with-template`, not through this skill.
 
@@ -91,7 +97,7 @@ page source.
 
 After concept approval, derive the real production asset gaps, confirm any
 remaining paid generation batch, resolve those slots, and continue with the
-ordinary Design Direction, Compose, Compile, Preview, and Approval stages.
+ordinary Design Direction, Compose, Compile, Hosted Draft, and Approval stages.
 
 ## Design Direction Gate
 
@@ -121,8 +127,7 @@ The plan already resolved the asset slots. Read `assets[]` from the manifest:
 3. In `fast-draft`, resolve them from the existing library or Shopify media
    using the plan and brand direction. Ask only before paid generation or when
    the unresolved choice would materially change the campaign. In
-   `production-ready`, ask once whether to generate, pick existing media, or
-   keep a bundled preview placeholder for local review.
+   `production-ready`, ask once whether to generate or pick existing media.
 4. Import externally generated media into Lexsis before production use, verify
    identity-sensitive imagery with `lexsis_assets.view`, and set
    `status: verified` on each resolved slot.
@@ -133,10 +138,9 @@ plan's Icons decision names a set to generate, generate one monochrome SVG set
 appear only where the plan's "Emoji in copy" line allows them, inside running
 text. Image generation is otherwise for imagery, banners, and illustrations.
 
-Placeholders are allowed only in the local preview and cannot pass
-`/generate`. When a store has no usable logo image, use an accessible text
-wordmark or plain HTML header for the local design. Do not substitute a
-product image or generic logo placeholder.
+Do not use local or temporary placeholder assets. When a store has no usable
+logo image, use an accessible text wordmark or plain HTML header. Do not
+substitute a product image or generic logo placeholder.
 
 ## Compose
 
@@ -174,19 +178,21 @@ product image or generic logo placeholder.
    return `THEME_CONTEXT_CONFLICT` with both values. Do not silently choose one.
 10. Use ordinary HTML for static content and `<lx-island>` source for supported
    interactions. Use headless mode only with complete required hooks.
-11. Keep preview props safe and presentation-focused. Real commerce is tested
-   on the hosted draft.
+11. Keep island props schema-valid and use current product bindings. Real
+    commerce is tested on the hosted draft.
+12. For guided merchandising, show two or three relevant choices by default,
+    name the relationship, show why each item belongs, and preserve the primary
+    product decision. Never use an unlabeled generic recommendation carousel.
 
 ## Parallel Section Generation
 
 If the runtime can spawn sub-agents, each may write one section's markup and
 scoped CSS from its plan line, wireframe box, slot ids and preset. The parent
 assembles `lexsis-source.html` in plan order, owns `page-theme.css`, compiles
-once, and runs the Self-Critique Gate. Sub-agents never compile, never edit
-shared CSS, and never spend credits. Without sub-agents, write the sections
-sequentially.
+once, and creates the draft. Sub-agents never compile, never edit shared CSS,
+and never spend credits. Without sub-agents, write the sections sequentially.
 
-## Compile and Preview
+## Compile and Create the Draft
 
 Compile the rough complete source, CSS, head, scripts, and bindings early. The
 compiler is the authoritative compatibility check.
@@ -198,61 +204,30 @@ compiler is the authoritative compatibility check.
 4. Recompile until blocking errors are clear.
 5. Save the exact clean response and input hashes in `compile-artifact.json`.
 
-Build the preview with the script bundled beside this skill. Resolve its path
-from the loaded skill directory rather than assuming the repository is the
-current working directory:
+Create with the exact clean compile ID and current source fields using
+`lexsis_page_create.create` with `publish:false`. Record page ID, version,
+preview URL, local hashes, compile bundle hash, `status: draft_created`,
+`design.status: pending-approval`, and `qa.status: pending`.
 
-```bash
-python3 <design-page-skill>/scripts/build_page_preview.py \
-  <page-workspace>/compile-artifact.json \
-  <page-workspace>/page-preview.html \
-  --theme-css <page-workspace>/page-theme.css
-```
+If the compile ID expires, recompile the same unchanged inputs once. If the
+manifest already contains a page ID, do not spend another creation credit:
+fetch its current version and edit that draft through `/generate`.
 
-In `fast-draft`, show the first compiled preview as soon as the section
-structure, responsive hierarchy, expected fonts, assets, and hydration are
-recognizable. Label it `ROUGH_PREVIEW`; critique and polish may continue after
-the user can see the direction.
+Return the hosted preview immediately as `DRAFT_CREATED`. A failed later
+review never erases or conceals the working draft.
 
-In `production-ready`, do not mark the design approved until the
-Self-Critique Gate passes.
+## Hosted Design Review
 
-Inspect 390px and 1280px. Confirm the expected islands hydrate and there is no
-overflow, clipping, broken hierarchy, or unusable responsive layout. Tablet,
-hosted visual comparison, and real cart behavior belong to `/generate`.
+Required for `production-ready` and whenever the user asks to approve the
+design. It is optional follow-up for `fast-draft`.
 
-The local hydration check must respect each island's strategy:
+Use the hosted preview at 390px and 1280px. Run
+`python3 <design-page-skill>/scripts/design_lint.py <page-workspace>` and then
+check real renderer output for fonts, media, hydration, overflow, clipping,
+hierarchy, and usable responsive layout. Tablet and full commerce QA remain
+owned by `/generate`.
 
-- `immediate` must hydrate during initial readiness.
-- `visible`, `idle`, and `interaction` may remain pending until their trigger.
-- Browser QA should scroll through visible islands and exercise interaction
-  islands before final approval.
-
-If browser automation cannot access the preview, return
-`DESIGN_PREVIEW_READY_QA_PENDING` with the preview path and the checks that still
-need manual confirmation. Never record hydration as passed without evidence.
-
-## Self-Critique Gate
-
-Required for `production-ready`. In `fast-draft`, it runs after the first
-preview and may remain pending without blocking `/generate`.
-
-Output: `<page-workspace>/design-critique.md`,
-`critique-390.png`, `critique-1280.png`.
-
-1. Mechanical checks. Run
-   `python3 <design-page-skill>/scripts/design_lint.py <page-workspace>` and
-   paste its table into the critique, then run the remaining checks from
-   `design-rules.md` §2.1 and §2.2 that the script does not cover. All of N1
-   to N14 must be 0 or within the stated allowance; A3, A6, A7, A11, A12 must
-   PASS.
-
-2. Screenshots. Open `page-preview.html` in the browser tool. Capture
-   full-page screenshots at 390 x 844 and 1280 x 800. Run the N2 background
-   script and the A4 line-length script at 1280 and paste their results into
-   the critique.
-
-3. Look at both screenshots and answer each question in one line:
+Look at both hosted screenshots and answer each question in one line:
    - Where does the eye land first? Is it the plan's bold moment? If not, what
      is stealing attention?
    - How many visually distinct horizontal bands are there between navbar and
@@ -266,36 +241,41 @@ Output: `<page-workspace>/design-critique.md`,
    - At 390: is anything clipped, is the price above 1.5 screens, are tap
      targets 48px?
 
-4. Fix, recompile, rerun 1 to 3. When the table has no FAIL and every question
-   in 3 has an answer, show the preview and label it `ROUGH_PREVIEW` if asset
-   polish remains. If the browser tool is unavailable, return
-   `DESIGN_PREVIEW_READY_QA_PENDING` and list the visual checks that were not
-   performed; never mark them passed.
+Write results to `qa-report.md` when review is attempted. Fix local source,
+compile once, update the existing draft with expected-version protection, and
+rerun only failed checks. Never create a replacement draft for a visual fix.
+
+If browser automation is unavailable, return the hosted preview URL with
+`DRAFT_CREATED` and state that hosted design QA remains pending. Never mark
+design approval or hydration as passed without hosted evidence.
 
 ## Approval
 
 Show:
 
 ```text
-Preview: [path]
-Critique: design-critique.md (no FAIL)
+Hosted preview: [url]
+Draft: [page id] version [version]
+Hosted review: [not requested | pending | passed]
 Sections: [ordered list]
 Interactive components: [islands]
 Presets: [ids]
 Reused assets: [slots]
 Generated assets: [slots]
-Temporary placeholders: [slots]
+Unresolved assets: [slots]
 Concept: [not requested | asset ids and approval]
 ```
 
-On approval, record only final IDs, compact island schema evidence, presets
-and overrides, and source, theme, configuration, structure, and bundle hashes
-in the manifest. Do not store creative explanations or tool transcripts there.
+On approval, set `design.status: approved`. Record only final IDs, compact
+island schema evidence, presets and overrides, and source, theme,
+configuration, structure, and bundle hashes in the manifest. Do not store
+creative explanations or tool transcripts there.
 
 Any later visible source, CSS, copy, layout, island, or asset change returns
 the design to `changes-pending-approval`.
 
 ## Return
 
-Return the source, theme, preview, critique, compile-artifact paths, sections,
-selected islands and presets, asset summary, and `DESIGN_APPROVED`.
+Return the source, theme, compile-artifact path, page ID, version, hosted
+preview URL, sections, selected islands and presets, asset summary, and
+`DRAFT_CREATED`. After explicit hosted approval, return `DESIGN_APPROVED`.

@@ -11,6 +11,7 @@ ask for it or route a general fast-build request to `/build`.
 Read:
 
 - `references/fast-build.md`
+- `references/consumer-behavior-cro.md`
 - `references/workflow-intent.md`
 
 Use `lexsis_template_library.get_kit`, `lexsis_design.get_section`,
@@ -30,4 +31,3 @@ return `DRAFT_CREATED`.
 
 This skill never publishes live and never upgrades the result to
 `DRAFT_READY`; use `/generate` and `/publish` for those outcomes.
-

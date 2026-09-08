@@ -1,7 +1,8 @@
 # Production Source and Synchronization
 
 `lexsis-source.html` and `page-theme.css` are the editable source of truth.
-`compile-artifact.json` and `page-preview.html` are generated.
+`compile-artifact.json` is generated. The hosted draft is the only interactive
+preview.
 
 Headers, announcement bars, navigation, and footers live in
 `lexsis-source.html` like every other section. Portable bundles preserve that
@@ -24,18 +25,22 @@ hashes with `compile-artifact.json`.
 
 Draft creation and production readiness are separate states.
 
-1. Validate the compact manifest and canonical source with the
+1. Inspect `remote.pageId`, version, and preview URL.
+2. If they exist, fetch edit context and reuse that draft; never create a
+   duplicate page merely because another skill or conversation began.
+3. Validate the compact manifest and canonical source with the
    `draft-created` gate.
-2. Confirm no preview placeholder remains.
-3. Refresh only volatile products, variants, prices, permissions, and remote
+4. Refresh only volatile products, variants, prices, permissions, and remote
    version data.
-4. Compile the current workspace inputs once.
-5. Create with `publish: false`.
-6. Save page ID, version, preview URL, compile hash, and `status:
+5. Compile the current workspace inputs once when no matching clean artifact
+   exists.
+6. Create with `publish: false` only when no remote draft exists; otherwise
+   patch changed sections with expected-version protection.
+7. Save page ID, version, preview URL, compile hash, and `status:
    draft_created`.
-7. Return `DRAFT_CREATED` immediately.
-8. Fetch persisted source and remote hashes, then run hosted QA.
-9. Save synchronized state and `status: qa_passed` only when every
+8. Return `DRAFT_CREATED` immediately.
+9. Fetch persisted source and remote hashes, then run hosted QA.
+10. Save synchronized state and `status: qa_passed` only when every
    production-ready check succeeds.
 
 A failed post-creation check does not erase or invalidate the reversible

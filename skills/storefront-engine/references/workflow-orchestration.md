@@ -14,10 +14,10 @@ Use one owning command at a time.
 
 - Setup is normally run once and refreshed only for changed stores/themes.
 - Plan defines a concise campaign and section strategy without islands.
-- Design selects islands, resolves page assets, and creates the interactive
-  source preview.
-- Generate creates the unpublished draft early, then owns synchronization and
-  hosted QA.
+- Design selects islands, resolves page assets, compiles source, and creates
+  one unpublished hosted draft.
+- Generate reuses that draft when present, then owns synchronization and
+  production-ready hosted QA.
 - Publish is a separate explicit release.
 
 Commands do not silently invoke one another. When a user intentionally starts

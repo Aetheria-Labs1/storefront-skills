@@ -47,21 +47,6 @@ SOURCE = """<!-- section: hero -->
 </style>
 """
 THEME_CSS = ":root { --lx-accent-color: #111111; --lx-text-color: #222222; }\n"
-PREVIEW = """<!doctype html>
-<html>
-  <body data-lx-visual-preview data-lx-hydration-status="pending">
-    <div data-island="BuyBox" data-props="{}"></div>
-    <link rel="stylesheet" href="https://storefront.trylexsis.com/islands/storefront.css">
-    <script src="https://storefront.trylexsis.com/islands/islands.js"></script>
-    <script>
-      window.__LEXSIS_PREVIEW_STATUS__ = {state: "passed"};
-      window.LexsisIslands.hydrateIslands([]);
-    </script>
-  </body>
-</html>
-"""
-
-
 class WorkspaceValidatorTests(unittest.TestCase):
     def make_workspace(self, design_status: str = "approved") -> Path:
         temp = tempfile.TemporaryDirectory()
@@ -136,7 +121,6 @@ class WorkspaceValidatorTests(unittest.TestCase):
         compiled_hash = VALIDATOR.compiled_response_hash(compile_response)
 
         if design_status == "approved":
-            (root / "page-preview.html").write_text(PREVIEW, encoding="utf-8")
             (root / "compile-artifact.json").write_text(
                 json.dumps(
                     {
@@ -180,7 +164,6 @@ class WorkspaceValidatorTests(unittest.TestCase):
                     "schemaVersion": "5.0.0",
                     "lifecycleStatus": "active",
                     "mode": "native",
-                    "previewMode": "hydrated",
                 }
             ],
             "design": {
@@ -196,17 +179,6 @@ class WorkspaceValidatorTests(unittest.TestCase):
                 "structureHash": structure_hash if design_status == "approved" else None,
                 "bundleHash": bundle_hash if design_status == "approved" else None,
                 "compiledBundleHash": compiled_hash if design_status == "approved" else None,
-                "hydration": (
-                    {
-                        "status": "passed",
-                        "bundleHash": bundle_hash,
-                        "expectedIslands": ["0:BuyBox"],
-                        "hydratedIslands": ["0:BuyBox"],
-                        "checkedAt": "2026-09-05T12:01:00Z",
-                    }
-                    if design_status == "approved"
-                    else None
-                ),
             },
             "sync": {
                 "lastCompiledBundleHash": bundle_hash,
@@ -259,7 +231,7 @@ class WorkspaceValidatorTests(unittest.TestCase):
         self.assertTrue(VALIDATOR.validate_workspace(root, "draft", **evidence)["ok"])
         self.assertTrue(VALIDATOR.validate_workspace(root, "publish", **evidence)["ok"])
 
-    def test_draft_created_requires_only_creation_evidence(self) -> None:
+    def test_draft_created_requires_current_compile_evidence(self) -> None:
         root = self.make_workspace()
         manifest = self.manifest(root)
         manifest["status"] = "draft_created"
@@ -277,12 +249,14 @@ class WorkspaceValidatorTests(unittest.TestCase):
         }
         manifest["design"]["sourceHash"] = "stale-design-hash"
         self.write_manifest(root, manifest)
-        (root / "page-preview.html").unlink()
-        (root / "compile-artifact.json").unlink()
         (root / "qa-report.md").unlink()
 
         result = VALIDATOR.validate_workspace(root, "draft-created")
-        self.assertTrue(result["ok"], result["errors"])
+        self.assertFalse(result["ok"])
+        self.assertIn(
+            "design_source_drift",
+            {item["code"] for item in result["errors"]},
+        )
 
     def test_draft_created_rejects_invalid_intent_evidence(self) -> None:
         root = self.make_workspace()
@@ -352,7 +326,6 @@ class WorkspaceValidatorTests(unittest.TestCase):
         for name in (
             "lexsis-source.html",
             "page-theme.css",
-            "page-preview.html",
             "compile-artifact.json",
             "qa-report.md",
         ):
@@ -436,7 +409,7 @@ class WorkspaceValidatorTests(unittest.TestCase):
     def test_design_passes_and_requires_generated_files(self) -> None:
         root = self.make_workspace()
         self.assertTrue(VALIDATOR.validate_workspace(root, "design")["ok"])
-        (root / "page-preview.html").unlink()
+        (root / "compile-artifact.json").unlink()
         self.assertIn("missing_design_artifact", self.codes(root, "design"))
 
     def test_legacy_visual_skip_is_accepted(self) -> None:
@@ -469,7 +442,7 @@ class WorkspaceValidatorTests(unittest.TestCase):
         )
         self.assertIn("compiled_source_island", self.codes(root, "precompile"))
 
-    def test_preview_placeholder_is_design_only(self) -> None:
+    def test_preview_placeholder_assets_are_rejected(self) -> None:
         root = self.make_workspace("skipped")
         source = SOURCE.replace(
             "<p>Creatine</p>",
@@ -487,8 +460,21 @@ class WorkspaceValidatorTests(unittest.TestCase):
             }
         ]
         self.write_manifest(root, manifest)
-        self.assertNotIn("preview_asset_in_production", self.codes(root, "design"))
-        self.assertIn("preview_asset_in_production", self.codes(root, "precompile"))
+        self.assertIn("asset_source", self.codes(root, "design"))
+        self.assertIn("asset_source", self.codes(root, "precompile"))
+        self.assertIn("relative_media_url", self.codes(root, "precompile"))
+
+    def test_pending_approval_can_be_draft_created_but_not_ready(self) -> None:
+        root = self.make_workspace()
+        manifest = self.manifest(root)
+        manifest["status"] = "draft_created"
+        manifest["design"]["status"] = "pending-approval"
+        manifest["qa"] = {"status": "pending"}
+        self.write_manifest(root, manifest)
+
+        created = VALIDATOR.validate_workspace(root, "draft-created")
+        self.assertTrue(created["ok"], created["errors"])
+        self.assertIn("design_status", self.codes(root, "draft"))
 
     def test_remote_hash_mismatch_blocks_draft(self) -> None:
         root = self.make_workspace()
@@ -524,7 +510,7 @@ class WorkspaceValidatorTests(unittest.TestCase):
         result = VALIDATOR.validate_workspace(root, "precompile")
         self.assertEqual(["hero"], result["changedSections"])
 
-    def test_v2_migration_compacts_manifest_and_renames_preview(self) -> None:
+    def test_v2_migration_compacts_manifest_and_ignores_legacy_preview(self) -> None:
         root = self.make_workspace()
         manifest = self.manifest(root)
         manifest["schemaVersion"] = 2
@@ -546,7 +532,10 @@ class WorkspaceValidatorTests(unittest.TestCase):
             "approvedBundleHash": manifest["design"]["bundleHash"],
             "approvedCompileBundleHash": manifest["design"]["compiledBundleHash"],
             "hydrationStatus": "passed",
-            "hydrationEvidence": manifest["design"]["hydration"],
+            "hydrationEvidence": {
+                "status": "passed",
+                "expectedIslands": ["0:BuyBox"],
+            },
         }
         manifest["sourceSync"] = manifest.pop("sync")
         manifest["fidelity"] = {
@@ -557,7 +546,7 @@ class WorkspaceValidatorTests(unittest.TestCase):
         manifest.pop("design")
         manifest["workflow"]["skippedSkills"] = ["visual-page"]
         self.write_manifest(root, manifest)
-        (root / "page-preview.html").rename(root / "visual-preview.html")
+        (root / "visual-preview.html").write_text("legacy preview", encoding="utf-8")
 
         result = MIGRATOR.migrate(root)
 
@@ -567,7 +556,10 @@ class WorkspaceValidatorTests(unittest.TestCase):
         self.assertEqual(["design-page"], migrated["workflow"]["skippedSkills"])
         self.assertNotIn("mcp", migrated)
         self.assertNotIn("fidelity", migrated)
-        self.assertTrue((root / "page-preview.html").is_file())
+        self.assertNotIn("hydration", migrated["design"])
+        self.assertNotIn("previewMode", migrated["islands"][0])
+        self.assertTrue((root / "visual-preview.html").is_file())
+        self.assertFalse((root / "page-preview.html").exists())
 
 
 if __name__ == "__main__":

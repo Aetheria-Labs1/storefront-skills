@@ -1,7 +1,7 @@
 interface:
   display_name: "Design Page"
-  short_description: "Compose source and preview at the intended fidelity."
-  default_prompt: "Use $design-page to infer the intended fidelity and turn this plan into a responsive page preview."
+  short_description: "Compose source and create its hosted draft."
+  default_prompt: "Use $design-page to turn this plan into responsive source and one unpublished hosted draft."
 dependencies:
   tools:
     - type: "mcp"

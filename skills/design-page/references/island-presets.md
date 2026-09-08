@@ -219,9 +219,13 @@ Gotchas: `card` and `banner` variants paint their own surface, which violates th
 
 #### Shared notes for section 2
 
-- **Fallback child.** `design-page/references/island-preview.md` asks for a direct `data-lx-island-fallback` child inside `<lx-island>`; `build_page_preview.py` does not reference that attribute, so its runtime handling is unconfirmed. Keep fallback markup simple, class-free or Tailwind-only (every class must compile), and free of interactive controls that could be mistaken for the island.
+- **Fallback child.** A direct `data-lx-island-fallback` child inside
+  `<lx-island>` may provide readable server-rendered content until the hosted
+  island hydrates. Keep it simple, class-free or Tailwind-only (every class
+  must compile), and free of interactive controls that could be mistaken for
+  the island.
 - **`animate` type.** Schema shows `boolean|boolean|string|string|string` for BuyBox, StickyBar, ProductCarousel; accepted string values are undocumented. Presets use booleans only.
-- **Manifest evidence per island** (from `validate_page_workspace.py`): `{sectionId, name, schemaVersion, lifecycleStatus:"active", mode:"native"|"headless", previewMode:"hydrated"|"fallback"}`, in source order.
+- **Manifest evidence per island** (from `validate_page_workspace.py`): `{sectionId, name, schemaVersion, lifecycleStatus:"active", mode:"native"|"headless"}`, in source order.
 
 ## 3. Presets
 
@@ -596,10 +600,10 @@ Rules: ids must exist in `island-presets.md`; the plan lists at most one preset 
 
 ### 4.6 Manifest
 
-`islands[]` already carries `{sectionId, name, schemaVersion, lifecycleStatus, mode, previewMode}`. Add:
+`islands[]` already carries `{sectionId, name, schemaVersion, lifecycleStatus, mode}`. Add:
 
 ```json
-{"sectionId":"buy","name":"BuyBox","schemaVersion":"5.1.0","lifecycleStatus":"active","mode":"native","previewMode":"hydrated","preset":"buybox/compact-dark","presetOverrides":{"ctaText":"Add to bag"}}
+{"sectionId":"buy","name":"BuyBox","schemaVersion":"5.1.0","lifecycleStatus":"active","mode":"native","preset":"buybox/compact-dark","presetOverrides":{"ctaText":"Add to bag"}}
 ```
 
 `preset` is a string or `null` (custom composition, rationale in `page-plan.md`). `presetOverrides` omitted when empty. `design.stylePack` stays; a preset set is not a style pack, but when a page uses presets of a single tone, record `design.presetTone`.

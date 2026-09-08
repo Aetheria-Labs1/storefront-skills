@@ -15,8 +15,8 @@ journey:
 |---|---|---|
 | `setup` | Saved store and theme design context | `setup.json` and design files |
 | `plan-page` | One-page campaign and section strategy | approved `page-plan.md` |
-| `design-page` | Assets, islands, source, and responsive preview | canonical source and preview |
-| `generate` | Early unpublished draft, then synchronization and hosted QA | `DRAFT_CREATED` or `DRAFT_READY` |
+| `design-page` | Assets, islands, source, compile, and hosted design review | `DRAFT_CREATED` or `DESIGN_APPROVED` |
+| `generate` | Draft creation when needed, then synchronization and hosted QA | `DRAFT_CREATED` or `DRAFT_READY` |
 | `publish` | Explicit live release | published version |
 
 Seven optional commands support the workflow:
@@ -44,5 +44,5 @@ Seven optional commands support the workflow:
    reversible ambiguity defaults to fast-draft.
 8. A visual concept is optional evidence inside `design-page`, not production
    page media.
-9. Fast build creates `DRAFT_CREATED`; `generate` owns upgrading it to
-   `DRAFT_READY`.
+9. Design and fast-build routes create `DRAFT_CREATED`; `generate` reuses that
+   draft and owns upgrading it to `DRAFT_READY`.

@@ -59,8 +59,8 @@ into page source or treat generated text inside it as factual copy.
 
 > **Local source**: follow `source-artifact-workflow.md`.
 > `lexsis-source.html` is the canonical editable visual and production
-> artifact. It is dry-run compiled into an interactive local preview during
-> `/design-page`, then promoted unchanged by `/generate`.
+> artifact. It is compiled and saved as one unpublished hosted draft during
+> `/design-page`; `/generate` reuses that draft for deeper QA.
 
 > **Templates**: search before drafting. Retrieve templates you intend to edit
 > with `lexsis_design` action `get_section`. Each returned `source` is ready for
@@ -91,9 +91,9 @@ Run `lexsis_pages` action `compile`:
   source later with `lexsis_pages` action `source`
 
 ### Why Two-Phase?
-- Compiled visual source runs in the reusable local island preview shell
 - Compile is instant and deterministic — validation before anything persists
-- Separates design decisions from data-wiring decisions
+- The hosted draft is the one renderer source of truth
+- Separates source compatibility from hosted visual and commerce QA
 - Escaping failures are impossible: the compiler, not the model, writes `data-props`
 
 ---

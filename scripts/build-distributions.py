@@ -40,11 +40,13 @@ LEGACY_CLAUDE_PLUGIN_ROOT = ROOT / "plugins" / "lexsis-storefront-skills"
 SHARED_RESOURCE_DIRS = {"storefront-engine"}
 SKILL_SHARED_REFERENCES = {
     "plan-page": {
+        "consumer-behavior-cro.md",
         "design-rules.md",
         "island-presets.md",
         "workflow-intent.md",
     },
     "design-page": {
+        "consumer-behavior-cro.md",
         "design-concepts.md",
         "design-rules.md",
         "island-presets.md",
@@ -52,17 +54,21 @@ SKILL_SHARED_REFERENCES = {
         "workflow-intent.md",
     },
     "build": {
+        "consumer-behavior-cro.md",
         "fast-build.md",
         "workflow-intent.md",
     },
     "build-with-template": {
+        "consumer-behavior-cro.md",
         "fast-build.md",
         "workflow-intent.md",
     },
     "ab-test": {
         "ab-testing.md",
+        "consumer-behavior-cro.md",
     },
     "generate": {
+        "consumer-behavior-cro.md",
         "design-rules.md",
         "merchant-templates.md",
         "page-editing.md",
@@ -70,6 +76,7 @@ SKILL_SHARED_REFERENCES = {
         "workflow-intent.md",
     },
     "optimize": {
+        "consumer-behavior-cro.md",
         "design-rules.md",
         "lexsis-design-capabilities.md",
     },
@@ -115,6 +122,7 @@ GPT_REFERENCE_ALLOWLIST = [
     "source-format",
     "workflow-orchestration",
     "conversion-psychology",
+    "consumer-behavior-cro",
     "island-patterns",
     "style-packs",
     "asset-prep",
@@ -123,7 +131,6 @@ GPT_REFERENCE_ALLOWLIST = [
     "page-generation",
     "page-editing",
     "source-artifact-workflow",
-    "island-preview",
     "visual-layout-workflow",
     "workflow-handoffs",
     "lexsis-mcp-contract",
@@ -370,7 +377,8 @@ setup → plan-page → design-page → generate → publish.
 Use build for the fastest unpublished draft from a prompt or automatically
 selected template, and build-with-template when the user already supplied the
 template direction. Design-page may generate a mobile-first visual concept
-before source when the user wants to approve the look.
+before source when the user wants to approve the look; otherwise it compiles
+and creates one unpublished hosted draft directly.
 Each command remains independently invokable, and explicit skips are recorded.
 Infer whether the user wants a fast reversible draft or production-ready QA
 from the whole request. Reversible ambiguity defaults to a fast draft; live

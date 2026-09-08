@@ -8,6 +8,7 @@ description: Diagnose and improve an existing Lexsis storefront page for a speci
 Read:
 
 - `references/evidence-led-cro.md`
+- `references/consumer-behavior-cro.md`
 
 Use the needed exact actions from
 `lexsis_pages.edit_context`, `lexsis_pages.source`,
@@ -60,12 +61,17 @@ behavior as stronger evidence than generic patterns.
    compare them with the current structure. Do not force template comparison
    for copy-only, offer-only, metadata, or minor visual changes.
 5. Classify proposed changes as keep, improve, replace, remove, or test.
-6. Present an optimization brief:
+6. Use the consumer-behavior framework to identify the visitor mode, top
+   unanswered decision question, and the smallest relevant behavioral
+   hypothesis. Analytics and observed behavior override generic guidance.
+7. Present an optimization brief:
 
 ```text
 Outcome:
 Evidence:
 Main friction:
+Visitor mode:
+Behavioral hypothesis:
 Proposed sections:
 Protected elements:
 Expected measurement:

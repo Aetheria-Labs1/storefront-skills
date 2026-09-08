@@ -12,6 +12,7 @@ Read:
 
 - `references/workflow-intent.md`
 - `references/source-and-sync.md`
+- `references/consumer-behavior-cro.md` when planning or design was skipped
 - `references/page-editing.md` only for an existing page
 - `references/merchant-templates.md` only when reusing a merchant template
 - `references/qa-recipe.md` for production-ready QA
@@ -34,9 +35,9 @@ Infer intent from the whole request and conversation using
   approval.
 
 State the inferred mode briefly and record compact evidence in `workflow`.
-A request to create a draft authorizes this draft-only write. Intent inference
-never authorizes paid generation, publication, deletion, or destructive
-replacement.
+A request to create a draft authorizes one page-creation credit for the named
+page. Intent inference never authorizes a duplicate page, paid asset
+generation, publication, deletion, or destructive replacement.
 
 ## Inputs and Setup Reuse
 
@@ -50,8 +51,10 @@ version. Never preserve a stale hardcoded Shopify variant ID when current
 catalog data or a dynamic product binding can resolve it.
 
 If `/plan-page` or `/design-page` was intentionally skipped, create the minimum
-missing local artifact, record the skip, and continue. Do not claim design
-approval that did not happen.
+missing local artifact, record the skip, and continue. Use
+`references/consumer-behavior-cro.md` to record a minimum visitor mode, top
+decision questions, at most two relevant patterns, gallery gaps, and primary
+metric. Do not claim design approval that did not happen.
 
 ## Draft-Creation Gate
 
@@ -60,7 +63,7 @@ Before the first remote draft, require only:
 - a valid saved store/theme binding and draft-write permission
 - non-empty canonical source, theme CSS, title, and page handle
 - current product/variant bindings with no known invalid hardcoded variant
-- permanent assets rather than local or preview-placeholder URLs
+- permanent assets rather than local URLs
 - custom fonts backed by full HTTPS stylesheet URLs in `head.fonts`, or an
   intentional system-font stack
 - a clean compiler result
@@ -86,8 +89,13 @@ Use the adapter's `compile` object as the exact arguments to
 `lexsis_pages.compile`. Use summary mode; do not request or echo the full
 compiled bundle merely to inspect it.
 
-Compile once from the current files. Immediately pass the returned
-`compile_id` and the adapter's `create` fields to
+If `remote.pageId`, `remote.lastKnownVersion`, and `remote.previewUrl` already
+exist, fetch the current edit context and reuse that draft. Do not call
+`lexsis_page_create.create` again. Compile only when local inputs changed, then
+patch the existing draft with expected-version protection.
+
+When no remote draft exists, compile once from the current files. Immediately
+pass the returned `compile_id` and the adapter's `create` fields to
 `lexsis_page_create.create` with `publish:false`.
 
 If a compile ID expires before creation, recompile the same verified inputs
@@ -95,16 +103,17 @@ once. If the client cannot reuse the ID, create with the exact source, head,
 theme CSS, and scripts from the adapter. Expiry is not a reason to repeat
 planning, critique, asset search, or approval.
 
-## Return the Reversible Draft
+## Return or Reuse the Reversible Draft
 
-As soon as creation succeeds:
+As soon as creation succeeds, or after an existing draft is confirmed current:
 
 1. Record page ID, version, preview URL, local hashes, and compile bundle hash.
 2. Set manifest `status` to `draft_created` and QA to `pending`.
 3. Run the validator with `--phase draft-created`.
 4. Surface the preview immediately as `DRAFT_CREATED`.
 
-Do not delete or conceal a working draft because later QA finds an issue.
+Do not delete, replace, or conceal a working draft because later QA finds an
+issue.
 
 ## Production-Ready Follow-Through
 

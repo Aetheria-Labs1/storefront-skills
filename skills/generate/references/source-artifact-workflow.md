@@ -12,14 +12,14 @@ work/visual-pages/<page-handle>/
 ├── lexsis-source.html
 ├── page-theme.css
 ├── compile-artifact.json
-├── page-preview.html
 ├── qa-report.md
 └── assets/
 ```
 
 Files appear progressively. Planning creates only the plan, compact manifest,
-and assets directory. Design creates source, CSS, compile artifact, and
-preview. Generation creates the QA report and remote synchronization state.
+and assets directory. Design creates source, CSS, a compile artifact, and the
+unpublished hosted draft. Generation creates or updates the QA report and
+remote synchronization state.
 
 ## Compact Manifest
 
@@ -57,7 +57,7 @@ Do not prefill future stages with null fields.
   "assets": [],
   "islands": [],
   "design": {
-    "status": "approved",
+    "status": "pending-approval",
     "stylePack": "editorial",
     "compiledStyleManifest": {},
     "sourceHash": "...",
@@ -65,24 +65,19 @@ Do not prefill future stages with null fields.
     "configHash": "...",
     "structureHash": "...",
     "bundleHash": "...",
-    "compiledBundleHash": "...",
-    "hydration": {
-      "status": "passed",
-      "bundleHash": "...",
-      "expectedIslands": [],
-      "hydratedIslands": [],
-      "checkedAt": "..."
-    }
+    "compiledBundleHash": "..."
   }
 }
 ```
 
 `lexsis-source.html` and `page-theme.css` are the only editable design inputs.
-`compile-artifact.json` and `page-preview.html` are generated.
+`compile-artifact.json` is generated. The hosted draft is the only interactive
+preview and the renderer source of truth.
 
 ## Remote State
 
-Immediately after unpublished creation, `/generate` adds:
+Immediately after unpublished creation, `/design-page`, `/build`, or
+`/generate` adds:
 
 ```json
 {
@@ -164,4 +159,6 @@ For editing:
 6. Update synchronization state only after success.
 
 Legacy schema-v1 and schema-v2 workspaces use
-`skills/generate/scripts/migrate_page_workspace_v3.py`.
+`skills/generate/scripts/migrate_page_workspace_v3.py`. Existing local preview
+files and hydration fields are ignored for compatibility; they are never
+required or regenerated.

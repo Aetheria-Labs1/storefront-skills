@@ -49,78 +49,21 @@ class PublicSkillPackTests(unittest.TestCase):
             self.assertIn(f"${name}", text, name)
             self.assertIn("https://mcp.trylexsis.com/mcp", text, name)
 
-    def test_visual_preview_assets_are_complete(self) -> None:
-        design_assets = SKILLS / "design-page" / "assets"
-        shell = (design_assets / "preview-shell.html").read_text(encoding="utf-8")
-        for token in (
-            "{{THEME_CSS}}",
-            "{{COMPILED_SECTION_CSS}}",
-            "{{COMPILED_SECTION_MARKUP}}",
-            "{{SECTIONS_JSON}}",
-            "{{TEST_CART_DATA_JSON}}",
-            "{{COMMERCE_CONFIG_JSON}}",
-            "{{PRODUCT_BINDING_JSON}}",
-        ):
-            self.assertIn(token, shell)
-        self.assertIn("LexsisIslands.hydrateIslands", shell)
-        self.assertIn("__LEXSIS_PREVIEW_STATUS__", shell)
-        self.assertIn("data-lx-hydration-status", shell)
-        self.assertIn('"pending-triggers"', shell)
-        self.assertIn("Immediate islands did not hydrate", shell)
-        self.assertNotIn("Islands did not hydrate:", shell)
-        self.assertNotIn("Content-Security-Policy", shell)
-        self.assertNotIn("window.fetch =", shell)
-        self.assertNotIn("XMLHttpRequest.prototype.open", shell)
-        self.assertNotIn("navigator.sendBeacon =", shell)
-        self.assertNotIn("window.open =", shell)
-
-        placeholders = design_assets / "placeholders"
-        expected = {
-            "hero-landscape.svg",
-            "product-square.svg",
-            "lifestyle-portrait.svg",
-            "video-poster.svg",
-            "avatar.svg",
-        }
-        self.assertEqual(expected, {path.name for path in placeholders.glob("*.svg")})
-
-    def test_visual_preview_builder_assembles_compiled_island_output(self) -> None:
-        script_path = (
-            SKILLS / "design-page" / "scripts" / "build_page_preview.py"
-        )
-        spec = importlib.util.spec_from_file_location(
-            "build_page_preview",
-            script_path,
-        )
-        assert spec and spec.loader
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
-
-        preview = module.build_preview(
-            {
-                "response": {
-                    "page": {
-                        "sections": [
-                            {
-                                "id": "video",
-                                "html": (
-                                    '<section id="video">'
-                                    '<div data-island="ShoppableVideoFeed" '
-                                    'data-props="{}"></div></section>'
-                                ),
-                                "css": "#video { min-height: 80vh; }",
-                                "js": "",
-                            }
-                        ]
-                    }
-                }
-            },
-            theme_css=":root { --lx-accent-color: #111; }",
-        )
-        self.assertIn('data-section-id="video"', preview)
-        self.assertIn('data-island="ShoppableVideoFeed"', preview)
-        self.assertIn("LexsisIslands.hydrateIslands", preview)
-        self.assertNotIn("{{SECTIONS_JSON}}", preview)
+    def test_local_preview_renderer_is_removed(self) -> None:
+        design = SKILLS / "design-page"
+        self.assertFalse((design / "assets" / "preview-shell.html").exists())
+        self.assertFalse((design / "assets" / "placeholders").exists())
+        self.assertFalse((design / "scripts" / "build_page_preview.py").exists())
+        self.assertFalse((design / "references" / "island-preview.md").exists())
+        for path in [
+            *SKILLS.rglob("*.md"),
+            *SKILLS.rglob("*.py"),
+            ROOT / "README.md",
+            *PLUGIN_AGENTS.glob("*.md"),
+        ]:
+            text = path.read_text(encoding="utf-8")
+            self.assertNotIn("page-preview.html", text, path)
+            self.assertNotIn("build_page_preview.py", text, path)
 
     def test_full_pack_discovery_includes_shared_resources(self) -> None:
         for root in (
@@ -238,9 +181,55 @@ class PublicSkillPackTests(unittest.TestCase):
         plan = (SKILLS / "plan-page" / "SKILL.md").read_text(encoding="utf-8")
         for block in ("## Design direction", "### Imagery and background plan", "### Asset slots", "## Parallel Planning"):
             self.assertIn(block, plan)
+        self.assertIn("Consumer decision model", plan)
         design = (SKILLS / "design-page" / "SKILL.md").read_text(encoding="utf-8")
-        for block in ("## Design Direction Gate", "## Self-Critique Gate", "## Asset Gap Confirmation", "design-critique.md"):
+        for block in (
+            "## Design Direction Gate",
+            "## Hosted Design Review",
+            "## Asset Gap Confirmation",
+            "qa-report.md",
+        ):
             self.assertIn(block, design)
+
+    def test_consumer_behavior_framework_is_wired_to_page_decisions(self) -> None:
+        reference = (
+            SKILLS
+            / "storefront-engine"
+            / "references"
+            / "consumer-behavior-cro.md"
+        )
+        text = reference.read_text(encoding="utf-8")
+        for phrase in (
+            "Classify the visitor's likely primary mode",
+            "Select at most three behavioral patterns",
+            "Gallery Job Coverage",
+            "two or three relevant products",
+            "Do not add a carousel",
+            "Never ask “Do you want custom images?”",
+            "## Consumer decision model",
+        ):
+            self.assertIn(phrase, text)
+
+        for skill_name in (
+            "plan-page",
+            "design-page",
+            "build",
+            "build-with-template",
+            "generate",
+            "optimize",
+            "ab-test",
+        ):
+            skill = (SKILLS / skill_name / "SKILL.md").read_text(encoding="utf-8")
+            self.assertIn("references/consumer-behavior-cro.md", skill, skill_name)
+            self.assertTrue(
+                (
+                    SKILLS
+                    / skill_name
+                    / "references"
+                    / "consumer-behavior-cro.md"
+                ).is_file(),
+                skill_name,
+            )
 
     def test_plan_page_does_not_choose_islands(self) -> None:
         text = (SKILLS / "plan-page" / "SKILL.md").read_text(encoding="utf-8")
@@ -254,13 +243,15 @@ class PublicSkillPackTests(unittest.TestCase):
         self.assertIn("Design asset selection", text)
         self.assertNotIn("reviewsEndpoint", text)
 
-    def test_design_page_compiles_early_and_allows_lazy_hydration(self) -> None:
+    def test_design_page_compiles_and_creates_the_hosted_draft(self) -> None:
         text = (SKILLS / "design-page" / "SKILL.md").read_text(encoding="utf-8")
         self.assertIn("Compile the rough complete source", text)
         self.assertIn("validation_errors", text)
-        self.assertIn("ROUGH_PREVIEW", text)
-        self.assertIn("pending until their trigger", text)
-        self.assertIn("DESIGN_PREVIEW_READY_QA_PENDING", text)
+        self.assertIn("lexsis_page_create.create", text)
+        self.assertIn("publish:false", text)
+        self.assertIn("design.status: pending-approval", text)
+        self.assertIn("Return the hosted preview immediately as `DRAFT_CREATED`", text)
+        self.assertNotIn("page-preview.html", text)
 
     def test_generate_routes_intent_and_creates_before_ready_qa(self) -> None:
         text = (SKILLS / "generate" / "SKILL.md").read_text(encoding="utf-8")
@@ -274,6 +265,7 @@ class PublicSkillPackTests(unittest.TestCase):
         self.assertIn("DRAFT_CREATED", text)
         self.assertIn("DRAFT_READY", text)
         self.assertIn("--phase draft-created", text)
+        self.assertIn("Do not call\n`lexsis_page_create.create` again", text)
 
     def test_design_page_supports_optional_existing_tool_concepts(self) -> None:
         text = (SKILLS / "design-page" / "SKILL.md").read_text(encoding="utf-8")
@@ -373,13 +365,18 @@ class PublicSkillPackTests(unittest.TestCase):
         self.assertFalse((SKILLS / "visual-page").exists())
         self.assertTrue((SKILLS / "design-page" / "SKILL.md").is_file())
 
+    def test_release_version_is_7_7_0(self) -> None:
+        for path in (
+            ROOT / ".claude-plugin" / "plugin.json",
+            ROOT / "codex" / ".codex-plugin" / "plugin.json",
+        ):
+            self.assertEqual("7.7.0", json.loads(path.read_text())["version"])
+
     def test_discovery_is_not_a_global_blocker(self) -> None:
         checked = [
             *SKILLS.rglob("*.md"),
             ROOT / "scripts" / "build-distributions.py",
-            *(
-                ROOT / "plugins" / "lexsis-storefront-skills" / "agents"
-            ).glob("*.md"),
+            *PLUGIN_AGENTS.glob("*.md"),
         ]
         for path in checked:
             text = path.read_text(encoding="utf-8")
