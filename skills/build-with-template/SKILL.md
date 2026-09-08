@@ -11,6 +11,7 @@ ask for it or route a general fast-build request to `/build`.
 Read:
 
 - `references/fast-build.md`
+- `references/animation-system.md` when the template contains custom motion
 - `references/consumer-behavior-cro.md`
 - `references/workflow-intent.md`
 

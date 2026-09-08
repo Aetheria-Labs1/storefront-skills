@@ -23,6 +23,31 @@ MCP dependency metadata and an `.mcp.json` entry describe configuration. They
 do not prove that the server or its tools are available in the current
 session.
 
+## Managed Motion Compilation
+
+Custom animation is authored in source as
+`<script type="application/lexsis-motion">`. The `lexsis_pages` `compile`
+action:
+
+1. extracts each motion function into the owning section's `motion[]`
+2. parses its AST and rejects unsafe globals, raw loops/observers/timers,
+   arbitrary networking, dynamic code, programmatic clicks, and undeclared
+   capabilities
+3. validates page source, loop, and WebGL budgets
+4. emits the animation manifest used for diagnostics and risk classification
+5. preserves the module through source reads, page bundles, section patches,
+   and versioned drafts
+
+The renderer then supplies only the declared managed APIs. `three.load()` uses
+the renderer-owned Three.js package and reserves a managed WebGL context;
+`webgl.context()` supplies raw WebGL. Agents do not add Three.js, GSAP, Lottie,
+or Rive CDN scripts.
+
+Compilation proves that the module satisfies the contract. It does not prove
+that a 3D composition is framed well or that an interaction feels correct.
+Always review the hosted draft visually. Read `animation-system.md` before
+authoring or editing managed motion.
+
 ## Resolve Actions with Exact Slots
 
 The public skills declare the stable router and action pairs they use. Resolve

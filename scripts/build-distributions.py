@@ -40,12 +40,14 @@ LEGACY_CLAUDE_PLUGIN_ROOT = ROOT / "plugins" / "lexsis-storefront-skills"
 SHARED_RESOURCE_DIRS = {"storefront-engine"}
 SKILL_SHARED_REFERENCES = {
     "plan-page": {
+        "animation-system.md",
         "consumer-behavior-cro.md",
         "design-rules.md",
         "island-presets.md",
         "workflow-intent.md",
     },
     "design-page": {
+        "animation-system.md",
         "consumer-behavior-cro.md",
         "design-concepts.md",
         "design-rules.md",
@@ -54,20 +56,24 @@ SKILL_SHARED_REFERENCES = {
         "workflow-intent.md",
     },
     "build": {
+        "animation-system.md",
         "consumer-behavior-cro.md",
         "fast-build.md",
         "workflow-intent.md",
     },
     "build-with-template": {
+        "animation-system.md",
         "consumer-behavior-cro.md",
         "fast-build.md",
         "workflow-intent.md",
     },
     "ab-test": {
+        "animation-system.md",
         "ab-testing.md",
         "consumer-behavior-cro.md",
     },
     "generate": {
+        "animation-system.md",
         "consumer-behavior-cro.md",
         "design-rules.md",
         "merchant-templates.md",
@@ -76,6 +82,7 @@ SKILL_SHARED_REFERENCES = {
         "workflow-intent.md",
     },
     "optimize": {
+        "animation-system.md",
         "consumer-behavior-cro.md",
         "design-rules.md",
         "lexsis-design-capabilities.md",
@@ -116,6 +123,7 @@ SHARED_REFERENCE_DEP_RE = re.compile(
 # follow up anyway, so operational docs matter more than raw data).
 GPT_REFERENCE_ALLOWLIST = [
     "storefront-craft",
+    "animation-system",
     "design-rules",
     "island-presets",
     "generation-protocol",

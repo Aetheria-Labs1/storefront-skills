@@ -121,13 +121,13 @@ bundle_landing, offer_landing, quiz_funnel, gifting, seasonal); islands
 
 | Effect | CSS/JS | When to Use |
 |--------|--------|-------------|
-| `fade-up` | `@keyframes fadeUp` + IntersectionObserver | Never by default; the one plan-named moment |
+| `fade-up` | Shared `fadeUp` keyframe or managed WAAPI | Never by default; the one plan-named moment |
 | `fade-in` | `opacity 0→1` | Subtle element appearance |
 | `scale-in` | `transform: scale(0.95)→1` | Cards, images on scroll |
 | `slide-left` / `slide-right` | `translateX` | Before/after, comparison |
 | `parallax` | `transform: translateY(calc(...))` on scroll | Only a plan-named full-bleed image |
 | `sticky` | `position: sticky` | CTA bars, navigation |
-| `reveal-on-scroll` | IntersectionObserver + class toggle | Never by default; one plan-named moment at most |
+| `reveal-on-scroll` | Managed `visibility` + `waapi` capabilities | Never by default; one plan-named moment at most |
 | `stagger` | `animation-delay: calc(index * 100ms)` | Never by default; only inside the one plan-named moment |
 | `counter` | JS number animation | Stats, social proof numbers |
 | `none` | — | The default for every section |

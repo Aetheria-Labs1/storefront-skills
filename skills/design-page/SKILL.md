@@ -11,6 +11,7 @@ draft for review. Never publish.
 Read:
 
 - `references/design-rules.md`
+- `references/animation-system.md` when the plan names a motion moment
 - `references/consumer-behavior-cro.md`
 - `references/island-presets.md`
 - `references/merchant-templates.md`

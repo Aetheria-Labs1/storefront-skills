@@ -96,12 +96,13 @@ Check:
 grep -nE '\b[0-9]{1,2}% ?OFF\b|BEST VALUE|MOST POPULAR|LIMITED TIME|NEW ARRIVAL' $W/lexsis-source.html | wc -l   # 0
 ```
 
-N10. Never add motion that is not answering a user action, except one orchestrated moment named in the plan. No fade-up per section, no stagger, no counters, no parallax, no marquee ticker unless the announcement bar's own island provides it.
+N10. Never add motion that is not answering a user action, except one orchestrated moment named in the plan. No fade-up per section, no stagger, no counters, no parallax, no marquee ticker unless the announcement bar's own island provides it. Custom motion must follow `animation-system.md` and use `application/lexsis-motion`, not raw observers, timers, or global DOM access.
 Rationale: scattered entrance effects are the generic default; one moment lands, ten do not (frontend-design; Sailop).
 Check:
 ```bash
-grep -cE 'data-reveal|IntersectionObserver|@keyframes|animation:' $W/lexsis-source.html $W/page-theme.css   # 0, or exactly the plan-named moment
-grep -c 'prefers-reduced-motion' $W/page-theme.css   # 1 if any animation exists
+grep -cE 'application/lexsis-motion|data-behavior="gsap-|@keyframes|animation:' $W/lexsis-source.html $W/page-theme.css   # 0, or exactly the plan-named moment
+grep -cE 'data-reduced-motion=|prefers-reduced-motion' $W/lexsis-source.html $W/page-theme.css   # >= 1 if any animation exists
+grep -cE 'new (IntersectionObserver|ResizeObserver|MutationObserver)|requestAnimationFrame|setInterval' $W/lexsis-source.html   # 0
 ```
 
 N11. Never show proof you cannot source: star glyphs, review counts, customer counts, "Only N left", countdowns, "as seen in" logos. Every number in a proof section traces to "Claims confirmed" in the plan.

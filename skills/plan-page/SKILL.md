@@ -13,6 +13,7 @@ and background plan, and every asset slot on the page.
 Read:
 
 - `references/page-files.md`
+- `references/animation-system.md` when the page may use motion
 - `references/consumer-behavior-cro.md`
 - `references/design-rules.md`
 - `references/island-presets.md`

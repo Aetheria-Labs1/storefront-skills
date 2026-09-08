@@ -9,6 +9,7 @@ Read:
 
 - `references/evidence-led-cro.md`
 - `references/consumer-behavior-cro.md`
+- `references/animation-system.md` before adding or editing motion
 
 Use the needed exact actions from
 `lexsis_pages.edit_context`, `lexsis_pages.source`,

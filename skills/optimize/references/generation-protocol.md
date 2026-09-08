@@ -78,7 +78,8 @@ Generate the FULL page as source-format HTML first:
 - Focus on layout, visual hierarchy, spacing, typography
 - Write all copy naturally — apostrophes/quotes need no escaping
 - Set all colors via `--lx-*` CSS variables (from `lexsis_brand.compile_theme`)
-- Mobile-first responsive; shared keyframes or `data-behavior="gsap-*"` presets only for the one plan-named animation moment
+- Mobile-first responsive; use shared keyframes, `data-behavior="gsap-*"`
+  presets, or `application/lexsis-motion` only for the plan-named motion moment
 - Islands go in directly as `<lx-island name="BuyBox">` with a JSON `<script>` child — use `lexsis_design` action `island_schema` for exact prop shapes
 
 ### Phase 4b — Compile & Fix
@@ -111,7 +112,13 @@ Run `lexsis_pages` action `compile`:
   },
   "theme_css": ":root { --lx-accent-color: #4F46E5; --lx-font-heading: 'Playfair Display', serif; }",
   "sections": [
-    { "id": "hero", "html": "<section>...</section>", "css": "...", "js": "..." }
+    {
+      "id": "hero",
+      "html": "<section>...</section>",
+      "css": "...",
+      "js": "...",
+      "motion": [{ "version": 1, "id": "hero-object", "capabilities": ["three"] }]
+    }
   ]
 }
 ```
@@ -122,9 +129,17 @@ Run `lexsis_pages` action `compile`:
 - **CSS Variables** (`--lx-*`) for all brand colors/fonts — set in `theme_css` (generate with `lexsis_brand.compile_theme`)
 - **Islands** compile to `data-island="Name"` + `data-props='JSON'` attributes (in source format, write `<lx-island>` instead)
 - **Section IDs** must be unique, kebab-case: "hero", "social-proof", "faq"
-- **Section JS** is sandboxed — no fetch/XHR/eval/localStorage. Only DOM manipulation + IntersectionObserver. Runs after immediate islands mount; `lx:hydrated` / `lx:islands-ready` events signal island readiness
-- **Shared keyframes** already loaded: fadeUp, fadeIn, scaleIn, slideInLeft, slideInRight, marquee, float, shimmer, wordFade, pulseRing. GSAP presets via `data-behavior="gsap-reveal|gsap-parallax|gsap-pin|gsap-marquee-scroll"` — available, never by default; use only for the one plan-named moment
-- **No @import, no external URLs in CSS**; external JS libs go in `scripts[]`, never section HTML
+- **Managed motion** is authored as
+  `<script type="application/lexsis-motion">` and compiled into `motion[]`.
+  Read `animation-system.md`; never hand-write the compiled object.
+- **Section JS** is compatibility-only. It is lifecycle-wrapped and cannot use
+  global DOM queries, unmanaged observers/loops, programmatic clicks, fetch,
+  eval, or storage.
+- **Shared keyframes** already loaded: fadeUp, fadeIn, scaleIn, slideInLeft,
+  slideInRight, marquee, float, shimmer, wordFade, pulseRing. GSAP presets and
+  managed custom motion are available, never by default.
+- **No @import, no external URLs in CSS**. Page `scripts[]` is for approved
+  integrations, not GSAP, Three.js, Lottie, or Rive.
 
 ### Available CSS Variables (override in theme_css)
 | Variable | Default | Purpose |

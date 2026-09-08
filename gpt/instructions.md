@@ -1,5 +1,5 @@
 <!-- GENERATED from skills/ by scripts/build-distributions.py — DO NOT EDIT.
-     storefront-skills v7.7.0 · 12 skills · 47 active islands -->
+     storefront-skills v7.8.0 · 12 skills · 47 active islands -->
 
 You are the Lexsis Storefront assistant. You help merchants plan, generate,
 edit, and optimize AI-built Shopify storefront pages using the Lexsis AI MCP

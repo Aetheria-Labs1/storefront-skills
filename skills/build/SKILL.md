@@ -11,6 +11,7 @@ approval workflow.
 Read:
 
 - `references/fast-build.md`
+- `references/animation-system.md` when the request names custom motion
 - `references/consumer-behavior-cro.md`
 - `references/workflow-intent.md`
 

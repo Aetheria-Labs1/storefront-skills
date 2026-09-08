@@ -1,5 +1,5 @@
 <!-- GENERATED from skills/ by scripts/build-distributions.py — DO NOT EDIT.
-     storefront-skills v7.7.0 · 12 skills · 47 active islands -->
+     storefront-skills v7.8.0 · 12 skills · 47 active islands -->
 
 # Lexsis Storefront Skills — Knowledge Base
 
@@ -222,6 +222,7 @@ approval workflow.
 Read:
 
 - `references/fast-build.md`
+- `references/animation-system.md` when the request names custom motion
 - `references/consumer-behavior-cro.md`
 - `references/workflow-intent.md`
 
@@ -269,6 +270,7 @@ ask for it or route a general fast-build request to `/build`.
 Read:
 
 - `references/fast-build.md`
+- `references/animation-system.md` when the template contains custom motion
 - `references/consumer-behavior-cro.md`
 - `references/workflow-intent.md`
 
@@ -360,6 +362,7 @@ draft for review. Never publish.
 Read:
 
 - `references/design-rules.md`
+- `references/animation-system.md` when the plan names a motion moment
 - `references/consumer-behavior-cro.md`
 - `references/island-presets.md`
 - `references/merchant-templates.md`
@@ -677,6 +680,7 @@ Read:
 
 - `references/workflow-intent.md`
 - `references/source-and-sync.md`
+- `references/animation-system.md` when source contains or requires motion
 - `references/consumer-behavior-cro.md` when planning or design was skipped
 - `references/page-editing.md` only for an existing page
 - `references/merchant-templates.md` only when reusing a merchant template
@@ -909,6 +913,7 @@ Read:
 
 - `references/evidence-led-cro.md`
 - `references/consumer-behavior-cro.md`
+- `references/animation-system.md` before adding or editing motion
 
 Use the needed exact actions from
 `lexsis_pages.edit_context`, `lexsis_pages.source`,
@@ -1109,6 +1114,7 @@ and background plan, and every asset slot on the page.
 Read:
 
 - `references/page-files.md`
+- `references/animation-system.md` when the page may use motion
 - `references/consumer-behavior-cro.md`
 - `references/design-rules.md`
 - `references/island-presets.md`
@@ -1761,7 +1767,7 @@ markers. Do not write that compiled representation by hand.
 | `craft-guide` | This file — architecture, flow, quality bar | Always first |
 | `workflow-orchestration` | Tool sequencing, parallelization, flow selection | Always — load after craft-guide |
 | `conversion-psychology` | Universal persuasion: pricing, urgency, trust, CTA psychology | Always — load for any ecommerce page |
-| `animation-system` | CSS animations, scroll-reveal, headline effects | Only when the plan names one motion moment |
+| `animation-system` | Managed WAAPI, GSAP, Canvas, WebGL, Three.js, Lottie and Rive | Only when the plan names one motion moment |
 | `visual-craft` | Typography, spacing, color, micro-interactions | Polishing visual quality |
 | `design-enrichment` | AI image generation + compositing pipeline | Need custom images/textures |
 | `premium-patterns` | Proven high-converting section patterns in HTML | Building hero, trust, CTA sections |
@@ -1894,6 +1900,362 @@ Use descriptive kebab-case: `hero`, `product-gallery`, `social-proof`, `ingredie
 
 ---
 
+# Managed Motion — Storefront Agent Reference
+
+> The active storefront design rules override every example below.
+> Motion is not a default decoration. Use it when the page plan names one
+> meaningful moment or when motion directly answers a shopper action.
+
+Lexsis supports open-ended custom animation without requiring a named scene or
+a custom island for every visual idea. Agents author the composition; the MCP
+compiler and renderer own capability validation, resource loading, lifecycle,
+cleanup, reduced motion, and performance limits.
+
+## Choose the lightest valid approach
+
+| Need | Use |
+|---|---|
+| Hover, focus, or a small entrance | CSS transition or shared keyframe |
+| Common reveal, parallax, pin, or marquee behavior | `data-behavior="gsap-*"` preset |
+| Custom timeline or interaction | Managed motion with WAAPI or GSAP |
+| Procedural drawing | Managed Canvas 2D |
+| Custom shaders | Managed WebGL |
+| Interactive 3D product or environment | Managed Three.js |
+| Supplied vector/state-machine animation | Managed Lottie or Rive |
+| Reusable stateful commerce/UI behavior | An island |
+
+Do not create an island solely to hold a one-off timeline, shader, particle
+field, 3D object, or scroll composition.
+
+## Source contract
+
+Place the motion block in the same source section as its markup:
+
+```html
+<!-- section: product-object -->
+<section class="product-object">
+  <canvas class="product-canvas" aria-label="Interactive product view"></canvas>
+  <img
+    class="product-fallback"
+    src="https://cdn.example.com/product-static.webp"
+    alt="Product front view"
+  >
+</section>
+
+<script
+  type="application/lexsis-motion"
+  data-motion-id="product-object"
+  data-capabilities="three resize"
+  data-mode="interaction"
+  data-importance="decorative"
+  data-reduced-motion="static"
+>
+async ({ dom, three, resize, scheduler, quality }) => {
+  // Agent-authored motion.
+}
+</script>
+```
+
+The script body must be one function expression. The MCP compiler extracts it
+into `section.motion[]`; never hand-write that compiled representation.
+
+### Module attributes
+
+| Attribute | Values | Meaning |
+|---|---|---|
+| `data-motion-id` | Unique identifier | Runtime diagnostics and source round-trip |
+| `data-capabilities` | Space/comma-separated capabilities | APIs granted to the module |
+| `data-mode` | `entrance`, `interaction`, `scroll`, `continuous` | Execution pattern |
+| `data-importance` | `essential`, `decorative` | Whether motion carries required meaning |
+| `data-reduced-motion` | `static`, `simplified` | Reduced-motion behavior |
+
+Defaults are `entrance`, `decorative`, and `static`. Capabilities are never
+inferred as permission: declare every capability the code uses.
+
+## Runtime APIs
+
+Always available:
+
+- `root`
+- `dom.query()`, `dom.queryAll()`, `dom.on()`, `dom.create()`, `dom.append()`
+- `scheduler.frame()`, `scheduler.loop()`, `scheduler.timeout()`,
+  `scheduler.interval()`, `scheduler.addCleanup()`
+- `quality.tier`, `quality.dpr`, `quality.fps`
+- `preferences.reducedMotion`, `saveData`, `colorScheme`, `contrast`
+- `assets.url()`, `assets.json()`, `assets.image()`
+
+Declared capabilities:
+
+| Capability | Runtime API |
+|---|---|
+| `waapi` | `waapi.animate()` |
+| `svg` | `svg.create()`, `svg.set()` |
+| `gsap` | `gsap.load()`, `gsap.withContext()` |
+| `scroll` | `scroll.on()`, `scroll.progress()` |
+| `pointer` | `pointer.onMove()`, `onEnter()`, `onLeave()` |
+| `resize` | `resize.observe()` |
+| `visibility` | `visibility.observe()` |
+| `canvas` | `canvas.context2d()`, `canvas.fit()` |
+| `webgl` | `webgl.context()` |
+| `three` | `three.load()` |
+| `lottie` | `assets.lottie.mount()` |
+| `rive` | `assets.rive.mount()` |
+| `video` | `media.source()` |
+| `events` | `events.on()`, `events.emit()` |
+
+Undeclared capability APIs are removed from the runtime context.
+
+## Scroll reveal with WAAPI
+
+Content stays visible by default. The running animation supplies the temporary
+starting state, preventing a failed module from leaving a blank section.
+
+```html
+<script
+  type="application/lexsis-motion"
+  data-motion-id="material-reveal"
+  data-capabilities="visibility waapi"
+  data-mode="scroll"
+  data-reduced-motion="static"
+>
+({ dom, visibility, waapi }) => {
+  const cards = dom.queryAll(".material-card");
+  const observer = visibility.observe(cards, (entries, instance) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      waapi.animate(entry.target, [
+        { opacity: 0.25, transform: "translateY(28px)" },
+        { opacity: 1, transform: "translateY(0)" }
+      ], {
+        duration: 650,
+        easing: "cubic-bezier(.16,1,.3,1)",
+        fill: "both"
+      });
+      instance.unobserve(entry.target);
+    });
+  }, { threshold: 0.2 });
+
+  return () => observer.disconnect();
+}
+</script>
+```
+
+## Three.js
+
+Do not add Three.js through `scripts[]` or a CDN. `three.load()` lazy-loads the
+renderer-owned package and reserves one managed WebGL context.
+
+```html
+<script
+  type="application/lexsis-motion"
+  data-motion-id="faceted-product"
+  data-capabilities="three resize"
+  data-mode="interaction"
+  data-importance="decorative"
+  data-reduced-motion="static"
+>
+async ({ dom, three, resize, scheduler, quality }) => {
+  const THREE = await three.load();
+  const canvas = dom.query(".product-canvas");
+  if (!canvas) return;
+
+  const renderer = new THREE.WebGLRenderer({
+    canvas,
+    alpha: true,
+    antialias: quality.tier !== "low"
+  });
+  renderer.setPixelRatio(quality.dpr);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
+  camera.position.z = 7;
+
+  const geometry = new THREE.IcosahedronGeometry(1.4, 2);
+  const material = new THREE.MeshPhysicalMaterial({
+    color: 0x111111,
+    roughness: 0.18,
+    clearcoat: 1
+  });
+  const object = new THREE.Mesh(geometry, material);
+  scene.add(object);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x222222, 3));
+
+  const fit = () => {
+    const rect = canvas.getBoundingClientRect();
+    renderer.setSize(Math.max(1, rect.width), Math.max(1, rect.height), false);
+    camera.aspect = rect.width / Math.max(1, rect.height);
+    camera.updateProjectionMatrix();
+  };
+  fit();
+  resize.observe(canvas, fit);
+
+  const stopLoop = scheduler.loop(() => {
+    object.rotation.y += 0.004;
+    renderer.render(scene, camera);
+  }, { fps: quality.fps });
+
+  return () => {
+    stopLoop();
+    renderer.forceContextLoss();
+    renderer.dispose();
+    geometry.dispose();
+    material.dispose();
+  };
+}
+</script>
+```
+
+For drag rotation, use `dom.on()` for `pointerdown`, `pointermove`,
+`pointerup`, and `pointercancel` on the canvas. Use pointer capture. Keep
+vertical tilt bounded and let horizontal rotation wrap when a full revolve is
+appropriate.
+
+## Raw WebGL
+
+Use raw WebGL when the design needs a custom shader rather than a Three.js
+scene:
+
+```html
+<script
+  type="application/lexsis-motion"
+  data-motion-id="custom-shader"
+  data-capabilities="webgl resize"
+  data-mode="continuous"
+  data-reduced-motion="simplified"
+>
+({ webgl, resize, scheduler, quality }) => {
+  const surface = webgl.context(".shader-canvas", { version: 2, alpha: true });
+  resize.observe(surface.canvas, surface.fit);
+
+  const stopLoop = scheduler.loop((time) => {
+    const { context } = surface;
+    surface.fit();
+    context.clearColor(0.08, 0.03, 0.06 + Math.sin(time * 0.001) * 0.02, 1);
+    context.clear(context.COLOR_BUFFER_BIT);
+  }, { fps: quality.fps });
+
+  return () => stopLoop();
+}
+</script>
+```
+
+Agent-authored shader compilation, buffers, uniforms, textures, and drawing
+remain inside the module. The runtime owns context limits, pause/resume, and
+context loss during cleanup.
+
+## GSAP
+
+Do not add GSAP through page scripts. The managed loader uses pinned
+first-party assets with a bounded fallback.
+
+```html
+<script
+  type="application/lexsis-motion"
+  data-motion-id="hero-timeline"
+  data-capabilities="gsap"
+  data-mode="entrance"
+  data-reduced-motion="simplified"
+>
+async ({ gsap }) => {
+  return gsap.withContext((runtime) => {
+    const timeline = runtime.timeline();
+    timeline
+      .from(".hero-title", { opacity: 0, y: 34, duration: 0.8 })
+      .from(".hero-copy", { opacity: 0, y: 16, duration: 0.5 }, "-=0.35");
+    return () => timeline.kill();
+  });
+}
+</script>
+```
+
+`gsap.withContext()` scopes selectors, reverts the timeline on cleanup, and
+pauses managed animations while the section is offscreen.
+
+## Canvas 2D
+
+Use `canvas.context2d()` and `surface.fit()` so the renderer applies the
+device-quality DPR cap. Put related drawing in one `scheduler.loop()` rather
+than starting one loop per particle or object.
+
+## Motion assets
+
+Declare every remote resource on section markup with an absolute HTTPS URL:
+
+```html
+<div
+  data-motion-asset="gift-reveal"
+  data-src="https://cdn.example.com/gift-reveal.json"
+  hidden
+></div>
+```
+
+Then load only by declared name:
+
+```javascript
+({ assets }) => assets.json("gift-reveal")
+```
+
+Use `assets.image`, `assets.lottie.mount`, `assets.rive.mount`, or
+`media.source` as appropriate. Arbitrary `fetch()` is rejected.
+
+## Progressive enhancement
+
+- Keep meaningful copy, images, SVG, and controls present in static HTML.
+- Keep content visible by default.
+- Do not make an empty fixed-height canvas the only representation of
+  essential content.
+- Hide a static visual fallback only after the module reports ready.
+- Use `data-reduced-motion="static"` when the fallback communicates the same
+  information.
+- Never delay pricing, variants, CTA availability, cart state, or trust
+  evidence behind animation.
+
+If a module fails or exceeds a boundary, Lexsis disables that module and keeps
+the static section usable.
+
+## Compiler and runtime boundaries
+
+- Motion source: at most 100 KiB per page.
+- Managed loops: at most 2 per section and 4 per page.
+- WebGL/Three modules: at most 2 per page.
+- Device tiers cap DPR at 1, 1.5, or 2 and fps at 30, 45, or 60.
+- Offscreen and hidden sections pause managed work.
+- Repeated callbacks over 50 ms disable only the offending module.
+- Mutation storms, excessive DOM growth, and event-loop stalls disable only
+  the offending module.
+- Section replacement and page exit clean up listeners, observers, timers,
+  loops, engine contexts, and loaded media.
+
+The compiler rejects:
+
+- `window`, `document`, and global browser escape hatches
+- `fetch`, WebSockets, workers, and browser storage
+- raw timers, animation frames, and observers
+- dynamic imports and dynamic code execution
+- programmatic `.click()`
+- island-internal access
+- unbounded loops
+- use of undeclared capabilities
+
+Use the managed context equivalents.
+
+## MCP compile workflow
+
+1. Author the source section and motion block in `lexsis-source.html`.
+2. Call `lexsis_pages` action `compile` with complete source, head, theme CSS,
+   and approved page scripts.
+3. Fix every `motion_*`, `unmanaged_*`, or capability error.
+4. Confirm the returned animation manifest reflects the expected engines,
+   capabilities, continuous motion, and performance tier.
+5. Create or update the unpublished draft only after compilation is clean.
+6. Verify the hosted draft at desktop and mobile widths. A successful compile
+   proves contract safety, not visual quality.
+
+The MCP round-trips managed motion through source reads, section patches, page
+bundles, and versioned drafts.
+
+---
+
 # Design Rules
 
 House rules for every generated page. They override generated brand `design.md`
@@ -1992,12 +2354,13 @@ Check:
 grep -nE '\b[0-9]{1,2}% ?OFF\b|BEST VALUE|MOST POPULAR|LIMITED TIME|NEW ARRIVAL' $W/lexsis-source.html | wc -l   # 0
 ```
 
-N10. Never add motion that is not answering a user action, except one orchestrated moment named in the plan. No fade-up per section, no stagger, no counters, no parallax, no marquee ticker unless the announcement bar's own island provides it.
+N10. Never add motion that is not answering a user action, except one orchestrated moment named in the plan. No fade-up per section, no stagger, no counters, no parallax, no marquee ticker unless the announcement bar's own island provides it. Custom motion must follow `animation-system.md` and use `application/lexsis-motion`, not raw observers, timers, or global DOM access.
 Rationale: scattered entrance effects are the generic default; one moment lands, ten do not (frontend-design; Sailop).
 Check:
 ```bash
-grep -cE 'data-reveal|IntersectionObserver|@keyframes|animation:' $W/lexsis-source.html $W/page-theme.css   # 0, or exactly the plan-named moment
-grep -c 'prefers-reduced-motion' $W/page-theme.css   # 1 if any animation exists
+grep -cE 'application/lexsis-motion|data-behavior="gsap-|@keyframes|animation:' $W/lexsis-source.html $W/page-theme.css   # 0, or exactly the plan-named moment
+grep -cE 'data-reduced-motion=|prefers-reduced-motion' $W/lexsis-source.html $W/page-theme.css   # >= 1 if any animation exists
+grep -cE 'new (IntersectionObserver|ResizeObserver|MutationObserver)|requestAnimationFrame|setInterval' $W/lexsis-source.html   # 0
 ```
 
 N11. Never show proof you cannot source: star glyphs, review counts, customer counts, "Only N left", countdowns, "as seen in" logos. Every number in a proof section traces to "Claims confirmed" in the plan.
@@ -2791,7 +3154,8 @@ Generate the FULL page as source-format HTML first:
 - Focus on layout, visual hierarchy, spacing, typography
 - Write all copy naturally — apostrophes/quotes need no escaping
 - Set all colors via `--lx-*` CSS variables (from `lexsis_brand.compile_theme`)
-- Mobile-first responsive; shared keyframes or `data-behavior="gsap-*"` presets only for the one plan-named animation moment
+- Mobile-first responsive; use shared keyframes, `data-behavior="gsap-*"`
+  presets, or `application/lexsis-motion` only for the plan-named motion moment
 - Islands go in directly as `<lx-island name="BuyBox">` with a JSON `<script>` child — use `lexsis_design` action `island_schema` for exact prop shapes
 
 ### Phase 4b — Compile & Fix
@@ -2824,7 +3188,13 @@ Run `lexsis_pages` action `compile`:
   },
   "theme_css": ":root { --lx-accent-color: #4F46E5; --lx-font-heading: 'Playfair Display', serif; }",
   "sections": [
-    { "id": "hero", "html": "<section>...</section>", "css": "...", "js": "..." }
+    {
+      "id": "hero",
+      "html": "<section>...</section>",
+      "css": "...",
+      "js": "...",
+      "motion": [{ "version": 1, "id": "hero-object", "capabilities": ["three"] }]
+    }
   ]
 }
 ```
@@ -2835,9 +3205,17 @@ Run `lexsis_pages` action `compile`:
 - **CSS Variables** (`--lx-*`) for all brand colors/fonts — set in `theme_css` (generate with `lexsis_brand.compile_theme`)
 - **Islands** compile to `data-island="Name"` + `data-props='JSON'` attributes (in source format, write `<lx-island>` instead)
 - **Section IDs** must be unique, kebab-case: "hero", "social-proof", "faq"
-- **Section JS** is sandboxed — no fetch/XHR/eval/localStorage. Only DOM manipulation + IntersectionObserver. Runs after immediate islands mount; `lx:hydrated` / `lx:islands-ready` events signal island readiness
-- **Shared keyframes** already loaded: fadeUp, fadeIn, scaleIn, slideInLeft, slideInRight, marquee, float, shimmer, wordFade, pulseRing. GSAP presets via `data-behavior="gsap-reveal|gsap-parallax|gsap-pin|gsap-marquee-scroll"` — available, never by default; use only for the one plan-named moment
-- **No @import, no external URLs in CSS**; external JS libs go in `scripts[]`, never section HTML
+- **Managed motion** is authored as
+  `<script type="application/lexsis-motion">` and compiled into `motion[]`.
+  Read `animation-system.md`; never hand-write the compiled object.
+- **Section JS** is compatibility-only. It is lifecycle-wrapped and cannot use
+  global DOM queries, unmanaged observers/loops, programmatic clicks, fetch,
+  eval, or storage.
+- **Shared keyframes** already loaded: fadeUp, fadeIn, scaleIn, slideInLeft,
+  slideInRight, marquee, float, shimmer, wordFade, pulseRing. GSAP presets and
+  managed custom motion are available, never by default.
+- **No @import, no external URLs in CSS**. Page `scripts[]` is for approved
+  integrations, not GSAP, Three.js, Lottie, or Rive.
 
 ### Available CSS Variables (override in theme_css)
 | Variable | Default | Purpose |
@@ -2997,9 +3375,22 @@ The old path (VibePage JSON with HTML in strings and JSON inside `data-props='..
   .hero-lede { max-width: 62ch; }
 </style>
 
-<script>
-  /* becomes section.js — sandboxed; `section` is bound to this section's element */
-  section.querySelectorAll('.hero-lede').forEach(el => el.classList.add('ready'));
+<script
+  type="application/lexsis-motion"
+  data-motion-id="hero-entrance"
+  data-capabilities="waapi"
+  data-mode="entrance"
+  data-importance="decorative"
+  data-reduced-motion="static"
+>
+({ dom, waapi }) => {
+  const lede = dom.query(".hero-lede");
+  if (!lede) return;
+  waapi.animate(lede, [
+    { opacity: 0.25, transform: "translateY(18px)" },
+    { opacity: 1, transform: "translateY(0)" }
+  ], { duration: 600, fill: "both" });
+}
 </script>
 
 <!-- section: faq -->
@@ -3016,8 +3407,13 @@ The old path (VibePage JSON with HTML in strings and JSON inside `data-props='..
 1. **Sections** are delimited by `<!-- section: kebab-case-id -->` comments. Ids must be unique.
 2. **Islands** are `<lx-island name="IslandName">` with props as a `<script type="application/json">` child. Write natural copy — apostrophes, quotes, em-dashes are all fine; no escaping needed.
 3. **`<lx-island>` attributes**: `name` (required), `hydrate` (`immediate|visible|idle|interaction`), `headless` (headless mode — see below), plus `class`/`id`/`style` which pass through to the compiled element.
-4. **Section CSS** goes in a top-level `<style>` block; **section JS** in a top-level `<script>` block (multiple blocks are concatenated). `application/json` / `ld+json` scripts stay in the HTML.
-5. **External libraries** do not go in section HTML—pass them through `scripts`.
+4. **Section CSS** goes in a top-level `<style>` block. New custom animation
+   goes in `<script type="application/lexsis-motion">`. Plain top-level
+   `<script>` remains compatibility section JS. `application/json` / `ld+json`
+   scripts stay in the HTML.
+5. **External libraries** do not go in section HTML. Approved analytics and
+   integrations use `scripts`; GSAP, Three.js, Lottie, and Rive use managed
+   motion loaders instead.
 6. **`head`, `theme_css`, `scripts`** are structured tool arguments. Save the
    selected theme and approved page-wide additions in `page-theme.css`, then
    pass that file's exact contents as `theme_css`.
@@ -3101,7 +3497,9 @@ Style the state classes in section CSS: `.lx-selected { ... }`, `.lx-adding { op
 
 ## Animations
 
-### Presets (no JS needed) — `data-behavior`
+Read `animation-system.md` before authoring any plan-named custom motion.
+
+### Presets — `data-behavior`
 
 ```html
 <section data-behavior="gsap-reveal" data-config='{"targets":".card","y":40,"stagger":0.1}'>
@@ -3110,20 +3508,20 @@ Style the state classes in section CSS: `.lx-selected { ... }`, `.lx-adding { op
 <div data-behavior="gsap-marquee-scroll" data-config='{"distance":-200}'>
 ```
 
-Presets lazy-load GSAP from CDN themselves and respect `prefers-reduced-motion`. Also available (CSS-driven, pre-existing): `scroll-reveal`, `accordion`, `horizontal-scroll`, `content-slider`, `sticky-reveal`.
+Presets use the renderer-owned pinned GSAP loader and respect reduced motion.
+Also available (CSS-driven, pre-existing): `scroll-reveal`, `accordion`,
+`horizontal-scroll`, `content-slider`, and `sticky-reveal`.
 
-### Custom GSAP in section JS
+### Custom managed motion
 
-Load the library via the `scripts` param, then write timelines in the section `<script>`:
+Use `<script type="application/lexsis-motion">` for custom WAAPI, GSAP, SVG,
+Canvas 2D, WebGL, Three.js, Lottie, Rive, video, pointer, scroll, or runtime
+event work. Declare capabilities and use managed timers, observers, loops,
+assets, and engine loaders. Do not add animation libraries through `scripts`.
 
-```json
-"scripts": [
-  { "src": "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js", "position": "body-end" },
-  { "src": "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js", "position": "body-end" }
-]
-```
-
-The compiler warns (`missing_animation_lib`) if section JS references gsap without either a scripts entry or a `gsap-*` preset on the page. Section JS runs after immediate islands mount; for work that depends on a deferred island, listen for its `lx:hydrated` event (bubbles, `detail.island`) or the document-level `lx:islands-ready`.
+The MCP compiler extracts managed motion into `section.motion[]`, validates the
+AST and performance budgets, and round-trips it through source reads and page
+patches. Plain section JS remains only for compatibility behavior.
 
 ## What NOT to do
 
@@ -5607,6 +6005,31 @@ is no `lexsis_styles` router or Navigation Profile workflow.
 MCP dependency metadata and an `.mcp.json` entry describe configuration. They
 do not prove that the server or its tools are available in the current
 session.
+
+## Managed Motion Compilation
+
+Custom animation is authored in source as
+`<script type="application/lexsis-motion">`. The `lexsis_pages` `compile`
+action:
+
+1. extracts each motion function into the owning section's `motion[]`
+2. parses its AST and rejects unsafe globals, raw loops/observers/timers,
+   arbitrary networking, dynamic code, programmatic clicks, and undeclared
+   capabilities
+3. validates page source, loop, and WebGL budgets
+4. emits the animation manifest used for diagnostics and risk classification
+5. preserves the module through source reads, page bundles, section patches,
+   and versioned drafts
+
+The renderer then supplies only the declared managed APIs. `three.load()` uses
+the renderer-owned Three.js package and reserves a managed WebGL context;
+`webgl.context()` supplies raw WebGL. Agents do not add Three.js, GSAP, Lottie,
+or Rive CDN scripts.
+
+Compilation proves that the module satisfies the contract. It does not prove
+that a 3D composition is framed well or that an interaction feels correct.
+Always review the hosted draft visually. Read `animation-system.md` before
+authoring or editing managed motion.
 
 ## Resolve Actions with Exact Slots
 

@@ -40,9 +40,22 @@ The old path (VibePage JSON with HTML in strings and JSON inside `data-props='..
   .hero-lede { max-width: 62ch; }
 </style>
 
-<script>
-  /* becomes section.js — sandboxed; `section` is bound to this section's element */
-  section.querySelectorAll('.hero-lede').forEach(el => el.classList.add('ready'));
+<script
+  type="application/lexsis-motion"
+  data-motion-id="hero-entrance"
+  data-capabilities="waapi"
+  data-mode="entrance"
+  data-importance="decorative"
+  data-reduced-motion="static"
+>
+({ dom, waapi }) => {
+  const lede = dom.query(".hero-lede");
+  if (!lede) return;
+  waapi.animate(lede, [
+    { opacity: 0.25, transform: "translateY(18px)" },
+    { opacity: 1, transform: "translateY(0)" }
+  ], { duration: 600, fill: "both" });
+}
 </script>
 
 <!-- section: faq -->
@@ -59,8 +72,13 @@ The old path (VibePage JSON with HTML in strings and JSON inside `data-props='..
 1. **Sections** are delimited by `<!-- section: kebab-case-id -->` comments. Ids must be unique.
 2. **Islands** are `<lx-island name="IslandName">` with props as a `<script type="application/json">` child. Write natural copy — apostrophes, quotes, em-dashes are all fine; no escaping needed.
 3. **`<lx-island>` attributes**: `name` (required), `hydrate` (`immediate|visible|idle|interaction`), `headless` (headless mode — see below), plus `class`/`id`/`style` which pass through to the compiled element.
-4. **Section CSS** goes in a top-level `<style>` block; **section JS** in a top-level `<script>` block (multiple blocks are concatenated). `application/json` / `ld+json` scripts stay in the HTML.
-5. **External libraries** do not go in section HTML—pass them through `scripts`.
+4. **Section CSS** goes in a top-level `<style>` block. New custom animation
+   goes in `<script type="application/lexsis-motion">`. Plain top-level
+   `<script>` remains compatibility section JS. `application/json` / `ld+json`
+   scripts stay in the HTML.
+5. **External libraries** do not go in section HTML. Approved analytics and
+   integrations use `scripts`; GSAP, Three.js, Lottie, and Rive use managed
+   motion loaders instead.
 6. **`head`, `theme_css`, `scripts`** are structured tool arguments. Save the
    selected theme and approved page-wide additions in `page-theme.css`, then
    pass that file's exact contents as `theme_css`.
@@ -144,7 +162,9 @@ Style the state classes in section CSS: `.lx-selected { ... }`, `.lx-adding { op
 
 ## Animations
 
-### Presets (no JS needed) — `data-behavior`
+Read `animation-system.md` before authoring any plan-named custom motion.
+
+### Presets — `data-behavior`
 
 ```html
 <section data-behavior="gsap-reveal" data-config='{"targets":".card","y":40,"stagger":0.1}'>
@@ -153,20 +173,20 @@ Style the state classes in section CSS: `.lx-selected { ... }`, `.lx-adding { op
 <div data-behavior="gsap-marquee-scroll" data-config='{"distance":-200}'>
 ```
 
-Presets lazy-load GSAP from CDN themselves and respect `prefers-reduced-motion`. Also available (CSS-driven, pre-existing): `scroll-reveal`, `accordion`, `horizontal-scroll`, `content-slider`, `sticky-reveal`.
+Presets use the renderer-owned pinned GSAP loader and respect reduced motion.
+Also available (CSS-driven, pre-existing): `scroll-reveal`, `accordion`,
+`horizontal-scroll`, `content-slider`, and `sticky-reveal`.
 
-### Custom GSAP in section JS
+### Custom managed motion
 
-Load the library via the `scripts` param, then write timelines in the section `<script>`:
+Use `<script type="application/lexsis-motion">` for custom WAAPI, GSAP, SVG,
+Canvas 2D, WebGL, Three.js, Lottie, Rive, video, pointer, scroll, or runtime
+event work. Declare capabilities and use managed timers, observers, loops,
+assets, and engine loaders. Do not add animation libraries through `scripts`.
 
-```json
-"scripts": [
-  { "src": "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js", "position": "body-end" },
-  { "src": "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js", "position": "body-end" }
-]
-```
-
-The compiler warns (`missing_animation_lib`) if section JS references gsap without either a scripts entry or a `gsap-*` preset on the page. Section JS runs after immediate islands mount; for work that depends on a deferred island, listen for its `lx:hydrated` event (bubbles, `detail.island`) or the document-level `lx:islands-ready`.
+The MCP compiler extracts managed motion into `section.motion[]`, validates the
+AST and performance budgets, and round-trips it through source reads and page
+patches. Plain section JS remains only for compatibility behavior.
 
 ## What NOT to do
 

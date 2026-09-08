@@ -46,7 +46,7 @@ markers. Do not write that compiled representation by hand.
 | `craft-guide` | This file — architecture, flow, quality bar | Always first |
 | `workflow-orchestration` | Tool sequencing, parallelization, flow selection | Always — load after craft-guide |
 | `conversion-psychology` | Universal persuasion: pricing, urgency, trust, CTA psychology | Always — load for any ecommerce page |
-| `animation-system` | CSS animations, scroll-reveal, headline effects | Only when the plan names one motion moment |
+| `animation-system` | Managed WAAPI, GSAP, Canvas, WebGL, Three.js, Lottie and Rive | Only when the plan names one motion moment |
 | `visual-craft` | Typography, spacing, color, micro-interactions | Polishing visual quality |
 | `design-enrichment` | AI image generation + compositing pipeline | Need custom images/textures |
 | `premium-patterns` | Proven high-converting section patterns in HTML | Building hero, trust, CTA sections |

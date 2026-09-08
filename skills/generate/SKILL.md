@@ -12,6 +12,7 @@ Read:
 
 - `references/workflow-intent.md`
 - `references/source-and-sync.md`
+- `references/animation-system.md` when source contains or requires motion
 - `references/consumer-behavior-cro.md` when planning or design was skipped
 - `references/page-editing.md` only for an existing page
 - `references/merchant-templates.md` only when reusing a merchant template
