@@ -22,4 +22,6 @@ Primary purchase action island. One per page max.
 - Pair with: ProductGallery, TrustBadgeBar, StickyBar
 - Place TrustBadgeBar within 200px below
 - StickyBar triggers when BuyBox scrolls out of viewport
+- Set matching `syncKey` on BuyBox and StickyBar, with the same complete variant catalog, to synchronize both directions. This works in rendered and headless mode.
+- For a linked group using external selectors, enable `listenForEvents` and set the selectors' `data-scope` wrapper to that key. Tier-priced options stay controlled by the main tier selector.
 - Never duplicate title/price outside island (it renders its own)
