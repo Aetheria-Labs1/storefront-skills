@@ -1,5 +1,9 @@
 # Google Ads & SEO → Landing Page — Storefront Design Intelligence
 
+> **Not real islands:** `CompareTable`, `TrustBadgeBar`. They have no schema. Verify every island name
+> against `lexsis_design` action `islands`; the replacement for each job is in
+> `references/workflows/island-selection-workflow.md`.
+
 > **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
 
 > **When to load:** Page designed for Google Ads (Search/Shopping/Display) or organic SEO traffic.

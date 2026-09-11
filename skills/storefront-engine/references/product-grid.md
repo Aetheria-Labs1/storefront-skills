@@ -1,5 +1,15 @@
 # Product Grid & Cards
 
+> **One example below is not compilable.** The hover-advance card carousel uses
+> `addEventListener`, `setInterval` and `clearInterval`. Section JS is
+> lifecycle-wrapped and may not use raw listeners on elements it did not
+> receive, unmanaged timers or global access, so the compiler rejects it. Use
+> CSS scroll-snap for a swipeable row, a media or product island for an
+> advancing one, or a managed motion module for the plan's single motion
+> moment (`references/animation-system.md`). Hover-advance is also a
+> hover-only interaction, which fails on touch
+> (`references/anti-patterns/mobile-anti-patterns.md`).
+
 > **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
 
 Use static HTML only for non-commerce editorial cards. For a live collection,

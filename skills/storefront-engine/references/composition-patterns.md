@@ -1,5 +1,14 @@
 # Composition Patterns
 
+> Three corrections. Scope the attribute selectors in these examples by section
+> id (`#<section-id> [data-accordion-trigger]`), or they apply page-wide after
+> compilation. Any `data-island` or `data-props` markup below is renderer
+> output and must never be pasted into source-authoring tools; author
+> `<lx-island>` instead (`references/authoring/source-authoring.md`). Arrow
+> glyphs in button and link text are banned by N12. Reveal-on-scroll is not a
+> default; it needs the plan's one motion moment
+> (`references/animation-system.md`).
+
 Concrete HTML patterns for building pages with composable primitives.
 
 > **Compiled runtime reference:** these snippets are stored renderer output

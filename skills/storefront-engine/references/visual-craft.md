@@ -1,5 +1,13 @@
 # Visual Craft — Typography, Spacing, Color & Polish
 
+> Two corrections before you copy anything here. Body copy uses
+> `--lx-text-muted`, never `--lx-text-color` at reduced opacity: the token was
+> contrast-checked against the page background and an opacity guess can fall
+> below the 4.5:1 floor (A7). Hover feedback changes colour, border colour or
+> underline only; the transform and shadow-lift examples below are superseded by
+> `references/design-rules.md` N7. Styling layers are decided by
+> `references/authoring/css-and-styling.md`.
+
 > House rules in `storefront-engine/references/design-rules.md` override every example below.
 > Examples show structure and copy intent; their styling (gradients, hover transforms,
 > uppercase labels, pills, emoji, section fills) is illustrative and must not be copied.

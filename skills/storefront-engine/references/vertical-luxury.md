@@ -1,5 +1,9 @@
 # High-AOV Luxury & Jewelry — Storefront Design Intelligence
 
+> **Not real islands:** `CompareTable`. They have no schema. Verify every island name
+> against `lexsis_design` action `islands`; the replacement for each job is in
+> `references/workflows/island-selection-workflow.md`.
+
 > **When to load**: Luxury goods, fine jewelry, watches, premium accessories, AOV > $300.
 
 ## Philosophy

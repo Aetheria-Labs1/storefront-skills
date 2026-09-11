@@ -1,5 +1,11 @@
 # Style Packs — Named `data-part` CSS Bundles
 
+> Scope every rule in a pack to its section id, as
+> `references/island-presets.md` does with `#{{id}} [data-part=...]`. An
+> unscoped `[data-part]` selector becomes page-global once compiled. Any
+> accent-tinted `box-shadow` in a pack is a glow and is banned by
+> `references/design-rules.md` N7 regardless of its offsets.
+
 > House rules in `storefront-engine/references/design-rules.md` override every example below.
 > Examples show structure and copy intent; their styling (gradients, hover transforms,
 > uppercase labels, pills, emoji, section fills) is illustrative and must not be copied.

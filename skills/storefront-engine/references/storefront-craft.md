@@ -1,5 +1,9 @@
 # Storefront Craft Guide — Start Here
 
+> **Not real islands:** `CompareTable`. They have no schema. Verify every island name
+> against `lexsis_design` action `islands`; the replacement for each job is in
+> `references/workflows/island-selection-workflow.md`.
+
 > House rules in `storefront-engine/references/design-rules.md` override every example below.
 > Examples show structure and copy intent; their styling (gradients, hover transforms,
 > uppercase labels, pills, emoji, section fills) is illustrative and must not be copied.
@@ -130,7 +134,12 @@ Use via `style="color: var(--lx-accent-color)"` or `style="font-family: var(--lx
 3. **No `@import` in section CSS** — blocked
 4. **No external `url()` in CSS** — only inline colors via `--lx-*` tokens
 5. **No duplicate section IDs** — each must be unique kebab-case
-6. **No `<script src="...">` in HTML** — use section `js` field for vanilla JS
+6. **No `<script src="...">` in HTML.** The section `js` field is compiler
+   output, not something you author: in source you write a top-level
+   `<script>` inside the section, and almost always you write none. Anything
+   needing a timer, an observer or global access belongs in a managed motion
+   module (`references/animation-system.md`) or an island; approved
+   integrations go in `scripts[]`.
 7. **No framework code** — no React/Vue/Angular in section HTML (islands handle interactivity)
 8. **Don't fake commerce** — always use BuyBox island for add-to-cart, never a plain button
 

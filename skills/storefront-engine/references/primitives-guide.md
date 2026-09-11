@@ -1,5 +1,15 @@
 # Composable Primitives Guide
 
+> **Not real islands:** `CompareTable`, `EditorialProductGrid`, `PDPInfoCards`, `TrustBadgeBar`. They have no schema. Verify every island name
+> against `lexsis_design` action `islands`; the replacement for each job is in
+> `references/workflows/island-selection-workflow.md`.
+
+> Hydration is authored as `hydrate="visible"` on `<lx-island>`. The
+> `data-hydrate` form below is compiled renderer output and must not be written
+> into source (`references/authoring/source-authoring.md`,
+> `references/source-format.md`). Take the mode from the island schema's
+> `defaultHydrate` unless the schema says otherwise.
+
 > **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
 
 ## Three-Tier System

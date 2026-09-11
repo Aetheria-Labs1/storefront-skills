@@ -1,5 +1,9 @@
 # Page Planning — Templates & Vocabulary
 
+> **Not real islands:** `FilterBar`, `NewsletterSignup`, `ProductGrid`, `TrustBadgeBar`. They have no schema. Verify every island name
+> against `lexsis_design` action `islands`; the replacement for each job is in
+> `references/workflows/island-selection-workflow.md`.
+
 > House rules in `storefront-engine/references/design-rules.md` override every example below.
 > Examples show structure and copy intent; their styling (gradients, hover transforms,
 > uppercase labels, pills, emoji, section fills) is illustrative and must not be copied.

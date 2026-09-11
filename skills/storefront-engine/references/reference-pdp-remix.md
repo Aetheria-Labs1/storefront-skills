@@ -1,5 +1,9 @@
 # Reference PDP Remix — Competitor Deconstruction Workflow
 
+> **Not real islands:** `EditorialProductGrid`, `PDPInfoCards`, `TrustBadgeBar`. They have no schema. Verify every island name
+> against `lexsis_design` action `islands`; the replacement for each job is in
+> `references/workflows/island-selection-workflow.md`.
+
 > **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
 
 > When to load: User provides a competitor/reference URL and wants to rebuild the same PDP structure for their brand.

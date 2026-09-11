@@ -608,4 +608,4 @@ Rules: ids must exist in `island-presets.md`; the plan lists at most one preset 
 
 `preset` is a string or `null` (custom composition, rationale in `page-plan.md`). `presetOverrides` omitted when empty. `design.stylePack` stays; a preset set is not a style pack, but when a page uses presets of a single tone, record `design.presetTone`.
 
-Source: `work/research/lexsis-island-presets.md`.
+Source: internal island-preset audit (2026-09-10).

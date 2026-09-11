@@ -1,5 +1,9 @@
 # Quick Section Insert
 
+> **Not real islands:** `EditorialProductGrid`, `TrustBadgeBar`. They have no schema. Verify every island name
+> against `lexsis_design` action `islands`; the replacement for each job is in
+> `references/workflows/island-selection-workflow.md`.
+
 Insert common section patterns into existing pages — one section at a time, matched to the page's existing brand style. NOT full page generation.
 
 Read `source-artifact-workflow.md` and `page-editing.md`. Every insertion begins

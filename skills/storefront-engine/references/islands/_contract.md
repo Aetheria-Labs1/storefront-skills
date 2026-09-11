@@ -1,5 +1,9 @@
 # Island Design Contract
 
+> **Not real islands:** `CompareTable`, `TrustBadgeBar`. They have no schema. Verify every island name
+> against `lexsis_design` action `islands`; the replacement for each job is in
+> `references/workflows/island-selection-workflow.md`.
+
 > **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
 
 Rules every island wrapper MUST follow. Violations = visual clashing between sections.
@@ -35,6 +39,13 @@ Section 3:            --lx-bg-color
 Section 4:            --lx-surface-alt
 ...alternate...
 ```
+
+> **Superseded.** Alternating section backgrounds are banned by
+> `references/design-rules.md` N2: one page background from below the navbar to
+> above the footer, with only the announcement bar, navbar, footer and one
+> plan-named full-bleed moment excepted. Separate sections with the spacing
+> scale and a 1px hairline (A2). `--lx-surface-alt` is a component tint for
+> chips, hover fills and selected state, never a section background.
 
 - Never 3+ consecutive sections with same background
 - Hero always uses `--lx-bg-color` or image (never surface-alt)
@@ -74,6 +85,9 @@ NEVER use `--lx-accent-color` as a section background (except CTA banner section
 - Sticky elements: only above lg (`lg:sticky lg:top-24`)
 - Full-bleed images: `aspect-[16/9] md:aspect-auto` (constrain mobile, natural desktop)
 - Touch targets: min 44x44px on mobile
+  (floors: 24x24 minimum per WCAG 2.2 SC 2.5.8, 44 for close, swatch and
+  quantity controls, 48 for the primary CTA; see
+  `references/anti-patterns/mobile-anti-patterns.md`)
 - Font sizes never below `text-sm` (14px) on mobile
 
 ## Animation Rules
@@ -83,6 +97,13 @@ NEVER use `--lx-accent-color` as a section background (except CTA banner section
 - Stagger: `animation-delay: calc(var(--i, 0) * 100ms)` with `--i` set per item
 - Never animate island internals — only wrapper/surrounding static HTML
 - Reduce motion: animations should be subtle (< 20px translation, < 0.5s duration)
+
+> **Superseded.** Entrance animation and stagger are not defaults. N10 allows
+> one orchestrated motion moment per page, named in `page-plan.md`; every other
+> section is static, and hover or focus feedback changes colour or border only.
+> The keyframe list and the timing above apply only inside that one moment, and
+> a `prefers-reduced-motion` block is required whenever any animation ships
+> (A11). Read `references/animation-system.md` before authoring motion.
 
 ## Composition Rules
 

@@ -1,5 +1,9 @@
 # Food & Beverage DTC — Storefront Design Intelligence
 
+> **Not real islands:** `TrustBadgeBar`. They have no schema. Verify every island name
+> against `lexsis_design` action `islands`; the replacement for each job is in
+> `references/workflows/island-selection-workflow.md`.
+
 > When to load: Product vertical is food, beverages, snacks, meal kits, coffee, tea, specialty food.
 
 > **Compiled runtime reference:** examples later in this legacy reference may show

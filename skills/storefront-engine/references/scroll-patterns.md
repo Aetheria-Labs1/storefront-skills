@@ -1,5 +1,11 @@
 # Scroll Patterns — Known Issues & Workarounds
 
+> The JavaScript recipes below use raw listeners, timers and global document
+> access, which the compiler rejects in section JS. Any of this behaviour ships
+> as a managed motion module (`references/animation-system.md`) or inside an
+> island, and only for the plan's one motion moment. The CSS-only patterns here
+> are safe to use.
+
 ## scroll-snap + Programmatic Scroll Conflict
 
 `scrollBy()` and `scrollTo()` silently fail when `scroll-snap-type: x mandatory` is active.

@@ -196,20 +196,24 @@ Islands are React components that hydrate client-side. They handle interactive c
 
 ### Key Islands by Use Case
 
-| Need | Island | Key Props |
-|------|--------|-----------|
-| Add to cart | BuyBox | product.title, product.price, product.variants |
-| Product images | ProductGallery | images[], layout |
-| Cart drawer | DrawerShell | Contains CartLines + CartCheckoutButton |
-| Reviews | ReviewCarousel | provider, productId |
-| FAQ accordion | FAQ | items[{question, answer}] |
-| Email capture | EmailCapture | provider, listId |
-| Announcement | AnnouncementBar | message, link, dismissible |
-| Navigation | Navbar / SiteHeader | links[], logo |
-| Footer | Footer | links[], social[], newsletter |
-| Product grid | EditorialProductGrid | products[], columns |
-| Trust badges | TrustBadgeBar | badges[{icon, text}] |
-| Social proof popup | SocialProofPopup | provider, delay |
+The catalog is the source of truth: read `lexsis_design` action `islands`, then
+`island_schema` for the one you pick. Prop shapes below are indicative only.
+
+| Need | Island | Note |
+|------|--------|------|
+| Add to cart | BuyBox | the only commerce island for purchase; never a custom button |
+| Product images | ProductGallery, or ProductHero for a split PDP hero | layout by image count |
+| Cart | none on the page | Cart V2 through `head.use_cart_v2` and the cart profile; CartDrawer is deprecated |
+| Reviews | ReviewCarousel or ReviewList | bound to a real collection or product ids from the Proof ledger |
+| FAQ accordion | none | native `<details>`/`<summary>`; the FAQ island is deprecated |
+| Email capture | EmailCapture | consent copy is authored HTML beside it |
+| Announcement | AnnouncementBar | one message; paired with Navbar, not SiteHeader |
+| Navigation | Navbar or SiteHeader, plus MobileMenu | full-nav page types only |
+| Footer | Footer | last section |
+| Product grid | none | a card composition per `references/product-grid.md` with QuickAdd, or FeaturedCollectionStage for a group |
+| Trust badges | none | static HTML with the issuer text from the Proof ledger |
+| Countdown | CountdownTimer | required prop is `endDate`; only with a verified end |
+| Recent-purchase popup | none, ever | fabricated proof (`references/proof/proof-ledger.md`) |
 
 ### Prop Data Sources
 - Product data → `lexsis_catalog` action `get` or `list`

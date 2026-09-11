@@ -1,5 +1,9 @@
 # Island Patterns — Wrapper HTML & Combination Recipes
 
+> **Not real islands:** `CompareTable`, `ExitIntent`, `TrustBadgeBar`. They have no schema. Verify every island name
+> against `lexsis_design` action `islands`; the replacement for each job is in
+> `references/workflows/island-selection-workflow.md`.
+
 > **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
 
 How to properly embed, wrap, and combine React islands in vibe-code HTML sections. Load when using commerce or engagement islands.
