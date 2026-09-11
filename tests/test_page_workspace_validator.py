@@ -47,6 +47,100 @@ SOURCE = """<!-- section: hero -->
 </style>
 """
 THEME_CSS = ":root { --lx-accent-color: #111111; --lx-text-color: #222222; }\n"
+class SetupSchemaTests(unittest.TestCase):
+    """The validator accepts a flat schema-1 setup and a multi-workspace schema-2 one."""
+
+    def index(self, *, schema: int, workspace: str, store: str, theme: str) -> dict:
+        store_entry = {
+            "storeId": store,
+            "storeName": "Main Store",
+            "themes": [{"themeId": theme, "themeName": "Light"}],
+        }
+        if schema == 1:
+            store_entry["brandDesignPath"] = f"stores/{store}/brand-design.md"
+            store_entry["themes"][0]["themeCssPath"] = f"stores/{store}/themes/{theme}.css"
+            return {
+                "schemaVersion": 1,
+                "workspaceId": workspace,
+                "stores": [store_entry],
+            }
+        base = f"workspaces/{workspace}/stores/{store}"
+        store_entry["brandDesignPath"] = f"{base}/brand-design.md"
+        store_entry["themes"][0]["themeCssPath"] = f"{base}/themes/{theme}.css"
+        return {
+            "schemaVersion": 2,
+            "defaultWorkspaceId": workspace,
+            "workspaces": [
+                {
+                    "workspaceId": workspace,
+                    "workspaceName": "Acme Brands",
+                    "defaultStoreId": store,
+                    "defaultThemeId": theme,
+                    "stores": [store_entry],
+                }
+            ],
+        }
+
+    def write_setup(self, root: Path, index: dict, store_dir: Path) -> Path:
+        (store_dir / "themes").mkdir(parents=True)
+        (store_dir / "brand-design.md").write_text("# Brand\n", encoding="utf-8")
+        theme = index.get("workspaces", [index])[0]["stores"][0]["themes"][0]["themeId"]
+        (store_dir / "themes" / f"{theme}.css").write_text(THEME_CSS, encoding="utf-8")
+        setup_path = root / "setup.json"
+        setup_path.write_text(json.dumps(index), encoding="utf-8")
+        return setup_path
+
+    def run_setup_check(self, schema: int, *, manifest_workspace: str) -> list[str]:
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        root = Path(temp.name)
+        setup_root = root / "setup"
+        workspace, store, theme = "ws-1", "store-1", "theme-1"
+        index = self.index(schema=schema, workspace=workspace, store=store, theme=theme)
+        rel = f"workspaces/{workspace}/stores/{store}" if schema == 2 else f"stores/{store}"
+        setup_path = self.write_setup(setup_root, index, setup_root / rel)
+
+        page = root / "page"
+        (page / "assets").mkdir(parents=True)
+        (page / "page-plan.md").write_text("# Plan\n", encoding="utf-8")
+        (page / "page-manifest.json").write_text(
+            json.dumps(
+                {
+                    "schemaVersion": 3,
+                    "status": "planned",
+                    "workspaceId": manifest_workspace,
+                    "storeId": store,
+                    "themeId": theme,
+                    "setupPath": str(setup_path),
+                    "campaignSlug": "diwali-2026",
+                    "sections": ["hero"],
+                }
+            ),
+            encoding="utf-8",
+        )
+        result = VALIDATOR.validate_workspace(page, "planned")
+        return [item["code"] for item in result["errors"]]
+
+    def test_schema_one_setup_is_accepted(self) -> None:
+        codes = self.run_setup_check(1, manifest_workspace="ws-1")
+        self.assertNotIn("setup_workspace", codes)
+        self.assertNotIn("setup_store", codes)
+        self.assertNotIn("theme_css_missing", codes)
+
+    def test_schema_two_setup_is_accepted(self) -> None:
+        codes = self.run_setup_check(2, manifest_workspace="ws-1")
+        self.assertNotIn("setup_workspace", codes)
+        self.assertNotIn("setup_store", codes)
+        self.assertNotIn("brand_design_missing", codes)
+        self.assertNotIn("theme_css_missing", codes)
+
+    def test_wrong_workspace_is_rejected_in_both_schemas(self) -> None:
+        for schema in (1, 2):
+            with self.subTest(schema=schema):
+                codes = self.run_setup_check(schema, manifest_workspace="ws-other")
+                self.assertIn("setup_workspace", codes)
+
+
 class WorkspaceValidatorTests(unittest.TestCase):
     def make_workspace(self, design_status: str = "approved") -> Path:
         temp = tempfile.TemporaryDirectory()

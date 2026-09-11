@@ -63,7 +63,7 @@ lexsis_drafts({ action: "asset_generate", args: { prompt: "...", demographic: "<
 ### Step 5 — Create Each Variant
 
 For each persona, first create
-`work/visual-pages/<base-handle>--<persona-key>/`, copy the synchronized base
+`<campaign-path>/pages/<base-handle>--<persona-key>/`, copy the synchronized base
 files, make the persona changes in local source, run the source gate, and
 compile the complete variant. Derive the remote change set from that local
 diff, then:

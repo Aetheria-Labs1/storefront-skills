@@ -49,7 +49,7 @@ Common high-impact tests (ordered by typical lift):
 
 ### Step 4 — Create the Variant
 
-Create `work/visual-pages/<base-handle>--<variant-key>/`, copy the synchronized
+Create `<campaign-path>/pages/<base-handle>--<variant-key>/`, copy the synchronized
 base files, make the one change in local `lexsis-source.html`, run the source
 gate, and compile the complete variant first.
 

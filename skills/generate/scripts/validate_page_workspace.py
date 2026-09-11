@@ -492,7 +492,27 @@ def validate_workspace(
         else:
             setup = read_json_file(setup_path, errors, "setup_invalid")
             if setup:
-                if setup.get("workspaceId") != manifest.get("workspaceId"):
+                # Schema 1 keeps one flat workspace with stores[] at the root;
+                # schema 2 nests them under workspaces[] so several workspaces
+                # can be saved side by side. Accept both.
+                workspaces = setup.get("workspaces")
+                if isinstance(workspaces, list):
+                    selected_workspace = next(
+                        (
+                            item
+                            for item in workspaces
+                            if isinstance(item, dict)
+                            and item.get("workspaceId") == manifest.get("workspaceId")
+                        ),
+                        None,
+                    )
+                else:
+                    selected_workspace = (
+                        setup
+                        if setup.get("workspaceId") == manifest.get("workspaceId")
+                        else None
+                    )
+                if not selected_workspace:
                     errors.append(
                         finding(
                             "setup_workspace",
@@ -503,7 +523,7 @@ def validate_workspace(
                 selected_store = next(
                     (
                         item
-                        for item in setup.get("stores", [])
+                        for item in (selected_workspace or {}).get("stores", [])
                         if isinstance(item, dict)
                         and item.get("storeId") == manifest.get("storeId")
                     ),

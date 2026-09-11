@@ -6,7 +6,7 @@ history.
 ## Workspace
 
 ```text
-work/visual-pages/<page-handle>/
+work/campaigns/<campaign-slug>/pages/<page-handle>/
 ├── page-plan.md
 ├── page-manifest.json
 ├── lexsis-source.html
@@ -148,6 +148,13 @@ in `qa-report.md`.
 For creation, use the clean design compile artifact when its input hashes still
 match. Recompile only after an input changes. After draft creation, fetch the
 persisted source and remote bundle and reject hash drift.
+
+`lexsis_page_create` action `create` consumes the `compile_id` directly, so a
+normal build never fetches the bundle itself. `lexsis_pages` action
+`compile_artifact` retrieves a stored bundle by `compile_id` for inspection
+only, and `lexsis_drafts` action `page_attach_bundle` exists solely to recover
+a page whose source was stored but whose bundle attachment failed (pass
+`expected_version`).
 
 For editing:
 
