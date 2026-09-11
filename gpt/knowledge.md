@@ -1,5 +1,5 @@
 <!-- GENERATED from skills/ by scripts/build-distributions.py — DO NOT EDIT.
-     storefront-skills v7.8.1 · 12 skills · 47 active islands -->
+     storefront-skills v7.9.0 · 12 skills · 47 active islands -->
 
 # Lexsis Storefront Skills — Knowledge Base
 
@@ -138,8 +138,16 @@ Use this skill for asset-only work. It does not require `/plan-page` or
 
 Use `lexsis_asset_library.search`, `lexsis_catalog.list`,
 `lexsis_catalog.get`, `lexsis_workspace.credits`,
-`lexsis_drafts.asset_generate`, `lexsis_asset_upload.import`, and
+`lexsis_drafts.asset_generate`, `lexsis_asset_import.import`,
+`lexsis_asset_upload.upload`, and
 `lexsis_assets.view`.
+
+Import requires exactly one source: `url`, image `data` + `mime_type`, or
+`attachments`. It never opens the upload UI. Use `lexsis_asset_upload.upload`
+with the selected `workspace_id` and `theme_id` for local-file uploads, and
+wait for the user's uploaded-asset message before using the result. If the
+host has no inline UI, ask for a URL or conversation attachment and import
+that source instead; never call import with no source.
 
 ## Choose a Mode
 
@@ -222,6 +230,14 @@ approval workflow.
 Read:
 
 - `references/fast-build.md`
+- `references/page-types/_index.md`, then only the matching
+  `references/page-types/<type>.md` and its `## Workflow`
+- `references/workflows/section-asset-workflow.md` and
+  `references/workflows/island-selection-workflow.md`
+- `references/authoring/css-and-styling.md` and
+  `references/authoring/source-authoring.md`
+- `references/assets/generation-policy.md` and
+  `references/proof/reviews-sourcing.md`
 - `references/animation-system.md` when the request names custom motion
 - `references/consumer-behavior-cro.md`
 - `references/workflow-intent.md`
@@ -251,6 +267,18 @@ Infer the complete request:
 - If the user asks to publish live, route to `/publish`; this skill creates
   with `publish:false` only.
 
+Build the page around real imagery, not around colour and copy. Identify the
+page type first, then per section decide the media before the copy: catalog
+media, then the asset library, then merchant-owned sources. Open every
+candidate with `lexsis_assets.view` and run the fit review in
+`references/workflows/section-asset-workflow.md` before using it, viewing a
+section's set together so it reads as one shoot, so the kit's sample imagery is replaced with viewed catalog or library assets. When a slot
+cannot be filled, leave it `planned` and name it in the draft summary so the
+merchant can upload the file or authorise generation; never spend generation
+credits without that yes, and never substitute a colour band, an emoji row or
+icon tiles for a missing image. Resolve islands live through
+`lexsis_design.islands` and `lexsis_design.island_schema`.
+
 Follow `references/fast-build.md`. Compile once, permit one targeted repair,
 create the draft, and return `DRAFT_CREATED` immediately. Do not run design
 critique, hosted QA, commerce QA, hash reconciliation, or full workspace
@@ -270,6 +298,14 @@ ask for it or route a general fast-build request to `/build`.
 Read:
 
 - `references/fast-build.md`
+- `references/page-types/_index.md`, then only the matching
+  `references/page-types/<type>.md` and its `## Workflow`
+- `references/workflows/section-asset-workflow.md` and
+  `references/workflows/island-selection-workflow.md`
+- `references/authoring/css-and-styling.md` and
+  `references/authoring/source-authoring.md`
+- `references/assets/generation-policy.md` and
+  `references/proof/reviews-sourcing.md`
 - `references/animation-system.md` when the template contains custom motion
 - `references/consumer-behavior-cro.md`
 - `references/workflow-intent.md`
@@ -283,6 +319,19 @@ Use `lexsis_template_library.get_kit`, `lexsis_design.get_section`,
 Use `lexsis_workspace.credits`, `lexsis_assets.capabilities`,
 `lexsis_assets.view`, and `lexsis_drafts.asset_generate` only for required
 production gaps and only after credit authorization.
+
+Build the page around real imagery, not around colour and copy. Identify the
+page type first, then per section decide the media before the copy: catalog
+media, then the asset library, then merchant-owned sources. Open every
+candidate with `lexsis_assets.view` and run the fit review in
+`references/workflows/section-asset-workflow.md` before using it, viewing a
+section's set together so it reads as one shoot, so the template's sample
+imagery is replaced with viewed catalog or library assets. When a slot cannot
+be filled, leave it `planned` and name it in the draft summary so the merchant
+can upload the file or authorise generation; never spend generation credits
+without that yes, and never substitute a colour band, an emoji row or icon
+tiles for a missing image. Re-check the template's island props against the
+current schema through `lexsis_design.island_schema` rather than trusting them.
 
 Treat the supplied template direction as authoritative. Follow
 `references/fast-build.md`, skip the visual-concept and design-approval stages,
@@ -362,6 +411,17 @@ draft for review. Never publish.
 Read:
 
 - `references/design-rules.md`
+- the plan's `references/page-types/<type>.md` (its `## Workflow` names the
+  island and asset decision per section) and
+  `references/page-types/_checklist-format.md` for the vocabulary
+- `references/workflows/island-selection-workflow.md` (variant and prop
+  decision tables per island) and
+  `references/workflows/section-asset-workflow.md`
+- `references/authoring/css-and-styling.md` and
+  `references/authoring/source-authoring.md` before writing any class or
+  section CSS
+- `references/mcp-playbooks/tool-sequence-by-stage.md` (Stage 2) and the
+  matching row of `references/mcp-playbooks/tool-sequence-by-page-type.md`
 - `references/animation-system.md` when the plan names a motion moment
 - `references/consumer-behavior-cro.md`
 - `references/island-presets.md`
@@ -370,6 +430,17 @@ Read:
 - `references/design-concepts.md` only when the user wants a visual concept
   before source authoring
 - `references/page-layout.md`
+- `references/proof/proof-ledger.md` (display rules) and the proof files the
+  ledger uses
+- `references/offers/price-presentation.md` and
+  `references/offers/urgency-scarcity.md` when the plan has an Offer ledger
+- `references/assets/generation-policy.md` and `references/assets/slot-spec.md`;
+  `references/assets/video-rules.md` when any slot is video
+- `references/copy/headline-and-cta-rules.md`,
+  `references/anti-patterns/copy-anti-patterns.md`,
+  `references/anti-patterns/dark-patterns.md`,
+  `references/anti-patterns/cro-anti-patterns.md`,
+  `references/anti-patterns/mobile-anti-patterns.md`
 
 Use `lexsis_brand.context`, `lexsis_brand.get_theme`,
 `lexsis_template_library.search_page_kits`,
@@ -377,9 +448,11 @@ Use `lexsis_brand.context`, `lexsis_brand.get_theme`,
 `lexsis_design.islands`, `lexsis_design.island_schema`,
 `lexsis_design.get_section`, `lexsis_template_library.get_kit`,
 `lexsis_asset_library.search`, `lexsis_catalog.get`, `lexsis_catalog.reviews`,
-`lexsis_assets.capabilities`, `lexsis_assets.view`,
+`lexsis_catalog.review_collection_items`, `lexsis_brand.navigation` (full-nav
+types only), `lexsis_assets.capabilities`, `lexsis_assets.view`,
 `lexsis_workspace.credits`,
-`lexsis_drafts.asset_generate`, `lexsis_asset_upload.import`, and
+`lexsis_drafts.asset_generate`, `lexsis_asset_import.import`,
+`lexsis_asset_upload.upload`, and
 `lexsis_pages.compile`, and `lexsis_page_create.create`.
 
 When the user wants one of their saved reusable sections, use
@@ -390,7 +463,11 @@ discovery.
 
 ## Inputs
 
-Use the approved `page-plan.md` and its saved store/theme binding. The plan
+Use the approved `page-plan.md` and its saved workspace, store and theme
+binding, inside the campaign folder the plan opened
+(`work/campaigns/<campaign-slug>/pages/<page-handle>/`). Campaign-level media
+in `../../assets/` is available to every page of the campaign; page-only media
+stays in the page's own `assets/`. The plan
 defines strategy, the Design direction, the Imagery and background plan, the
 asset slots and section intent; it must not define islands or implementation
 details.
@@ -402,8 +479,57 @@ metric. Reopen a decision only when live catalog, asset, or policy evidence
 contradicts the plan.
 
 If the user explicitly skips `/plan-page`, write a short one-page plan with
-the same blocks and record the skip. Never run `/setup` or `/plan-page`
-automatically.
+the same blocks (including the Page type block, Proof ledger and, when an
+offer exists, the Offer ledger) and record the skip. Never run `/setup` or
+`/plan-page` automatically.
+
+## Page-Type Workflow
+
+Before any template fetch or HTML, read `page.pageType` from the manifest and
+the matching `references/page-types/<type>.md`. Its `## Workflow` already
+names, per section, the media decision and the island decision the plan made
+from the context reads; your job is to execute them. Run
+`python3 <plan-page-skill>/scripts/plan_lint.py <page-workspace>` and read
+its WARN rows together with the plan's "Deviations from the type default":
+a deviation the plan explains is a decision, a deviation it does not mention
+is a question for the plan owner. A review section with no review data or
+urgency with no verified basis is the one case to stop and ask.
+
+For each section, in order:
+
+1. **Media first.** Resolve the section's slots exactly as the plan decided
+   (catalog media, library asset, imported file, or an ALLOW-purpose
+   generation). If a slot is still empty at this point, follow
+   `references/workflows/section-asset-workflow.md`: one more library search
+   with the right tag, then decide whether an allowed generation purpose
+   fits, then put one question to the merchant that names what is missing
+   (section, job, aspect, count) and offers upload through
+   `lexsis_asset_import.import` or MCP generation when feasible (the credit
+   confirmation and any ASK approval travel in that same answer). Skip or
+   merge the section only when the merchant chooses. Never ship the
+   section as a colour band, an emoji row, icon tiles or copy alone, and
+   never leave a missing asset unreported.
+2. **Island second.** Take the plan's island decision, call
+   `lexsis_design.island_schema` for that island only, and pick the variant
+   and props from what the live schema offers using the plan's decision
+   inputs (image count for gallery layout and thumbnails, variant axes for
+   swatches vs buttons, review band for carousel vs list, page length for a
+   sticky bar), as `references/workflows/island-selection-workflow.md`
+   describes. Record the chosen variant and the inputs in `islands[]`.
+3. **Copy third.** Short, in the plan's framework, no emoji, no filler.
+
+Carry these type defaults into composition:
+
+- **Above the fold (390px).** Build the type's first screen exactly as listed;
+  nothing else enters it.
+- **CTA.** Count, first position, sticky behaviour and copy pattern from the
+  checklist `cta` block. Every CTA on a single-goal type performs the same
+  action.
+- **Nav.** `none` means logo only, not a link; `minimal` means logo plus one
+  utility link; `full` means the store navigation from `lexsis_brand.navigation`.
+- **Price.** `price_above_fold` is obeyed at 390 and 1280.
+- **Proof density.** Module count inside the checklist range; kinds only from
+  the ledger.
 
 ## Infer the Design Mode
 
@@ -480,15 +606,33 @@ The plan already resolved the asset slots. Read `assets[]` from the manifest:
    using the plan and brand direction. Ask only before paid generation or when
    the unresolved choice would materially change the campaign. In
    `production-ready`, ask once whether to generate or pick existing media.
-4. Import externally generated media into Lexsis before production use, verify
-   identity-sensitive imagery with `lexsis_assets.view`, and set
-   `status: verified` on each resolved slot.
+4. Import externally generated media into Lexsis before production use. View
+   every asset with `lexsis_assets.view` before it enters the source and run
+   the fit review in `references/workflows/section-asset-workflow.md` against
+   the section it belongs to: subject, crop at the slot aspect, a quiet area
+   where the headline and body sit, consistency with the neighbouring slots,
+   palette, no baked-in text or watermark. Never place an asset on the page
+   from its filename, tag or search rank alone. Then set `status: verified` on
+   each resolved slot.
 
 Use Lexsis icons, supported SVG, or CSS for ordinary interface icons. When the
 plan's Icons decision names a set to generate, generate one monochrome SVG set
 (one stroke, one size) and import it. Never fall back to emoji as icons; emoji
 appear only where the plan's "Emoji in copy" line allows them, inside running
-text. Image generation is otherwise for imagery, banners, and illustrations.
+text.
+
+Generation obeys `references/assets/generation-policy.md`. ALLOW purposes
+(`hero_bg`, `section_bg`, `card_bg`, `texture_fill`, `pattern_tile`,
+`decorative_element`, `product_composite` over a real cut-out) may be
+generated after confirmation; `icon_set` is a plan role meaning "author one
+monochrome inline SVG set", never a raster generation. ASK purposes need the merchant's
+explicit yes for that slot. NEVER purposes are not generated under any
+instruction short of the merchant supplying the media themselves: the
+product itself when Shopify media exists or could exist, a person presented
+as a customer, reviewer, creator or staff, before/after or result imagery,
+press logos, badges, certifications or awards, text or prices inside images,
+and competitor products. A slot whose job is on the NEVER list stays
+`planned` and the section is built without it or removed with a note.
 
 Do not use local or temporary placeholder assets. When a store has no usable
 logo image, use an accessible text wordmark or plain HTML header. Do not
@@ -513,28 +657,61 @@ substitute a product image or generic logo placeholder.
    `hydrate`, and its scoped CSS. Check its `requires` first. Unknown id:
    return `PRESET_NOT_FOUND`. Any deviation is recorded as
    `islands[].presetOverrides`; never edit a preset in place for one page.
-5. Review islands follow the plan's Proof sources line: `collectionId` or
-   `productIds`, `minRating`, `pageSize` of 12 or fewer. Omit
-   `reviewsEndpoint`; the page supplies it at runtime. `averageRating` and
-   `totalReviews` only from the `lexsis_catalog.reviews` total. `none` means no
-   review island. Never `SocialProofPopup`.
-6. Write a rough but complete `lexsis-source.html` with stable section
-   delimiters, minimal island props, and the documented examples as a starting
-   point.
-7. Write global page rules to `page-theme.css`; keep section-specific CSS
-   beside its section.
-8. Use LX tokens for brand values and compile-time Tailwind utilities for
-   layout. Do not use a runtime Tailwind CDN.
-9. Compare explicit `NEVER`, `must`, and `non-negotiable` rules in the saved
+5. Proof renders only from the plan's Proof ledger
+   (`references/proof/proof-ledger.md`). Review islands use the ledger's
+   `collectionId` or `productIds`, `minRating`, `pageSize` of 12 or fewer.
+   Omit `reviewsEndpoint`; the page supplies it at runtime. `averageRating`
+   and `totalReviews` only from the `lexsis_catalog.reviews` total. `none`
+   means no review island. Never `SocialProofPopup`, never a live viewer or
+   purchase count. Star glyphs appear only next to a real average and count.
+   Every press logo is an `<a>` to the ledger's article URL, monochrome, one
+   height; a logo with no URL is not rendered. Badges and certifications
+   carry the ledger's issuer text. Quotes are verbatim with the ledger's
+   attribution. Every numeral in a proof section appears in the ledger.
+6. Offers render from the Offer ledger following
+   `references/offers/price-presentation.md`: current price first, compare-at
+   struck through only with a recorded basis and a `data-source` attribute
+   naming it, savings in the merchant's currency, unit or per-day price only when accurate, shipping and tax
+   language from the store. Countdown and stock islands are bound to the
+   ledger's confirmed end date or live inventory, never a fixed number or a
+   timer that resets. Nothing in `references/anti-patterns/dark-patterns.md`
+   ships: no pre-selected paid add-ons, no confirmshaming dismiss copy, no
+   hidden recurring terms, no fake urgency.
+7. Write a rough but complete `lexsis-source.html` with stable section
+   delimiters from the canonical vocabulary, minimal island props, and the
+   documented examples as a starting point.
+8. Write copy as design content using the plan's framework
+   (`references/copy/copy-frameworks.md`) and
+   `references/copy/headline-and-cta-rules.md`: sentence case, the CTA names
+   the action and outcome, the first sentence of every FAQ answer answers,
+   and no word or structure from
+   `references/anti-patterns/copy-anti-patterns.md`. For ad-driven traffic,
+   the hero headline and visual satisfy `references/copy/message-match.md`.
+9. Write global page rules to `page-theme.css`; keep section-specific CSS
+   beside its section. `references/authoring/css-and-styling.md` decides which
+   layer a rule belongs to: tokens and the radius and type scales in theme CSS,
+   all layout in utilities, and section CSS only for a scoped component's
+   geometry, an island's `data-part` hooks, one scoped keyframe, or a fallback.
+10. Use LX tokens for brand values and compile-time Tailwind utilities for
+   layout, mobile-first. There is no runtime Tailwind CDN, and a class the
+   compiler cannot generate is a blocking error, so never invent class names.
+   Author the source itself as `references/authoring/source-authoring.md`
+   describes.
+11. Compare explicit `NEVER`, `must`, and `non-negotiable` rules in the saved
    brand design with matching theme tokens. On a direct value contradiction,
    return `THEME_CONTEXT_CONFLICT` with both values. Do not silently choose one.
-10. Use ordinary HTML for static content and `<lx-island>` source for supported
+12. Use ordinary HTML for static content and `<lx-island>` source for supported
    interactions. Use headless mode only with complete required hooks.
-11. Keep island props schema-valid and use current product bindings. Real
+13. Keep island props schema-valid and use current product bindings. Real
     commerce is tested on the hosted draft.
-12. For guided merchandising, show two or three relevant choices by default,
+14. For guided merchandising, show two or three relevant choices by default,
     name the relationship, show why each item belongs, and preserve the primary
     product decision. Never use an unlabeled generic recommendation carousel.
+15. Media follows `references/assets/slot-spec.md`: every `<img>` has the
+    slot's aspect, minimum resolution, descriptive alt text (empty alt for
+    decorative), `loading="lazy"` below the fold and the hero preloaded;
+    video is click-to-play or muted loop with a poster and captions
+    (`references/assets/video-rules.md`).
 
 ## Parallel Section Generation
 
@@ -592,6 +769,14 @@ Look at both hosted screenshots and answer each question in one line:
      tiles; uniform radius; scattered motion?
    - At 390: is anything clipped, is the price above 1.5 screens, are tap
      targets 48px?
+   - Does the 390 first screen match the type file's "Above the fold" list,
+     nothing more? Is `price_above_fold` obeyed? Is there exactly one
+     conversion goal on single-goal types?
+   - Does every proof element on screen trace to a Proof ledger row (open the
+     press links, count the stars against the ledger total)?
+   - Is any item from `references/anti-patterns/mobile-anti-patterns.md`
+     visible: stacked sticky bars over 15% of the viewport, hover-only
+     controls, text under 16px, side-by-side buttons under 48px?
 
 Write results to `qa-report.md` when review is attempted. Fix local source,
 compile once, update the existing draft with expected-version protection, and
@@ -608,13 +793,17 @@ Show:
 ```text
 Hosted preview: [url]
 Draft: [page id] version [version]
+Page type: [type] · deviations [none | list]
 Hosted review: [not requested | pending | passed]
 Sections: [ordered list]
 Interactive components: [islands]
 Presets: [ids]
+Proof rendered: [n ledger rows] · dropped: [rows and why]
+Offer rendered: [terms | none]
 Reused assets: [slots]
-Generated assets: [slots]
-Unresolved assets: [slots]
+Generated assets: [slots with purposes]
+Unresolved assets: [slots, incl. blocked by generation policy]
+Copy lint: [passed | findings]
 Concept: [not requested | asset ids and approval]
 ```
 
@@ -685,6 +874,13 @@ Read:
 - `references/page-editing.md` only for an existing page
 - `references/merchant-templates.md` only when reusing a merchant template
 - `references/qa-recipe.md` for production-ready QA
+- `references/authoring/css-and-styling.md` and
+  `references/authoring/source-authoring.md` when repairing source
+- the plan's `references/page-types/<type>.md` and
+  `references/proof/proof-ledger.md` for the production gate
+- `references/anti-patterns/copy-anti-patterns.md`,
+  `references/anti-patterns/dark-patterns.md` and
+  `references/anti-patterns/mobile-anti-patterns.md` for hosted QA
 
 Use `lexsis_catalog.get`, `lexsis_design.island_schema`,
 `lexsis_pages.compile`, `lexsis_pages.edit_context`,
@@ -710,9 +906,12 @@ generation, publication, deletion, or destructive replacement.
 
 ## Inputs and Setup Reuse
 
-Use `lexsis-source.html`, `page-theme.css`, and the compact schema-v3 manifest.
-Reuse the saved store/theme binding from `work/storefront/setup/setup.json`.
-Do not call setup again when that binding is valid.
+Use `lexsis-source.html`, `page-theme.css`, and the compact schema-v3 manifest
+from the page workspace inside its campaign folder. Reuse the workspace, store
+and theme binding recorded in the manifest and `campaign.json`, resolved
+through `work/storefront/setup/setup.json`. Do not call setup again when that
+binding is valid, and never switch workspace, store or theme for an existing
+page.
 
 Refresh only volatile creation data: selected products and variants, prices,
 availability, permissions, active island schemas, and an existing page's
@@ -800,8 +999,16 @@ For `production-ready`, or when upgrading an existing `DRAFT_CREATED`:
 5. Verify typography, media, hydration, overflow, responsive geometry,
    expected Shopify variant, cart opening, quantity, subtotal, Quick Add,
    product-grid stability, thumbnails, and authored header/footer order.
-6. Write evidence and blockers to `qa-report.md`.
-7. Set `status: qa_passed` only when all blocking checks pass, then run the
+6. Run `python3 <plan-page-skill>/scripts/plan_lint.py <page-workspace>` and
+   `python3 <design-page-skill>/scripts/design_lint.py <page-workspace>`.
+   Proof and offer findings (a proof element outside the Proof ledger, an
+   offer element outside the Offer ledger, a dark-pattern hit) block; type
+   deviations and copy findings are review notes unless the plan did not
+   record them. Check the 390px first screen against the type file's
+   "Above the fold" list and every numeral in proof sections against the
+   ledger.
+7. Write evidence and blockers to `qa-report.md`.
+8. Set `status: qa_passed` only when all blocking checks pass, then run the
    validator with `--phase draft` and live remote hashes.
 
 Return `DRAFT_READY` only after synchronization and every blocking QA check
@@ -913,6 +1120,7 @@ Read:
 
 - `references/evidence-led-cro.md`
 - `references/consumer-behavior-cro.md`
+- `references/authoring/css-and-styling.md` before any CSS or class change
 - `references/animation-system.md` before adding or editing motion
 
 Use the needed exact actions from
@@ -1114,25 +1322,75 @@ and background plan, and every asset slot on the page.
 Read:
 
 - `references/page-files.md`
+- `references/page-types/_index.md`, then only the matching
+  `references/page-types/<type>.md` (its `## Workflow` is the procedure to
+  follow)
+- `references/workflows/section-asset-workflow.md` (the per-section media
+  loop) and `references/workflows/island-selection-workflow.md`
+- `references/mcp-playbooks/tool-sequence-by-stage.md` and the matching row of
+  `references/mcp-playbooks/tool-sequence-by-page-type.md`
 - `references/animation-system.md` when the page may use motion
 - `references/consumer-behavior-cro.md`
 - `references/design-rules.md`
 - `references/island-presets.md`
 - `references/workflow-intent.md`
+- `references/offers/funnel-stages.md`, `references/offers/offer-ledger.md`,
+  and the matching entries of `references/offers/offer-types.md` and
+  `references/offers/campaign-calendar.md`
+- `references/proof/proof-ledger.md` and `references/proof/reviews-sourcing.md`;
+  `references/proof/press-and-media-mentions.md`,
+  `references/proof/trust-badges-certifications.md`,
+  `references/proof/ugc-rights-and-display.md`,
+  `references/proof/before-after-and-claims.md` when the page plans that kind
+  of proof
+- `references/assets/image-jobs-by-page-type.md`,
+  `references/assets/asset-sourcing-sequence.md`,
+  `references/assets/generation-policy.md`
+- `references/copy/copy-frameworks.md` and `references/copy/message-match.md`
 
 Use `lexsis_catalog.list`, `lexsis_catalog.get`,
 `lexsis_template_library.search_page_kits`,
 `lexsis_template_library.search_sections`, `lexsis_template_library.get_kit`,
 `lexsis_asset_library.search`, `lexsis_assets.view`,
-`lexsis_asset_upload.import`, `lexsis_drafts.asset_generate`,
+`lexsis_asset_import.import`, `lexsis_asset_upload.upload`,
+`lexsis_drafts.asset_generate`,
 `lexsis_workspace.credits`, `lexsis_catalog.reviews_status`,
-`lexsis_catalog.review_collections`, `lexsis_catalog.reviews`, and
-`lexsis_catalog.reviews_search`. Resolve an unfamiliar schema with exact
+`lexsis_catalog.review_collections`, `lexsis_catalog.reviews`,
+`lexsis_catalog.reviews_search`, and, for ad-driven or persona-led pages,
+`lexsis_campaigns.creatives`, `lexsis_campaigns.analyze`,
+`lexsis_campaigns.personas`, `lexsis_campaigns.match_persona`; for quiz and
+lead-capture types, `lexsis_capture.funnel_templates` and
+`lexsis_capture.funnel_template`. Resolve an unfamiliar schema with exact
 router/action discovery.
 
-Read `work/storefront/setup/setup.json`, select one saved store/theme pair, and
-read its brand design. If the selection is not saved, stop with
-`Run /setup for this store and theme first.`
+## Bind the Workspace and Open the Campaign Folder
+
+Read `work/storefront/setup/setup.json`. Select one saved workspace, store and
+theme triple: the one the user names, otherwise the saved defaults. Read that
+store's brand design and that theme's CSS. If the selection is not saved, stop
+with `Run /setup for this store and theme first.` State the workspace, store
+and theme in one line so a wrong default is visible immediately, and never mix
+files from two themes, stores or workspaces on one page.
+
+Then infer the campaign folder from the request with the table in
+`references/page-files.md` (occasion and year, named sale, product launch,
+evergreen funnel, channel test, collaboration, or `adhoc-<yyyy-mm>` when the
+request is not campaign-shaped). Reuse the folder when this page continues an
+existing campaign, including a variant or an edit; open a new one when the
+occasion, offer or product changes. Say which folder is in use.
+
+```text
+work/campaigns/<campaign-slug>/
+├── campaign.json     binding and campaign facts
+├── campaign.md       one-page brief
+├── assets/           media shared across this campaign's pages
+└── pages/<page-handle>/
+```
+
+Write `campaign.json` with the binding and the confirmed campaign facts, and
+`campaign.md` with the brief, before the page workspace. A campaign folder
+holds one workspace, store and theme binding; a second store means a second
+folder. Every page repeats the binding in its own manifest.
 
 ## Infer the Planning Mode
 
@@ -1164,11 +1422,74 @@ If a packaged design or preset reference is unavailable, warn once and
 continue from the saved brand, theme, and live catalog. A missing optional
 reference must not prevent a reversible plan.
 
+## Identify the Page Type
+
+Do this before any template, asset, or proof call. Walk the decision tree in
+`references/page-types/_index.md` from the brief: traffic source, funnel stage,
+awareness level, offer shape, product count, campaign trigger, desired action.
+Choose exactly one `pageType`. When two fit, the index names the tie-break;
+when the brief is silent, choose the type that assumes less of the visitor and
+say so. Then load only `references/page-types/<type>.md`.
+
+Write this block at the top of `page-plan.md` and mirror it in the manifest
+(`page.pageType`, `page.funnelStage`, `page.awareness`, `page.trafficSource`,
+`offer`, `campaign`):
+
+```markdown
+## Page type
+
+**Type.** <file name without .md>
+**Funnel stage.** tof | mof | bof | retention
+**Awareness.** unaware | problem-aware | solution-aware | product-aware | most-aware
+**Traffic.** <source>
+**Offer.** <offer-types id> or none
+**Campaign.** <campaign-calendar id> or evergreen
+**Copy framework.** <copy-frameworks id>
+**Mandatory sections omitted.** none | `<id>`: <reason>
+**Deviations from the type default.** none | <field>: <value>, <reason>
+```
+
+Then follow the type file's `## Workflow` in order:
+
+1. **Context reads.** Run its numbered tool calls first and note what they
+   return: how many catalog images exist and which image jobs they cover,
+   the variant axes and whether colour variants have their own images, price
+   and compare-at, selling plans, inventory, the review count band, theme
+   tokens and voice, what the asset library holds under each tag, and the ad
+   creative when traffic is paid. Every later decision cites one of these.
+2. **Section by section.** For each section in the type's Anatomy order,
+   decide three things and write them into the plan: the media (which image
+   job, where it comes from, or generate when the policy allows; when nothing
+   fits, tell the merchant exactly what is missing and offer upload or MCP
+   generation, and skip the section only if they choose:
+   `references/workflows/section-asset-workflow.md`), the interactive
+   component if any (name the island role and the decision inputs from the
+   context reads; the plan never resolves a schema or names props, and
+   `/design-page` reads the live catalog and schema for the variant and props:
+   `references/workflows/island-selection-workflow.md`; record the inputs and
+   a `Preset:` or one-line note), and the copy pattern and ceiling. A section that would end up as
+   a colour band, emoji row, icon tiles or a wall of text is rebuilt around
+   imagery or put to the merchant.
+3. **Asset budget.** Fill the type's asset-budget table for this product:
+   what the catalog and library supply, which jobs are missing, and per gap
+   whether to reuse, generate (with the purpose), or ask the merchant to
+   upload or approve generation. Every missing asset is listed for the
+   merchant; in fast-draft, proceed with the closest existing asset or a
+   `planned` slot and still list it. Assets carry the page; plain colour
+   does not.
+
+The `## Checklist` JSON is the default this workflow lands on. When the
+context argues for something else (a PDP with two images, a store with no
+reviews, a brand whose voice bans a section), deviate and record it under
+"Deviations from the type default". Run
+`python3 <plan-page-skill>/scripts/plan_lint.py <page-workspace>` before
+presenting the plan and treat its WARN rows as that deviation list.
+
 ## Ask Only What Is Missing
 
 Collect:
 
-1. Page or campaign type.
+1. Page type, only when the brief leaves the identified type ambiguous.
 2. Product or collection.
 3. Audience and customer problem.
 4. Traffic source.
@@ -1267,10 +1588,15 @@ Keep `page-plan.md` concise enough to scan in one view. Include:
 - selected template direction
 - ordered section list
 - one sentence describing each section's purpose
+- the Page type block defined above
 - the Consumer decision model block from
   `references/consumer-behavior-cro.md`
 - the Design direction, Imagery and background plan, and Asset slots blocks
   defined below
+- the Proof ledger and, when an offer exists, the Offer ledger
+- the copy framework and headline pattern from
+  `references/copy/copy-frameworks.md`, and the message-match line from
+  `references/copy/message-match.md` for ad-driven traffic
 - offers and claims that require confirmation
 
 ### Design direction (required block in page-plan.md)
@@ -1345,10 +1671,20 @@ exception is the bold moment named above. Sections without imagery are
 separated by spacing and a hairline, not colour.
 
 Before finalizing the imagery plan, map the existing gallery to the relevant
-jobs in `references/consumer-behavior-cro.md`: identity, detail, scale/fit,
-texture/finish, context, variation, setup/sequence, and sourced proof. Create
-slots only for decision-critical missing jobs. If paid generation would fill
-them, ask once with the exact jobs, count, aspects, and placements.
+jobs in `references/consumer-behavior-cro.md` and to the page type's
+`imagery.required_jobs` in `references/assets/image-jobs-by-page-type.md`:
+identity, detail, scale/fit, texture/finish, context, variation,
+setup/sequence, and sourced proof. Create slots for every required job the
+gallery does not cover and for decision-critical gaps. Resolve each slot with
+the ordered sequence in `references/assets/asset-sourcing-sequence.md`
+(Shopify media, asset library, merchant-supplied or brand-site capture,
+licensed stock where the policy allows, then generation). A slot may be
+planned for generation only when its purpose is on the ALLOW list in
+`references/assets/generation-policy.md`; NEVER-list jobs (the product
+itself, people shown as customers, results, logos, badges, text in images)
+stay `planned` until the merchant supplies media. If paid generation would
+fill allowed gaps, ask once with the exact jobs, count, aspects, and
+placements.
 
 ### Asset slots
 
@@ -1358,13 +1694,18 @@ List every slot the wireframe names, for any page type:
 | Slot | Section | Role/purpose | Aspect | Source decision | Id / URL | Status |
 |---|---|---|---|---|---|---|
 | A1 | gallery | product_media | 4:5 | shopify media | gid://…/ProductImage/… | verified |
-| A2 | proof | product_lifestyle | 3:2 | generate | | planned |
+| A2 | story | context | 3:2 | library | asset 7f2e… | verified |
+| A3 | closing-cta | hero_bg | 3:2 | generated (after credit confirmation) | | planned |
+| A4 | benefits | in-use | 3:2 | pending: merchant to upload, or approve a `product_composite` scene | | planned |
 ```
 
-`Role/purpose` uses the generation purposes where they apply (`hero_bg`,
-`product_lifestyle`, `section_bg`, `product_composite`, `texture_fill`,
-`decorative_element`) plus `product_media`, `logo`, `proof`, and `icon_set` (only
-when the Icons decision says a set must be generated). `Status` is `verified`
+`Role/purpose` uses the image job for real media (`product_media`, `context`,
+`in-use`, `logo`, `proof`, ...) and the generation purpose for generated
+media: ALLOW purposes `hero_bg`, `section_bg`, `card_bg`, `texture_fill`,
+`pattern_tile`, `decorative_element`, `product_composite`; `product_lifestyle`
+only as an ASK slot with the merchant's yes recorded; `icon_set` when the
+Icons decision says a monochrome inline SVG set must be authored
+(`references/assets/generation-policy.md`). `Status` is `verified`
 or `planned`. Ordinary interface icons come from one inline SVG set and are
 not slots; emoji are never an icon fallback.
 
@@ -1380,40 +1721,88 @@ skill searches only for what the user did not pick.
    `selection_order` (A1, A2, …). Confirm the mapping in one line or take a
    one-line remap. Without a picker: Storefront → Design library → Assets;
    accept filenames or URLs and look them up with `mode: "filename"`. Files
-   not yet in the library go through `lexsis_asset_upload.import` with no
-   source; the upload panel's message carries the new asset id.
-2. **Skill fills the gaps.** For every slot still unresolved, search
-   `lexsis_asset_library.search` (semantic, then tags) and the product's
-   Shopify media through `lexsis_catalog.get`. Present the table with the best
-   candidate per slot, then ask once: **I pick** (use the best match for every
-   remaining slot) or **Generate the gaps** (check `lexsis_workspace.credits`,
-   then `lexsis_drafts.asset_generate` per slot with its purpose and aspect).
-3. Verify identity-sensitive picks with `lexsis_assets.view`. Record the
-   provider and asset id for generated slots.
+   not yet in the library go through `lexsis_asset_upload.upload` with the
+   selected `workspace_id` and `theme_id`; wait for the user's uploaded-asset
+   message with the new asset id. Import supplied URLs, image base64 plus
+   `mime_type`, or conversation attachments through `lexsis_asset_import.import`
+   instead, using exactly one source. Without inline UI, ask for a URL or
+   conversation attachment and import it; never call import with no source.
+2. **Skill fills the gaps.** For every slot still unresolved, search the
+   product's Shopify media through `lexsis_catalog.get`, then
+   `lexsis_asset_library.search` (tags first, then semantic, then filename).
+   Present the table with the best candidate per slot and, for every slot
+   with no candidate, say exactly what is missing (section, job, aspect,
+   count). Then ask once: **I pick** (use the best match for every remaining
+   slot), **Upload** (the merchant supplies files through
+   `lexsis_asset_upload.upload`, or URLs/attachments through
+   `lexsis_asset_import.import`), or **Generate the gaps**
+   (only ALLOW purposes, or ASK purposes with the merchant's yes recorded;
+   check `lexsis_workspace.credits`, then `lexsis_drafts.asset_generate` per
+   slot with its purpose and aspect). Skipping a section is the merchant's
+   choice, offered alongside.
+3. View every asset before it fills a slot. `lexsis_assets.view` returns the
+   image itself; judge it against the section with the fit review in
+   `references/workflows/section-asset-workflow.md` (subject does the job,
+   crops without losing the subject, leaves a quiet area for the copy,
+   matches the neighbouring slots' lighting and styling, colours sit inside
+   the palette, no baked-in text or watermark). A filename, tag or alt text
+   is never evidence. View the candidates for one section together so the set
+   reads as one shoot. Record the provider and asset id for generated slots
+   and view those too.
 4. Write the final table into the plan and one `assets[]` entry per slot into
    the manifest. A slot the user postpones stays `planned`; `/design-page`
    confirms only those.
 
-### Proof sources
+### Proof ledger
 
-Before planning any reviews or testimonials section, call
-`lexsis_catalog.reviews_status` and `lexsis_catalog.review_collections` with
-`collection_status: "active"`. Ask question 9 with the active collections and
-their `item_count`. Write one line in the plan:
+Every proof element on the page is a row in the `## Proof ledger` block
+defined in `references/proof/proof-ledger.md`: kind, claim it supports,
+source, evidence id or URL, verification status, and the section that shows
+it. Nothing renders that is not in the ledger. Fill it with the tiered
+procedure in `references/proof/reviews-sourcing.md`:
 
-```text
-reviews → collection:<id> "<name>" (<n> items)
-        | products:<gid, …> (min rating <r>, <n> available via lexsis_catalog.reviews)
-        | none → guarantees, certifications, product evidence instead
-```
+1. `lexsis_catalog.reviews_status`, then `lexsis_catalog.review_collections`
+   with `collection_status: "active"`, then `lexsis_catalog.reviews`
+   (`rating_min`, `has_media`, `product_id`) for counts and distribution.
+2. `lexsis_catalog.reviews_search` once per top decision question to place
+   proof beside the claim it answers.
+3. Only when tiers 1 and 2 return nothing usable: the zero-review playbook
+   (public reviews on marketplaces, Google, Trustpilot, Reddit, YouTube,
+   creator content) via the host's web search and `lexsis_assets.view`. An
+   external quote enters the ledger as `external-verified` only with its
+   source URL, the merchant's written approval, verbatim text, and
+   attribution the platform's terms permit. Marketplace review text that the
+   platform forbids reusing is evidence for the merchant, never page copy.
+4. Still nothing: plan guarantees, policy facts, certifications with issuer
+   ids, test data, a founder note, or verified press instead. Never a review
+   section, never invented counts, never `SocialProofPopup`.
 
-`connected: false` with an empty library means `none`; do not plan the
-section. Every count comes from the API and is listed under "Claims to
-confirm". The plan never activates a collection. To propose a shortlist, run
-`lexsis_catalog.reviews_search` and, only when the user asks,
-`lexsis_drafts.review_collection_create` (draft); the merchant activates it in
-Storefront → Reviews → Collections. If the host returns `UNKNOWN_ACTION` for
-these actions, ask the user to pick a collection there and paste its id.
+Ask question 9 with the active collections and their `item_count`. Every
+number in the ledger comes from the API or a linked source and is repeated
+under "Claims to confirm". The plan never activates a collection; to propose
+a shortlist, run `lexsis_catalog.reviews_search` and, only when the user asks,
+`lexsis_drafts.review_collection_create` (draft). If the host returns
+`UNKNOWN_ACTION`, ask the user to pick a collection in Storefront → Reviews →
+Collections and paste its id.
+
+Press logos, "as seen in" marquees, badges, certifications, UGC, before/after
+media, expert quotes, and counts follow their own files in
+`references/proof/`. A press logo without a linked article, a badge without
+an issuer, UGC without rights, or a count without a source does not enter the
+ledger and does not appear on the page.
+
+### Offer ledger
+
+When the page carries any offer, discount, bundle price, urgency, or
+delivery promise, write the `## Offer ledger` block from
+`references/offers/offer-ledger.md`: offer type, exact terms, math shown on
+the page, compare-at basis, start and end, stock basis, exclusions, regions,
+code, stacking, and who confirmed each item. Use
+`references/offers/offer-types.md` for the anatomy changes the offer type
+requires and `references/offers/price-presentation.md` and
+`references/offers/urgency-scarcity.md` for what may be shown. A countdown or
+stock indicator is planned only when the ledger has a confirmed end date or
+live inventory read. Mirror the summary in the manifest `offer` block.
 
 Verify facts that control the page's urgency or trust before treating them as
 copy. This includes occasion dates, delivery cutoffs, prices, availability,
@@ -1431,9 +1820,11 @@ Do not include:
 - template search transcripts
 - QA, compilation, synchronization, or publishing state
 
-Create the page directory, `assets/`, and a compact schema-v3
-`page-manifest.json` using `references/page-files.md`, including one
-`assets[]` entry per slot and the `reviews` block. Do not create source,
+Create the page directory under `work/campaigns/<campaign-slug>/pages/`, its
+`assets/`, and a compact schema-v3 `page-manifest.json` using
+`references/page-files.md`, including `campaignSlug`, `campaignPath`, the
+workspace, store and theme ids, one `assets[]` entry per slot, and the
+`reviews` block. Add the page handle to `campaign.json` `pages[]`. Do not create source,
 preview, compile, or QA files.
 
 ## Approval
@@ -1442,16 +1833,24 @@ Present:
 
 ```text
 Page:
+Campaign: <campaign-slug> (<campaign type>)
+Binding: <workspace> / <store> / <theme>
+Page type: <type> · <funnel stage> · <awareness> · <traffic>
+Deviations from the type default: <none | list>
+Mandatory sections omitted:
 Goal:
 Audience:
+Offer: <type and terms | none>
+Campaign:
+Copy framework:
 Template direction:
 Design direction:
 Bold moment:
 Overrides:
 Sections:
-Asset slots: <n verified / m planned>
+Asset slots: <n verified / m planned / k blocked by generation policy>
 Planned slots (unresolved):
-Proof sources:
+Proof ledger: <n verified / m pending / k dropped>
 Consumer decision model:
 Behavioral hypothesis:
 Claims to confirm:
@@ -1464,110 +1863,22 @@ review the plan first or the route requires paid generation.
 
 ## Return
 
-Return the working directory, plan path, manifest path, the asset slot
-summary, inferred next route, and `PLAN_APPROVED`. The next command is
-`/design-page`, `/build`, or `/build-with-template` according to that route.
+Return the campaign path, the page working directory, plan path, manifest path,
+the workspace, store and theme in effect, the asset slot summary, the
+missing-asset list, the inferred next route, and `PLAN_APPROVED`. Name the
+route with the command it maps to:
 
-### plan-page reference: page-files
+| Route | Next command | When |
+|---|---|---|
+| `direct-design` | `/design-page` | the normal source and hosted-draft review |
+| `concept-first` | `/design-page` (concept path) | the user wants to approve a mockup first |
+| `fast-build` | `/build` | fastest draft, no template supplied |
+| `fast-build` | `/build-with-template` | the user supplied a page-kit or section-template URL |
 
-# Initial Page Files
-
-Create:
-
-```text
-work/visual-pages/<page-handle>/
-├── page-plan.md
-├── page-manifest.json
-└── assets/
-```
-
-Start with a compact progressive manifest:
-
-```json
-{
-  "schemaVersion": 3,
-  "status": "planned",
-  "workflow": {
-    "skippedSkills": []
-  },
-  "page": {
-    "title": "...",
-    "handle": "...",
-    "archetype": "landing"
-  },
-  "workspaceId": "...",
-  "storeId": "...",
-  "themeId": "...",
-  "setupPath": "work/storefront/setup/setup.json",
-  "template": {
-    "mode": "page-kit",
-    "pageKitId": "...",
-    "sectionTemplateIds": ["..."]
-  },
-  "sections": [
-    "hero",
-    "benefits",
-    "closing-cta"
-  ],
-  "products": [
-    {
-      "productId": "...",
-      "variantIds": ["..."]
-    }
-  ],
-  "assets": [
-    {
-      "slotId": "A1",
-      "role": "hero_bg",
-      "sectionId": "hero",
-      "sourceType": "lexsis",
-      "assetId": "...",
-      "url": "https://...",
-      "status": "verified"
-    },
-    {
-      "slotId": "A2",
-      "role": "product_lifestyle",
-      "sectionId": "benefits",
-      "sourceType": "pending",
-      "status": "planned"
-    }
-  ],
-  "reviews": {
-    "source": "collection",
-    "collectionId": "...",
-    "productIds": [],
-    "minRating": 4,
-    "available": 37
-  }
-}
-```
-
-`template.mode` is `page-kit`, `sections`, or `custom`. For custom
-composition, keep the rationale in `page-plan.md`; do not store template
-search transcripts in JSON.
-
-`assets[]` holds one entry per asset slot in the plan. `sourceType` is
-`lexsis` (with `assetId`), `shopify` (with `productId` and `mediaId`), or
-`pending` while the slot is still `planned`.
-`status` is `verified` or `planned`.
-
-`reviews` records the plan's Proof sources line: `source` is `collection`,
-`products`, or `none`; `collectionId` or `productIds` name the real source;
-`available` is the count returned by the reviews API. Omit the block when the
-page has no review section.
-
-The manifest grows only when later stages have real state to record:
-
-- `/plan-page` writes `assets[]` (verified or planned) and `reviews`.
-- `/design-page` resolves `planned` assets and adds compact `config`,
-  `islands`, `design`, `sync`, `remote`, and pending `qa` records.
-- `/generate` creates a draft only when none exists; otherwise it updates
-  synchronization and QA state.
-
-Do not prefill null production, approval, hash, QA, or remote fields. Do not
-store copy intent, claims, occasion research, omitted components, or creative
-notes in the manifest.
+Every route builds the page the same way: the type's `## Workflow`, media
+decided per section before copy, every asset viewed before use, and missing
+slots reported rather than filled with colour or copy. `fast-build` asks fewer
+questions and skips the design-approval stage; it does not skip the assets.
 
 ---
 
@@ -1631,7 +1942,7 @@ evidence.
 
 # Skill: setup
 
-> Connect a Lexsis storefront workspace and save reusable brand and theme design context. Run once initially, then only to add or refresh a store or theme.
+> Connect one or more Lexsis storefront workspaces and save reusable brand and theme design context per workspace, store and theme. Run once initially, then to add, switch or refresh a workspace, store or theme.
 
 # Set Up Lexsis
 
@@ -1650,41 +1961,57 @@ failure; the real domain call determines whether the operation is available.
 ## What to Save
 
 1. Resolve only unfamiliar schemas through exact router/action discovery.
-2. Resolve the authorized workspace and connected stores.
-3. When several stores or themes exist, ask the user which ones to save and
-   which store/theme should be the default. Show names, not raw IDs.
+2. Call `lexsis_workspace.list` for every authorized workspace, then
+   `lexsis_workspace.stores` per workspace for its connected stores, then
+   `lexsis_brand.list_themes` per store. An agency or multi-brand account
+   commonly has several workspaces, each with its own stores and themes.
+3. Show the tree by name, never raw ids, and ask which workspaces, stores and
+   themes to save and which of each should be the default. Saving one
+   workspace now does not prevent adding another later. When only one
+   workspace, store or theme exists, save it and say so instead of asking.
 4. For each selected store, read the brand kit, design guide, voice, and
    navigation. For each selected theme, read its exact theme CSS.
-5. Write:
+5. Write one file per saved artefact, namespaced by workspace so two
+   workspaces can hold a store with the same name:
 
 ```text
 work/storefront/setup/
 ├── setup.json
-└── stores/
-    └── <store-id>/
-        ├── brand-design.md
-        └── themes/
-            └── <theme-id>.css
+└── workspaces/
+    └── <workspace-id>/
+        └── stores/
+            └── <store-id>/
+                ├── brand-design.md
+                └── themes/
+                    └── <theme-id>.css
 ```
 
-`setup.json` indexes every saved store/theme pair and identifies one default:
+`setup.json` indexes every saved workspace, store and theme, and names one
+default at each level:
 
 ```json
 {
-  "schemaVersion": 1,
-  "workspaceId": "...",
-  "defaultStoreId": "...",
-  "defaultThemeId": "...",
-  "stores": [
+  "schemaVersion": 2,
+  "defaultWorkspaceId": "...",
+  "workspaces": [
     {
-      "storeId": "...",
-      "storeName": "Main Store",
-      "brandDesignPath": "stores/<store-id>/brand-design.md",
-      "themes": [
+      "workspaceId": "...",
+      "workspaceName": "Acme Brands",
+      "defaultStoreId": "...",
+      "defaultThemeId": "...",
+      "stores": [
         {
-          "themeId": "...",
-          "themeName": "Light",
-          "themeCssPath": "stores/<store-id>/themes/<theme-id>.css"
+          "storeId": "...",
+          "storeName": "Main Store",
+          "storeDomain": "acme.myshopify.com",
+          "brandDesignPath": "workspaces/<workspace-id>/stores/<store-id>/brand-design.md",
+          "themes": [
+            {
+              "themeId": "...",
+              "themeName": "Light",
+              "themeCssPath": "workspaces/<workspace-id>/stores/<store-id>/themes/<theme-id>.css"
+            }
+          ]
         }
       ]
     }
@@ -1692,14 +2019,44 @@ work/storefront/setup/
 }
 ```
 
-The default theme must belong to the default store. Adding a theme must not
-replace another theme's CSS or another store's design file.
+Rules for the index:
+
+- `defaultWorkspaceId` names a saved workspace; each workspace's
+  `defaultStoreId` names one of its own stores and `defaultThemeId` one of
+  that store's themes. A default never points across workspaces.
+- Paths are relative to `setup.json` and unique per workspace, store and
+  theme. Adding a theme never overwrites another theme's CSS, another store's
+  design file, or another workspace's tree.
+- Schema 1 (a single flat `workspaceId` with `stores[]` at the root) is still
+  readable. When a schema-1 file is found and the user adds a second
+  workspace, migrate it: move `stores/` under
+  `workspaces/<workspace-id>/stores/`, wrap the existing entry in
+  `workspaces[]`, set `schemaVersion: 2` and `defaultWorkspaceId`, and update
+  every `brandDesignPath` and `themeCssPath`. Say that the migration happened.
+
+## Switching Workspace, Store or Theme
+
+A page binds exactly one workspace, store and theme, recorded in its manifest
+as `workspaceId`, `storeId` and `themeId`, and it never silently changes.
+
+- When the user names a workspace, store or theme, resolve it by name from
+  `setup.json` and use it. An ambiguous name (the same store name in two
+  workspaces) is disambiguated by asking, showing the workspace for each.
+- When the user names nothing, use the defaults, and state which workspace,
+  store and theme are in effect in one line so a wrong default is visible
+  immediately.
+- Switching mid-campaign is a new binding, not an edit: a page already bound
+  to one store keeps that binding, and a page for the other store belongs to
+  its own campaign folder or its own page workspace. Never combine design
+  files or theme CSS from two themes, stores or workspaces on one page.
+- `/setup` can be re-run to add a workspace, store or theme, or to change a
+  default, without touching what is already saved.
 
 ## Reuse
 
-If a requested store/theme is already saved, reuse it. Refresh only when the
-user asks, adds a store/theme, or Lexsis reports that the saved binding is no
-longer valid.
+If a requested workspace, store or theme is already saved, reuse it. Refresh
+only when the user asks, adds one, or Lexsis reports that the saved binding is
+no longer valid.
 
 Do not cache changing commerce or operational data. Page skills still read
 current products, variants, prices, assets, island schemas, permissions,
@@ -1709,8 +2066,9 @@ Never save credentials, cookies, authorization headers, or tokens.
 
 ## Return
 
-Return the setup path, saved store/theme names, default selection, MCP status,
-discovered capabilities, actions called, fallbacks, and blockers. Other skills
+Return the setup path, the saved tree as workspace then store then theme names,
+the default at each level, MCP status, discovered capabilities, actions called,
+fallbacks, and blockers. Say whether a schema-1 file was migrated. Other skills
 read this setup independently and never invoke `/setup` automatically.
 
 ---
@@ -1720,6 +2078,10 @@ read this setup independently and never invoke `/setup` automatically.
 ---
 
 # Storefront Craft Guide — Start Here
+
+> **Not real islands:** `CompareTable`. They have no schema. Verify every island name
+> against `lexsis_design` action `islands`; the replacement for each job is in
+> `references/workflows/island-selection-workflow.md`.
 
 > House rules in `storefront-engine/references/design-rules.md` override every example below.
 > Examples show structure and copy intent; their styling (gradients, hover transforms,
@@ -1851,7 +2213,12 @@ Use via `style="color: var(--lx-accent-color)"` or `style="font-family: var(--lx
 3. **No `@import` in section CSS** — blocked
 4. **No external `url()` in CSS** — only inline colors via `--lx-*` tokens
 5. **No duplicate section IDs** — each must be unique kebab-case
-6. **No `<script src="...">` in HTML** — use section `js` field for vanilla JS
+6. **No `<script src="...">` in HTML.** The section `js` field is compiler
+   output, not something you author: in source you write a top-level
+   `<script>` inside the section, and almost always you write none. Anything
+   needing a timer, an observer or global access belongs in a managed motion
+   module (`references/animation-system.md`) or an island; approved
+   integrations go in `scripts[]`.
 7. **No framework code** — no React/Vue/Angular in section HTML (islands handle interactivity)
 8. **Don't fake commerce** — always use BuyBox island for add-to-cart, never a plain button
 
@@ -2285,7 +2652,7 @@ Rules for applying it:
 
 ## 2. Design rules for generated storefront pages
 
-Format per rule: imperative sentence; rationale; a check the agent can run. Checks are written for macOS (BSD grep has no `-P`; use `perl -CSD`). `$W` is the page workspace, e.g. `work/visual-pages/<handle>`. Browser checks run in the hosted draft via the browser tool's evaluate call.
+Format per rule: imperative sentence; rationale; a check the agent can run. Checks are written for macOS (BSD grep has no `-P`; use `perl -CSD`). `$W` is the page workspace, e.g. `work/campaigns/<campaign-slug>/pages/<handle>`. Browser checks run in the hosted draft via the browser tool's evaluate call.
 
 ### 2.1 NEVER
 
@@ -2341,6 +2708,7 @@ Rationale: gradient + hover-lift is the SaaS-card kit that reads as generated re
 Check:
 ```bash
 grep -nE 'gradient\(|bg-gradient|shimmer|animate-pulse|pulseRing|float-|hover:scale|hover:-translate|scale\(1\.[0-9]|box-shadow:\s*0 0 ' $W/lexsis-source.html $W/page-theme.css | wc -l   # 0, or only the plan-named overlay
+grep -nE 'box-shadow:[^;}]*(--lx-accent|color-mix\()' $W/lexsis-source.html $W/page-theme.css | wc -l   # 0; a shadow tinted with the accent is a glow whatever its offsets
 ```
 
 N8. Never wrap plain text in a card. A card (`--lx-bg-surface`, border, or shadow with radius) surrounds a distinct object only: a product, a proof artefact with an image, a table, a form, a quoted review. Paragraphs, lists and FAQs sit on the page background.
@@ -2456,7 +2824,7 @@ Check: `grep -cE '>(Shop Now|Get Started|Learn More|Buy Now)\s*(→)?<' $W/lexsi
 
 Cream page + high-contrast serif + terracotta accent as the only idea; identical rounded cards with one radius and one grey shadow; tracked-out ALL-CAPS eyebrow above every heading; meta strings joined with middle dots; `WORD — fragment` labels; `→` appended to links and buttons; icon in a rounded tile above every heading; discount pills and "MOST POPULAR" ribbons; gradient washes; fade-up on every section; five gold stars with a round avatar and an italic quote; a monospace face for small labels; near-black `#0B0B0B` standing in for black.
 
-Source audit: `work/research/lexsis-design-rules.md` (2026-09-05).
+Source audit: internal design-rules research (2026-09-05).
 
 ---
 
@@ -3070,7 +3438,7 @@ Rules: ids must exist in `island-presets.md`; the plan lists at most one preset 
 
 `preset` is a string or `null` (custom composition, rationale in `page-plan.md`). `presetOverrides` omitted when empty. `design.stylePack` stays; a preset set is not a style pack, but when a page uses presets of a single tone, record `design.presetTone`.
 
-Source: `work/research/lexsis-island-presets.md`.
+Source: internal island-preset audit (2026-09-10).
 
 ---
 
@@ -3272,20 +3640,24 @@ Islands are React components that hydrate client-side. They handle interactive c
 
 ### Key Islands by Use Case
 
-| Need | Island | Key Props |
-|------|--------|-----------|
-| Add to cart | BuyBox | product.title, product.price, product.variants |
-| Product images | ProductGallery | images[], layout |
-| Cart drawer | DrawerShell | Contains CartLines + CartCheckoutButton |
-| Reviews | ReviewCarousel | provider, productId |
-| FAQ accordion | FAQ | items[{question, answer}] |
-| Email capture | EmailCapture | provider, listId |
-| Announcement | AnnouncementBar | message, link, dismissible |
-| Navigation | Navbar / SiteHeader | links[], logo |
-| Footer | Footer | links[], social[], newsletter |
-| Product grid | EditorialProductGrid | products[], columns |
-| Trust badges | TrustBadgeBar | badges[{icon, text}] |
-| Social proof popup | SocialProofPopup | provider, delay |
+The catalog is the source of truth: read `lexsis_design` action `islands`, then
+`island_schema` for the one you pick. Prop shapes below are indicative only.
+
+| Need | Island | Note |
+|------|--------|------|
+| Add to cart | BuyBox | the only commerce island for purchase; never a custom button |
+| Product images | ProductGallery, or ProductHero for a split PDP hero | layout by image count |
+| Cart | none on the page | Cart V2 through `head.use_cart_v2` and the cart profile; CartDrawer is deprecated |
+| Reviews | ReviewCarousel or ReviewList | bound to a real collection or product ids from the Proof ledger |
+| FAQ accordion | none | native `<details>`/`<summary>`; the FAQ island is deprecated |
+| Email capture | EmailCapture | consent copy is authored HTML beside it |
+| Announcement | AnnouncementBar | one message; paired with Navbar, not SiteHeader |
+| Navigation | Navbar or SiteHeader, plus MobileMenu | full-nav page types only |
+| Footer | Footer | last section |
+| Product grid | none | a card composition per `references/product-grid.md` with QuickAdd, or FeaturedCollectionStage for a group |
+| Trust badges | none | static HTML with the issuer text from the Proof ledger |
+| Countdown | CountdownTimer | required prop is `endDate`; only with a verified end |
+| Recent-purchase popup | none, ever | fabricated proof (`references/proof/proof-ledger.md`) |
 
 ### Prop Data Sources
 - Product data → `lexsis_catalog` action `get` or `list`
@@ -3585,6 +3957,14 @@ inference never authorizes publishing, paid generation, or deletion.
 
 ## Shared Safety
 
+- Identify one page type (`references/page-types/_index.md`) before templates,
+  assets or proof; its `## Workflow` guides every later stage and its checklist
+  is the default anatomy.
+- Render proof only from the plan's Proof ledger and offers only from its
+  Offer ledger; never invent reviews, counts, logos, badges or urgency.
+- Generate imagery only for ALLOW purposes in
+  `references/assets/generation-policy.md`; never the product, people as
+  customers, results, badges or text in images.
 - Bind every page to one saved store/theme pair.
 - Read changing product, price, asset, schema, permission, analytics, and
   version data live.
@@ -3599,6 +3979,10 @@ inference never authorizes publishing, paid generation, or deletion.
 ---
 
 # Conversion Psychology — Storefront Design Intelligence
+
+> **Not real islands:** `CompareTable`. They have no schema. Verify every island name
+> against `lexsis_design` action `islands`; the replacement for each job is in
+> `references/workflows/island-selection-workflow.md`.
 
 > House rules in `storefront-engine/references/design-rules.md` override every example below.
 > Examples show structure and copy intent; their styling (gradients, hover transforms,
@@ -4541,6 +4925,10 @@ This framework synthesizes merchant-provided Shopify CRO research with:
 
 # Island Patterns — Wrapper HTML & Combination Recipes
 
+> **Not real islands:** `CompareTable`, `ExitIntent`, `TrustBadgeBar`. They have no schema. Verify every island name
+> against `lexsis_design` action `islands`; the replacement for each job is in
+> `references/workflows/island-selection-workflow.md`.
+
 > **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
 
 How to properly embed, wrap, and combine React islands in vibe-code HTML sections. Load when using commerce or engagement islands.
@@ -5143,6 +5531,12 @@ The publish validator enforces required tags when hydration mode detected:
 
 # Style Packs — Named `data-part` CSS Bundles
 
+> Scope every rule in a pack to its section id, as
+> `references/island-presets.md` does with `#{{id}} [data-part=...]`. An
+> unscoped `[data-part]` selector becomes page-global once compiled. Any
+> accent-tinted `box-shadow` in a pack is a glow and is banned by
+> `references/design-rules.md` N7 regardless of its offsets.
+
 > House rules in `storefront-engine/references/design-rules.md` override every example below.
 > Examples show structure and copy intent; their styling (gradients, hover transforms,
 > uppercase labels, pills, emoji, section fills) is illustrative and must not be copied.
@@ -5261,7 +5655,7 @@ Need an image or video for a section?
 │  └─ Specialized illustration (custom style beyond built-in)
 │     └─ External MCP: OpenArt
 │
-└─ After sourcing → lexsis_asset_upload action import
+└─ After sourcing → lexsis_asset_import action import
 ```
 
 ---
@@ -5273,11 +5667,20 @@ Need an image or video for a section?
 | `lexsis_asset_library` → `search` | Search workspace assets | Free |
 | `lexsis_drafts` → `asset_generate` | Generate, composite, inpaint, or restyle | Credits |
 | `lexsis_assets` → `view` | Verify an asset | Free |
-| `lexsis_asset_upload` → `import` | Import URL, base64, attachments; with no source it opens the upload panel and the resulting asset id arrives in a user message | Free |
+| `lexsis_asset_import` → `import` | Import exactly one source: URL, image base64 plus MIME type, or conversation attachments; never opens UI | Free |
+| `lexsis_asset_upload` → `upload` | Open the local image/video upload panel; wait for the user's uploaded-asset message with the resulting asset id and URL | Free |
 
 Ask the user whether they want to pick from the library before searching; an empty `query` browses and opens the asset picker (`Design asset selection:` carries `asset_ids` and `selection_order`). Pass `workspace_id` explicitly when multiple workspaces
 are available and the selected `theme_id` whenever the discovered action
 schema supports it.
+
+For import, supply exactly one of `url`, image `data` + `mime_type`, or a
+non-empty `attachments` array with `attachment_id` per entry. Never call
+import without a source. For the upload UI, call `lexsis_asset_upload` with
+`action: "upload"` and only `workspace_id` and `theme_id` in `args`.
+Opening the panel does not import an asset. Wait for the user's uploaded-asset
+message; if inline UI is unavailable, ask for a URL or conversation attachment
+and use `lexsis_asset_import` with `action: "import"` instead.
 
 See `design-enrichment.md` for detailed prompt patterns, style selection guide, compositing recipes, and HTML placement patterns.
 
@@ -5295,7 +5698,7 @@ web_search_exa({ query: "skincare brand hero photography editorial style" })
 
 Use for: mood boards, competitor visual research, finding reference imagery to brief `lexsis_drafts` action `asset_generate` more precisely, sourcing real lifestyle photos.
 
-**Flow:** Exa search → find URL → `lexsis_asset_upload` action `import` → use
+**Flow:** Exa search → find URL → `lexsis_asset_import` action `import` → use
 the returned permanent URL.
 
 ### HiggsField / Runway / Kling — Video Generation
@@ -5306,7 +5709,7 @@ Use when: TikTok traffic source, fashion/luxury vertical, product demo needed, b
 1. Generate video via external MCP (short clip, 3-8 seconds)
 2. `lexsis_campaigns.frames` → pull best frame as thumbnail
 3. Use video URL in HeroMedia island or `<video>` tag
-4. Set click-to-play (NEVER autoplay — costs 7% CVR)
+4. Set click-to-play; a muted loop is allowed only as the plan's single motion moment (`references/assets/video-rules.md`)
 
 **Video placement patterns:**
 - Hero: click-to-play with compelling thumbnail image
@@ -5330,7 +5733,7 @@ All external assets MUST be persisted before use:
 
 ```
 1. Source asset via external MCP → get URL
-2. lexsis_asset_upload({
+2. lexsis_asset_import({
      action: "import",
      args: { url, purpose: "hero_bg", tags: ["lifestyle", "summer"], workspace_id, theme_id }
    })
@@ -5384,7 +5787,7 @@ This ensures: the asset is stored in the brand's library, available for reuse, a
 ```
 
 ### Anti-Patterns
-- NEVER autoplay video (-7% CVR)
+- NEVER autoplay video with sound; see `references/assets/video-rules.md` for the muted-loop exception
 - NEVER use video as only hero content (needs fallback image)
 - NEVER serve uncompressed video; use the imported CDN URL
 
@@ -5421,7 +5824,7 @@ only permanent verified URLs.
 1. `lexsis_asset_library` action `search` first
 2. `lexsis_workspace` action `credits` before expensive operations
 3. Prefer `quality: "medium"` — reserve `"high"` for hero only
-4. External MCP assets → `lexsis_asset_upload` action `import`
+4. External MCP assets → `lexsis_asset_import` action `import`
 5. The page background for sections that don't need imagery
 6. Reuse: one hero image can serve as dimmed background for 2-3 sections
 
@@ -5745,7 +6148,7 @@ history.
 ## Workspace
 
 ```text
-work/visual-pages/<page-handle>/
+work/campaigns/<campaign-slug>/pages/<page-handle>/
 ├── page-plan.md
 ├── page-manifest.json
 ├── lexsis-source.html
@@ -5888,6 +6291,13 @@ For creation, use the clean design compile artifact when its input hashes still
 match. Recompile only after an input changes. After draft creation, fetch the
 persisted source and remote bundle and reject hash drift.
 
+`lexsis_page_create` action `create` consumes the `compile_id` directly, so a
+normal build never fetches the bundle itself. `lexsis_pages` action
+`compile_artifact` retrieves a stored bundle by `compile_id` for inspection
+only, and `lexsis_drafts` action `page_attach_bundle` exists solely to recover
+a page whose source was stored but whose bundle attachment failed (pass
+`expected_version`).
+
 For editing:
 
 1. Fetch the remote version and stop on drift.
@@ -6006,6 +6416,24 @@ MCP dependency metadata and an `.mcp.json` entry describe configuration. They
 do not prove that the server or its tools are available in the current
 session.
 
+## Asset Import and Upload
+
+`lexsis_asset_import.import` requires exactly one source: `url`, image
+`data` + `mime_type`, or a non-empty `attachments` array of conversation
+attachment IDs. It imports directly into the library and never opens the upload UI.
+Do not call import without a source or combine multiple source types.
+
+`lexsis_asset_upload.upload` exclusively opens the local image/video upload UI.
+Pass only the selected `workspace_id` and `theme_id`; do not send URL, base64,
+or attachment inputs to this action. In inline-UI hosts,
+wait for the user's uploaded-asset message before using its asset ID and URL.
+Opening the panel is not evidence that an asset was uploaded.
+
+If the host has no inline UI, ask for a URL or conversation attachment and
+use `lexsis_asset_import.import` with that source instead. Do not repeatedly
+open an unsupported upload panel. `lexsis_asset_library.search` selects
+existing library assets; it is not a local-file upload action.
+
 ## Managed Motion Compilation
 
 Custom animation is authored in source as
@@ -6060,6 +6488,48 @@ Before live Lexsis work:
 3. Invoke the real domain router for the operation.
 4. Read changing products, variants, prices, availability, assets, island
    schemas, permissions, analytics, and remote versions live.
+
+## When Lexsis Behaviour Is Unclear
+
+`lexsis_support` action `search_docs` searches the Lexsis storefront
+documentation and returns passages about islands, tools, recipes, page schema
+and workflows. Use it when a behaviour is genuinely unclear, before guessing or
+before telling the user something is impossible. It answers questions about the
+product; it does not replace `lexsis_design` action `island_schema` for prop
+shapes or `lexsis_discover` for an action's arguments.
+
+## Recovery and Inspection Actions
+
+Three actions exist for narrow situations and should not appear in a normal
+build:
+
+- `lexsis_pages` action `compile_artifact` retrieves a short-lived compiled
+  bundle by `compile_id`. Draft creation consumes `compile_id` directly, so
+  fetch the artifact only to inspect a compile result. Never fetch it merely to
+  read the page back.
+- `lexsis_drafts` action `page_attach_bundle` attaches an existing successful
+  compile artifact to the current version without creating a new one. Use it
+  only to recover a page whose source was stored but whose bundle attachment
+  failed, with `expected_version`.
+- `lexsis_pages` action `qa` reads the stored QA record for a page;
+  `lexsis_drafts` action `page_record_qa` writes it.
+
+## Reporting a Defect
+
+`lexsis_drafts` action `send_feedback` files a bug or gap with the Lexsis dev
+team. Use it when the platform, not the page, is at fault, and say so to the
+user rather than filing silently. Categories: `island-bug`,
+`island-variant-request`, `validator-issue`, `generation-quality`, `ux-issue`,
+`docs-gap`, `composition-issue`, `api-bug`, `api-gap`, `platform-bug`, with a
+severity. The distinction that matters: `docs-gap` means the guidance is
+missing or wrong and documenting it would fix the problem, while `api-gap`
+means no tool exists for a necessary operation and documentation would not.
+
+File one when an island renders wrong with schema-valid props, the compiler
+rejects something the contract allows, a tool returns a misleading result, or a
+required primitive has no action. Do not file for a page-level mistake you can
+fix yourself, and never let filing substitute for finishing or for telling the
+user what is blocked.
 
 ## Error Handling
 
@@ -6377,3 +6847,2054 @@ compilation, store the returned style manifest under
 `stylePack` is the selected named pack, `custom` for an intentional scoped
 treatment, or `existing-page` when adopting and preserving a remote page's
 current design.
+
+---
+
+# Page Types: Identification Framework
+
+Every storefront page is one of the thirty types below. `/plan-page` picks
+exactly one before it searches templates, assets or proof, records it in the
+`## Page type` block and in `page.pageType`, and then loads only that type's
+file. `/design-page`, `/build` and `/generate` re-read the same file. Each
+type file follows `references/page-types/_checklist-format.md` and ends with
+a JSON checklist that `plan-page/scripts/plan_lint.py` enforces.
+
+## 1. Inputs to read from the brief
+
+Extract these seven facts before choosing. Ask only for the ones that change
+the answer and that the catalog, brand, campaign and analytics cannot supply.
+
+| Input | Values | Where it usually comes from |
+|---|---|---|
+| Traffic source | meta, tiktok, google-search, google-shopping, email, sms, organic, direct, influencer, affiliate, retargeting, marketplace | brief, `lexsis_campaigns.creatives`, analytics |
+| Funnel stage | tof (cold), mof (warm), bof (hot), retention (owned) | traffic + whether the visitor has seen the product |
+| Awareness (Schwartz) | unaware, problem-aware, solution-aware, product-aware, most-aware | traffic + ad creative + audience description |
+| Desired action | buy now, add to cart, start quiz, join waitlist, subscribe, capture email, read then buy, browse, refer, reorder | brief |
+| Product count | 1 SKU, 1 product with variants, 2 to 5 (kit/compare), 6 to 40 (collection), whole store | catalog |
+| Offer shape | an offer id from `references/offers/offer-types.md`: `none`, `first-order`, `percent-off`, `fixed-off`, `bogo`, `gwp`, `bundle`, `bundle-decoy`, `subscribe-save`, `free-shipping`, `tiered-volume`, `pre-order-price`, `trial-sample`, `flash-sale`, `clearance`, `limited-edition`, and the rest of that list | brief, merchant |
+| Campaign trigger | a campaign id from `references/offers/campaign-calendar.md`: `evergreen`, `launch`, `restock`, `seasonal`, `gifting`, `flash-sale`, `clearance`, `collab-drop`, `anniversary`, `cause`, `back-to-school`, `bfcm`, `end-of-season`, `founder-sale` | brief, calendar |
+
+## 2. Decision tree
+
+Walk top to bottom; stop at the first leaf that fits. Tie-breaks are in
+section 4.
+
+```text
+Is the visitor's job to BUY (or add to cart) on this page?
+├── no ─ what is the job?
+│   ├── answer questions / route to the right product ........... quiz-funnel
+│   ├── leave an email or phone (giveaway, waitlist, early access)
+│   │   ├── product not yet purchasable ....................... launch-waitlist-preorder
+│   │   └── incentive or contest ............................... lead-capture-giveaway
+│   ├── read a story, learn who we are ......................... brand-story-founder
+│   ├── understand the science, ingredients, materials, method . ingredient-science
+│   ├── browse many products
+│   │   ├── whole store, first visit ........................... homepage
+│   │   ├── one category or collection ......................... collection-landing
+│   │   ├── by recipient or price for a holiday ................ gift-guide
+│   │   └── outfits, rooms, looks with shoppable items ......... lookbook-shop-the-look
+│   ├── get help, policies, answers ............................ faq-support-led
+│   ├── refer a friend, join a programme, see tiers ............ referral-loyalty-vip
+│   ├── just paid; what next .................................... thank-you-post-purchase
+│   └── order in volume for resale ............................. wholesale-b2b
+└── yes ─ has the visitor already seen this product or brand?
+    ├── no (cold) ─ what brought them?
+    │   ├── a social ad with a story or problem hook (meta, tiktok, native)
+    │   │   ├── long-read wanted, price hidden until late ...... advertorial
+    │   │   ├── "N reasons / best X" list framing ............. listicle
+    │   │   ├── creator or customer video is the hero .......... ugc-creator-collab
+    │   │   ├── one long video does the selling ................ video-sales-page
+    │   │   └── direct-response, single product, single CTA .... ad-landing-page
+    │   ├── a search for the product or category (google, shopping)
+    │   │   ├── "X vs Y", "alternatives" ....................... comparison-us-vs-them
+    │   │   ├── "best X", "top N X", buyer's guide, roundup ..... seo-buyers-guide
+    │   │   └── product or category intent ..................... pdp (search-intent variant)
+    │   └── a sample, trial or starter offer ................... trial-sample
+    └── yes (warm or hot) ─ what is the page selling?
+        ├── one product at full price, full store context ....... pdp
+        ├── one product, paid-traffic focus, no navigation ...... pdp-hybrid-landing
+        ├── two or more products as a set or configurator ....... bundle-kit
+        ├── a recurring plan ..................................... subscription
+        ├── a specific discount, code, GWP or BOGO .............. offer-page
+        ├── many products at reduced prices for a window ........ sale-clearance-flash
+        ├── an occasion or holiday assortment .................... seasonal-gifting
+        ├── a product that is back or newly available ............ restock
+        └── a return visit after abandonment or a prior view ..... retargeting-warm
+```
+
+## 2b. Keyword lookup
+
+A fast first pass before the tree. The tree still decides.
+
+| Brief says | Type |
+|---|---|
+| "5 reasons", "top 7", "reasons why", "things you didn't know" (paid social, one product) | `listicle` |
+| "best X", "top N X for Y", "buyer's guide", "roundup" (search intent) | `seo-buyers-guide` |
+| "story", "article", "editorial", "we tried it", "here's what happened", native placement | `advertorial` |
+| "vs", "compared to", "alternative to", "why switch" | `comparison-us-vs-them` |
+| "find your", "which one is right", "shade finder", "size finder" | `quiz-funnel` |
+| "bundle", "kit", "starter set", "build your own", "routine" | `bundle-kit` |
+| "% off", "BOGO", "free gift", "GWP", "code", "deal" without a hard end | `offer-page` |
+| "sale", "flash", "clearance", "ends", "48 hours" | `sale-clearance-flash` |
+| "BFCM", "Diwali", "Rakhi", "Valentine", "Mother's Day", "Eid", "Christmas" with a buying window | `seasonal-gifting` |
+| "gift guide", "gifts for", "under ₹999" without a hard date | `gift-guide` |
+| "launch", "coming soon", "waitlist", "pre-order", "drop" | `launch-waitlist-preorder` |
+| "restock", "back in stock", "notify me" | `restock` |
+| "subscribe", "auto-ship", "membership" | `subscription` |
+| "creator", "influencer", "collab", "x [name]", "code [NAME]" | `ugc-creator-collab` |
+| "video", "VSL", "watch the presentation" | `video-sales-page` |
+| "about", "our story", "founder", "why we started" | `brand-story-founder` |
+| "ingredients", "science", "how it works", "clinical", "studies" | `ingredient-science` |
+| "shop all", "collection", "category", "browse" | `collection-landing` |
+| "homepage", "home" | `homepage` |
+| "lookbook", "shop the look", "outfit", "styled" | `lookbook-shop-the-look` |
+| "thank you", "order confirmation", "after checkout" | `thank-you-post-purchase` |
+| "giveaway", "enter to win", "newsletter", "10% for email", "text club" | `lead-capture-giveaway` |
+| "refer", "rewards", "VIP", "loyalty", "points" | `referral-loyalty-vip` |
+| "retarget", "came back", "visited but didn't buy", "abandoned" | `retargeting-warm` |
+| "FAQ", "help", "support", "questions" | `faq-support-led` |
+| "sample", "trial", "try before you buy", "home try-on" | `trial-sample` |
+| "wholesale", "B2B", "stockists", "bulk" | `wholesale-b2b` |
+| "landing page", "LP", "ad page", "post-click" for one product | `ad-landing-page` (or `pdp-hybrid-landing` when variants or gallery matter) |
+| "product page", "PDP", brand search, Google Shopping | `pdp` |
+| "microsite", "campaign hub" | the type of its main page; other pages are separate plans |
+| "mobile first", "one thumb" | a modifier, not a type; every type is mobile-first already |
+
+## 3. Type catalogue
+
+`Length` is sections between chrome. `Proof` is the checklist's module range.
+`Nav` is the checklist value.
+
+| Type id | One line | Stage | Awareness | Typical traffic | Length | CTAs | Proof | Nav |
+|---|---|---|---|---|---|---|---|---|
+| `ad-landing-page` | Single product, single CTA, message-matched to a paid ad | tof/mof | problem→product | meta, tiktok, google | 8–11 | 3 | 2–4 | none |
+| `pdp` | Full product page inside the store; gallery, buy box, details, reviews | mof/bof | product/most | organic, search, email, nav | 7–11 | 2 | 2–4 | full |
+| `pdp-hybrid-landing` | PDP anatomy with landing-page focus: no nav, ad message match, one goal | mof | solution→product | meta, google shopping | 8–11 | 2–3 | 2–4 | none |
+| `advertorial` | Editorial article that sells by story; price and CTA arrive late | tof | unaware/problem | meta, native, tiktok | 8–12 | 1–3 | 2–4 | none |
+| `listicle` | Numbered reasons for one product; each reason answers an objection and earns a click | tof/mof | problem/solution | meta, tiktok | 8–13 | 3–6 | 2–4 | none/minimal |
+| `seo-buyers-guide` | Search-intent roundup or "best X" guide: TOC, methodology, ranked entries, comparison table | tof/mof | problem/solution | google organic, google ads | 9–14 | per entry + 1 | 2–4 | full |
+| `comparison-us-vs-them` | Attribute table against named or generic alternatives | mof | solution/product | google, retargeting | 7–10 | 2–3 | 2–3 | minimal |
+| `quiz-funnel` | Questions route the visitor to a recommendation | tof/mof | problem/solution | meta, tiktok, email | 4–7 | 1 + result | 1–2 | none |
+| `bundle-kit` | Fixed or build-your-own set with visible savings math | mof/bof | product | email, pdp cross-link, ads | 7–10 | 2 | 2–3 | minimal/full |
+| `offer-page` | One named promotion (code, GWP, BOGO, first order) | mof/bof | product/most | email, sms, retargeting | 6–9 | 2–3 | 1–3 | minimal |
+| `sale-clearance-flash` | Many products, reduced prices, real window | bof | most | email, sms, social | 5–8 | per card | 1–2 | full |
+| `seasonal-gifting` | Occasion assortment with delivery cutoffs and gift options | mof | solution/product | email, social, search | 7–10 | per card + 1 | 1–3 | full |
+| `gift-guide` | Curated picks by recipient or price band | tof/mof | solution | organic, email, social | 6–9 | per card | 1–2 | full |
+| `launch-waitlist-preorder` | Not yet buyable: capture intent or take pre-orders | tof/mof | problem/solution | email, social, PR | 6–9 | 1–2 | 1–3 | minimal |
+| `restock` | Product is back; convert the demand already there | bof/retention | most | email, sms | 5–7 | 2 | 1–2 | minimal |
+| `subscription` | Recurring plan; cadence, savings, cancellation clarity | mof/bof | product | pdp, email, ads | 7–10 | 2 | 2–3 | minimal/full |
+| `ugc-creator-collab` | Creator or customer content is the hero and the proof | tof/mof | problem/solution | tiktok, instagram, influencer | 6–9 | 2–3 | 3–5 | none |
+| `video-sales-page` | One long video, then the offer | tof/mof | problem/solution | meta, youtube, email | 5–8 | 1–2 | 1–3 | none |
+| `brand-story-founder` | Who we are and why; sells belief, not a SKU | tof/retention | unaware/problem | organic, nav, PR | 6–9 | 1–2 | 1–2 | full |
+| `ingredient-science` | Mechanism, ingredients, materials, studies | mof | solution/product | organic, pdp link, google | 7–10 | 1–2 | 2–4 | full |
+| `collection-landing` | One category; grid with filters and a short story | mof | solution | organic, nav, google | 5–8 | per card | 1–2 | full |
+| `homepage` | Store front door; route to collections, best sellers, story | tof/retention | all | direct, organic, brand search | 7–10 | 2–3 | 2–3 | full |
+| `lookbook-shop-the-look` | Editorial imagery with shoppable items | tof/mof | solution | instagram, organic, email | 5–8 | per look | 1–2 | full |
+| `lead-capture-giveaway` | Email or SMS in exchange for an incentive | tof | unaware/problem | social, partner, ads | 3–6 | 1 | 1–2 | none |
+| `referral-loyalty-vip` | Programme rules, tiers, rewards, join | retention | most | email, account, nav | 5–8 | 1–2 | 1–2 | full |
+| `retargeting-warm` | Visitor saw it already; handle objections, restate offer | bof | product/most | meta/google retargeting | 5–8 | 2–3 | 2–4 | none/minimal |
+| `thank-you-post-purchase` | Order confirmed; next steps, one relevant add-on, referral | retention | most | checkout | 3–6 | 1–2 | 0–1 | minimal |
+| `faq-support-led` | Answers first; policies, shipping, sizing, care | mof/retention | product | organic, nav, support links | 4–7 | 1 | 0–2 | full |
+| `trial-sample` | Low-risk first purchase; what happens after is explicit | tof/mof | solution | ads, email | 6–9 | 2 | 2–3 | minimal |
+| `wholesale-b2b` | MOQ, tiers, lead times, line sheet, inquiry | mof | product | organic, outreach | 5–8 | 1–2 | 1–3 | minimal |
+
+## 4. Tie-breaks between near neighbours
+
+| If torn between | Choose | Because |
+|---|---|---|
+| `ad-landing-page` vs `pdp-hybrid-landing` | hybrid when the product has 3+ variants or a gallery that matters; ad-landing otherwise | hybrid keeps PDP buy mechanics; ad-landing keeps one story |
+| `ad-landing-page` vs `advertorial` | advertorial when awareness is unaware/problem-aware and the ad is a story or "I tried" hook | cold readers need the premise before the price |
+| `advertorial` vs `listicle` | listicle when the ad or search phrase is a number or "best/top/reasons" | frame must match the click |
+| `listicle` vs `comparison-us-vs-them` | comparison when the visitor named a competitor or searched "vs" | intent is evaluative, not exploratory |
+| `listicle` vs `seo-buyers-guide` | buyer's guide when traffic is search and the query is "best/top N"; listicle when traffic is paid social and the page sells one product | search readers expect a ranked, methodical roundup; social readers expect five reasons |
+| `pdp` vs `pdp-hybrid-landing` | hybrid whenever the traffic is paid and the brief wants one goal | navigation on paid traffic leaks |
+| `bundle-kit` vs `offer-page` | bundle when the value is the set; offer when the value is the discount | anatomy differs: savings math vs offer terms |
+| `offer-page` vs `sale-clearance-flash` | sale when more than five products are discounted | grid, not buy box |
+| `seasonal-gifting` vs `gift-guide` | gifting when there is a purchase window with cutoffs and gift options; guide when it is curation without a hard date | cutoff logic vs editorial |
+| `launch-waitlist-preorder` vs `restock` | restock when the product sold before and has review data | proof exists |
+| `ugc-creator-collab` vs `video-sales-page` | VSL when one long video carries the pitch; UGC when many short clips do | one hero vs many proofs |
+| `retargeting-warm` vs `offer-page` | retargeting when the offer is secondary to objection handling | different first screen |
+| `quiz-funnel` vs `lead-capture-giveaway` | quiz when answers change the recommendation; capture when they do not | a quiz that does not route is a form |
+| `homepage` vs `collection-landing` | collection when one category is named | scope |
+| `brand-story-founder` vs `ingredient-science` | science when the brief names ingredients, studies or "how it works" | mechanism vs meaning |
+| Brief is silent on stage | the type that assumes less (`ad-landing-page` over `retargeting-warm`, `advertorial` over `ad-landing-page` for unaware audiences) | over-assuming knowledge loses cold visitors |
+
+## 5. Awareness level → headline and page posture
+
+Eugene Schwartz's five stages decide how much the page may assume and what
+the headline leads with.
+
+| Awareness | Visitor knows | Headline leads with | Page posture | Types |
+|---|---|---|---|---|
+| unaware | nothing relevant | a story, an identity, a surprising fact; never the product | educate first, price last | advertorial, brand-story, video-sales |
+| problem-aware | the pain, not the fix | the problem named in their words | agitate briefly, reveal mechanism, then product | advertorial, listicle, ad-landing, quiz |
+| solution-aware | the category, not you | the mechanism or outcome and why this one | differentiate, compare, prove | ad-landing, comparison, ingredient-science, ugc |
+| product-aware | your product, not enough to buy | the product name plus the strongest claim or offer | proof, price clarity, risk reversal | pdp, hybrid, bundle, subscription, retargeting |
+| most-aware | wants it; needs the deal or the nudge | product plus offer plus terms | buy box first, no education | offer, sale, restock, thank-you |
+
+Rule: a page never assumes a higher awareness than the traffic supplies. Cold
+social traffic is problem-aware at best. Brand search is product-aware.
+
+## 6. Funnel stage defaults
+
+| Stage | Assume | Proof density | Offer aggressiveness | Copy length | First CTA |
+|---|---|---|---|---|---|
+| tof | nothing; explain the premise | high, early and distributed | low; `first-order` or `free-shipping` in view, `gwp` or `trial-sample` only below the fold | longest | after the premise (hero for ad-landing; section 4+ for advertorial) |
+| mof | category known; brand not trusted | high, beside claims | moderate; bundle, subscribe-and-save, GWP | medium | hero |
+| bof | product known; objections remain | targeted; answer the objection | highest that the ledger verifies | short | hero, repeated |
+| retention | brand trusted | light; continuity cues | loyalty, referral, reorder | shortest | hero |
+
+`references/offers/funnel-stages.md` expands this table.
+
+## 7. Recording the choice
+
+Plan block (`page-plan.md`):
+
+```markdown
+## Page type
+
+**Type.** advertorial
+**Funnel stage.** tof
+**Awareness.** problem-aware
+**Traffic.** meta
+**Offer.** first-order
+**Campaign.** evergreen
+**Copy framework.** story-lead
+**Mandatory sections omitted.** none
+```
+
+Manifest (`page-manifest.json`): `page.pageType`, `page.funnelStage`,
+`page.awareness`, `page.trafficSource`, plus `offer` and `campaign` blocks
+(`references/page-files.md`).
+
+## 8. Benchmarks and what they are worth
+
+Use benchmarks to set relative expectations (quiz > landing page > PDP for
+cold traffic; PDP beats a landing page for hot and branded-search traffic),
+never as promised outcomes. Print the caveat with the number.
+
+| Metric | Value | Source | Caveat |
+|---|---|---|---|
+| Median landing-page conversion, all industries | 6.6% | Unbounce Conversion Benchmark Report Q4 2024, https://unbounce.com/conversion-benchmark-report/ | counts form fills and other goals, not purchases |
+| Ecommerce landing-page conversion | 2.35% to 4.2% | same report; summaries of the same data disagree | quote the range, never one number |
+| Ecommerce landing page by channel | email 28.6%, paid search 5.1 to 5.7%, paid social 4.8% | https://unbounce.com/conversion-benchmark-report/ecommerce-conversion-rate/ | traffic source moves conversion more than page design |
+| Reading level | grade 5 to 7 pages 5.6% vs professional 1.5% | same | correlational |
+| Ecommerce landing-page word count | 285 to 930 words | same | classic landing page only, not advertorial |
+| Average Shopify store conversion | 1.4% (top 20% above 3.2%, top 10% above 4.7%) | Littledata, https://www.littledata.io/ecommerce-conversion-rate | average across ~2,800 stores, 2023 |
+| Shopify add-to-cart rate | 4.6% of sessions (top 10% above 9.6%) | Littledata | low ATC is a product-page problem |
+| Cart abandonment | 70.2% mean of 50 studies | https://baymard.com/lists/cart-abandonment-rate | 42% "just browsing" is unavoidable |
+| Landing page vs PDP by traffic heat | cold LP 3.8% vs PDP 2.4%; hot (cart abandoners) LP 6.5% vs PDP 7.2%; branded search LP 5.1% vs PDP 6.8% | https://mhigrowthengine.com/blog/landing-page-vs-product-page-dtc/ | practitioner averages |
+| Cold Facebook traffic straight to PDP | about 0.5%; with an advertorial in between 3 to 5% | TrueProfit via https://www.getlandra.com/blog/advertorial-listicle-conversion-statistics | vendor, directional |
+| Quiz results pages | one results page 10.6% vs 7.1% with 11 or more | https://docs.revenuehunt.com/customer-success/how-to-build-successful-quiz/ | vendor data |
+| Back-in-stock alerts | about 25% when sent within 15 minutes, 10% after 4 hours | Klaviyo via https://ustechautomations.com/resources/blog/ecommerce-back-in-stock-notifications-how-to-2026 | vendor |
+| Post-purchase one-click upsell | 3 to 8% take rate; thank-you page upsells about 1% | https://zipify.com/blog-post-purchase-upsells-shopify-2026/ | vendor network |
+| Urgency | real promo countdown +8.3%; generic timer -11.4% revenue; cart urgency flat | https://crometrics.com/blog/urgency-that-actually-works/ | agency test portfolio |
+| Sticky add-to-cart | -7.7% to +26% across tests | see `references/anti-patterns/cro-anti-patterns.md` | mixed; test, do not assume |
+| Reading | users read about 20 to 28% of words; paragraph 4 gets 32% of eyes | https://www.nngroup.com/articles/how-little-do-users-read/ , https://www.nngroup.com/articles/website-reading/ | subheads carry long pages |
+
+## 9. Universal rules across every type
+
+1. Message match: the H1 restates the promise of the ad, email or creator
+   post that sent the click (`references/copy/message-match.md`).
+2. One destination: on single-goal types every CTA points at the same next
+   step.
+3. Mobile first: hero, first proof and CTA survive the first 390px screen as
+   the type file lists them.
+4. Proof is specific and checkable, and comes from the Proof ledger.
+5. Urgency is real, specific and server-anchored, from the Offer ledger.
+6. Plain language: grade 6 to 8, short paragraphs, a subhead every 300 to 500
+   words on long pages.
+7. A reviews block with 5 or more reviews shows the ratings distribution and
+   lets it filter; below 5 it shows the count and quotes only.
+8. Hero media is compressed and preloaded (`references/assets/slot-spec.md`).
+9. Advertorials carry a visible "Advertisement" or "Sponsored" label;
+   health claims stay within what the ledger substantiates.
+10. Never send cold prospecting traffic to the homepage.
+
+## 10. What the type does not decide
+
+Vertical (`references/vertical-*.md`), traffic source
+(`references/traffic-source-*.md`) and brand design layer on top of the type.
+The type fixes anatomy, proof density, CTA logic, price timing and imagery
+jobs. The vertical fixes which modules fill those slots (ingredient explorer
+for beauty, supplement-facts panel for supplements, size guide for fashion).
+The traffic file fixes tone and message match. House rules
+(`references/design-rules.md`) override all three.
+
+---
+
+# Page-Type Checklist Format
+
+Every file in `references/page-types/` (except `_index.md` and this file)
+describes one page type in the same shape so that `/plan-page`, `/design-page`,
+`/build` and `plan-page/scripts/plan_lint.py` can read it the same way. The
+heart of each file is its `## Workflow`: the ordered thinking the model follows
+for that type, section by section, with the asset decision, the island
+decision and the tool call that settles each. The `## Checklist` JSON is the
+default anatomy the workflow produces; deviate when the context calls for it
+and note the deviation in the plan. House rules in `references/design-rules.md`
+still apply to every page.
+
+## How a skill uses a page-type file
+
+1. `/plan-page` identifies the type with `references/page-types/_index.md`,
+   records the `## Page type` block in `page-plan.md` and `page.pageType` in
+   `page-manifest.json`, then loads only the matching file.
+2. `/plan-page` follows the file's **Workflow**: the context reads first, then
+   each section in order with its media decision (search, generate, ask or
+   skip), island decision and copy ceiling. The **Checklist** JSON is the
+   default the workflow lands on; a deviation is written under "Deviations
+   from the type default" in the plan with its reason.
+3. `/design-page` re-reads the same file before writing HTML and follows the
+   Workflow's island and asset decisions while composing, with **Above the
+   fold**, **Proof**, **Offer and CTA**, **Imagery** and **Copy** as the
+   guide. Where source and plan disagree with the checklist, it lists the
+   differences in the plan and continues.
+4. `python3 <plan-page-skill>/scripts/plan_lint.py <page-workspace>` prints
+   the mechanical review (advisory by default; `--strict` exits non-zero).
+
+## Required prose sections, in order
+
+```markdown
+# <Page type name>
+
+One paragraph: what the page is for, who lands on it, what they must do.
+
+## Identify it
+Signals in the brief that select this type; near neighbours and how to tell
+them apart (one line each).
+
+## Anatomy
+Numbered, ordered section list using the canonical ids below. Mark each
+`mandatory`, `recommended` or `conditional: <condition>`. One sentence per
+section on its job.
+
+## Workflow
+The ordered thinking for this type. Three fixed sub-headings:
+
+### Context reads
+Numbered tool calls run before any section is chosen, each with what to
+extract from the result (image count and which jobs they cover, variant axes
+and whether colour variants have images, price and compare-at, selling plans,
+inventory, review count band, theme tokens and voice, asset library inventory
+by tag, ad creative for message match).
+
+### Section by section
+One block per Anatomy section, in order:
+
+**`<section id>`**
+- Purpose: one line.
+- Media: needs imagery yes/no; which image job(s); search order (catalog
+  media, then the `lexsis_asset_library.search` tag, then semantic, then
+  merchant-owned sources); every candidate is opened with
+  `lexsis_assets.view` and judged against this section before it is used;
+  generation purpose if nothing is found and the
+  policy allows it; otherwise tell the merchant exactly what is missing and
+  offer upload (`lexsis_asset_upload.upload`) or MCP generation when
+  feasible. The section is skipped or merged only if the merchant chooses.
+  Follows `references/workflows/section-asset-workflow.md`.
+- Island: `none`, or the island name and the context that decides its
+  configuration (image count, variant axes, review band, page length,
+  vertical). Variants and props are not listed here; they are resolved live
+  from `lexsis_design.islands` and `lexsis_design.island_schema` as
+  `references/workflows/island-selection-workflow.md` describes.
+- Copy: pattern and ceiling.
+- Decide with: the data or tool call that settles the choices above.
+
+### Asset budget
+A table: what the catalog and library already supply for this type, which
+jobs are usually missing, and for each missing job whether to reuse, generate
+(with purpose) when the policy allows, or tell the merchant and offer upload
+or generation. A missing asset is always reported to the merchant; a section
+is skipped or merged only on the merchant's decision. Never fill a gap with a
+colour band, emoji, icon tiles or a wall of copy; a section is imagery plus a
+few words, or the merchant decides what happens to it.
+
+## Above the fold (390px)
+What must be visible in the first screen on mobile, in order. What must not.
+
+## Proof
+Which proof kinds, how many modules, where they sit, minimum evidence per
+kind, and what replaces them when the store has none
+(`references/proof/reviews-sourcing.md`).
+
+## Offer and CTA
+CTA count, first CTA position, sticky rule, CTA copy pattern, price reveal
+timing, offer types that fit and offer types that do not
+(`references/offers/offer-types.md`).
+
+## Imagery
+Required image jobs, hero treatment, lifestyle vs studio balance, video rule,
+slots the plan must create (`references/assets/image-jobs-by-page-type.md`).
+
+## Copy
+Framework, headline pattern, reading level, length ceiling per section,
+vocabulary constraints (`references/copy/copy-frameworks.md`).
+
+## Never
+Type-specific failures, one line each, each checkable.
+
+## Examples
+Two or three real pages with URLs and one line on what they do well.
+
+## Checklist
+One fenced ```json block, schema below.
+
+## Sources
+URLs.
+```
+
+## Checklist JSON schema
+
+```json
+{
+  "page_type": "advertorial",
+  "aliases": ["editorial pre-sell", "native article"],
+  "funnel_stage": ["tof", "mof"],
+  "awareness": ["problem-aware", "solution-aware"],
+  "traffic": ["meta", "tiktok", "native"],
+  "sections": { "min": 8, "max": 12 },
+  "mandatory_sections": ["hero", "hook", "problem", ["mechanism", "how-it-works"], "reviews", "offer-bridge", "faq", "closing-cta"],
+  "recommended_sections": ["dateline", "founder-note", "guarantee"],
+  "forbidden_sections": ["announcement", "header", "product-grid", "countdown", "stock-indicator"],
+  "nav": "none",
+  "price_above_fold": "forbidden",
+  "cta": { "min": 1, "max": 3, "first_after_section": 4, "sticky": "optional", "copy_pattern": "next-step" },
+  "proof": { "min_modules": 2, "max_modules": 4, "required_kinds": ["review-quote"], "forbidden_kinds": ["social-proof-popup", "live-viewer-count"] },
+  "imagery": { "required_jobs": ["identity", "in-use", "result-or-context"], "hero": "editorial-lifestyle", "video": "optional", "min_images": 4 },
+  "copy_framework": ["story-lead", "pas"],
+  "offer_compat": { "allowed": ["first-order", "bundle", "free-shipping"], "forbidden": ["flash-sale", "clearance", "percent-off"] },
+  "urgency": "none"
+}
+```
+
+Field rules:
+
+- `mandatory_sections`, `recommended_sections`, `forbidden_sections`: canonical
+  ids from the vocabulary below. An inner array means "any one of these".
+  A manifest section id `x` satisfies id `y` when `x == y` or `x` starts with
+  `y + "-"` (so `reviews-skin-type` satisfies `reviews`).
+- `nav`: `none` (logo only, not clickable), `minimal` (logo + one utility
+  link), `full`.
+- `price_above_fold`: `required`, `optional`, `forbidden`.
+- `cta.first_after_section`: 0 means the first CTA is in the hero.
+- `cta.sticky`: `required`, `optional`, `forbidden`.
+- `cta.copy_pattern`: `add-to-cart`, `claim-offer`, `next-step`,
+  `start-quiz`, `join-waitlist`, `subscribe`, `shop-collection`,
+  `read-results`.
+- `proof.*_kinds`: from the proof vocabulary below.
+- `imagery.hero`: `packshot`, `product-in-hand`, `product-in-context`,
+  `editorial-lifestyle`, `video-poster`, `typographic`, `grid`,
+  `ugc-screenshot`. Before/after media never leads a hero
+  (`references/proof/proof-ledger.md`, display rule 9).
+- `imagery.video`: `required`, `optional`, `forbidden`.
+- `copy_framework`: `pas`, `aida`, `bab`, `4ps`, `fab`, `story-lead`,
+  `listicle`, `comparison`, `hook-story-offer`, `answer-first`,
+  `qualifier-lead`.
+- `offer_compat.allowed` / `forbidden`: offer ids from
+  `references/offers/offer-types.md`, exactly: `none`, `percent-off`,
+  `fixed-off`, `bogo`, `gwp`, `free-shipping`, `tiered-volume`, `bundle`,
+  `bundle-decoy`, `subscribe-save`, `first-order`, `referral`, `loyalty`,
+  `cashback`, `bnpl`, `trial-sample`, `mystery`, `pre-order-price`,
+  `price-lock`, `flash-sale`, `clearance`, `limited-edition`, `gift-card`,
+  `student-military`, `charity`. Hero placement and countdown rules are not
+  offer ids; they live in `price_above_fold` and `urgency`.
+- Campaign ids (manifest `campaign.type`) come from
+  `references/offers/campaign-calendar.md`: `evergreen`, `launch`, `restock`,
+  `seasonal`, `gifting`, `flash-sale`, `clearance`, `collab-drop`,
+  `anniversary`, `cause`, `back-to-school`, `bfcm`, `end-of-season`,
+  `founder-sale`.
+- `urgency`: `none`, `verified-only`, `encouraged` (still verified).
+- Every checklist value is the type's default, not a hard limit. A plan that
+  deviates records the field, the new value and the reason under
+  "Deviations from the type default".
+- `awareness`: `unaware`, `problem-aware`, `solution-aware`,
+  `product-aware`, `most-aware`.
+- `funnel_stage`: `tof`, `mof`, `bof`, `retention`.
+
+## Canonical section id vocabulary
+
+Use these ids (or `id-suffix`) in plans, manifests and `<!-- section: id -->`
+delimiters. Add a new id only by adding it here.
+
+| Group | Ids |
+|---|---|
+| Chrome | `announcement`, `header`, `footer`, `sticky-cta`, `legal` |
+| Opening | `hero`, `dateline`, `hook`, `toc`, `qualifier` (who this is / is not for) |
+| Trust strip | `trust-bar` (shipping, returns, guarantee facts), `press-marquee` (linked media logos), `stats` (verified numbers), `certifications` |
+| Narrative | `problem`, `agitation`, `discovery`, `story`, `founder-note`, `about`, `values`, `mission` |
+| Explanation | `solution`, `mechanism`, `how-it-works`, `benefits`, `features`, `ingredients`, `specs`, `materials`, `sourcing`, `science`, `methodology`, `routine`, `usage`, `results-timeline` |
+| Product | `gallery`, `buy-box`, `product-hero`, `variant-picker`, `size-guide`, `product-grid`, `product-spotlight`, `list-item`, `lookbook`, `shop-the-look`, `cross-sell`, `bundle-builder`, `quantity-breaks`, `subscription-toggle`, `plan-selector` |
+| Offer | `offer`, `offer-bridge` (advertorial hand-off to product), `pricing`, `savings-math`, `gift-options`, `delivery-cutoff`, `countdown`, `stock-indicator`, `bnpl-line`, `shipping-returns`, `guarantee`, `payment-options` |
+| Proof | `review-summary` (stars + count), `reviews`, `testimonial-spotlight`, `ugc-grid`, `video-testimonials`, `before-after`, `expert-endorsement`, `press-quotes`, `case-study`, `awards`, `community-count` |
+| Comparison | `comparison`, `us-vs-them`, `alternatives`, `verdict`, `winner` |
+| Interaction | `quiz`, `quiz-results`, `product-finder`, `calculator`, `video`, `shoppable-video`, `email-capture`, `sms-capture`, `waitlist-form`, `referral-form`, `giveaway-entry` |
+| Closing | `faq`, `objections`, `closing-cta`, `final-offer`, `post-purchase-next-steps`, `related-reads`, `disclaimer` |
+
+## Proof kind vocabulary
+
+`review-summary`, `review-quote`, `review-list`, `review-with-media`,
+`external-verified-quote`, `ugc-photo`, `ugc-video`, `creator-video`, `before-after`, `expert-quote`,
+`founder-note`, `press-logo-linked`, `press-quote-linked`, `certification`,
+`award`, `test-data`, `customer-count`, `sales-count`, `repeat-rate`,
+`guarantee`, `policy-fact`, `case-study`, `community-screenshot`,
+`social-proof-popup` (never), `live-viewer-count` (never), `stock-count`
+(verified only), `press-logo-unlinked` (never).
+
+## Image job vocabulary
+
+`identity`, `detail`, `scale`, `texture`, `in-use`, `context`, `variation`,
+`included-items`, `sequence`, `result-or-context`, `ingredient-or-material`,
+`packaging`, `founder-or-team`, `ugc`, `diagram`, `comparison-visual`,
+`gift-presentation`, `size-reference`, `swatch`, `label-or-facts-panel`.
+
+---
+
+# Reviews Sourcing
+
+The tiered procedure that fills the review rows of the plan's `## Proof
+ledger` (`references/proof/proof-ledger.md`). `/plan-page` runs tiers 0 to 3
+against Lexsis before any template or asset call; tiers 4 and 5 run only when
+tiers 1 to 3 return nothing usable. Output is ledger rows, never page copy.
+Rule tags: LAW (statute, regulator, platform terms), RESEARCH (with [H]
+academic or regulator, [M] large survey with method, [L] vendor or
+practitioner), OPERATOR (Lexsis contract), HEURISTIC (house judgement).
+
+Definitions. `n` is the count of published, product-matched reviews the API
+returns for the exact product or active collection. `avg` is the arithmetic
+mean of all published ratings for that scope, never of a `minRating` subset.
+"Usable" means a row can reach `verified` under the ledger's per-kind table.
+
+## Tier 0: read status
+
+| Step | Call | Read | Then |
+|---|---|---|---|
+| 0.1 | `lexsis_catalog.reviews_status` | source connected (Judge.me), imported count, last sync | connected and count > 0: tier 1. Otherwise: tier 4 |
+| 0.2 | write "Proof sources" line in `page-plan.md` | source, count, sync date, tier reached | always, even when the answer is "none" |
+
+## Tier 1: active collections
+
+| Step | Call | Read | Then |
+|---|---|---|---|
+| 1.1 | `lexsis_catalog.review_collections` with `collection_status: "active"` | id, name, `item_count`, product scope | list them with counts in plan question 9 |
+| 1.2 | `lexsis_catalog.review_collection_items` for the chosen collection | rating, body, author, date, media, verified flag | one `review-quote` or `review-list` row per rendered item, `collectionId` recorded |
+| 1.3 | no active collection fits | | tier 2; optionally `lexsis_drafts.review_collection_create` as a draft shortlist, only when the user asks |
+
+Only `active` collections serve on published pages. A draft the agent creates
+is `pending` in the ledger until the merchant activates it in Storefront,
+Reviews, Collections. If the host returns `UNKNOWN_ACTION`, ask the merchant
+to paste a collection id.
+
+## Tier 2: product reviews via the API
+
+| Step | Call | Read | Ledger use |
+|---|---|---|---|
+| 2.1 | `lexsis_catalog.reviews` with `product_id`, `limit: 100` | total `n`, `avg`, newest date | `review-summary` row: avg, n, min rating present, as-of date |
+| 2.2 | same with `rating_min: 5`, `4`, `3`, `2`, `1` (or read the distribution the response carries) | per-star counts | distribution for the summary; confirms no band is missing |
+| 2.3 | same with `has_media: true` | count of photo or video reviews | `review-with-media` rows; UGC grid eligibility |
+| 2.4 | same with `source_type` | Shop vs app vs import | verified badge semantics per source (RS10) |
+
+### Count bands
+
+| Band | n | Show | Do not show | Evidence |
+|---|---|---|---|---|
+| B0 | 0 | nothing review-shaped; go to tier 4 | stars, "loved by customers", placeholder cards | 45% will not buy with no reviews, PowerReviews 2023 n=8,153 [M] |
+| B1 | 1 to 4 | individual cards, verbatim, fields present in data; "n reviews" text link | any average, star summary, distribution, carousel | 56% chose 4.5 from 12 ratings over 5.0 from 2, Baymard n=670 [H]; Baymard: hide the summary at 5 or fewer ratings [H] |
+| B2 | 5 to 19 | avg to one decimal with n beside it every time; carousel of 3 to 6 cards; verified badge where data has it | distribution below 10 (optional 10 to 19); "rated 5.0" headline styling | most lift arrives by 5 reviews, Spiegel 2017 [H, single retailer, unreplicated] |
+| B3 | 20 to 99 | avg + n; distribution bars as filters, expanded; sort control; at least one review of 3 stars or lower reachable without filtering when one exists | five-star-only carousel with no path to the rest | distribution used more than review text, Baymard [H]; 53% seek negative reviews, Baymard [H] |
+| B4 | 100+ | everything in B3 plus media filter, attribute filters, merchant replies, corpus summary labelled as generated | aggregating other sites into the same average | conversion lift grows with displayed count to 1,000+, PowerReviews 8.8M pages [M, correlational] |
+
+Spiegel found ratings of 4.2 to 4.7 convert better than 4.7 to 5.0
+(https://spiegel.medill.northwestern.edu/how-online-reviews-influence-sales/).
+That describes shopper psychology. It is never a target: removing five-star or
+low-star reviews to land in the band is suppression (RS9).
+
+### Display decision table
+
+Module shape by band and page type (`references/page-types/_index.md`). Every
+module is a ledger row; proof density stays inside the type checklist.
+
+| Page type | B1 (1 to 4) | B2 (5 to 19) | B3 (20 to 99) | B4 (100+) |
+|---|---|---|---|---|
+| `ad-landing-page`, `pdp-hybrid-landing` | "n reviews" link near price; one quote beside the primary claim | avg + n near price; carousel 3 to 6; last-word quote above final CTA | as B2 plus "Read all n reviews" to a list | as B3; media filter |
+| `pdp` | "n reviews" near title; cards mid-page | avg + n near title; carousel or short list | avg + n; distribution + list with filters mid or low page | full module with media and attribute filters, replies |
+| `advertorial`, `video-sales-page` | one dated quote after the mechanism | two or three dated quotes inline, never a carousel | as B2 plus avg + n at the offer bridge | as B3 |
+| `listicle` | one quote under the reason it matches | one quote per reason where a matching review exists; avg + n at the close | as B2 | as B2 |
+| `comparison-us-vs-them` | none or one quote that names the alternative | avg + n near the verdict; quotes that name the alternative | as B2 | as B2 |
+| `seo-buyers-guide` | one quote under the ranked entry it matches, labelled by product | per-entry avg + n labelled by product in the comparison table; never one guide-level average | as B2 | as B2 |
+| `bundle-kit` | component quotes labelled by product | component avg + n labelled by product; no bundle average unless reviews are bundle-specific | as B2 | as B2 |
+| `ugc-creator-collab` | none | `review-with-media` cards only, 3 to 6 | media grid 6 to 12 | as B3 |
+| `restock`, `retargeting-warm` | one dated quote answering the objection | avg + n plus one objection quote | as B2 | as B2 |
+| `launch-waitlist-preorder`, `thank-you-post-purchase`, `faq-support-led`, `lead-capture-giveaway` | none | none or a store-level avg + n labelled as store rating | as B2 | as B2 |
+| luxury vertical (`references/vertical-luxury.md`) | one long-form quote | one long-form quote; no carousel, no counts | as B2 | as B2 |
+
+### Review anatomy: field gating
+
+Render a field only when the record contains it. Never fill a gap.
+
+| Field | Render only if | Rendering |
+|---|---|---|
+| Rating | `rating` present, integer 1 to 5 from the author | as given; never recalculated (IS 19000 cl. 5.7.3) |
+| Body | `body` present | verbatim; `[…]` trim only; "Read more" reveals the full text |
+| Title | `title` present | verbatim |
+| Name | `reviewer_name` present | first name + last initial, or as the app displays it publicly |
+| Location | `location` present | city or region as stored |
+| Date | `created_at` present | month and year at minimum; always shown |
+| Verified badge | record links to an order, or `verified: true`, or Shop source | the app's own semantics; never on a CSV import without order linkage |
+| Photo or video | media URL present and app terms cover display | native aspect; no crop that removes product or watermark |
+| Variant | `variant` present | "Size M, Olive" |
+| Recommends | explicit boolean present | text plus icon; never inferred from rating |
+| Merchant reply | reply present | visually distinct, labelled as the store's reply |
+| Incentivised | app flag present | "Incentivised review" label on the card and beside the summary |
+| Source | always | "via Judge.me" or "via Shop"; third-party sources link out |
+
+Never render: an avatar that is not the reviewer's, a stock face implied to be
+the reviewer, a generated name, date or verified tick.
+
+## Tier 3: proof-proximity candidates
+
+| Step | Call | Read | Then |
+|---|---|---|---|
+| 3.1 | for each of the plan's three decision questions, `lexsis_catalog.reviews_search` with `query` = the claim in the shopper's words | candidate reviews with ids | row per candidate, status `pending`, section = the claim's section |
+| 3.2 | `lexsis_catalog.reviews` by id (or the item in an active collection) | full record | confirm verbatim text, date, fields |
+| 3.3 | plan question 9 lists candidates with a one-line excerpt | merchant confirms or an active collection already contains the item | status `verified`; else the row stays `pending` and does not render |
+
+Semantic search returns candidates, not selections. A candidate that mentions
+a limitation ("took two weeks", "runs small") is preferred over pure praise.
+
+## Tier 4: zero-review playbook
+
+Run only when tiers 1 to 3 return zero usable rows for both product and store.
+Everything here produces evidence for the merchant and a consent shortlist;
+only an `external-verified` row reaches the page.
+
+```text
+ZERO_REVIEW(store, product):
+ 1. Shop app reviews. Ask the merchant whether Shop reviews exist (Shopify admin,
+    Shop, Reviews). Shop reviews are purchase-verified by construction and sync
+    into Judge.me with a non-removable "Verified by Shop" badge.
+    STOP if the sync brings n > 0: rerun tier 0.
+ 2. Brand-owned channels. Ask for: existing testimonials page (must hold evidence
+    of genuineness and contact details, CAP 3.45); comments on the brand's own
+    Instagram, TikTok or YouTube posts; customer emails, DMs or WhatsApp.
+    The author owns each comment or message. Build a consent shortlist: post
+    URL or message date, author handle, proposed quote, channels, duration.
+    STOP the item until a recorded written "yes" exists (template in
+    `references/proof/ugc-rights-and-display.md`).
+ 3. Public third-party sources. Search "<brand>" "<product>" reviews on each
+    source in the table below. Record URL, date, count, rating, handle.
+    Apply the per-source rule. Verify the author bought or used the product
+    (EU Annex I 23b; FTC bona fide user); if unverifiable, at most a link.
+ 4. Decide. If at least one item has (a) platform-permitted reuse, (b) merchant
+    written approval, (c) verbatim text, (d) live URL and attribution the
+    platform allows: ledger row kind `external-verified`, section
+    `testimonial-spotlight` captioned "What people are saying elsewhere" with
+    the source named and linked. Never blended into an on-site average.
+    STOP. Else tier 5.
+```
+
+| Source | May reach the page as | Evidence for the merchant only | Never |
+|---|---|---|---|
+| Shopify Shop app | synced reviews through tier 1 to 2 with the Shop badge | | copying Shop text outside the synced app |
+| Brand site testimonials | quote with evidence of genuineness and contact details on file | | undocumented quotes |
+| Brand Instagram or TikTok comments and tagged posts | quote or embed with the author's scoped written consent recorded | shortlist to request consent | a tag or hashtag treated as a licence; platform-licensed music |
+| YouTube | official embed of a creator video with the creator's written permission and connection disclosed | shortlist | downloading or re-hosting; quoting comments |
+| Customer emails, DMs, WhatsApp | quote with explicit consent for that quote, channel and duration; phone numbers, surnames, avatars redacted; channel and month labelled | shortlist | fabricated chat UI; screenshots without consent |
+| Trustpilot | live TrustBox widget on a paid plan; free plan is a plain text link; quotes need reviewer permission or full anonymisation | aggregate and count | static star image; product-score widget on a landing page (Trustpilot brand guidelines Sep 2026) |
+| Google Business Profile | Places API with author name, avatar, profile link, link to the source review, no caching, Google logo when off-map | aggregate and count | screenshots; feeding into the site average; expecting rich-result stars |
+| Amazon | one dated text line "Rated 4.6/5 by 2,140 Amazon customers (as of Sep 2026)" with a link, screenshot on file | aggregate, themes, objections | verbatim review text; "Best Seller" or "Amazon's Choice" badge art (Amazon trademark licence) |
+| Flipkart, Nykaa, Myntra | as Amazon (terms not fetched; applied by analogy) | aggregate, themes | verbatim text |
+| Reddit | "Discussed on r/<sub>" with a link; a quote only with the author's written permission | objections, vocabulary | quoting without permission; any use in ads (Reddit Embeds Terms) |
+| Creator videos (any platform) | hosted or embedded only with scoped written consent that names "website"; "Paid partnership" when paid | shortlist | organic consent stretched to ads or whitelisting |
+
+## Tier 5: substitutes when no review row exists
+
+Use in this order and stop at the first that verifies. Each is its own ledger
+kind; none is review-shaped.
+
+| Order | Kind | Minimum evidence | File |
+|---|---|---|---|
+| 1 | `guarantee`, `policy-fact` | policy page URL, exact terms (days, conditions, refund vs credit) | `references/offers/offer-ledger.md` |
+| 2 | `certification` | issuer, certificate or licence number, scope, current | `references/proof/trust-badges-certifications.md` |
+| 3 | `test-data` | lab or study report with method, n, date; numbers copied exactly | `references/proof/before-after-and-claims.md` |
+| 4 | `founder-note` | named founder, role stated, approved text, no invented customer voices | `references/proof/before-after-and-claims.md` |
+| 5 | `press-quote-linked`, `press-logo-linked` | fetched editorial URL naming the brand | `references/proof/press-and-media-mentions.md` |
+| 6 | "first customers" programme | offer terms in the offer ledger; adequate stock (India CCPA bait rule); copy states reviews open after delivery | `references/offers/offer-ledger.md` |
+| 7 | nothing | a page without proof is honest; a page with invented proof is a liability | |
+
+## Rules
+
+RS1. Never render a review element that is not a ledger row from tiers 0 to 3 or an `external-verified` row from tier 4. OPERATOR.
+Check: every `ReviewCarousel` or `ReviewList` `data-props` carries `collectionId` or `productIds`; any static `reviews[]` item id appears in the ledger.
+```bash
+perl -ne 'while(/data-island="Review[A-Za-z]*"[^>]*data-props=\x27([^\x27]*)\x27/g){print "unbound\n" unless $1=~/collectionId|productIds/}' $W/lexsis-source.html | wc -l   # 0
+```
+
+RS2. Run tiers in order and stop at the first tier that yields usable rows; never open tier 4 while tier 1 or 2 has data. OPERATOR.
+Check: the plan's "Proof sources" line names the tier reached and the calls made.
+
+RS3. Show an average only at n >= 5, always beside n, to one decimal, computed from all published ratings for the scope. RESEARCH [H] Baymard; LAW (a headline 5.0 from two ratings is misleading by omission, FTC 465.7, CMA "publishing in a misleading way").
+Check: every rating string is followed by a count in the same element (review the hits; prices also match the pattern).
+```bash
+grep -oE '[0-5]\.[0-9](/5| out of 5)[^<]{0,40}' $W/lexsis-source.html | grep -vcE '[0-9][0-9,]* (reviews|ratings)'   # 0
+```
+
+RS4. Never show 5.0 unless every review is five stars and n >= 20; never show two decimals. HEURISTIC, mirrors `proof-ledger.md` display rule 3.
+Check: `grep -c '5\.0' $W/lexsis-source.html` is 0 unless the ledger row records n >= 20 and a distribution of 100% five-star.
+
+RS5. Show the distribution at n >= 20 (optional at 10 to 19, hidden below 10), expanded, every bar present including one-star, bars acting as mutually exclusive filters. RESEARCH [H] Baymard distribution summary.
+Check: in the hosted draft the distribution element exists when the ledger's n >= 20 and lists five bars.
+
+RS6. Recency gate: when the newest review is older than 12 months, do not place the average in the hero or buy box; render dated cards only. RESEARCH [M] PowerReviews (64% prefer fewer recent reviews), BrightLocal 2026.
+Check: ledger `review-summary` row records newest date; if older than 12 months, section is not `hero`, `buy-box` or `review-summary`.
+
+RS7. Never relabel a store-level aggregate as a product rating, never average bundle components into a bundle rating, never merge reviews across substantially different products or formulations. LAW FTC 465.3; CMA208 "porting"; FTC v. Bountiful ($600k, 2023).
+Check: each `review-summary` row names the exact `product_id` or `collectionId` its numbers came from.
+
+RS8. A `minRating` filter is allowed only on a carousel that is labelled as a selection ("Selected reviews"), links to the full list ("Read all n reviews"), and sits with an unfiltered avg + n. Never on the full list, never for `averageRating` or `totalReviews`. LAW FTC 465.7(b); DMCC banned practice 13.
+Check:
+```bash
+grep -oE '"minRating":[[:space:]]*[2-5]' $W/lexsis-source.html | wc -l   # 0, or each carousel section also contains 'Read all' and the ledger avg + n
+```
+
+RS9. Negative reviews stay reachable: at n >= 20 at least one review rated 3 or lower is visible without filtering when one exists; sort default is disclosed in one line and does not bury low ratings. LAW FTC 465.7; FTC v. Fashion Nova ($4.2M, 2022); IS 19000 (no discouraging negatives). RESEARCH [H] Baymard: presence of negatives makes positives believable.
+Check: hosted draft at 1280 shows the sort label and, for B3+, at least one card with rating <= 3 in the default view.
+
+RS10. Render each review field only when the record contains it (field-gating table). Verified badge only with order linkage or Shop source. LAW EU Annex I 23b (verification is material information); Shopify Shop badge semantics.
+Check: no `verified` prop set to true on a static item whose ledger row lacks order linkage; no `avatar` URL that is not the reviewer's own media.
+
+RS11. Quote verbatim. Trim with `[…]` only; keep the reviewer's specifics (variant, timeframe, use); prefer a quote that includes a limitation; never stitch sentences from two reviews; never fix grammar. LAW CAP 3.47; Trustpilot "quote reviews exactly as written"; IS 19000 (administrator may not edit content).
+Check: each `review-quote` body is a substring of the API record with `[…]` removed.
+
+RS12. Render merchant replies when present, visually distinct and labelled as the store's reply. RESEARCH [H] Baymard: 37% weigh the reply; 87% of sites never reply.
+Check: reply markup uses a distinct class and the label "Reply from <store>".
+
+RS13. Label incentivised reviews on the card and beside the summary when the app flags them; incentives may never be conditioned on sentiment. LAW FTC 465.4 and 465.5; CMA208; Google review-snippet policy.
+Check: if any record has the incentivised flag, `grep -c 'Incentivised' $W/lexsis-source.html` >= 2.
+
+RS14. Review islands take `collectionId` or `productIds`, `minRating`, `pageSize` <= 12; `averageRating` and `totalReviews` come only from the API total for the same scope; never `reviewsEndpoint`; never `SocialProofPopup`. OPERATOR.
+Check:
+```bash
+grep -cE 'SocialProofPopup|reviewsEndpoint|"pageSize":[[:space:]]*(1[3-9]|[2-9][0-9])' $W/lexsis-source.html   # 0
+```
+
+RS15. Only `active` collections bind to `collectionId`; a draft collection is `pending` until the merchant activates it. The plan never activates a collection. OPERATOR.
+Check: the `collectionId` in source matches an id returned with `collection_status: "active"` on the plan date.
+
+RS16. `reviews_search` hits are `pending` until the merchant confirms them or an active collection contains them. OPERATOR.
+Check: every row with source `reviews_search` has status `verified` only with a confirmation note (question 9 answer or collection id).
+
+RS17. In band B0 render nothing review-shaped. An external item reaches the page only as `external-verified` with a live URL, platform-permitted reuse, merchant written approval, and verbatim text. Marketplace review text (Amazon, Flipkart, Nykaa, Myntra) is never verbatim; Reddit is never used in ads. LAW Amazon Conditions of Use; Reddit User Agreement and Embeds Terms; CAP 3.45.
+Check: no `review-*` kind in the ledger when `reviews_status` count is 0; each `external-verified` row has four evidence fields.
+
+RS18. When B0 persists after tier 4, use tier 5 substitutes in order; "nothing" is an acceptable outcome. HEURISTIC.
+Check: plan records the substitute chosen and why the higher rows were unavailable.
+
+RS19. Never write, paraphrase, summarise as if quoted, or generate a review; never present staff or founders as customers; never reuse a review for a different product. LAW FTC 16 CFR 465.2 and 465.5; FTC v. Rytr 2024; FTC v. Sunday Riley 2020; India E-Commerce Rules 2020 r.5(2).
+Check: `grep -ciE 'lorem|example review|sample review|\[name\]|\[city\]' $W/lexsis-source.html` is 0; no review text exists in source that is absent from the API.
+
+RS20. Autoplay video reviews muted only; sound on tap; captions present. LAW WCAG 2.1 SC 1.4.2.
+Check:
+```bash
+perl -ne 'print if /<video[^>]*autoplay(?![^>]*muted)/' $W/lexsis-source.html | wc -l   # 0
+```
+
+## Regulatory spine
+
+| Jurisdiction | Instrument | In force | Bites on | Penalty | URL |
+|---|---|---|---|---|---|
+| US | FTC Consumer Reviews and Testimonials Rule, 16 CFR 465 | 21 Oct 2024 | fake or AI reviews (465.2), porting (465.3), sentiment-conditioned incentives (465.4), undisclosed insiders (465.5), suppression (465.7), bought indicators (465.8) | civil penalties per knowing violation | https://www.federalregister.gov/documents/2024/08/22/2024-18519/trade-regulation-rule-on-the-use-of-consumer-reviews-and-testimonials |
+| US | FTC Endorsement Guides, 16 CFR 255 | 26 Jul 2023 revision | atypical results (255.2(b)), procuring or editing reviews (255.2(d)), experts (255.3), material connections (255.5) | Section 5 FTC Act; > $50,000 per violation under penalty offence notices | https://www.federalregister.gov/documents/2023/07/26/2023-14795/guides-concerning-the-use-of-endorsements-and-testimonials-in-advertising |
+| UK | DMCC Act 2024 Sch. 20 banned practice 13; CMA208 | 6 Apr 2025 | fake or concealed incentivised reviews; publishing reviews in a misleading way; no reasonable steps to prevent them | CMA fines up to 10% of global turnover | https://www.gov.uk/government/publications/unfair-commercial-practices-cma207/unfair-commercial-practices |
+| UK | CAP Code 3.45 to 3.48 | current | evidence and contact details for each testimonial; permission; relates to the advertised product | ASA ruling, ad withdrawn, referral | https://www.asa.org.uk/advice-online/testimonials-and-endorsements.html |
+| EU | Directive 2019/2161 amending UCPD, Annex I 23b and 23c, Art. 7(6) | 28 May 2022 | claiming reviews are from purchasers without verification; fake reviews; verification method is material information | national penalties | https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX%3A32019L2161 |
+| India | CPA 2019; CCPA Misleading Ads Guidelines 2022 | 9 Jun 2022 | endorsements must be genuine and current; disclaimers cannot cure | ₹10 lakh first, ₹50 lakh repeat; endorser ban 1 to 3 years | https://consumeraffairs.nic.in/theconsumerprotection/guidelines-prevention-misleading-advertisements-and-endorsements-misleading |
+| India | Consumer Protection (E-Commerce) Rules 2020 r.5(2), 7(2) | 2020 | sellers may not pose as consumers and post reviews | CPA 2019 | https://taxguru.in/corporate-law/consumer-protection-e-commerce-rules-2020.html |
+| India | BIS IS 19000:2022 | voluntary; QCO proposed May 2024 | no editing review content or ratings; publish moderation criteria; no discouraging negatives | certification of process | https://www.bis.gov.in/scheme-online-review-feb-26/ |
+
+## Sources
+
+- Spiegel Research Center 2017: https://spiegel.medill.northwestern.edu/how-online-reviews-influence-sales/ ; critique: https://cleancommit.io/blog/do-product-reviews-increase-conversion-rate/
+- Baymard: https://baymard.com/blog/sort-by-customer-ratings ; https://baymard.com/blog/user-ratings-distribution-summary ; https://baymard.com/blog/respond-to-negative-user-reviews
+- PowerReviews: https://www.powerreviews.com/power-of-reviews-2023/ ; https://www.powerreviews.com/right-volume-of-reviews/ ; https://www.powerreviews.com/review-volume-and-recency/
+- BrightLocal 2026: https://www.brightlocal.com/research/local-consumer-review-survey/
+- FTC FAQ on the reviews rule: https://www.ftc.gov/business-guidance/resources/consumer-reviews-testimonials-rule-questions-answers
+- FTC v. Fashion Nova: https://www.ftc.gov/news-events/news/press-releases/2022/01/fashion-nova-will-pay-42-million-part-settlement-ftc-allegations-it-blocked-negative-reviews
+- FTC v. Rytr: https://www.ftc.gov/news-events/news/press-releases/2024/12/ftc-approves-final-order-against-rytr-seller-ai-testimonial-review-service-providing-subscribers
+- FTC v. Sunday Riley: https://www.ftc.gov/news-events/news/press-releases/2020/11/ftc-approves-final-consent-agreement-sunday-riley-modern-skincare-llc
+- FTC v. Bountiful: https://techcrunch.com/2023/04/10/ftc-orders-supplement-maker-to-pay-600k-in-first-case-involving-hijacked-amazon-reviews/
+- CMA208 fake reviews guidance: https://assets.publishing.service.gov.uk/media/67eeb64fe9c76fa33048c790/CMA208_-_Fake_reviews_guidance.pdf
+- IS 19000:2022 text: https://www.medianama.com/wp-content/uploads/2022/12/19000_2022.pdf
+- Shopify Shop reviews: https://help.shopify.com/en/manual/online-sales-channels/shop/product-reviews ; partner sync: https://help.shopify.com/en/manual/online-sales-channels/shop/product-reviews/sync-partner-apps
+- Trustpilot brand guidelines: https://uk.corporate.trustpilot.com/legal/for-businesses/legal-brand-guidelines/sept-2026 ; showcasing reviews: https://help.trustpilot.com/s/article/Share-and-showcase-reviews
+- Google Places policies: https://developers.google.com/maps/documentation/places/web-service/policies ; review snippet: https://developers.google.com/search/docs/appearance/structured-data/review-snippet
+- Amazon Conditions of Use: https://www.amazon.com/gp/help/customer/display.html?nodeId=GLSBYFE9MGKKQXXM ; trademark licence: https://buywithprime.amazon.com/legal/trademark-license
+- Reddit: https://redditinc.com/policies/user-agreement ; https://redditinc.com/policies/embeds-terms
+- YouTube terms: https://www.youtube.com/static?template=terms ; Instagram terms: https://help.instagram.com/581066165581870/
+- WCAG 1.4.2: https://www.w3.org/WAI/WCAG21/Understanding/audio-control.html
+
+---
+
+# Proof Ledger
+
+Every trust element a page shows (a star, a count, a quote, a logo, a badge,
+a photo of a customer, a "clinically tested" line) is a row in the plan's
+`## Proof ledger` before design begins. `/design-page` renders only ledger
+rows; `/generate` fails production QA on any proof element that is not in the
+ledger; `/optimize` may add proof only by adding a row first. This file
+defines the block, the verification each kind needs, and the display rules.
+Sourcing procedures live in `references/proof/reviews-sourcing.md` and the
+sibling files.
+
+## The block
+
+```markdown
+## Proof ledger
+
+| # | Kind | Supports claim | Source | Evidence | Verified | Section | Status |
+|---|---|---|---|---|---|---|---|
+| P1 | review-summary | overall quality | lexsis_catalog.reviews product gid://…/123 | 4.6 avg, 212 reviews, min rating 1 | API 2026-09-10 | review-summary | verified |
+| P2 | review-quote | "no more 3pm crash" | collection 7f2e… item 9a1c… | verbatim text, name initial + city as stored, 2026-04-02 | API | benefits | verified |
+| P3 | press-logo-linked | credibility | Vogue India | https://www.vogue.in/… (article names the brand) | fetched 2026-09-10 | press-marquee | verified |
+| P4 | certification | "FSSAI licensed" | merchant | licence no. 1001…; issuer FSSAI | merchant doc | trust-bar | verified |
+| P5 | ugc-video | in-use proof | creator @…, rights email 2026-08-21 | asset id … | merchant consent | ugc-grid | verified |
+| P6 | customer-count | "50,000+ customers" | merchant | Shopify orders export, 51,204 unique customers to 2026-08-31 | merchant doc | stats | pending |
+| P7 | before-after | "visible in 4 weeks" | merchant | none supplied | none | — | dropped |
+```
+
+Columns:
+
+- **Kind**: one id from the proof kind vocabulary in
+  `references/page-types/_checklist-format.md`.
+- **Supports claim**: the exact page claim this proof stands beside. Proof
+  without a claim is decoration; drop it.
+- **Source**: the system, person or publication that holds the evidence.
+- **Evidence**: the id, URL, count, document, or verbatim text.
+- **Verified**: how and when (API date, fetched URL, merchant document,
+  consent record). "Merchant says" is `pending` until a document or written
+  confirmation exists.
+- **Section**: the canonical section id where it renders.
+- **Status**: `verified`, `pending` (may not render), `dropped` (with reason
+  in the row).
+
+## Verification required per kind
+
+| Kind | Minimum evidence before `verified` | Never |
+|---|---|---|
+| review-summary | `lexsis_catalog.reviews` total and average for the exact product or collection; count ≥ 5 to show an average, ≥ 1 to show a count | rounding 4.3 to 5.0; "5.0" with under 20 reviews; stars without a count |
+| review-quote / review-list / review-with-media | row exists in `lexsis_catalog.reviews` or `review_collection_items`; text verbatim; attribution exactly as stored; date present | edited wording beyond `[…]` trimming; invented names, cities, photos; five identical five-star quotes |
+| external-verified-quote | public URL, platform terms allow reuse, merchant written approval, verbatim text, attribution the platform allows; manifest `reviews.source: external-verified` | marketplace text that the platform's terms forbid copying; quotes from DMs without consent |
+| ugc-photo / ugc-video / creator-video | asset id in the library, rights record (email, contract, platform rights request), creator handle, paid disclosure flag when paid | stock people as customers; generated people; content without rights |
+| before-after | merchant-supplied, same subject, same framing and lighting, unretouched, timeframe stated, consent, category permitted (`references/proof/before-after-and-claims.md`) | generated, composite, or "illustrative" results; medical outcomes without substantiation |
+| expert-quote / founder-note | named person, credential verifiable, written approval, material connection disclosed | anonymous "doctors recommend"; invented titles |
+| press-logo-linked / press-quote-linked | fetched article URL that names the brand or product; not a press release wire; paid placements disclosed as such | logos without a URL; "as seen in" for a wire release; podcast without episode link |
+| certification / award | issuer, certificate or licence number, scope, current date; exact issuer wording (`references/proof/trust-badges-certifications.md`) | "FDA approved" for anything FDA does not approve; "dermatologist tested" without a test report; generated badge art |
+| test-data / case-study | document or URL with method, sample, date; numbers copied exactly; disclaimer where required | "clinically proven" from an ingredient supplier's study applied to the product |
+| customer-count / sales-count / repeat-rate | merchant export or analytics screenshot with date; rounded down; phrase "over N" | invented, rounded up, or extrapolated numbers |
+| guarantee / policy-fact | store policy page URL or merchant confirmation; exact terms | "free returns" when returns cost; "lifetime" without terms |
+| community-screenshot | platform, date, consent from the poster (or public brand-owned content) | screenshots of paid or fake accounts |
+| stock-count | live `lexsis_catalog.get` inventory read at render time via island binding | fixed numbers in copy |
+| social-proof-popup, live-viewer-count, press-logo-unlinked | never verified; never rendered | — |
+
+## Display rules
+
+1. **Proof proximity.** A quote or number sits beside the claim it supports,
+   not pooled in one "testimonials" block. A standalone reviews section holds
+   the breadth (list or carousel); claim-specific rows go inline.
+2. **Density.** Modules within the type checklist's `proof.min_modules` and
+   `max_modules`. A module is one section or one inline element; the same
+   ledger row may render once.
+3. **Stars.** Show stars only next to a numeric average and count (count of
+   5 or more for an average). Distribution (or "n% recommend"): hidden below
+   10 reviews, optional from 10 to 19, required and click-to-filter at 20 or
+   more. Use the real average to one decimal; do not show 5.0 unless every
+   review is five stars and there are at least 20. No average in the hero or
+   buy box when the newest review is older than 12 months (recency gate).
+   A filtered carousel (`minRating`) is labelled as a selection, links to the
+   full unfiltered list, and sits beside the unfiltered average and count;
+   `averageRating` and `totalReviews` are never computed from a filtered set.
+4. **Quotes.** Verbatim. Trim with `[…]` only. Keep the reviewer's own
+   specifics (product variant, timeframe, use). Attribution exactly as
+   stored plus the date. Prefer reviews that mention the claim and, where
+   possible, a limitation.
+5. **Counts.** Round down, prefix "over", include the as-of month when older
+   than 90 days. Never mix units ("customers" vs "orders").
+6. **Press.** Monochrome logos at one height, each an `<a>` to the ledger
+   URL with the publication as accessible name; three to six logos; caption
+   "Press" or "In the press", never "As seen in" unless the outlet actually
+   featured the product. Paid placements say "Sponsored feature". Mentions
+   older than 24 months drop out (12 months for "as seen in" or "featured").
+7. **Badges.** Issuer text next to the mark; monochrome; no generated art;
+   one row, three to five badges, never repeated per section.
+8. **UGC.** Native aspect (9:16 or 1:1), captions on video, click to play,
+   creator handle, "Paid partnership" when paid, rights recorded.
+9. **Before/after.** Same crop, labels "Before" and "After" with the
+   interval, "Individual results vary" where the category requires it,
+   never in the hero, never generated.
+10. **Numbers in copy.** Every numeral inside a proof, trust, stats or press
+    section appears in the ledger. `design_lint.py` lists them; the review
+    checks each.
+
+## Fallback order when the ledger is thin
+
+1. Guarantee and policy facts (returns, shipping, warranty) with exact terms.
+2. Certifications and licences with issuer.
+3. Product evidence: test data, ingredient sourcing, materials, process
+   photos.
+4. A founder note with a real name and signature.
+5. Verified press with links.
+6. A "first customers" programme: an honest invitation (early access,
+   founder contact, review request) that says the product is new.
+7. Nothing. A page with no proof section is honest; a page with invented
+   proof is a liability.
+
+## Lint hooks
+
+- `plan_lint.py` T9: a reviews section requires `manifest.reviews.available
+  > 0` from an allowed source.
+- `design_lint.py`: emoji stars (N1), fabricated pills (N9), numerals in
+  proof sections (N11, manual), unlinked press logos (`<img>` inside a
+  `press-marquee` section that is not wrapped in `<a href`), forbidden kinds
+  (`SocialProofPopup`, "people are viewing", "bought in the last").
+
+---
+
+# Generation policy
+
+The ALLOW / ASK / NEVER model for AI-generated imagery on storefront pages.
+It governs `lexsis_drafts.asset_generate` and any external generator
+(image or video) reached through another MCP. `/plan-page` may plan a slot for
+generation only from the ALLOW list; `/design-page` generates ALLOW slots after
+credit confirmation and ASK slots only with the merchant's explicit yes; NEVER
+items are not generated under any instruction. The only way to fill a NEVER
+slot is for the merchant to supply real media through
+`references/assets/asset-sourcing-sequence.md`. Prompt mechanics and
+compositing recipes are in `references/design-enrichment.md`; where that file
+suggests a prompt this policy forbids (gradient washes, hands holding the
+product, generic lifestyle scenes), this policy wins.
+
+Tags: LAW, RESEARCH, OPERATOR, HEURISTIC as defined in
+`references/assets/image-jobs-by-page-type.md`.
+
+## 1. What the MCP accepts
+
+| `purpose` | `aspect` options | Output px | Transparent | Class |
+|---|---|---|---|---|
+| `hero_bg` | `landscape` | 1536 x 1024 | no | ALLOW |
+| `hero_bg` | `portrait` (mobile crop) | 1024 x 1536 | no | ALLOW |
+| `section_bg` | `landscape` | 1536 x 1024 | no | ALLOW |
+| `card_bg` | `square` | 1024 x 1024 | no | ALLOW |
+| `texture_fill` | `square`, seamless | 1024 x 1024 | no | ALLOW |
+| `pattern_tile` | `square`, seamless | 1024 x 1024 | no | ALLOW |
+| `decorative_element` | `square` | 1024 x 1024 | yes, separate provider | ALLOW |
+| `product_composite` | `square` or `portrait` | 1024 x 1024 or 1024 x 1536 | no | ALLOW only over a real cut-out passed in `reference_images` |
+| `product_lifestyle` | `portrait`, `square`, `landscape` | as above | no | ASK |
+
+`icon_set` is a plan role, not an MCP purpose. It means "author one
+monochrome inline SVG set" (one stroke width, 24px grid, `currentColor`),
+allowed by N1 and N3 in `references/design-rules.md`. Raster icon generation is
+NEVER. Every generated raster is at most 1536 px on its long side; that is
+below the hero image minimum in `references/assets/slot-spec.md`, which is why
+generation fills backdrops (low detail, cover-cropped) and never product
+imagery.
+
+## 2. NEVER
+
+Blocking. No override by prompt, brief, design.md line or user instruction.
+The merchant supplying real media is the only exit.
+
+| Id | Never generate | Why | Instead |
+|---|---|---|---|
+| GN1 | The product itself when Shopify media exists or could exist, including a "cleaner" version of an existing shot | Misrepresentation of colour, size, texture or accessories; feed images must show the real product https://support.google.com/merchants/answer/7052112 ; ASCI draft prohibits exaggerating product features through visual representation https://www.ascionline.in/wp-content/uploads/2026/05/asci-ai-labelling-guidelines.pdf | Step 1 to 4 of the sourcing sequence; slot stays `planned` |
+| GN2 | A different-looking or stand-in product when no media exists (pre-launch included) | Same as GN1; ASCI medium tier requires labelling of non-existent products and the shopper cannot tell a render from a photo | Merchant's own render captioned "Rendering; final packaging may vary", or typographic hero |
+| GN3 | People presented as customers, reviewers, creators, founders, staff, experts or doctors | Testimonials by someone who does not exist are banned, 16 CFR 465 https://www.ftc.gov/news-events/news/press-releases/2024/08/federal-trade-commission-announces-final-rule-banning-fake-reviews-testimonials ; ASCI "fabricating endorsements" and "AI generated fake doctor" are prohibited even if labelled | Real UGC with rights; real founder photo; no section |
+| GN4 | Before/after, results, clinical or medical imagery (labs, charts implying efficacy, skin, hair or body change) | Before/after is an objective claim needing substantiation https://www.asa.org.uk/advice-online/before-and-after-photos.html ; "results not typical" does not cure deception https://www.ftc.gov/business-guidance/resources/health-products-compliance-guidance | `references/proof/before-after-and-claims.md` |
+| GN5 | Press logos, certification badges, awards, seals, payment marks | Endorsement and certification fraud; `references/proof/trust-badges-certifications.md` requires issuer artwork | Issuer or outlet artwork with a ledger row |
+| GN6 | Text, prices, labels, headlines, ingredient lists or facts panels inside an image | WCAG 1.4.5 https://www.w3.org/WAI/tutorials/images/ ; Google and Shopify overlay rules https://support.google.com/merchants/answer/6101131 , https://shopify.dev/docs/storefronts/themes/store/requirements | HTML text over the image |
+| GN7 | Celebrities, lookalikes or any recognisable real person | Right of publicity; FTC celebrity avatar guidance https://www.ftc.gov/business-guidance/resources/consumer-reviews-testimonials-rule-questions-answers ; ASCI "likeness without consent" | None |
+| GN8 | Competitor products or packaging, or generic products styled to resemble one | Trademark and comparative advertising exposure | Inline SVG silhouette labelled "other brands" |
+| GN9 | Anything that will be captioned as a review, UGC, "from our customers" or a customer photo | 16 CFR 465 insiders and fake-review rules | Rights-cleared UGC only |
+| GN10 | Unsafe use (baby, pets, tools, dosing) | ASCI prohibited tier "depicts unsafe situations" regardless of label | Real, correct-use photography |
+| GN11 | Food, ingredients or formula presented as the merchant's own product or sourcing | GN1 by extension; net-impression deception | Real flat lays; stock raw material only as context |
+| GN12 | Anything for the Google Shopping feed image slot or the first gallery position | Feed image must be a real, unobstructed photo https://support.google.com/merchants/answer/7052112 | Shopify media |
+
+## 3. ALLOW
+
+Generated after the merchant confirms the credit spend for the named batch.
+Every ALLOW file: no people, no hands, no text, no products, no logos; brand
+palette hexes from `lexsis_brand.brand_kit` passed in `brand_colors`;
+provenance recorded per section 7.
+
+| Purpose | Aspect | Prompt constraints | Negative list | Placement rule | Alt | Manifest role |
+|---|---|---|---|---|---|---|
+| `hero_bg` | `landscape` plus `portrait` for the mobile crop | Physical material or place (linen, paper, plaster wall, stone, wood, water, sky); soft depth; matte; a low-detail quiet zone where the HTML headline and CTA sit; luminance variance under 30% in that zone | text, letters, watermark, logo, person, hands, face, product, bottle, package, gradient wash, blob, bokeh, neon glow, 3D render | Only in the hero and only when the hero is the plan's bold moment (N2 full-bleed exception) or the section is typographic; a real cut-out is composited on top or no product is shown; one black-to-transparent legibility overlay at most (N7) | `alt=""`, `aria-hidden="true"` | `hero_bg` |
+| `section_bg` | `landscape` | As `hero_bg`; even lower detail | As above | Only in the one full-bleed section the plan names as the bold moment (N2); never behind body copy blocks | `alt=""` | `section_bg` |
+| `card_bg` | `square` | Flat material or tone; no objects | As above | Only inside a card that wraps a distinct object per N8 (product, proof artefact, table, form); never behind plain text | `alt=""` | `card_bg` |
+| `texture_fill` | `square`, seamless | Abstract material grain (paper, linen, stone); tileable; no recognisable objects | As above plus "pattern of objects" | Page-wide behind the single `--lx-bg-color` at 8% opacity or less, or inside a media object; never per section (N2) | `alt=""` (inline `style` background on a `div`) | `texture_fill` |
+| `pattern_tile` | `square`, seamless | Brand motif in one or two palette colours; geometric or botanical line work; tileable | As above | Same as `texture_fill`; never animated (N10) | `alt=""` | `pattern_tile` |
+| `decorative_element` | `square`, `transparent: true` | Vector-like silhouette or brush mark in one palette colour; SVG preferred over PNG | As above plus "gradient", "glow", "3D" | At most two per page; never behind text; never floating, pulsing or parallax (N7, N10) | `alt=""`, `aria-hidden="true"` | `decorative_element` |
+| `product_composite` | `square` or `portrait` | `reference_images` holds the real Shopify or library cut-out first, then a surface or scene; prompt places the product on the surface with realistic contact shadow; product pixels are not repainted, recoloured, relit beyond global grade or scaled non-uniformly; nothing added that could read as shipped with the product | text, hands, person, second product, brand signage, gift wrap, accessories | Fills `context` jobs only; never `identity`, `variation`, `included-items`, `gift-presentation` or gallery position one; caption "Product photo on a generated background" when the scene is photoreal (a room, a landscape) rather than a plain surface | Informative: "{Product} {variant} on {surface}" | `product_composite` |
+| `icon_set` (authored SVG) | 24px grid | One stroke width, `stroke="currentColor"`, `fill="none"`, one size per context | Multi-colour, 3D, raster | Beside a visible text label, `aria-hidden="true"` (N3, A5) | n/a | `icon_set` |
+
+Quality tier: `high` only for `hero_bg`; `medium` for `section_bg`,
+`card_bg`, `product_composite`; `low` for `texture_fill`, `pattern_tile`,
+`decorative_element` (`references/design-enrichment.md` cost table). House
+cap: four generated assets per page (HEURISTIC).
+
+## 4. ASK
+
+Requires the merchant's explicit yes for the named slot in the same reply,
+logged in the plan's Generation record with the merchant's words and date.
+Never inferred from "go ahead" on the plan as a whole.
+
+| Case | Question to put to the merchant | Conditions if approved |
+|---|---|---|
+| `product_lifestyle`: a scene around the real product where identity is preserved through a composited cut-out, or the merchant accepts illustrative context | "Slot A7 (in-use, benefits) would be a generated scene with your real product composited in. It will carry an 'AI-generated scene' caption and metadata, cannot be captioned as a customer photo, and Meta will label it if reused in ads. Generate it, or leave the section without an image?" | Visible caption near the image; `alt` names the product and says "generated scene"; never in `ugc-grid`, `reviews`, `testimonial-spotlight` or gallery position one; no people or hands; not for beauty shade or fit claims |
+| Generated person or hands with the composited product (a synthetic model) | "This uses a synthetic model. It will be labelled 'AI-generated' and can never be presented as a customer, reviewer or staff. Proceed?" | Label visibly; ASCI medium tier "synthetic influencer" label; EU Art. 50 deep-fake label; never on `pdp` gallery, `ugc-creator-collab`, `brand-story-founder`; skin tone and body claims forbidden |
+| Illustration or 3D-render style for the whole page | "The page would use an illustrated look for backdrops and decoration. Product images stay photographic. Accept the style?" | Products remain real photos; `alt` says "illustration"; style recorded in the Design direction block |
+| Any generation on a page type whose checklist sets `imagery.hero` to `packshot` or `ugc-screenshot` | "This page type leads with a real product or customer image. Generated backdrops would sit below the hero only. Confirm?" | Hero stays real; generated assets only below the fold |
+| Replacing a real but low-quality merchant photo with a composite | Show both; "Keep your photo or use the composite with your product cut out onto a generated surface?" | Original stays in the library; composite follows `product_composite` rules |
+| Any batch beyond the four-asset cap or the plan's credit allowance | "This adds N generated assets at M credits (balance B). Proceed?" | Recorded count and cost |
+
+RESEARCH context: when users did not know an image was generated there was no
+trust penalty versus stock, but users who suspected generation reacted
+negatively (n=77) https://www.nngroup.com/articles/ai-generated-images/ ;
+marketers rank AI visuals far below UGC for trust (16% vs 33%)
+https://www.nosto.com/blog/new-research-brands-prefer-ugc-for-diversity/ .
+Default to real; spend generation on backdrops.
+
+## 5. Prompt constraints for every call
+
+1. Describe a material or place, never a mood word alone ("linen", not
+   "premium vibe").
+2. Add the negative list from the purpose row verbatim; always include
+   "text, letters, logo, watermark, person, hands, face, product".
+3. Pass `brand_colors` from `lexsis_brand.brand_kit`; never a default hex
+   (N14).
+4. Name the quiet zone position (left third, lower half) when HTML text will
+   sit on the image.
+5. Ask for even, diffuse light and low contrast; the legibility overlay does
+   the rest (N7).
+6. `style: photography` for backdrops unless the ASK illustration case is
+   approved; never `3d_render` for anything near a product.
+7. Store the exact prompt, negatives, aspect, style, quality, provider and
+   returned asset id in the plan's Generation record.
+
+## 6. Disclosure by jurisdiction
+
+Applies to every generated or composited image on the page. "Metadata" means
+`IPTC DigitalSourceType` = `TrainedAlgorithmicMedia` (fully generated) or
+`CompositeSynthetic` (real product on generated scene), kept on the original
+in the library. Hosts may re-encode and strip metadata, so the library record
+and the plan carry provenance as well.
+
+| Jurisdiction or platform | Obligation | What the page does | Tag | Source |
+|---|---|---|---|---|
+| EU, AI Act Art. 50 (applies 2026-08-02; marking grace to 2026-12-02 for earlier models) | Deployers label deep fakes (AI content resembling real persons, objects, places or events that would appear authentic) clearly at first exposure | ASK-tier realistic scene or human: visible label "AI-generated image" adjacent plus metadata. ALLOW backdrops without people or products: metadata only | LAW | https://digital-strategy.ec.europa.eu/en/factpages/quick-facts-transparency-rules-ai-systems ; https://www.orrick.com/en/insights/2026/08/eu-ai-act-transparency-obligations-for-ai-generated-content-article-50 |
+| India, ASCI draft AI labelling guidelines (May 2026), aligned to IT Rules amendment of 2026-02-10 | High tier prohibited even if labelled (fake testimonials, exaggerated results, fake settings, likeness without consent, fake authority); Medium tier label required (synthetic influencers, realistic AI settings, non-existent products); Low tier no label (decorative backgrounds, minor enhancement) | High tier blocked by section 2; Medium tier gets "Created using AI" label; ALLOW backdrops need none | LAW (draft) | https://www.ascionline.in/wp-content/uploads/2026/05/asci-ai-labelling-guidelines.pdf ; https://www.thehindubusinessline.com/info-tech/asci-proposes-risk-based-approach-for-responsible-labelling-on-ads-made-with-ai/article70969237.ece |
+| US, FTC 16 CFR 465 and Section 5 | No federal AI label law; deception judged on the net impression including images; fake or AI testimonials banned; NY GBL 396-b requires disclosure of synthetic performers in ads from 2026-06-09 (secondary source, verify) | Section 2 blocks the deceptive cases; synthetic humans labelled anyway | LAW | https://www.ftc.gov/legal-library/browse/federal-register-notices/16-cfr-part-465-trade-regulation-rule-use-consumer-reviews-testimonials-final-rule ; https://craftshift.com/disclose-ai-generated-product-images-shopify-2026/ |
+| UK, ASA/CAP | Visual claims must not exaggerate; before/after follows testimonial evidence rules; retouching of product-relevant areas misleads even with a disclaimer | GN4, GN6 | LAW | https://www.asa.org.uk/advice-online/cosmetics-the-use-of-production-techniques.html |
+| Meta ads | Auto-applies an "AI info" label to images created or significantly edited with generative AI; photorealistic AI humans labelled next to "Sponsored" | Expect labels when page assets are reused as ads; keep metadata intact | LAW (platform) | https://www.facebook.com/business/help/1010479435004531 ; https://about.fb.com/news/2025/02/gen-ai-transparency-metas-ads-products/ |
+| Google Merchant Center | All generated images carry `IPTC DigitalSourceType`; do not strip it; no visible watermark or overlay; feed image is a real photo | Feed image never generated (GN12); metadata preserved on any other image | LAW (platform) | https://support.google.com/merchants/answer/7052112 |
+| Shopify | No merchant-facing disclosure rule; Shopify Magic watermarks its own output invisibly; CDN re-encoding may strip IPTC (secondary claim) | Provenance kept in the library record and plan, not only in the file | OPERATOR | https://help.shopify.com/en/manual/shopify-admin/productivity-tools/shopify-magic/media-generation |
+
+## 7. Recording
+
+Plan (`page-plan.md`), one block after "## Asset slots":
+
+```markdown
+## Generation record
+
+| Slot | Purpose | Aspect | Style / quality | Prompt (verbatim) | Negatives | Brand hexes | Provider | Asset id | Metadata set | Visible label | Approved by |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| A3 | hero_bg | landscape + portrait | photography / high | "Unbleached linen surface, soft north window light, ..." | text, letters, logo, ... | #F5F0E6, #1F1D24 | lexsis | 2d9a... | TrainedAlgorithmicMedia | none | credits: merchant, 2026-09-10 |
+| A7 | product_lifestyle | portrait | photography / medium | "..." | ... | ... | lexsis | 9f01... | CompositeSynthetic | "AI-generated scene" | "yes, generate A7" Aditi 2026-09-10 |
+```
+
+Manifest (`page-manifest.json`): the slot's `assets[]` entry gets
+`"sourceType": "lexsis"`, `"assetId"`, `"url"`, `"generated": true`,
+`"provider": "<provider>"`, and `role` equal to the purpose. For an approved
+ASK slot the role is `product_lifestyle`, the entry also carries
+`"askApproved": true`, and the merchant's words live in the plan record
+(`plan_lint.py` T8 rejects an ASK role without that flag). Nothing else about
+generation enters the manifest.
+
+## 8. Generation request checklist
+
+Complete every line with yes before calling `lexsis_drafts.asset_generate`
+or any external generator. One no stops the call.
+
+1. The slot exists in the plan's Asset slots table with an id and section.
+2. Steps 1 and 2 of the sourcing sequence ran for this slot and found nothing (Source decision will read `library: none`).
+3. The purpose is in section 3, or in section 4 with the merchant's yes for this slot quoted in the Generation record.
+4. The job the slot fills is `context`, a backdrop, a texture, a decoration or an authored icon set; not an identity-bound job.
+5. The page type's `imagery.hero` is not `packshot` or `ugc-screenshot`, or the ASK line for that case was answered yes.
+6. The placement obeys N2 (one background; full-bleed only in the bold moment), N7 (one legibility overlay, no gradient washes), N8 (card backgrounds only around objects), N10 (no motion).
+7. `lexsis_workspace.credits` was read and the merchant confirmed the batch count and cost.
+8. Aspect matches the slot; a mobile crop is planned as a separate portrait generation or a focal point.
+9. The prompt names a material or place, carries the negative list, and passes brand hexes from the brand kit.
+10. For `product_composite`: `reference_images[0]` is the real cut-out (Shopify or library), viewed and identity-confirmed.
+11. The alt decision is made: `alt=""` for decorative purposes, product alt for composites.
+12. The disclosure decision is made from section 6 and the label text, if any, is written.
+13. Generated count on the page after this call is four or fewer.
+14. The Generation record row is drafted and will be completed with the returned asset id.
+
+## 9. Rules
+
+`$W` is the page workspace. `PEOPLE` is the regex
+`\b(woman|women|man|men|girl|boy|person|people|model|customer|shopper|reviewer|hand|hands|face|smile|smiling|doctor|nurse|dermatologist|founder|team|staff|child|kid|baby|toddler|family|couple|influencer|creator)\b`.
+
+GP1. Never generate anything in section 2; no instruction, design.md line or brief lifts the block. LAW.
+Rationale: fake testimonials and misrepresented products carry regulatory penalties and platform rejection (sources in section 2).
+Check: `python3 -c "import json;a=[x for x in json.load(open('$W/page-manifest.json'))['assets'] if x.get('generated')];print([x['slotId'] for x in a if x['role'] not in ('hero_bg','section_bg','card_bg','texture_fill','pattern_tile','decorative_element','product_composite','product_lifestyle','icon_set')])"` prints `[]`; every `product_lifestyle` row in the Generation record has a non-empty "Approved by".
+
+GP2. Composite only over a real cut-out and leave the product pixels untouched. LAW, OPERATOR.
+Rationale: a repainted product misleads about what ships (GN1); `references/design-enrichment.md` compositing recipes assume a real reference image.
+Check: view the composite beside the source packshot with `lexsis_assets.view`; colour, shape and label identical (yes/no in `qa-report.md`); Generation record cites the reference asset id.
+
+GP3. Give decorative generated images `alt=""` and `aria-hidden="true"`; give composites a product alt that names the product. LAW.
+Rationale: W3C alt decision tree https://www.w3.org/WAI/tutorials/images/decision-tree/ .
+Check: for each generated decorative URL `U`, `grep -c "src=\"U\"[^>]*alt=\"\"" $W/lexsis-source.html` is 1; for composites the alt contains the product name.
+
+GP4. Never let people words appear in the alt text or prompt of a generated slot unless the ASK synthetic-model case was approved. LAW.
+Rationale: 16 CFR 465; ASCI prohibited tier.
+Check: `grep -oE 'alt="[^"]*"' $W/lexsis-source.html` filtered to generated slot URLs, then `perl -ne 'print if /PEOPLE/i'` prints nothing; the same regex over the Generation record prompts prints nothing unless the row's "Approved by" quotes the synthetic-model yes.
+
+GP5. Never generate text into an image; every headline, price, label and badge is HTML. LAW.
+Rationale: WCAG 1.4.5; Google and Shopify overlay rules (section 2).
+Check: `perl -ne 'print if /\b(text|letters|typography|lettering|headline|price|label|badge|logo|caption)\b/i' <<< "<prompt>"` matches only inside the negative list; view the output for stray glyphs.
+
+GP6. Place `hero_bg` and `section_bg` only in the plan's bold moment; keep one page background everywhere else. OPERATOR.
+Rationale: N2 and N7 in `references/design-rules.md`; a generated band per section is the template tell those rules exist to stop.
+Check: count of full-width elements with a generated background image is 0 or 1 and its section id equals the plan's "Bold moment" line (browser check from N2).
+
+GP7. Record provenance three ways: metadata on the original, `generated: true` plus `provider` in the manifest, and the Generation record in the plan. LAW.
+Rationale: Google requires `IPTC DigitalSourceType`; EU and ASCI labelling decisions must be auditable; hosts may strip file metadata.
+Check: `exiftool -DigitalSourceType <original>` prints a value when the tool is available; `grep -c '"generated": true' $W/page-manifest.json` equals the Generation record row count.
+
+GP8. Show a visible label wherever section 6 requires one and place it adjacent to the image. LAW.
+Rationale: EU Art. 50 first-exposure labelling; ASCI medium tier.
+Check: for every record row with a non-empty "Visible label", `grep -c '<label text>' $W/lexsis-source.html` is at least 1 within the same section.
+
+GP9. Read credits and obtain a yes for the named batch before spending; cap generated assets at four per page. OPERATOR, HEURISTIC.
+Rationale: `/design-page` authorises page creation, not generation; more than a few generated backdrops read as a template.
+Check: `grep -c '"generated": true' $W/page-manifest.json` is 4 or fewer; the session shows `lexsis_workspace.credits` before the first generate call.
+
+GP10. Use `high` quality only for `hero_bg`; `medium` for section and card backgrounds and composites; `low` for textures and decoration. OPERATOR.
+Rationale: cost table in `references/design-enrichment.md`.
+Check: Generation record "Style / quality" column obeys the mapping.
+
+GP11. Never place a generated image in the gallery, the first gallery position, the feed image or a proof section. LAW.
+Rationale: GN12; feed and gallery positions carry product identity; proof sections carry testimony.
+Check: no manifest entry with `generated: true` has `sectionId` in `gallery`, `buy-box`, `product-hero`, `reviews`, `ugc-grid`, `testimonial-spotlight`, `before-after`, `press-marquee`, `certifications`, `awards`.
+
+GP12. Log every ASK approval with the merchant's words and the date; never infer approval from plan approval. OPERATOR.
+Rationale: an ASK image carries a label and legal exposure the merchant must own.
+Check: Generation record "Approved by" for ASK rows quotes text and a date; `PLAN_APPROVED` alone is not accepted.
+
+GP13. Never add props, gifts, accessories or a second product to a composite that could read as shipped with the product. LAW.
+Rationale: included-items misrepresentation; ASCI "exaggerating product features".
+Check: view; the composite contains the product and a surface or scene only (yes/no).
+
+GP14. Never use a generated image to fill `in-use`, `scale`, `size-reference`, `swatch`, `texture` of the product, `ingredient-or-material` presented as own sourcing, or `result-or-context` results. LAW, RESEARCH.
+Rationale: these jobs are how the shopper judges the real product (Baymard in-scale, human model, health and beauty research cited in `image-jobs-by-page-type.md`).
+Check: every `generated` slot's Role/purpose job is `context`, a backdrop, a texture fill, a decoration or an icon set.
+
+## Sources
+
+- Google Merchant product data spec (IPTC) https://support.google.com/merchants/answer/7052112 ; promotional overlays https://support.google.com/merchants/answer/6101131
+- Shopify Theme Store requirements https://shopify.dev/docs/storefronts/themes/store/requirements ; Shopify Magic media https://help.shopify.com/en/manual/shopify-admin/productivity-tools/shopify-magic/media-generation
+- FTC consumer reviews and testimonials rule https://www.ftc.gov/news-events/news/press-releases/2024/08/federal-trade-commission-announces-final-rule-banning-fake-reviews-testimonials ; Q&A https://www.ftc.gov/business-guidance/resources/consumer-reviews-testimonials-rule-questions-answers ; Federal Register https://www.ftc.gov/legal-library/browse/federal-register-notices/16-cfr-part-465-trade-regulation-rule-use-consumer-reviews-testimonials-final-rule ; health products guidance https://www.ftc.gov/business-guidance/resources/health-products-compliance-guidance
+- ASCI draft AI labelling guidelines https://www.ascionline.in/wp-content/uploads/2026/05/asci-ai-labelling-guidelines.pdf ; coverage https://www.thehindubusinessline.com/info-tech/asci-proposes-risk-based-approach-for-responsible-labelling-on-ads-made-with-ai/article70969237.ece
+- EU AI Act Art. 50 quick facts https://digital-strategy.ec.europa.eu/en/factpages/quick-facts-transparency-rules-ai-systems ; Orrick summary https://www.orrick.com/en/insights/2026/08/eu-ai-act-transparency-obligations-for-ai-generated-content-article-50
+- ASA before/after https://www.asa.org.uk/advice-online/before-and-after-photos.html ; production techniques https://www.asa.org.uk/advice-online/cosmetics-the-use-of-production-techniques.html
+- Meta AI labels https://www.facebook.com/business/help/1010479435004531 ; newsroom https://about.fb.com/news/2025/02/gen-ai-transparency-metas-ads-products/
+- W3C images tutorial https://www.w3.org/WAI/tutorials/images/ ; alt decision tree https://www.w3.org/WAI/tutorials/images/decision-tree/
+- NN/g AI-generated images https://www.nngroup.com/articles/ai-generated-images/ ; Nosto trust ranking https://www.nosto.com/blog/new-research-brands-prefer-ugc-for-diversity/
+- Secondary (verify before legal reliance): Craftshift on Shopify AI disclosure https://craftshift.com/disclose-ai-generated-product-images-shopify-2026/
+
+---
+
+# Offer types
+
+The canonical offer catalogue. `page-manifest.json` `offer.type` takes exactly
+one id from this file; page-type checklists list the same ids under
+`offer_compat`. Every offer renders only from a verified row in the plan's
+`## Offer ledger` (`references/offers/offer-ledger.md`). Price display rules
+live in `references/offers/price-presentation.md`, urgency rules in
+`references/offers/urgency-scarcity.md`, stage rules in
+`references/offers/funnel-stages.md`, dark patterns in
+`references/anti-patterns/dark-patterns.md`.
+
+Tags: LAW (statute or regulator text), RESEARCH (peer-reviewed or large
+sample), OPERATOR (practitioner data, directional), HEURISTIC (rule of thumb).
+Section ids come from `references/page-types/_checklist-format.md`.
+
+## Catalogue
+
+### `none`
+- Use when: luxury or prestige positioning; launches at full price; retargeting where the objection is not price; any page whose ledger has no verified offer row.
+- Anatomy delta: no `offer`, `savings-math`, `countdown`, `stock-indicator`, `final-offer`. `trust-bar` carries shipping, returns and guarantee facts only.
+- Math: list price alone; unit price in `specs` where law requires it (PP8).
+- LAW: general price rules only (`price-presentation.md`).
+- Anti-patterns: inventing a "value" or "worth" line to fill the gap; a fake compare-at to make list price look reduced.
+- Metric: conversion rate. CTA: "Add to cart" ("Add to bag" for fashion and beauty).
+
+### `percent-off`
+- Use when: unit price under about $100 or ₹8,000 (RESEARCH, Rule of 100); catalogue-wide sale; mass or mid-market positioning. OPERATOR: 20% was the redemption and AOV sweet spot in Seguno's unique-code benchmark; 10% had the worst redemption (0.20%).
+- Anatomy delta: `announcement` with depth and end date; struck compare-at plus sale price on every price instance in `buy-box` and `pricing`; `savings-math` line with currency saved; `legal` offer footnote within one scroll of the first price.
+- Math: compare-at, sale price, computed currency saving. EU: percent computed from the 30-day lowest prior price (PP2).
+- LAW: compare-at basis required in every market (PP1 to PP5). FTC 16 CFR 233.1: a nominal reduction may not be called a sale.
+- Anti-patterns: perpetual sale; stacking with the first-order code; percent alone on goods over the Rule-of-100 line; ALL-CAPS "% OFF" pills (design-rules N9); any percent on a luxury page (OF3).
+- Metric: conversion rate and contribution margin per order. CTA: "Add to cart"; headline "[depth] off [scope], ends [date]".
+
+### `fixed-off`
+- Use when: unit price over about $100 or ₹8,000; win-back; when a minimum-spend threshold is wanted. OPERATOR: minimum spend on amount-off codes correlated with 2.6x AOV ($100.79 vs $39.30, Seguno).
+- Anatomy delta: as `percent-off`, plus a threshold line beside the offer ("$30 off orders over $150") and a cart progress indicator toward the threshold (cart profile, `references/cart-composition.md`).
+- Math: currency off beside the price; in cart, the remaining amount to unlock.
+- LAW: same compare-at rules; threshold and exclusions adjacent to the offer, not in a footnote (FTC 251.1 proximity by analogy; India CCPA drip pricing).
+- Anti-patterns: threshold more than 50% above AOV; amount-off on items under $30 (reads small); threshold that differs from the checkout rule.
+- Metric: AOV lift against a holdout, redemption rate. CTA: "Add to cart"; headline "Save $[n] on [product] this week".
+
+### `bogo`
+- Use when: product cost is low relative to price (OPERATOR, CTC: at 13 to 18% COGS a BOGO is a better take rate than 25% off and a bigger perceived offer); moving a second SKU or slow stock; consumables.
+- Anatomy delta: `offer` names both items with images; `buy-box` shows the free line at 0 with a strike; an explicit "add both to cart" instruction because native Shopify Buy X Get Y never auto-adds the get item.
+- Math: present as quantity gained, not percent saved (RESEARCH, Chen et al. 2012: bonus pack beat the equivalent price cut); show effective per-unit price ("2 for $40, $20 each").
+- LAW: FTC 16 CFR 251.1 treats "buy one get one" as a Free claim: the paid item at its regular price (lowest with substantial sales in the prior 30 days); no size runs a Free offer more than 6 months in any 12. Stock for the free item must exist.
+- Anti-patterns: "BOGO 50%" with no per-unit price; a code required but not stated near the offer; a get item of lower quality; "BOGO" as a word for non-US audiences.
+- Metric: units per order, contribution margin per order. CTA: "Add both to cart".
+
+### `gwp`
+- Use when: prestige positioning where a price cut damages equity; AOV lift via threshold; sampling a new SKU; giving categories (pets, kids, beauty). OPERATOR: three named, pictured gifts at a $60 threshold beat 15% off by +25% AOV in a five-arm popup test (Convertibles).
+- Anatomy delta: `offer` shows the gift as a product image with its retail value; threshold line adjacent; cart progress to the gift; gift line auto-added at 0 by a Discount Function, never theme JavaScript (which drops at checkout).
+- Math: gift retail value, never cost; threshold gap in cart.
+- LAW: FTC 251.1: all conditions "at the outset, in close conjunction with the offer"; an asterisk to a footnote is not adequate; "gift", "bonus", "complimentary" carry the same rules. India CCPA: free samples are not basket sneaking, but the gift may not raise the total payable.
+- Anti-patterns: "a free gift" with no name or picture; threshold below current AOV; dead-stock gift; banner still up after the gift sells out.
+- Metric: AOV lift, gift redemption, second-purchase rate of gifted customers. CTA: "Add to cart" on the product; "Claim your free [gift]" only on the gift module.
+
+### `free-shipping`
+- Use when: unexpected shipping is the top addressable abandonment cause. RESEARCH, Baymard: 40% of non-browsing abandoners cite extra costs; 64% look for shipping cost on the product page and 43% of sites do not show it.
+- Anatomy delta: `announcement` with the threshold; a `shipping-returns` line in `buy-box`; cart progress bar with remaining amount; optional gap-filler `cross-sell` priced to close the gap.
+- Math: threshold 15 to 30% above AOV (HEURISTIC). OPERATOR, 72technologies 14-store test: 1.5x AOV was the best revenue-per-session point; the bar was negative on revenue per session in 3 of 14 stores; a static banner beat the animated bar in 2 of 3 arms. Margin floor: all-in shipping cost divided by gross margin percent.
+- LAW: the page threshold and the checkout shipping rate are the same number. India: delivery charge sits inside the single-figure total (E-Commerce Rules 6(5)(b)).
+- Anti-patterns: threshold hidden until checkout; bar that resets between pages; free shipping stacked with a sitewide percent code; threshold above mobile AOV.
+- Metric: revenue per session and contribution margin per order, never AOV alone. CTA: none of its own; announcement copy "Free shipping on orders over $[n]" (India: "Free delivery above ₹[n]. Pay on delivery available").
+
+### `tiered-volume`
+- Use when: consumables and replenishables where shipping cost barely rises with units (OPERATOR, CTC).
+- Anatomy delta: `quantity-breaks` in the purchase block with per-unit price per tier; cart shows the tier reached and the gap to the next.
+- Math: per-unit price and total saving at each tier; the single unit is the reference price. OPERATOR: single, 2-pack, 3-pack beat single and 3-pack; removing the 2-pack dropped 3-pack sales 15 to 25% (AccelerOI).
+- LAW: the single-unit price must be the real selling price (PP1). Needs an app or Discount Function on Shopify.
+- Anti-patterns: more than four tiers (RESEARCH, Chernev 2003 on choice overload); a higher tier with a worse per-unit price; a multi-pack pre-selected; "MOST POPULAR" ribbon (N9).
+- Metric: units per order, tier mix. CTA: "Add to cart" with the selected tier; headline "Buy 2, save 10%. Buy 3, save 20%." with per-unit price beneath.
+
+### `bundle`
+- Use when: AOV is below the paid-media break-even (OPERATOR, Statlas: median new-customer AOV $74; 35% of brands under $75 lose on the first order); the value is the set.
+- Anatomy delta: `product-hero` or `bundle-builder` with component images and "what's inside"; `savings-math` mandatory ("$87 separately, $59 as a set, save $28"); `comparison` table when a good, better, best ladder exists.
+- Math: sum of components, bundle price, currency saved; percent only under the Rule-of-100 line. Do not pad with a cheap item to inflate the "separately" figure (RESEARCH, Chernev: low-value components lower willingness to pay).
+- LAW: compare-at for a bundle is the sum of component prices actually sold at those prices (UK CMA principles cover bundles).
+- Anti-patterns: no "vs buying separately" line; build-your-own with more than six slots; components never sold individually; percent-only saving on a bundle over $100.
+- Metric: AOV, bundle attach rate, first-order contribution margin. CTA: "Get the set" or "Add the bundle".
+
+### `bundle-decoy`
+- Use when: a three-option ladder where the target tier should win and the attributes can be compared in a visible table.
+- Anatomy delta: `plan-selector` or `pricing` with three tiers plus `comparison` (the decoy effect needs visible attribute comparison); target tier in the middle or as the option that dominates the decoy.
+- Math: RESEARCH, Simonson 1989 asymmetric dominance; the Economist replication moved bundle share 32% to 84%, but replications show 10 to 18 point shifts, so plan on that. Every tier shows price and per-unit or per-item value.
+- LAW: the decoy must be a real purchasable option at the shown price; a tier nobody can buy is bait (UK DMCC bait advertising; FTC 16 CFR 238).
+- Anti-patterns: decoy not clearly dominated; all three tiers look poor (repulsion effect); highlighted middle tier with "BEST VALUE" chrome (N9).
+- Metric: target-tier share, revenue per visitor. CTA: "Choose [tier name]".
+
+### `subscribe-save`
+- Use when: replenishable category. OPERATOR, Recharge 2026: subscribers place about 3x more orders than one-time shoppers.
+- Anatomy delta: `subscription-toggle` in `buy-box` with one-time and subscribe prices side by side; frequency selector; "skip, swap or cancel anytime" adjacent; renewal price and cadence stated before the buy button.
+- Math: both prices and the saving per delivery; per-day framing allowed for consumables (RESEARCH, Gourville 1998: 52% vs 30% acceptance for the same annual cost framed daily).
+- LAW: US ROSCA: material terms before billing details, express informed consent, simple cancellation (the 2024 FTC Negative Option Rule was vacated July 2025; ROSCA and state auto-renewal laws still apply). UK DMCC subscription rules phase in from 2026. India CCPA lists "subscription trap".
+- Anti-patterns: subscribe pre-selected; intro discount so deep that churn follows expiry (OPERATOR, Recharge 2022); renewal price hidden; cancellation path missing from the page.
+- Metric: subscription attach rate, 90-day retention, first-order margin after discount. CTA: "Subscribe and save [n]%" with renewal terms directly beneath.
+
+### `first-order`
+- Use when: cold or TOF acquisition where price is the stated objection. OPERATOR: popups with a discount convert 7.45% vs 4.60% without (Wisepops via Farabi Ulder); 10% and 20% first offers show near-identical repeat rate and LTV, so 10% is the margin-efficient default.
+- Anatomy delta: `sticky-cta` bar or a timed `email-capture`; code shown in `buy-box` and pre-filled in cart; "first order" eligibility stated on the offer.
+- Math: 10% under $50 AOV; free shipping or GWP over $80 AOV with over 55% margin (OPERATOR, Blossom).
+- LAW: if email or SMS is collected, consent wording per market; never gate the code behind pre-ticked marketing consent (forced action, basket sneaking).
+- Anti-patterns: code visible to returning customers (trains abandon-and-return); mobile popup that fails Google's interstitial guidance; deeper than the sitewide sale running at the same time.
+- Metric: net revenue per new subscriber, not popup submit rate. CTA: "Add to cart"; offer line "10% off your first order" (never "Unlock").
+
+### `referral`
+- Use when: the visitor has already bought. OPERATOR, ReferralCandy: referred customers are 10.7x more likely to refer (3.27% vs 0.30%); 83% of advocates refer exactly once.
+- Anatomy delta: `referral-form` on `thank-you-post-purchase` and `referral-loyalty-vip`; the referred friend's landing page states both rewards and who referred them.
+- Math: both sides of the reward in currency ("Give $15, get $15"); expiry and minimum spend adjacent.
+- LAW: the friend's reward is a discount or Free claim (FTC 251.1); incentivised reviews disclosed (UK DMCC banned practice 13; FTC Endorsement Guides).
+- Anti-patterns: referral module on a cold page (nobody has bought); reward that is store credit with expiry but not labelled as such.
+- Metric: referral order share, share-action rate. CTA: "Share your link".
+
+### `loyalty`
+- Use when: retention pages, account pages, early access. OPERATOR, CTC: give VIPs early access and exclusive drops, not a deeper discount.
+- Anatomy delta: points-earned line in `buy-box` ("Earn 120 points"); tier badge; "members get early access" `announcement` shown only to logged-in visitors.
+- Math: points value in currency where the programme defines it; expiry stated.
+- LAW: expiry and redemption terms disclosed; India CCPA "interface interference" if points value is obscured.
+- Anti-patterns: loyalty widget above the fold on TOF pages; points shown to visitors who cannot join.
+- Metric: repeat rate, redemption rate. CTA: "Get early access", "Join [programme]".
+
+### `cashback`
+- Use when: India and marketplace-trained audiences; bank or UPI cashback is the dominant festive mechanic (Redseer festive 2025).
+- Anatomy delta: `payment-options` strip near the price ("10% instant discount with [bank] cards, up to ₹1,500"); terms link adjacent.
+- Math: cap, minimum order, and whether the cashback is instant or post-settlement.
+- LAW: cashback conditions are material terms; "up to" must be achievable by a meaningful share of buyers (UK CAP "up to" standard; India CCPA misleading advertisement).
+- Anti-patterns: store credit labelled cashback; bank list hidden; cap omitted.
+- Metric: payment-method mix, prepaid share. CTA: none of its own; line "[n]% instant discount with [bank] cards, up to ₹[cap]. T&C."
+
+### `bnpl`
+- Use when: AOV $80 to $400 (₹3,000 and up) and considered purchases. OPERATOR: Shop Pay Installments 15 to 30% higher AOV on qualifying carts (Digital Heroes citing Shopify Editions); moving the callout from below add-to-cart to under the price lifted installment selection 9% for one brand (D2C Times).
+- Anatomy delta: `bnpl-line` directly under the price in `buy-box`, not only at checkout; `payment-options` logos in `trust-bar`.
+- Math: total price first, then the split, count and interest ("$99, or 4 payments of $24.75"); "0% APR" only if true; India "₹999/month x 6, no-cost EMI" with bank list and the note that interest is absorbed as a discount.
+- LAW: US TILA / Reg Z triggering terms; UK FCA BNPL regulation from 2026; EU Consumer Credit Directive 2023; India RBI digital-lending guidelines. Full price always more prominent than the installment.
+- Anti-patterns: installment larger than the total; BNPL as the only price; more than two providers; shown under the provider's eligibility floor.
+- Metric: conversion on carts above the floor; repeat rate by payment cohort. CTA: none; the line sits under price.
+
+### `trial-sample`
+- Use when: high-consideration consumables (skincare, supplements) where the objection is "will it work for me".
+- Anatomy delta: `product-hero` with the sample and the full-size price visible; shipping cost on the page; `post-purchase-next-steps` states what happens after the trial.
+- Math: trial price, shipping, full-size price; if the trial converts to a subscription, renewal price and date.
+- LAW: FTC 251.1: "Free" with a shipping charge needs the charge at the outset; conversion to paid needs ROSCA consent and cancellation; UK DMCC subscription rules; India "subscription trap".
+- Anti-patterns: auto-enrol without a separate un-ticked consent; "free" in the headline with "$4.95 S&H" in the footer.
+- Metric: trial-to-paid conversion. CTA: "Try it for $[n]" or "Get your sample".
+
+### `mystery`
+- Use when: clearance of mixed inventory to an engaged base; retention audiences.
+- Anatomy delta: `offer` with "guaranteed value of at least $[n]"; category or size selector; "no returns on mystery items" stated before add-to-cart.
+- Math: guaranteed value is a compare-at claim and needs a basis (PP1).
+- LAW: returns exclusions disclosed pre-purchase (UK CRA 2015; India E-Commerce Rules 6(5)(g)); statutory withdrawal rights cannot be waived in the EU.
+- Anti-patterns: on any TOF page; value guarantee built on inflated RRPs.
+- Metric: sell-through, return rate. CTA: "Add the mystery box".
+
+### `pre-order-price`
+- Use when: a launch or restock where the visitor pays now (deposit or full) for a product that ships later.
+- Anatomy delta: "Pre-order" state in `buy-box`; "Estimated to ship by [date]" beside the price and beside the button; deposit and full price shown separately; cancellation line in `shipping-returns`.
+- Math: Shopify UX guidance: never strike the full price against a deposit. "Pre-order $89 (launch price $109)" is a future-price comparison and is fair only if the price actually rises afterwards (UK CTSI).
+- LAW: FTC Mail Order Rule 16 CFR 435: reasonable basis for the ship date, 30 days if none stated, revised date plus cancel or refund right on delay. Shopify pre-order policy mirrors this.
+- Anti-patterns: "ships soon" without a date; charging months ahead without saying so; countdown to a ship date the merchant cannot meet.
+- Metric: pre-order conversion, cancellation rate. CTA: "Pre-order. Ships by [date]".
+
+### `price-lock`
+- Use when: a waitlist or subscription where the merchant promises to hold today's price for a stated period or cohort.
+- Anatomy delta: `offer` line stating the locked price, duration and conditions; on `subscription` pages, "your price stays $[n] per delivery for 12 months" beside the toggle.
+- Math: locked price, comparison price only if it is a real current or scheduled price.
+- LAW: a price-lock is a contract term: state duration, what ends it, and what happens after. UK CTSI: an "after the promotion" price is fair only if it really rises.
+- Anti-patterns: "prices going up soon" with no scheduled increase; lock that silently expires into a higher renewal.
+- Metric: waitlist-to-order or subscription retention. CTA: "Lock in $[n]" or "Join the waitlist".
+
+### `flash-sale`
+- Use when: a genuinely short window (hours) and a list to notify. OPERATOR, Attentive: hours, not days; send SMS off the hour to avoid carrier congestion.
+- Anatomy delta: `sticky-cta` or `announcement` with a server-side `countdown` to the real end; sale `product-grid`; price reverts automatically at zero. Requires the page-type checklist `urgency` to be `verified-only` or `encouraged`.
+- Math: as `percent-off` or `fixed-off` on each card.
+- LAW: UK DMCC Sch. 20, EU UCPD Annex I.7, India CCPA false urgency (`urgency-scarcity.md`). Never extend a "last chance" deadline.
+- Anti-patterns: six-day "flash" sale; timer on any TOF page; timer without an `offer.endsAt`.
+- Metric: revenue per send, cumulative revenue past the window (nets out pull-forward). CTA: "Add to cart"; headline "[depth] off [set] until [time] [tz]".
+
+### `clearance`
+- Use when: end of season or discontinued lines. OPERATOR, CTC: go deep on end-of-line stock late in season rather than a 70%-off site in March.
+- Anatomy delta: separate "Last chance" `product-grid`; "Final sale, no returns" on card and `buy-box`; sizes remaining shown from live inventory via `stock-indicator`.
+- Math: genuine compare-at per SKU; "up to X% off" only when a meaningful share of SKUs sit at the maximum (PP23).
+- LAW: compare-at basis still required; "final sale" cannot remove statutory rights (UK CRA; EU 14-day withdrawal; India return-terms disclosure).
+- Anti-patterns: clearance stock in the hero of an evergreen page; "up to 70%" where one SKU is 70%; any clearance on a luxury page.
+- Metric: sell-through, margin recovered. CTA: "Add to cart"; card label "Final sale".
+
+### `limited-edition`
+- Use when: a real unit cap or collaboration. RESEARCH, Barton et al. 2022 meta-analysis (131 studies): scarcity effects roughly double for unfamiliar brands (0.41 vs 0.21) and are larger for high-involvement products.
+- Anatomy delta: unit count in `product-hero` ("Edition of 500"); drop date and time; `waitlist-form` pre-drop; "sold out" state stays visible post-drop; no percent off, ever.
+- Math: none beyond price; the counter binds to live inventory and stops at the cap.
+- LAW: the cap must be true and not replenished under the same "limited" label (UK DMCC banned practice on availability; India CCPA false scarcity).
+- Anti-patterns: "limited" with no number; restocking a "limited" SKU; discount on a drop.
+- Metric: sell-out time, waitlist conversion. CTA: "Join the waitlist" pre-drop; "Add to cart" during; "Notify me" after.
+
+### `gift-card`
+- Use when: shipping cutoffs have passed; last-minute gifting; "they choose".
+- Anatomy delta: denomination selector, schedule-send date, personal message field, no shipping line; becomes the hero of `seasonal-gifting` after the last cutoff.
+- Math: face value only. Never show a gift card at a discount unless the merchant funds it.
+- LAW: US CARD Act: no expiry under 5 years, fee limits; UK and EU: expiry and fees disclosed; India RBI PPI rules: minimum one-year validity.
+- Anti-patterns: gift card as a hero before cutoffs have passed; "bonus" card value without terms.
+- Metric: gift-card revenue share in the post-cutoff window. CTA: "Send a gift card".
+
+### `student-military`
+- Use when: a verification partner (SheerID, ID.me, UNiDAYS) is connected and the segment matters to the brand.
+- Anatomy delta: verification-gated code in `offer` or `faq`; eligibility stated; hidden from segments known to be ineligible.
+- Math: as `percent-off` or `fixed-off`, against the real selling price.
+- LAW: never presented as a general sale; UK CMA: the reference price is still the real selling price.
+- Anti-patterns: eligibility hidden until after the code fails; the gated code visible in the hero of a general page.
+- Metric: verified redemptions. CTA: "Verify and save".
+
+### `charity`
+- Use when: a cause campaign with a named recipient; brand story pages. RESEARCH, Gneezy et al.: pay-what-you-want with half to charity reached 4.49% purchase at a $5.33 average and was profitable.
+- Anatomy delta: "[n]% or $[n] of every order goes to [named charity]" adjacent to price; running total only if real; end date; any donation add-on un-ticked.
+- Math: amount or percent per order, cap, period.
+- LAW: name the charity, share, period and cap (UK CAP Code; FTC charitable-solicitation guidance; India CCPA "disguised advertisement"). India CCPA lists pre-ticked charity add-ons as basket sneaking.
+- Anti-patterns: "a portion of proceeds"; cause badge on an unrelated product; discount stacked on a cause campaign.
+- Metric: conversion versus the same page without the cause line, donation total. CTA: "Shop and give".
+
+## Cross-cutting rules
+
+OF1. One offer per page. `offer.type` holds one id; a second offer needs its own ledger block and a reason. Exempt page types: `sale-clearance-flash`, `seasonal-gifting` (offer-ledger rule 6).
+Check: `grep -c '<!-- section: offer' $W/lexsis-source.html` is 0 or 1 unless `page.pageType` is exempt.
+
+OF2. Rule of 100. Always show the currency saving (offer-ledger rule 2). Under $100 or ₹8,000 the percent may lead ("32% off, save $28"); above it currency leads and percent is optional ("Save $128 (18%)"); never a percent without the currency amount on high-ticket goods. RESEARCH: Berger; JBR 2015 three-study replication. The ₹8,000 crossover is HEURISTIC.
+Check: every `savings-math` line contains a currency figure; the leading figure matches the side of the line the ledger price falls on.
+
+OF3. Luxury never shows percent, a struck price, a timer, "sale" or "clearance". Allowed ids: `none`, `gwp`, `free-shipping` (phrased "complimentary shipping", no threshold), `limited-edition`, `pre-order-price`, `price-lock`, `loyalty`, `gift-card`. RESEARCH and OPERATOR: Kapferer and Bastien anti-laws; Langer on price volatility and equity decay.
+Check: when the plan loads `references/vertical-luxury.md`, `offer.type` is in the allowed list and `grep -ciE 'sale|% off|save [$₹£€]' $W/lexsis-source.html` is 0.
+
+OF4. Bundle, tiered and BOGO pages show their arithmetic. `bundle`, `bundle-decoy`, `tiered-volume`, `bogo` require a `savings-math` or `quantity-breaks` section whose figures are ledger rows.
+Check: `offer.type` in that set implies `grep -cE '<!-- section: (savings-math|quantity-breaks)' $W/lexsis-source.html` is at least 1.
+
+OF5. "Free", "gift", "bonus" and "complimentary" appear only when the buyer pays nothing extra and the conditions sit in the same section (LAW, FTC 16 CFR 251.1; UK banned practice; EU UCPD Annex I.20).
+Check: every section containing `\bfree\b` also contains the threshold, shipping cost or eligibility text; no `*` after "free".
+
+OF6. No pre-ticked add-on, subscription, gift wrap, insurance, donation or upsell (LAW, India CCPA basket sneaking; ROSCA; EU CRD Art 22). Detail in `references/anti-patterns/dark-patterns.md`.
+Check: `grep -cE '<input[^>]*checked' $W/lexsis-source.html` is 0 outside variant pickers.
+
+OF7. The offer moves down the page as awareness falls. On `tof` page types the offer section index is greater than the `mechanism`, `how-it-works` or `solution` index; on `bof` types the offer is in the hero (`funnel-stages.md` FS4).
+Check: compare section order in `page-manifest.json` against `page.funnelStage`.
+
+OF8. Retargeting never shows a deeper discount than the visitor already saw, and never the first-order code (OPERATOR: trains abandonment).
+Check: `page.pageType` is `retargeting-warm` implies `offer.type` is not `first-order` and the ledger notes the prior offer depth.
+
+OF9. Free-offer frequency. A size or SKU carries a Free or BOGO offer no more than 6 months in any 12, with 30 days between offers and at most three per year (LAW, FTC 251.1(h)).
+Check: ledger row for `bogo` or `gwp` records the months this year the offer has run on that SKU.
+
+OF10. Compare-at is struck-through text only; no pills, ribbons or caps (design-rules N9).
+Check: design-rules N9 grep returns 0.
+
+OF11. Promise only what the discount configuration can do. Native BXGY does not auto-add the get item; a GWP auto-add needs a Discount Function; tiered pricing needs an app or Function; shipping discounts never combine with each other; at most 25 active automatic discounts (Shopify Help).
+Check: ledger row O9 names the mechanic (code, automatic, Function, app) and the page instruction matches it.
+
+OF12. Terms travel with the offer: exclusions, stacking, regions, code, minimum spend and cancellation terms within one scroll of the first offer mention (offer-ledger rule 4).
+Check: the `legal` or `disclaimer` text for the offer is in the same or the next section as the first `offer`, `pricing` or `buy-box`.
+
+OF13. Unknown market means the strictest rule: EU 30-day prior price, UK duration and volume, India MRP display and single-figure total.
+Check: `page-manifest.json` has a market list, or the ledger notes "strictest applied".
+
+OF14. Never render an offer the merchant has not confirmed on the offer-ledger "Claims to confirm" list. Missing timing, compare-at basis or stock answers mean the price renders alone: no strike, no urgency, no scarcity.
+Check: every offer-ledger row that the page uses has status `verified`.
+
+## Offer by page type compatibility
+
+Rows are the 30 page type ids from `references/page-types/_index.md`;
+columns are the 25 offer ids in catalogue order. Cells: `yes` fits; `ask` fits
+only under the condition named in the offer's entry above (merchant confirms
+it, ledger records it); `no` never. A page-type file's `offer_compat` may
+narrow this table but not widen it.
+
+| Page type | none | percent-off | fixed-off | bogo | gwp | free-shipping | tiered-volume | bundle | bundle-decoy | subscribe-save | first-order | referral | loyalty | cashback | bnpl | trial-sample | mystery | pre-order-price | price-lock | flash-sale | clearance | limited-edition | gift-card | student-military | charity |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| ad-landing-page | yes | ask | ask | ask | ask | yes | no | ask | ask | ask | yes | no | no | no | ask | yes | no | no | no | no | no | ask | no | no | ask |
+| pdp | yes | ask | ask | ask | yes | yes | ask | yes | ask | yes | ask | ask | ask | ask | ask | ask | no | ask | ask | no | no | ask | ask | ask | ask |
+| pdp-hybrid-landing | yes | ask | ask | ask | yes | yes | ask | yes | ask | yes | yes | no | no | ask | ask | ask | no | ask | no | no | no | ask | no | no | ask |
+| advertorial | yes | ask | ask | no | ask | ask | no | ask | no | no | ask | no | no | no | no | yes | no | no | no | no | no | no | no | no | ask |
+| listicle | yes | ask | ask | ask | ask | ask | no | yes | no | no | ask | no | no | no | ask | yes | no | no | no | no | no | no | no | no | no |
+| seo-buyers-guide | yes | ask | ask | no | ask | yes | no | yes | no | no | ask | no | no | no | ask | ask | no | no | no | no | no | no | no | no | no |
+| comparison-us-vs-them | yes | ask | ask | no | ask | yes | no | ask | no | ask | ask | no | no | no | ask | ask | no | no | no | no | no | no | no | no | no |
+| quiz-funnel | yes | no | no | no | no | no | no | yes | ask | ask | ask | no | no | no | no | yes | no | no | no | no | no | no | no | no | no |
+| bundle-kit | yes | no | yes | yes | yes | yes | yes | yes | yes | yes | ask | no | ask | ask | yes | no | no | no | no | no | no | ask | no | no | no |
+| offer-page | yes | yes | yes | yes | yes | yes | yes | yes | ask | ask | yes | no | ask | yes | yes | ask | ask | ask | ask | ask | ask | ask | ask | ask | ask |
+| sale-clearance-flash | yes | yes | yes | yes | yes | yes | ask | yes | no | no | no | no | yes | yes | yes | no | yes | no | no | yes | yes | no | no | ask | no |
+| seasonal-gifting | yes | ask | yes | ask | yes | yes | no | yes | no | no | ask | no | ask | ask | yes | no | ask | no | no | ask | ask | yes | yes | no | ask |
+| gift-guide | yes | ask | ask | no | yes | yes | no | yes | no | no | ask | no | no | ask | ask | no | no | no | no | no | no | yes | yes | no | ask |
+| launch-waitlist-preorder | yes | no | no | no | yes | yes | no | yes | no | no | no | ask | yes | ask | ask | no | no | yes | yes | no | no | yes | no | no | ask |
+| restock | yes | no | no | no | ask | yes | ask | ask | no | yes | no | no | ask | ask | ask | no | no | no | ask | no | no | ask | no | no | no |
+| subscription | yes | no | no | no | yes | yes | ask | yes | yes | yes | yes | ask | yes | no | no | yes | no | no | yes | no | no | no | no | no | no |
+| ugc-creator-collab | yes | ask | ask | no | yes | yes | no | yes | no | no | yes | no | no | no | ask | yes | no | ask | no | no | no | yes | no | no | no |
+| video-sales-page | yes | ask | ask | no | ask | ask | no | yes | no | no | ask | no | no | no | ask | yes | no | no | no | no | no | ask | no | no | no |
+| brand-story-founder | yes | no | no | no | no | ask | no | no | no | no | ask | ask | ask | no | no | no | no | no | no | no | no | ask | no | no | yes |
+| ingredient-science | yes | no | no | no | no | yes | no | ask | no | ask | ask | no | no | no | no | ask | no | no | no | no | no | no | no | no | no |
+| collection-landing | yes | ask | ask | ask | yes | yes | no | yes | no | no | ask | no | ask | ask | ask | no | no | no | no | ask | ask | ask | no | no | ask |
+| homepage | yes | ask | ask | ask | yes | yes | no | yes | no | no | ask | ask | yes | ask | no | ask | no | ask | no | ask | ask | ask | ask | ask | ask |
+| lookbook-shop-the-look | yes | no | no | no | ask | yes | no | yes | no | no | ask | no | no | no | ask | no | no | no | no | no | no | ask | no | no | no |
+| lead-capture-giveaway | yes | no | no | no | ask | ask | no | no | no | no | yes | ask | no | no | no | ask | no | no | no | no | no | ask | no | no | ask |
+| referral-loyalty-vip | yes | no | no | no | no | yes | no | no | no | no | no | yes | yes | no | no | no | ask | no | no | no | no | yes | ask | ask | no |
+| retargeting-warm | yes | yes | yes | yes | yes | yes | yes | yes | ask | yes | no | no | yes | yes | yes | yes | ask | no | ask | ask | ask | yes | no | ask | no |
+| thank-you-post-purchase | yes | no | no | no | no | no | no | no | no | ask | no | yes | yes | no | no | no | no | no | no | no | no | no | no | no | ask |
+| faq-support-led | yes | no | no | no | no | yes | no | no | no | no | no | no | ask | no | ask | no | no | no | no | no | no | no | ask | ask | no |
+| trial-sample | yes | no | no | no | no | yes | no | no | no | ask | no | no | no | no | no | yes | no | no | no | no | no | no | no | no | no |
+| wholesale-b2b | yes | no | no | no | no | ask | yes | ask | ask | no | no | no | no | no | no | ask | no | no | ask | no | no | no | no | no | no |
+
+Reading notes: `ask` on TOF types (`ad-landing-page`, `advertorial`,
+`listicle`, `video-sales-page`) always means below the fold and after the
+mechanism (OF7). `ask` for `percent-off` and `fixed-off` on `pdp`,
+`seo-buyers-guide` and `collection-landing` means a verified compare-at basis
+exists for every discounted entry. `ask` on `retargeting-warm` for `mystery`
+and `clearance` means existing customers only. `charity` on
+`thank-you-post-purchase` means a round-up that is never pre-ticked.
+`wholesale-b2b` `tiered-volume` means MOQ price breaks, not a consumer promo.
+
+## Sources
+
+- Shopify discount types and combinations: https://help.shopify.com/en/manual/discounts/discount-types and https://help.shopify.com/en/manual/discounts/combining-discounts/discount-combinations
+- Berger, Rule of 100: https://jonahberger.com/fuzzy-math-what-makes-something-seem-like-a-good-deal/ ; JBR 2015 replication: https://www.sciencedirect.com/science/article/abs/pii/S0148296315003513
+- Seguno unique-code benchmarks: https://www.seguno.com/unique-discount-code-benchmarks
+- Common Thread Collective BFCM offer database: https://commonthreadco.com/blogs/ecommerce-playbook/dig-in-bfcm-offer-database-2023 and https://commonthreadco.com/blogs/ecommerce-playbook/how-to-craft-the-best-bfcm-offer-this-year
+- Chen, Marmorstein, Tsiros and Rao 2012 (bonus packs): https://doi.org/10.1509/jm.10.0443
+- FTC 16 CFR 251.1 (Free): https://www.law.cornell.edu/cfr/text/16/251.1 ; 16 CFR 233.1 (deceptive pricing): https://www.law.cornell.edu/cfr/text/16/233.1 ; Mail Order Rule: https://www.ftc.gov/business-guidance/resources/business-guide-ftcs-mail-internet-or-telephone-order-merchandise-rule
+- Convertibles GWP vs discount popup test: https://convertibles.dev/blogs/case-studies/free-gifts-vs-discounts-popup-offers-case-study
+- Baymard cart abandonment and shipping-cost research: https://baymard.com/lists/cart-abandonment-rate and https://baymard.com/blog/show-shipping-costs-on-product-pages
+- 72technologies free-shipping bar test: https://www.72technologies.com/blog/free-shipping-threshold-bar-ab-test-results
+- AccelerOI pricing psychology (quantity breaks): https://www.acceleroi.com/blog/psychology-of-pricing
+- Chernev 2003 (choice overload): https://ideas.repec.org/a/oup/jconrs/v30y2003i2p170-83.html
+- Statlas AOV data (Taylor Holiday): https://www.linkedin.com/posts/taylor-holiday-a169b322_we-track-store-and-analyze-conversations-activity-7471272309199265792-Xc7H
+- CXL pricing experiments (decoy, anchoring, PWYW): https://cxl.com/blog/pricing-experiments-you-might-not-know-but-can-learn-from/
+- UK CMA reference-pricing principles: https://assets.publishing.service.gov.uk/media/66ab4347a3c2a28abb50db3c/Discount_and_reference_pricing_principles.pdf ; CTSI pricing guidance: https://www.businesscompanion.info/en/guidance-for-traders-on-pricing-practices
+- Recharge subscription trend report 2026: https://getrecharge.com/reports/subscription-trend-report-2026/ ; Gourville 1998: https://doi.org/10.1086/209517
+- FTC negative option and ROSCA: https://www.ftc.gov/business-guidance/blog/2024/10/click-cancel-ftcs-amended-negative-option-rule-what-it-means-your-business
+- Welcome offer benchmarks: https://farabiulder.com/blog/welcome-offer-benchmarks and https://www.blossomecom.com/blogs/welcome-offer-optimization-ecommerce
+- ReferralCandy referred-customer study: https://www.referralcandy.com/blog/referred-customers-study/
+- Redseer festive 2025: https://redseer.com/articles/festive-2025-day-0-ecommerce-sales-surge-25-with-gst-boost-demand-led-by-smartphones-and-tvs/
+- BNPL placement and AOV: https://digitalheroesco.com/journal/shopify-afterpay-klarna-shop-pay-integration/ and https://d2c-times.com/shopifys-shop-pay-installments-surge-is-rewriting-dtc-checkout-economics/
+- Shopify pre-order UX guidelines: https://shopify.dev/docs/storefronts/themes/pricing-payments/preorder-tbyb/preorder-tbyb-ux-guidelines
+- Attentive BFCM campaign guidance: https://www.attentive.com/black-friday-cyber-monday-2026/articles/bfcm-campaigns-that-convert
+- Barton, Zlatevska and Oppewal 2022 scarcity meta-analysis (via Clean Commit): https://cleancommit.io/blog/do-countdown-timers-work/
+- India CCPA Dark Patterns Guidelines 2023: https://www.nls.ac.in/wp-content/uploads/2021/04/Dark-Patterns.pdf ; E-Commerce Rules 2020: https://ibclaw.in/consumer-protection-e-commerce-rules-2020/
+- Luxury pricing: https://aws2.campaignasia.com/article/why-pricing-is-the-easy-growth-trap-in-luxury/482956 and https://www.vogue.com/article/should-luxury-brands-reduce-their-prices
+
+---
+
+# Dark patterns
+
+Catalogue of deceptive interface practices a generated page must never
+contain. Each entry gives the regulator's definition, an ecommerce example,
+the page-builder rule, a severity and a check. `/plan-page` applies these when
+it writes the Offer ledger; `/design-page` applies them in Compose step 6;
+`design_lint.py` runs the O1 to O4 checks. Offer-specific detail lives in
+`references/offers/offer-ledger.md`, `references/offers/price-presentation.md`
+and `references/offers/urgency-scarcity.md`; proof detail in
+`references/proof/proof-ledger.md`. This file is the canonical list; the two
+offer files and `references/consumer-behavior-cro.md` (Guardrails) point here.
+
+Severity: BLOCK (legal exposure; the page does not ship), FAIL (fix before
+publish), WARN (fix unless the plan records a reason). Tag: LAW (a regulator
+names it), RESEARCH (usability evidence), OPERATOR (practitioner consensus),
+HEURISTIC (this project's judgement).
+
+Checks use `$W` for the page workspace (`work/campaigns/<campaign-slug>/pages/<handle>`) and
+`$T` for the extracted text: `perl -pe 's/<[^>]+>/ /g' $W/lexsis-source.html > $T`.
+Browser checks run in the hosted draft at 390 and 1280.
+
+## 1. Regulatory frame
+
+| Regime | Scope | Status | Text |
+|---|---|---|---|
+| India CCPA, Guidelines for Prevention and Regulation of Dark Patterns, 2023 | 13 named patterns in Annexure 1; applies to all platforms, advertisers and sellers offering goods or services in India; list extensible | In force since 30 Nov 2023; self-audit advisory 5 Jun 2025 with notices issued | https://consumeraffairs.nic.in/theconsumerprotection/guidelines-prevention-and-regulation-dark-patterns-2023 ; https://consumeraffairs.nic.in/latestnews/ccpa-advisory-terms-consumer-protection-act-2019-self-audit-e-commerce-platforms |
+| US FTC, Bringing Dark Patterns to Light (Sep 2022) | Four buckets: induce false beliefs; hide or delay material information; unauthorised charges (ROSCA); obscure privacy choices | Staff report; enforced under FTC Act s.5 and ROSCA | https://www.ftc.gov/system/files/ftc_gov/pdf/P214800%20Dark%20Patterns%20Report%209.14.2022%20-%20FINAL.pdf |
+| US FTC, Rule on the Use of Consumer Reviews and Testimonials, 16 CFR 465 | Fake or AI-generated reviews, bought reviews, insider reviews, suppression of negative reviews | Final rule 14 Aug 2024; civil penalties | https://www.ftc.gov/news-events/news/press-releases/2024/08/federal-trade-commission-announces-final-rule-banning-fake-reviews-testimonials |
+| US FTC, Endorsement Guides, 16 CFR 255 (2023) | Disclosure of material connections; typicality of results claims | Guides; enforced under s.5 | https://www.federalregister.gov/documents/2023/07/26/2023-14795/guides-concerning-the-use-of-endorsements-and-testimonials-in-advertising |
+| US ROSCA (15 USC 8401) | Disclose material terms before billing information; express informed consent; simple cancellation | In force. The 2024 amended Negative Option Rule was vacated by the Eighth Circuit on 8 Jul 2025; ROSCA and state auto-renewal laws still apply | https://ecf.ca8.uscourts.gov/opndir/25/07/243137P.pdf |
+| EU DSA Art. 25 | Platforms may not design interfaces that deceive, manipulate or materially distort decisions; names prominence bias, repeated prompts, harder-to-cancel | In force since 17 Feb 2024 (platforms; single-brand stores fall under UCPD) | https://www.digitalacts.eu/regulation/digital-service-act/article/25/online-interface-design-and-organisation |
+| EU UCPD Annex I | Blacklist incl. false limited-availability statements (item 7), advertorial without disclosure (item 11), "free" that costs (item 20) | In force for all B2C traders | https://www.europarl.europa.eu/RegData/etudes/ATAG/2025/767191/EPRS_ATA(2025)767191_EN.pdf |
+| CJEU Planet49, C-673/17 | Pre-ticked boxes are not consent | Judgment 1 Oct 2019 | https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX%3A62017CJ0673 |
+| UK CMA, Online Choice Architecture (Apr 2022) + DMCC Act 2024 | 21 practices; drip pricing, reference pricing, sludge, forced outcomes starred as almost always harmful; CMA direct fines up to 10 percent of global turnover from 6 Apr 2025 | Guidance + statute | https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1066524/Online_choice_architecture_discussion_paper.pdf ; https://www.gov.uk/government/publications/unfair-commercial-practices-cma207/unfair-commercial-practices |
+| deceptive.design (Brignull) | Reference taxonomy: sneaking, hidden costs, hidden subscription, trick wording, confirmshaming, fake scarcity, fake urgency, fake social proof, forced action, hard to cancel, preselection, obstruction, nagging, disguised ads, visual interference, comparison prevention | Taxonomy, not law | https://deceptive.design/types/ |
+| EU Digital Fairness Act (proposal) | Expected to codify dark patterns and switch addictive design (infinite scroll, autoplay) off by default | Proposal expected end 2026 | https://www.dentons.com/en/insights/articles/2026/june/9/the-digital-fairness-act-dark-patterns-addictive-designs-and-influencer-marketing |
+
+Prevalence (CMA evidence review): 75 percent of the top 200 US ecommerce sites carried at least one impulse-buying choice-architecture practice; the ICPEN/OECD 2021 sweep of 1,300 sites found over a fifth with harmful practices, led by pre-ticked defaults, scarcity claims and drip pricing. https://www.gov.uk/government/publications/online-choice-architecture-how-digital-design-can-harm-competition-and-consumers/evidence-review-of-online-choice-architecture-and-consumer-and-competition-harm
+
+## 2. Catalogue
+
+### DP1. False urgency (timers)  BLOCK  LAW
+- Definition. CCPA Annexure 1, item 1: "falsely stating or implying the sense of urgency or scarcity so as to mislead a user into making an immediate purchase". FTC bucket I: countdown timers on offers that are not time-limited. UCPD Annex I item 7. CMA: countdown clocks that reset.
+- Example. A "Sale ends in 14:59" timer that restarts on every page load; "limited time" sales where the same deal continues after the deadline (Emma Sleep undertakings, 22 May 2026: https://www.gov.uk/cma-cases/emma-group-consumer-protection-case ).
+- Rule. A countdown binds to the Offer ledger's confirmed `endsAt` (ISO datetime with timezone), disappears after it, and the deal actually ends. No per-session, per-visitor or resetting timers. No "ends soon" in static copy.
+- Check. `grep -c '<lx-island name="Countdown' $W/lexsis-source.html` is 0, or `grep -ciE 'end date.*20[0-9]{2}-[0-9]{2}-[0-9]{2}' $W/page-plan.md` is at least 1 (lint O2). `grep -ciE '\b(ends? (soon|tonight|today|in)|last chance|limited time|hurry)\b' $T` is 0 (lint O1).
+
+### DP2. Fake scarcity (stock)  BLOCK  LAW
+- Definition. CCPA item 1(ii): "stating that quantities of a particular product or service are more limited than they actually are". FTC: "almost sold out" with ample supply. UK banned practice: pretending a product is available only for a very limited time.
+- Example. "Only 3 left!" hardcoded in copy on a made-to-order item; "Low stock" badge on every variant.
+- Rule. Stock statements come only from a live inventory binding (`lexsis_catalog.get` at render) and read the real count. "Limited edition" states the run size from the ledger. No stock words in static copy.
+- Check. `grep -ciE '\b(only [0-9]+ left|low stock|almost gone|selling fast|limited stock|while (stocks|supplies) last)\b' $T` is 0 (lint O1). Any `stock-indicator` section requires `offer.stockVerified` in the manifest (plan_lint T10).
+
+### DP3. Fake popularity (viewer and purchase counts)  BLOCK  LAW
+- Definition. CCPA item 1(i): "showing false popularity of a product or service". FTC bucket I: false "others are viewing" and "recently purchased" notices. deceptive.design: fake social proof.
+- Example. "23 people are viewing this" from a random-number script; "Priya from Mumbai just bought" popups with no order behind them.
+- Rule. No viewer counts, activity feeds or "recently bought" toasts of any kind, even if fed by analytics; the proof vocabulary lists `social-proof-popup` and `live-viewer-count` as never rendered. Aggregate counts ("over 51,000 customers") only as verified proof-ledger rows.
+- Check. `grep -ciE 'SocialProofPopup|people are viewing|viewing this|bought in the last|just (bought|purchased|ordered)' $W/lexsis-source.html` is 0 (lint P1).
+
+### DP4. Basket sneaking  BLOCK  LAW
+- Definition. CCPA item 2: "inclusion of additional items such as products, services, payments to charity or donation at the time of checkout from a platform, without the consent of the user, such that the total amount payable by the user is more than the amount payable for the product(s) and/or service(s) chosen by the user". Free samples and disclosed necessary fees are exempt.
+- Example. Sports Direct added a GBP 1 magazine to every basket (https://deceptive.design/types/sneaking ); shipping protection auto-added in the cart drawer.
+- Rule. Nothing enters the cart that the shopper did not tap. Cart-drawer add-ons are opt-in buttons, not pre-added lines. A bundle is one product the shopper chose, not silently combined items.
+- Check. Cart island props contain no `autoAdd`, `preselected` or default add-on ids: `grep -ciE 'auto-?add|pre-?select(ed)?=.?true' $W/lexsis-source.html` is 0. Browser: add the hero product; the cart total equals the displayed price plus stated shipping and tax only.
+
+### DP5. Preselection (pre-ticked paid add-ons and consent)  BLOCK  LAW
+- Definition. deceptive.design "preselection"; CJEU Planet49: pre-ticked boxes are not consent; GDPR Recital 32; EU Consumer Rights Directive Art. 22: no default options that require payment; CCPA basket sneaking covers paid defaults.
+- Example. Gift wrap, insurance, donation, warranty, or "Subscribe and save" ticked by default; marketing checkbox pre-checked under the email field.
+- Rule. No `checked` on any checkbox or radio whose label carries a price, a cadence, or a consent verb. Purchase type defaults to one-time. Marketing and SMS consent boxes start unchecked and are never `required`.
+- Check.
+```bash
+grep -cE '<input[^>]*type="(checkbox|radio)"[^>]*\bchecked\b' $W/lexsis-source.html   # 0 unless data-lx-default marks a free, non-consent default (lint O3)
+grep -ciE '<input[^>]*(consent|marketing|sms|newsletter)[^>]*\brequired\b' $W/lexsis-source.html   # 0
+```
+
+### DP6. Confirmshaming  BLOCK  LAW
+- Definition. CCPA item 3: "using a phrase, video, audio or any other means to create a sense of fear or shame or ridicule or guilt in the mind of the user so as to nudge the user to act in a certain way". Amazon's "No, I don't want Free Shipping" decline button is now banned by court order (https://www.ftc.gov/news-events/news/press-releases/2025/09/ftc-secures-historic-25-billion-settlement-against-amazon ).
+- Example. "No thanks, I like paying full price"; "I don't care about my skin".
+- Rule. Decline and close labels are neutral: "No thanks", "Close", "Not now", "Continue without". No first-person self-deprecation, no consequence framing, no sarcasm.
+- Check. `grep -ciE "no,? (thanks,? )?i (don'?t|do not|hate|prefer|like paying|want to pay)|i'?ll (pay full price|stay|pass on)|(full price|miss out|rather|don'?t care|waste)" $T` is 0 (lint O4 plus additions in section 4).
+
+### DP7. Forced action  BLOCK  LAW
+- Definition. CCPA item 4: "forcing a user into taking an action that would require the user to buy any additional good(s) or subscribe or sign up for an unrelated service or share personal information, in order to buy or subscribe to the product or service originally intended by the user". Baymard: 18 to 19 percent of US shoppers abandoned a checkout because the site wanted an account. https://baymard.com/lists/cart-abandonment-rate
+- Example. Email gate before the price is shown; "Create an account to continue"; forced app download.
+- Rule. Guest checkout is the primary path. No gate on price, shipping, reviews or the CTA. Email and phone are asked once, optional unless needed for delivery, and marketing consent is separate.
+- Check. Every primary CTA href resolves to the cart or checkout, never to a capture step: `grep -oE 'href="[^"]*"' $W/lexsis-source.html` for elements inside `buy-box` or `sticky-cta` sections contains no `#signup`, `/account`, `/register`. No `<lx-island name="Popup"` or dialog carries `dismissible="false"`.
+
+### DP8. Subscription trap, hard to cancel, roach motel  BLOCK  LAW
+- Definition. CCPA item 5: making cancellation "impossible or a complex and lengthy process", hiding the cancel option, forcing payment details for a free trial, or giving "ambiguous instructions for cancellation". ROSCA: simple cancellation mechanism. DSA Art. 25(3)(c): termination may not be harder than subscribing. FTC v. Amazon, Vonage (USD 100M, 2022: https://www.ftc.gov/news-events/news/press-releases/2022/11/ftc-action-against-vonage-results-100-million-customers-trapped-illegal-dark-patterns-junk-fees-when-trying-cancel-service ) and Adobe (2024: https://www.ftc.gov/news-events/news/press-releases/2024/06/ftc-takes-action-against-adobe-executives-hiding-fees-preventing-consumers-easily-cancelling ).
+- Example. "Cancel anytime" in the hero, "call us Monday to Friday" in the terms.
+- Rule. The cancellation path is one sentence beside the subscribe control ("Pause or cancel from your account, no call needed") and it is true for this store's subscription app. Free trials state the conversion date and price in the CTA block.
+- Check. For every `subscription-toggle` or `plan-selector` section: `grep -ciE 'cancel' <section text>` is at least 1 and the offer ledger row "subscription terms" is `verified`.
+
+### DP9. Hidden recurring terms (SaaS billing, hidden subscription)  BLOCK  LAW
+- Definition. CCPA item 12 "SaaS billing": generating and collecting recurring payments "by exploiting positive acquisition loops in recurring subscriptions ... as surreptitiously as possible", including silent trial conversion. ROSCA s.4: all material terms clearly and conspicuously before obtaining billing information. deceptive.design "hidden subscription".
+- Example. "$19" in the buy box, "/month" in 10 px grey; first-charge date only in the confirmation email.
+- Rule. Recurring amount, cadence, first-charge date, renewal price after any intro period and the cancel path sit in the same visual block as the price, at body size and contrast. A subscribe option never wins by default (DP5).
+- Check.
+```bash
+perl -0ne 'while(/<!-- section: (subscription-toggle|plan-selector|pricing)[^>]*-->(.*?)(?=<!-- section:|\z)/sg){ $s=$2; print "$1: ", ($s=~/(every|per|\/)\s*(month|week|[0-9]+ days)/i && $s=~/cancel/i ? "ok" : "MISSING cadence or cancel"), "\n" }' $W/lexsis-source.html
+```
+
+### DP10. Interface interference, visual interference, false hierarchy  BLOCK  LAW
+- Definition. CCPA item 6: "a design element that manipulates the user interface in ways that (a) highlights certain specific information; and (b) obscures other relevant information relative to the other information". DSA Art. 25(3)(a): giving more prominence to certain choices. FTC bucket II: un-bolded fees "sandwiched between bold paragraphs".
+- Example. Bright "Yes, upgrade" button with a grey 12 px "no" text link; a close icon at 2:1 contrast; compare-at price larger than the price paid.
+- Rule. In any binary choice (consent, upsell, subscription vs one-time), both options are the same element type, within 1.5x of each other's area, both at 4.5:1. Close controls are at least 24 x 24 CSS px at 3:1 and close on first tap. The price paid is never smaller than the compare-at.
+- Check (browser).
+```js
+(() => { const d = document.querySelector('[role=dialog]'); if (!d) return 'no dialog';
+  const a = d.querySelector('[data-action=accept]'), r = d.querySelector('[data-action=decline]');
+  if (!a || !r) return 'FAIL missing accept/decline';
+  const A = a.getBoundingClientRect(), R = r.getBoundingClientRect();
+  return ((A.width*A.height)/(R.width*R.height) <= 1.5 && a.tagName === r.tagName) ? 'ok' : 'FAIL parity'; })()
+```
+
+### DP11. Bait and switch  BLOCK  LAW
+- Definition. CCPA item 7: "advertising a particular outcome based on the user's action but deceptively serving an alternate outcome". UK banned practices 5 and 6 (bait advertising; bait and switch). FTC 16 CFR 238.
+- Example. Ad shows the GBP 29 colourway; the page lands on a GBP 39 variant with the cheap one "unavailable"; sold-out size silently replaced.
+- Rule. The SKU, variant, colour, flavour, size and price in the ad and the hero are what lands in the cart. Sold-out variants are disabled and labelled "Notify me", never swapped. See `references/copy/message-match.md` MM3.
+- Check. Manifest `campaign.adVariantId`, hero `data-variant-id` and buy-box default variant are identical; the cart preload URL carries the same variant id.
+
+### DP12. Drip pricing and hidden costs  BLOCK  LAW
+- Definition. CCPA item 8: "elements of prices are not revealed upfront or are revealed surreptitiously", including revealing price "post-confirmation" and "free" that requires a paid continuation. UK DMCC: the full price belongs in the invitation to purchase. FTC fees rule (16 CFR 464 for tickets and lodging; s.5 elsewhere). CMA evidence 4/4 stars. Baymard: extra costs are the top abandonment reason at 39 to 40 percent; 64 percent of shoppers look for shipping cost on the product page. https://baymard.com/lists/cart-abandonment-rate ; https://baymard.com/blog/show-shipping-costs-on-product-pages
+- Example. "$49" hero, "$8.95 handling" at payment; "Free" trial with shipping charged; tax added after the address step with no earlier signal.
+- Rule. The price on the page is the price at checkout. Shipping cost or the free-shipping threshold, tax wording ("inclusive of all taxes" or "plus tax") and any mandatory fee appear within one viewport of the primary CTA. See `references/offers/price-presentation.md` PP1 and PP21.
+- Check. For every `buy-box`, `pricing` or `offer` section: section text matches `shipping|delivery` and `tax|GST|inclusive`. Every `<s>`, `<del>` or compare-at element traces to an offer-ledger row with a `compare_at_basis`.
+
+### DP13. Disguised advertisement  BLOCK  LAW
+- Definition. CCPA item 9: "posing, masking advertisements as other types of content such as user generated content or new articles or false advertisements". UK banned practice 11 (advertorial without disclosure). FTC native advertising guidance; Endorsement Guides: disclosures "difficult to miss" and "unavoidable".
+- Example. Fake newspaper masthead; "By our health desk" byline on a sales page; comment thread with invented commenters.
+- Rule. `advertorial` and `listicle` pages carry a visible "Advertisement" or "Sponsored by [brand]" label inside the first 600 px at 390, plus the compliance line in the footer. No fake mastheads, bylines of people who do not exist, or invented comments. Paid creators say "Paid partnership".
+- Check (browser, 390).
+```js
+(() => { if (!/advertorial|listicle/.test(document.body.dataset.pageType||'')) return 'n/a';
+  return [...document.querySelectorAll('body *')].some(e => e.children.length===0 && /advertis(ement|ing)|sponsored|paid partnership/i.test(e.textContent) && e.getBoundingClientRect().top < 600) ? 'ok' : 'FAIL label'; })()
+```
+
+### DP14. Nagging  BLOCK  LAW
+- Definition. CCPA item 10: "disrupted and annoyed by repeated and persistent interactions, in the form of requests, information, options, or interruptions ... unless specifically permitted by the user". DSA Art. 25(3)(b): repeatedly requesting a choice already made, especially by pop-ups. NN/g "overlay overload". https://www.nngroup.com/articles/overlay-overload/
+- Example. Email popup on every page view after dismissal; notification prompt with no "No".
+- Rule. One marketing popup per session, remembered for at least 7 days after dismissal and 30 days after conversion. Never two overlays at once. Consent UI first; marketing waits until it is gone.
+- Check. Popup island props: `frequencyCapDays >= 7`. Browser: `[...document.querySelectorAll('[role=dialog],[data-overlay]')].filter(e => e.offsetParent !== null).length <= 1` at every scroll position.
+
+### DP15. Trick wording, trick question  BLOCK  LAW
+- Definition. CCPA item 11: "deliberate use of confusing or vague language like confusing wording, double negatives, or other similar tricks, in order to misguide or misdirect a user". CMA: complex language starred as almost always harmful.
+- Example. "Uncheck to not receive no updates"; a toggle labelled "Opt out" whose on state means subscribed.
+- Rule. Choice labels are affirmative, single-clause, no negation: "Email me offers" / "No thanks". Toggle labels describe the on state. No double negatives anywhere in choice UI.
+- Check. `grep -ciE '\b(opt.?out|un(check|tick|subscribe)|do not|don'"'"'t) .*(receive|get|miss)\b|not .* (unless|except|without)' $T` restricted to label and button text is 0.
+
+### DP16. Rogue malware and fake system UI  BLOCK  LAW
+- Definition. CCPA item 13: scareware and ransomware tactics.
+- Rule. No fake virus warnings, fake OS dialogs, fake download buttons, fake "connection lost" banners.
+- Check. `grep -ciE 'virus|infected|your (device|phone|computer) (is|has)|system alert' $T` is 0.
+
+### DP17. Fake reviews and undisclosed incentives  BLOCK  LAW
+- Definition. FTC 16 CFR 465 bans fake, AI-generated or bought reviews, insider reviews without disclosure, and suppression of negative reviews (Fashion Nova, USD 4.2M, 2022: https://www.ftc.gov/news-events/news/press-releases/2022/01/fashion-nova-will-pay-42-million-part-settlement-ftc-allegations-it-blocked-negative-reviews-website ). UK DMCC banned practice on fake reviews. Endorsement Guides: incentivised reviews disclosed; results claims need typicality.
+- Rule. Every quote, star, count and photo of a customer is a `verified` row in the proof ledger (`references/proof/proof-ledger.md`); sourcing in `references/proof/reviews-sourcing.md`. No invented names, avatars or cities. Never only five-star sets. "Results not typical" alone is not a disclosure.
+- Check. lint P1 to P4 and N11; `grep -ciE 'results (may )?(not typical|vary)' $T` hits require a "generally expected results" statement in the same section.
+
+### DP18. Misdirection  BLOCK  LAW
+- Definition. deceptive.design: design that steers attention to the seller's preferred option and away from the shopper's. CMA "sensory manipulation" and "decoys". Overlaps DP10 but concerns steering rather than hiding.
+- Example. A highlighted "MOST POPULAR" middle tier that exists only to make the top tier look cheap; a colour-only difference between "one-time" and "subscribe" that favours subscribe.
+- Rule. Plan tiers are presented with the same visual weight; a recommended tier is labelled with a reason from the ledger ("Most ordered in the last 90 days" with the count), never a ribbon (design-rules N9). One-time and subscribe options are visually equal with one-time first.
+- Check. `grep -cE 'BEST VALUE|MOST POPULAR|RECOMMENDED' $W/lexsis-source.html` is 0 (lint N9). Purchase-type radio order: one-time appears before subscribe in DOM.
+
+### DP19. Obstruction and sludge  FAIL  LAW
+- Definition. deceptive.design "obstruction"; CMA "sludge": excessive friction on the action the shopper wants (returns, cancellation, contact).
+- Rule. Returns, refund, cancellation and contact information reach in at most two taps from any CTA: a one-line statement under the CTA linked to the full policy.
+- Check. `grep -ciE 'return|refund|guarantee' <buy-box or closing-cta section text>` is at least 1 and contains an `<a href` to the policy URL recorded in the offer ledger.
+
+### DP20. Comparison prevention  WARN  LAW
+- Definition. deceptive.design: making it hard to compare prices or features; CMA "partitioned pricing".
+- Rule. Comparison tables use one unit per row, the same attribute set for every column, and no blank cell where the competitor actually has the feature. Per-unit price is shown wherever pack sizes differ.
+- Check. In `comparison` and `us-vs-them` sections, every row has a value in every column; no cell is only a dash for a named competitor unless the plan records the source.
+
+### DP21. Fictitious former price  BLOCK  LAW
+- Definition. FTC 16 CFR 233.1; UK CMA duration and volume tests (Emma Sleep was/now judgment 30 Jul 2026); EU Price Indication Directive 30-day prior price; India MRP rules.
+- Rule. A struck-through price exists only with an offer-ledger `compare_at_basis`. Detail in `references/offers/price-presentation.md` PP1 to PP5.
+- Check. Every `<s>`, `<del>`, `[data-part=compare-at]` carries `data-source="compare_at_price"` or the ledger row id.
+
+### DP22. Faux progress and fake processing  BLOCK  LAW
+- Definition. FTC bucket I (induce false beliefs); CCPA interface interference. Progress indicators and "analysing your answers..." delays that do not reflect real work.
+- Example. "Applying your discount... 87 percent" spinner; "Step 2 of 3" on a one-step form; quiz "Building your routine" delay with a fixed timer.
+- Rule. Progress UI reflects real remaining steps from the funnel definition. No decorative delays or fake percentages.
+- Check. `grep -cE 'data-part="progress"' $W/lexsis-source.html` equals the count of those with `data-steps-total`. `grep -ciE 'analy[sz]ing|calculating|applying your' $T` is 0 unless a real async call exists.
+
+## 3. Enforcement cases to cite when a merchant pushes back
+
+| Case | Pattern | Outcome | URL |
+|---|---|---|---|
+| FTC v. Amazon (Prime), 2023 to 2025 | Subscription trap, confirmshaming decline, hidden terms | USD 2.5B (USD 1B penalty, USD 1.5B refunds); decline button must be clear and neutral | https://www.ftc.gov/news-events/news/press-releases/2025/09/ftc-secures-historic-25-billion-settlement-against-amazon |
+| FTC v. Epic Games, 2022 | Dark patterns causing unwanted charges | USD 245M refunds | https://www.ftc.gov/news-events/news/press-releases/2022/12/fortnite-video-game-maker-epic-games-pay-more-half-billion-dollars-over-ftc-allegations |
+| FTC v. Vonage, 2022 | Hard to cancel, junk fees | USD 100M | https://www.ftc.gov/news-events/news/press-releases/2022/11/ftc-action-against-vonage-results-100-million-customers-trapped-illegal-dark-patterns-junk-fees-when-trying-cancel-service |
+| FTC v. Adobe, 2024 | Hidden early-termination fee, obstructed cancellation | Complaint filed | https://www.ftc.gov/news-events/news/press-releases/2024/06/ftc-takes-action-against-adobe-executives-hiding-fees-preventing-consumers-easily-cancelling |
+| FTC v. Fashion Nova, 2022 | Suppressed negative reviews | USD 4.2M | https://www.ftc.gov/news-events/news/press-releases/2022/01/fashion-nova-will-pay-42-million-part-settlement-ftc-allegations-it-blocked-negative-reviews-website |
+| CMA v. Emma Sleep, 2022 to 2026 | Countdown timers, "high demand" claims, misleading discounts; was/now pricing | Court-confirmed undertakings 22 May 2026; High Court judgment on reference pricing 30 Jul 2026 | https://www.gov.uk/cma-cases/emma-group-consumer-protection-case |
+| CMA and Simba Sleep | Genuineness of "was" prices | Formal undertakings | https://www.gov.uk/government/news/cma-launches-court-action-against-emma-to-protect-uk-consumers |
+| CJEU Planet49, 2019 | Pre-ticked consent | Pre-ticked boxes invalid | https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX%3A62017CJ0673 |
+| India CCPA advisory, 5 Jun 2025 | All 13 patterns | Mandatory self-audit within 3 months; notices to platforms | https://consumeraffairs.nic.in/latestnews/ccpa-advisory-terms-consumer-protection-act-2019-self-audit-e-commerce-platforms |
+| Sports Direct, 2015 | Basket sneaking (GBP 1 magazine) | Public backlash, practice withdrawn | https://deceptive.design/types/sneaking |
+
+## 4. Lint alignment
+
+`design_lint.py` already carries O1 (stock and hurry phrases), O2 (countdown without plan end date), O3 (pre-checked inputs), O4 (confirmshaming) and P1 (social-proof popups and live counts). Adopt these additions:
+
+```python
+# O1 extension (DP1, DP2): add to STOCK_PHRASES
+r"|\bends? (soon|tonight|today|in)\b|\blimited time\b|\bwhile (stocks|supplies) last\b|\blow stock\b"
+# O4 extension (DP6): decline copy with consequence framing
+CONFIRMSHAME_EXT = r"i'?ll (pay full price|stay|pass on)|\b(full price|miss out|rather|don'?t care|waste)\b"   # apply to text inside [data-action=decline], button, a
+# O5 NEW (DP5, DP7): required consent inputs
+r'<input[^>]*(consent|marketing|sms|newsletter)[^>]*\brequired\b'          # expect 0
+# O6 NEW (DP9): subscription sections must state cadence and cancel path
+# for each <!-- section: (subscription-toggle|plan-selector|pricing) --> body: require /(every|per|\/)\s*(month|week|\d+ days)/i and /cancel/i
+# O7 NEW (DP12): buy-box / pricing / offer section must mention shipping and tax
+# for each <!-- section: (buy-box|pricing|offer) --> body: require /shipping|delivery/i and /tax|gst|inclusive/i
+# O8 NEW (DP13): advertorial / listicle label
+# if manifest page.pageType in {advertorial, listicle}: require /advertis(ement|ing)|sponsored|paid partnership/i in the first 600 px (browser) or before the third section delimiter (static)
+# O9 NEW (DP15): negated choice labels
+r"\b(opt.?out|un(check|tick|subscribe)|do not|don'?t) .*(receive|get|miss)\b"   # within <label>, <button> text; expect 0
+# O10 NEW (DP16, DP22): fake system UI and faux processing
+r"\b(virus|infected|system alert|analy[sz]ing your|applying your discount)\b"    # expect 0
+# O11 NEW (DP18): tier ribbons already in N9; add
+r"\bRECOMMENDED\b"
+# O12 NEW (DP21): strike-through without source
+r"<(s|del)\b(?![^>]*data-source=)"   # expect 0
+```
+
+Browser-only checks (record in `qa-report.md`): DP10 parity script, DP13 label position, DP14 single-overlay assertion, DP4 cart-total equality.
+
+---
+
+# Copy anti-patterns
+
+The canonical vocabulary and structure blacklist for generated page copy.
+`/design-page` applies it in Compose step 8; `design_lint.py` C1 to C4
+mirror the lists below (update both together); `brand_kit.banned_phrases`
+is merged in at run time. Positive rules for headlines, CTAs, FAQs and
+microcopy are in `references/copy/headline-and-cta-rules.md`; frameworks in
+`references/copy/copy-frameworks.md`; sourcing real language in
+`references/copy/voice-of-customer-mining.md`.
+
+Scope of a hit. FAIL when the word or structure appears in an `h1`, `h2`,
+`h3`, subhead, button, link label, CTA microcopy or announcement bar. WARN
+when it appears in body text fewer than two times; FAIL at two or more body
+hits. Text inside `<blockquote>` and review islands is exempt: reviews are
+verbatim (`references/proof/proof-ledger.md` rule 4).
+
+Severity BLOCK, FAIL, WARN. Tag LAW, RESEARCH, OPERATOR, HEURISTIC. `$T` is
+the extracted text with quotes removed:
+`perl -0pe 's/<blockquote.*?<\/blockquote>//sg; s/<lx-island name="Review.*?<\/lx-island>//sg; s/<[^>]+>/ /g' $W/lexsis-source.html > $T`.
+
+## 1. Evidence
+
+- Kobak et al., Science Advances 2024/25, 15M PubMed abstracts: after ChatGPT, 379 style words spiked; "delves" 28x, "underscores" 13.8x, "showcasing" 10.7x; 66 percent of excess style words are verbs. https://arxiv.org/html/2406.07016v5
+- Pangram (vendor, per 10k words, AI vs human): em dashes 17 vs 2 (10x), triads 19 vs 5 (4x), "not just X but Y" 3 vs 1 (3x), "delve into" class phrases 30 vs 3, bullet lists 9x, emoji 2x. https://www.pangram.com/signs-of-ai-writing
+- Community catalogues derived from Wikipedia "Signs of AI writing": antithesis cadence, "from X to Y" sweeps, colon reveals, fragment punchlines. https://github.com/crypdick/unslop/blob/main/skills/unslop/references/ai-writing-patterns.md
+- Copyhackers/Beachway: a headline lifted from a real review beat the marketing-written one by over 400 percent in clicks. Real language wins; generic language loses. https://copyhackers.com/2014/10/amazon-review-mining/
+
+## 2. Vocabulary blacklist
+
+CP1 (FAIL in headings and controls; WARN then FAIL in body; RESEARCH, OPERATOR). None of the following appears outside verbatim quotes. The lint list is the union of the three blocks plus `brand_kit.banned_phrases`.
+
+Verbs and verb phrases:
+```text
+elevate, unleash, unlock (except a literal gate: "Unlock free shipping at ₹999" is allowed), delve, embrace, indulge,
+discover (as an imperative opener), experience (as an imperative opener), transform your, revolutionize, revolutionise,
+empower, harness, leverage, supercharge, streamline, optimize (consumer copy), reimagine, redefine, showcase, foster,
+navigate (metaphorical), dive into, take ... to the next level, say goodbye to, say hello to, look no further, treat yourself
+```
+
+Adjectives and nouns:
+```text
+seamless, effortless, game-changer, game-changing, revolutionary, cutting-edge, next-level, next-generation, state-of-the-art,
+world-class, best-in-class, innovative, unparalleled, unmatched, unrivalled, ultimate, premium (unqualified; allowed inside a tier or product name),
+luxurious (unqualified), exquisite, meticulous, meticulously, intricate, curated, bespoke (unless made to order), artisanal (unless hand-made),
+holistic, synergy, robust, tapestry, realm, journey (metaphorical), landscape (metaphorical), testament, beacon, pivotal, crucial,
+vibrant, dynamic, must-have, perfect for, stunning, breathtaking, elevated, sleek, effortlessly chic
+```
+
+Phrases and openers:
+```text
+elevate your routine, in today's fast-paced world, whether you're X or Y, it's not just X, it's Y, not just ... but (also), more than just,
+Imagine ... (opener), Picture this, Introducing (headline), crafted with care, crafted with love, premium quality, designed with you in mind,
+the perfect blend of, at its finest, like never before, you deserve, the secret to, your go-to, made for modern life, we've got you covered,
+sit back and relax, the best part?, here's the thing, let's face it, in a world where, gone are the days, nestled, boasts, a testament to,
+from X to Y and everything in between, welcome to, at [Brand], we believe, discover the difference, experience the difference, the ultimate,
+your journey, level up, game on, ready to ..., unlock your potential, step into, dive in
+```
+
+Allowlist handling. `brand_kit.allowlist` (or the plan's "Copy allowlist" line) removes a term when it is literal: a brand named "Elevate", a tier named "Premium", a hair oil that is literally "curated" by a named person. Every allowlisted hit is recorded in `page-plan.md` with the reason.
+
+## 3. Claims
+
+| Id | Tell | Rule | Sev | Tag | Check |
+|---|---|---|---|---|---|
+| CP2 | Superlatives and objective claims without substantiation: best, #1, No.1, most trusted, most advanced, clinically proven, doctor recommended, dermatologist tested, award-winning, 100% natural, chemical-free, toxin-free, guaranteed results, proven to | FTC: objective claims need a reasonable basis before publication; "clinically proven" needs that evidence. India ASCI/CCPA: "No.1" only with market-share data; disclaimers may not contradict the claim. Each hit must map to a proof-ledger row (`test-data`, `award`, `certification`, `customer-count`). https://www.ftc.gov/business-guidance/resources/advertising-faqs-guide-small-business ; https://www.ascionline.in/wp-content/uploads/2022/09/asci_june_july_2020_ccc_pr.pdf | BLOCK | LAW | `grep -niE '\b(#\s?1|no\.?\s?1|number one|the best|world'"'"'s (best|most)|most (trusted|advanced|popular|loved)|clinically (proven|tested)|(doctor|dermatologist)[- ](recommended|tested)|award[- ]winning|100% (natural|safe|effective)|chemical-free|toxin-free|guaranteed results|proven to)\b' $T`; every line maps to a ledger row |
+| CP3 | Hedged non-claims: may help support, can help promote, is believed to, designed to help, supports healthy ... | Either a substantiated fact with a number, or cut the sentence. Where regulation mandates a hedge (supplement structure/function claims), keep the mandated wording and pair it with dose, ingredient or study n. | WARN | OPERATOR | `grep -ciE '\b(may help|can help|might help|is believed to|designed to help|helps? support|supports? (healthy|overall))\b' $T` |
+| CP4 | "Results not typical" or "results may vary" as the only qualifier beside a results testimonial | FTC Endorsement Guides: disclose the generally expected result in the same block; the bare disclaimer does not comply. https://www.govinfo.gov/content/pkg/CFR-2023-title16-vol1/pdf/CFR-2023-title16-vol1-part255.pdf | BLOCK | LAW | any hit of `results (may )?(not typical|vary)` requires `generally|typical(ly)? (see|lose|gain|report)` in the same section |
+
+## 4. Structure tells
+
+| Id | Tell | Rule | Sev | Tag | Check |
+|---|---|---|---|---|---|
+| CP5 | Em-dash chains | At most one em dash per 150 words; none in headings, buttons or subheads. Prefer a full stop. Pangram: 10x more em dashes in AI text. | FAIL | RESEARCH | lint C3 (headline chains); `perl -ne '$d+=()=/\x{2014}|\x{2013}| - /g; $w+=split; END{printf "%.2f per 150w\n",$d/($w/150)}' $T` under 1.0 |
+| CP6 | Rule of three everywhere ("soft, breathable, and durable") | At most one adjective triad per section. Lists of specifics beat adjective triads. | WARN | RESEARCH | `grep -ciE '\b\w+, \w+,? and \w+\b'` per section text at most 1 |
+| CP7 | Antithesis: "not just X, it's Y", "isn't just ... it's", "more than just" | Zero. | FAIL | RESEARCH | `grep -ciE "(isn'?t|not|is more than) just\b.*\b(but|it'?s|it is)\b" $T` is 0 |
+| CP8 | Rhetorical-question openers ("Tired of ...?", "Ever wondered ...?") | At most one question heading per page; never the h1 unless the type uses `qualifier-lead` and the question genuinely selects the reader. | WARN | OPERATOR | `grep -c '?' <headings>` at most 1 |
+| CP9 | "Imagine ..." or "Picture this" | Zero. | FAIL | RESEARCH | `grep -ciE '^\s*(imagine|picture this)\b' $T` is 0 |
+| CP10 | Exclamation marks | Zero outside verbatim reviews. | FAIL | OPERATOR | `grep -c '!' $T` is 0 |
+| CP11 | Uniform sentence and paragraph length | Standard deviation of sentence length at least 4 words per section; no three consecutive paragraphs within 10 percent of the same word count. | WARN | HEURISTIC | sentence-length variance script in section 9 |
+| CP12 | Identical section rhythm (headline, subhead, three bullets, CTA, repeated) | Adjacent sections never share the same layout skeleton (`references/anti-patterns/design-anti-patterns.md` DA14). | FAIL | OPERATOR | DA14 check |
+| CP13 | Alliterative or fragment triad headlines ("Pure. Potent. Proven.") | At most one fragment-triad heading per page. | FAIL | RESEARCH | `grep -cE '^[A-Z][a-z]+\. [A-Z][a-z]+\. [A-Z][a-z]+\.$' <headings>` at most 1 |
+| CP14 | Summary and conclusion language ("In conclusion", "Ultimately", "Overall", "To sum up") | Zero. A landing page asks; it does not conclude. | FAIL | OPERATOR | `grep -ciE '\b(in conclusion|ultimately|overall|to sum up|in summary|all in all)\b' $T` is 0 |
+| CP15 | Colon reveal in headings ("The result: skin that ...") | At most one per page. | WARN | RESEARCH | `grep -c ': ' <headings>` at most 1 |
+| CP16 | Title Case Headings | Sentence case for headings, subheads, buttons, labels; product names keep brand casing. USAGov moved to sentence case sitewide in 2023 with no trust drop. https://www.usa.gov/blog/2023/09/making-the-case-for-sentence-case | FAIL | RESEARCH | `grep -cE '^([A-Z][a-z]+\s){3,}[A-Z][a-z]+' <headings>` is 0 after the product-name allowlist |
+| CP17 | Bold-label bullets ("**Fast:** ...", "**Simple:** ...") | Zero. Write the specific. | FAIL | RESEARCH | `grep -cE '<li>\s*<(strong|b)>[^<]{1,20}:</(strong|b)>' $W/lexsis-source.html` is 0 |
+| CP18 | False ranges ("from busy parents to pro athletes") | Only when X and Y are real endpoints of one scale the merchant serves. | WARN | RESEARCH | `grep -ciE '\bfrom \w+( \w+)? to \w+( \w+)?( and everything in between)?\b' $T`; each hit reviewed |
+| CP19 | Generic openers ("Welcome to ...", "At [Brand], we believe ...", "We are passionate about") | Zero. Lead with the shopper's problem or a specific. | FAIL | OPERATOR | `grep -ciE '^\s*(welcome to|at [A-Z][A-Za-z]+,? we (believe|are passionate)|we are passionate)' $T` is 0 |
+| CP20 | Subhead restates the headline | The subhead resolves the headline (mechanism, proof or who it is for); token overlap with the h1 under 50 percent. | FAIL | OPERATOR | overlap script in section 9 |
+
+## 5. Punctuation and case
+
+| Id | Tell | Rule | Sev | Tag | Check |
+|---|---|---|---|---|---|
+| CP21 | Hype punctuation: "!!", "?!", "..." trails in headings | Zero. | FAIL | OPERATOR | lint C2 `!{2,}|\?!` |
+| CP22 | ALL-CAPS words of six or more letters | None outside a `CAPS_ALLOWLIST` of acronyms and registered marks (GST, FSSAI, UPI, MRP, BIS, ISO, NSF, USDA, SPF, COD, EMI, BNPL). Labels of three words or fewer may be caps only under a merchant-stated rule (design-rules N5). | FAIL | RESEARCH | lint C2 `[A-Z]{6,}(?![a-z])` after allowlist removal |
+| CP23 | Arrow glyphs or "->" in link and button text | Design-rules N12. | FAIL | OPERATOR | lint N12 |
+| CP24 | Emoji anywhere in copy | Design-rules N1. | FAIL | OPERATOR | lint N1 |
+| CP25 | Middle dots (U+00B7) joining meta strings ("Free shipping", dot, "30-day returns", dot, "Made in India") | Use a full stop or separate lines; N12 names middle-dot joins as chrome. | WARN | OPERATOR | `grep -c '\xc2\xb7' $W/lexsis-source.html` is 0 |
+
+## 6. CTA and control copy
+
+| Id | Tell | Rule | Sev | Tag | Check |
+|---|---|---|---|---|---|
+| CP26 | Stock CTA labels: Shop Now, Get Started, Learn More, Buy Now (tof/mof), Submit, Click here, Continue (no object), OK, Yes, Go, Read more | Design-rules A12; `references/copy/headline-and-cta-rules.md` HC12 to HC14. The CTA is verb plus object plus outcome or price, at most four words, sentence case. | FAIL | OPERATOR | lint A12 and C4 plus the extension in section 10 |
+| CP27 | CTA that does not start with a verb, or exceeds four words | HC12. | FAIL | OPERATOR | CTA verb script in section 9 |
+| CP28 | "Free" with an asterisk or a later condition | Offers OF5: the condition sits in the same line. | BLOCK | LAW | `grep -ciE '\bfree\*' $T` is 0 |
+
+## 7. Placeholder and model leakage
+
+| Id | Tell | Rule | Sev | Tag | Check |
+|---|---|---|---|---|---|
+| CP29 | Placeholder text: lorem ipsum, TODO, TBD, [brand], [product], {{ }}, "Your headline here", "Insert ...", "Product name", "Lorem" | Zero. A12 already forbids placeholder copy. | BLOCK | OPERATOR | `grep -ciE 'lorem|ipsum|\bTODO\b|\bTBD\b|\[(brand|product|name|city|number)\]|\{\{|your (headline|text|copy) here|insert (your|a|the)|product name here' $W/lexsis-source.html` is 0 |
+| CP30 | Framework labels leaking into copy ("Problem:", "Agitate:", "Solution:", "Benefit:", "Call to action") | Zero. Frameworks shape the order, never the words. | FAIL | OPERATOR | `grep -ciE '^\s*(problem|agitat(e|ion)|solution|benefit|proof|push|hook|story|offer|call to action)\s*:' $T` is 0 |
+| CP31 | Assistant voice leaking ("As an AI", "Certainly", "Here's a", "I hope this helps", "Feel free to") | Zero. | BLOCK | OPERATOR | `grep -ciE "as an ai|certainly|here'?s an? |i hope this|feel free to|let me know" $T` is 0 |
+
+## 8. Brand voice
+
+| Id | Tell | Rule | Sev | Tag | Check |
+|---|---|---|---|---|---|
+| CP32 | A `brand_kit.banned_phrases` entry appears | BLOCK in any position, including body. Merged into the lint list at run time; the plan's "Copy allowlist" cannot override a merchant ban. | BLOCK | OPERATOR | `for p in "${BANNED[@]}"; do grep -ciF "$p" $T; done` all 0 |
+| CP33 | Register mismatch with `voice_md` (jokey copy for a clinical brand; clinical copy for a playful brand) | Reviewed by an LLM pass against the voice adjectives and "we say / we don't say" pairs; not regex. | WARN | OPERATOR | one-line finding per section in `qa-report.md` |
+| CP34 | Brand name outnumbers "you/your" | Second person leads; Apple's iPhone 5 copy used "you/your" more than "iPhone" and "Apple" combined. https://neilpatel.com/blog/write-copy-like-apple/ | WARN | RESEARCH | ratio script in section 9 |
+| CP35 | Spelling locale drift (color and colour on one page) | One locale from `brand_kit` or the store market. | WARN | OPERATOR | `grep -ciE '\bcolor\b' $T` and `grep -ciE '\bcolour\b' $T` are not both non-zero |
+
+## 9. Canonical regex and scripts
+
+Python `re` form, case-insensitive, applied to `$T`. Lines marked `# lint` are already in `design_lint.py`; `# NEW` are additions for the lead to adopt.
+
+```python
+SLOP_WORDS = r"\b(elevate[sd]?|unleash(es|ed)?|unlock(s|ed)?|delve[sd]?|seamless(ly)?|game-?changer|game-?changing|revolutioni[sz]e[sd]?|revolutionary|effortless(ly)?|curated|indulge|embrace|look no further|say goodbye to|in today'?s fast-paced|whether you'?re|it'?s not just|crafted with (care|love|passion)|meticulously|premium quality|world-class|cutting-edge|next-level|transform(s|ed)? your|elevate your|discover the (power|magic|difference)|experience the (difference|magic)|the ultimate|your journey|treat yourself|introducing the)\b"   # lint C1
+SLOP_WORDS_EXT = r"\b(empower(s|ed|ing)?|harness(es|ed)?|leverage[sd]?|supercharge[sd]?|streamline[sd]?|reimagine[sd]?|redefine[sd]?|showcas(e|es|ed|ing)|foster(s|ed)?|dive into|next-gen(eration)?|state-of-the-art|best-in-class|innovative|unparalleled|unmatched|unrivall?ed|exquisite|meticulous|intricate|bespoke|artisanal|holistic|synergy|robust|tapestry|realm|testament|beacon|pivotal|crucial|vibrant|must-have|perfect for|stunning|breathtaking|say hello to|designed with you in mind|the perfect blend|at its finest|like never before|you deserve|the secret to|your go-to|made for modern life|we'?ve got you covered|sit back and relax|the best part\?|here'?s the thing|let'?s face it|in a world where|gone are the days|nestled|boasts|a testament to|and everything in between|welcome to|at [A-Z][a-z]+,? we believe|level up|unlock your potential|step into|dive in)\b"   # NEW
+HYPE_PUNCT = r"!{2,}|\?!|[A-Z]{6,}(?![a-z])"   # lint C2 (apply CAPS_ALLOWLIST first)
+CAPS_ALLOWLIST = {"FSSAI","GST","UPI","MRP","BIS","ISO","NSF","USDA","SPF","COD","EMI","BNPL","INCI","GMP","HACCP"}   # NEW
+HEADLINE_EMDASH = r"<h[1-3][^>]*>[^<]*\u2014[^<]*\u2014"   # lint C3 (the script uses the literal em dash)
+STOCK_CTA = r">\s*(Submit|Click here|Learn more)\s*<"   # lint C4
+STOCK_CTA_EXT = r">\s*(Shop now|Get started|Buy now|Read more|Continue|OK|Yes|Go|Sign up|Download)\s*(<|$)"   # NEW (Buy now only when funnelStage != bof)
+ANTITHESIS = r"(isn'?t|not|is more than) just\b.*\b(but|it'?s|it is)\b"   # NEW
+IMAGINE = r"^\s*(imagine|picture this)\b"   # NEW
+SUMMARY = r"\b(in conclusion|ultimately|overall|to sum up|in summary|all in all)\b"   # NEW
+GENERIC_OPENER = r"^\s*(welcome to|at [A-Z][A-Za-z]+,? we (believe|are passionate)|we are passionate)"   # NEW
+BOLD_LABEL_BULLET = r"<li>\s*<(strong|b)>[^<]{1,20}:</(strong|b)>"   # NEW (source html)
+SUPERLATIVE = r"\b(#\s?1|no\.?\s?1|number one|the best|world'?s (best|most)|most (trusted|advanced|popular|loved)|clinically (proven|tested)|(doctor|dermatologist)[- ](recommended|tested)|award[- ]winning|100% (natural|safe|effective)|chemical-free|toxin-free|guaranteed results|proven to)\b"   # NEW, BLOCK unless ledger row
+HEDGE = r"\b(may help|can help|might help|is believed to|designed to help|helps? support|supports? (healthy|overall))\b"   # NEW, WARN
+RESULTS_DISCLAIMER = r"results (may )?(not typical|vary)"   # NEW, BLOCK without 'generally expected'
+PLACEHOLDER = r"lorem|ipsum|\bTODO\b|\bTBD\b|\[(brand|product|name|city|number)\]|\{\{|your (headline|text|copy) here|insert (your|a|the)|product name here"   # NEW, BLOCK
+FRAMEWORK_LABEL = r"^\s*(problem|agitat(e|ion)|solution|benefit|proof|push|hook|story|offer|call to action)\s*:"   # NEW
+ASSISTANT_VOICE = r"as an ai|certainly|here'?s an? |i hope this|feel free to|let me know"   # NEW, BLOCK
+FREE_ASTERISK = r"\bfree\*"   # NEW, BLOCK
+TITLE_CASE_HEADING = r"^([A-Z][a-z]+\s){3,}[A-Z][a-z]+"   # NEW, on heading text after product-name allowlist
+FRAGMENT_TRIAD = r"^[A-Z][a-z]+\. [A-Z][a-z]+\. [A-Z][a-z]+\.$"   # NEW, on heading text, allow 1
+```
+
+```python
+# CP11 sentence-length variance, CP20 subhead overlap, CP27 CTA verb, CP34 you/brand ratio
+import re, statistics
+def sentences(t): return [s for s in re.split(r'[.!?]+\s', t) if s.strip()]
+def cp11(section_text):
+    L = [len(s.split()) for s in sentences(section_text)]
+    return len(L) < 3 or statistics.pstdev(L) >= 4
+def cp20(h1, sub):
+    a, b = set(re.findall(r'\w+', h1.lower())), set(re.findall(r'\w+', sub.lower()))
+    return len(a & b) / max(1, len(b)) < 0.5
+VERBS = {'add','get','start','claim','buy','shop','send','try','join','grab','order','choose','see','show','save','pre-order','subscribe','reserve','book','take','find','build','pick','complete','apply','check'}
+def cp27(label):
+    w = label.strip().lower().split()
+    return 1 <= len(w) <= 4 and w[0] in VERBS and (len(w) > 1 or w[0] in {'buy','shop','order','subscribe'})
+def cp34(text, brand):
+    return len(re.findall(r'\byou(r|rs)?\b', text, re.I)) >= len(re.findall(re.escape(brand), text, re.I))
+```
+
+## 10. Rewrite procedure for a hit
+
+1. Ask Harry Dry's three questions of the sentence: can the reader visualise it, can it be falsified, could no competitor say it. A line failing all three is deleted, not rephrased. https://www.demandcurve.com/lessons/fundamental-rules-of-good-copy
+2. Replace the banned word with what specifically happens: "seamless" becomes "arrives assembled, no tools"; "premium quality" becomes the material, weight or test.
+3. Pull the replacement from the voice-of-customer worksheet (`references/copy/voice-of-customer-mining.md`) before inventing one.
+4. Re-run the section checks; a heading hit blocks compile, a body hit produces a rewrite note in `qa-report.md` with the span and the rule id.
+
+## 11. Lint alignment
+
+`design_lint.py` today: C1 `SLOP_WORDS`, C2 `HYPE_PUNCT`, C3 headline em-dash chains, C4 Submit/Click here/Learn more. Adopt, in this order of value:
+
+1. Merge `SLOP_WORDS_EXT` into C1 and honour `brand_kit.allowlist` plus the plan's "Copy allowlist" line (CP1).
+2. Merge `brand_kit.banned_phrases` as literal, case-insensitive matches, BLOCK in any position (CP32).
+3. Add `CAPS_ALLOWLIST` stripping before C2 (CP22).
+4. Add `STOCK_CTA_EXT` to C4, with "Buy now" gated on `manifest.page.funnelStage != "bof"` (CP26).
+5. New checks C5 `ANTITHESIS`, C6 `IMAGINE`, C7 `SUMMARY`, C8 `GENERIC_OPENER`, C9 `BOLD_LABEL_BULLET`, C10 `PLACEHOLDER` (BLOCK), C11 `FRAMEWORK_LABEL`, C12 `ASSISTANT_VOICE` (BLOCK), C13 `FREE_ASTERISK` (BLOCK), C14 `SUPERLATIVE` (BLOCK unless a ledger row is named in `page-plan.md` "Claims confirmed"), C15 `HEDGE` (WARN), C16 `RESULTS_DISCLAIMER` (BLOCK without a "generally expected" phrase in the same section).
+6. Heading-text checks C17 `TITLE_CASE_HEADING`, C18 `FRAGMENT_TRIAD` (allow 1), C19 question headings (allow 1), C20 colon reveals (allow 1), C21 em-dash density under 1 per 150 words on `$T`.
+7. Structural scripts C22 `cp11`, C23 `cp20`, C24 `cp27` on every button and `a.btn` label, C25 `cp34`.
+8. Scope: run C1 and the structure checks on `$T` with `<blockquote>` and review islands removed, and report heading hits as FAIL and body hits as WARN (FAIL at two or more).
+
+---
+
+# Lexsis MCP Tool Sequence by Stage
+
+The exact `router.action` order for a page, from setup to publish. Skills list
+the actions they own; this file shows how they chain and what each call must
+return before the next one runs. Resolve an unfamiliar argument schema with
+`lexsis_discover` using structured `router` and `action` fields, never a
+prose query for a known pair (`references/lexsis-mcp-contract.md`).
+
+Legend: **R** read, **W** reversible write, **$** spends credits (confirm
+first), **!** requires explicit approval (`lexsis_live_ops`).
+
+## Stage 0: Setup (once per store/theme)
+
+| # | Call | Type | Needed before |
+|---|---|---|---|
+| 1 | `lexsis_workspace.list` then `.get` | R | everything |
+| 2 | `lexsis_workspace.stores` | R | choosing the store |
+| 3 | `lexsis_brand.context` | R | any design decision |
+| 4 | `lexsis_brand.brand_kit` | R | palette, fonts, voice, banned phrases |
+| 5 | `lexsis_brand.list_themes` then `.get_theme` | R | `page-theme.css` |
+| 6 | `lexsis_brand.navigation` | R | header/footer links (full-nav types only) |
+| 7 | `lexsis_design.guide` | R | `brand-design.md` |
+
+Output: `work/storefront/setup/setup.json` plus saved brand and theme files.
+Everything below reads the saved pair and refreshes only volatile data.
+
+## Stage 1: Plan
+
+Order matters: identify the type before searching anything.
+
+| # | Call | Type | Purpose | Gate |
+|---|---|---|---|---|
+| 1 | read `setup.json` | local | one store/theme pair | stop if missing |
+| 2 | `lexsis_catalog.list` then `.get` per product | R | title, variants, prices, availability, media, description | every product on the page |
+| 3 | walk `references/page-types/_index.md`, then the type's `## Workflow` context reads | local | `pageType`, funnel stage, awareness, offer, campaign; image count and jobs, variant axes, review band | record `## Page type` block |
+| 4 | `lexsis_campaigns.creatives` then `.analyze` (or view the creative yourself) | R | message match for ad-driven types | ad-landing, advertorial, listicle, retargeting |
+| 5 | `lexsis_campaigns.personas` then `.match_persona` | R | vocabulary, pain points | when personas exist |
+| 6 | `lexsis_catalog.reviews_status` | R | is a review source connected, how many imported | before any proof plan |
+| 7 | `lexsis_catalog.review_collections` (`collection_status: "active"`) | R | curated sets with counts | if connected |
+| 8 | `lexsis_catalog.reviews` (`rating_min`, `has_media`, `product_id`) | R | count, media, distribution | if connected |
+| 9 | `lexsis_catalog.reviews_search` (`query` = the page's key claim) | R | proof-proximity candidates | one call per top decision question |
+| 10 | host web search + `lexsis_assets.view` | R | zero-review playbook tiers 3 to 5 | only when 6 to 8 return nothing usable (`references/proof/reviews-sourcing.md`) |
+| 11 | `lexsis_template_library.search_page_kits` (`query: ""`, filters) | R | user picks or skill picks a direction | after page type is fixed |
+| 12 | `lexsis_template_library.search_sections` | R | when no kit fits | at most three candidates |
+| 13 | `lexsis_template_library.get_kit` | R | resolve a slug or URL | user-picked kit |
+| 14 | `lexsis_asset_library.search` (`theme_id`, `mode: "tags"`, then semantic) | R | resolve slots the user did not pick | after gallery jobs mapped |
+| 15 | `lexsis_assets.view` | R | verify identity-sensitive picks | every product or person image |
+| 16 | `lexsis_asset_import.import` or `lexsis_asset_upload.upload` | W | import a supplied URL, image base64 plus MIME type, or attachments; use upload only for the local-file UI | before any generation; wait for the user's uploaded-asset message for UI uploads; without inline UI, ask for a URL or attachment and import it |
+| 17 | `lexsis_workspace.credits` | R | balance before asking | before 18 |
+| 18 | `lexsis_drafts.asset_generate` | W $ | only ALLOW-list purposes (`references/assets/generation-policy.md`) | one confirmation per batch |
+| 19 | `lexsis_capture.funnel_templates` then `.funnel_template` | R | quiz, gift-reveal, personalised-offer structure | quiz-funnel and lead-capture types |
+| 19b | `lexsis_capture.form_schemas`, then `.submissions` for an existing form | R | field shapes; whether a live form already collects what the page needs (PII is redacted) | lead-capture, giveaway, wholesale, waitlist |
+| 20 | `lexsis_drafts.review_collection_create` | W | draft shortlist for the merchant to activate | only when asked |
+
+Output: `page-plan.md` with Page type, Design direction, Consumer decision
+model, Proof ledger, Offer ledger, Imagery plan, Asset slots; compact
+`page-manifest.json`. Run `plan_lint.py` before approval.
+
+## Stage 2: Design
+
+| # | Call | Type | Purpose | Gate |
+|---|---|---|---|---|
+| 1 | read plan + manifest + page-type file | local | follow its `## Workflow`; note deviations | ask only when a deviation is unexplained |
+| 2 | `lexsis_brand.context`, `.get_theme` | R | live tokens | compare with saved; `THEME_CONTEXT_CONFLICT` on value clash |
+| 3 | `lexsis_template_library.get_kit` then `lexsis_design.get_section` (1 to 3 ids per call, kit order) | R | authoring source | only ids in the manifest |
+| 4 | `lexsis_template_library.list_mine` then `.get_mine` | R | merchant's saved sections | when the user names one |
+| 5 | `lexsis_design.islands` | R | compact catalog | select only interactive needs |
+| 6 | `lexsis_design.island_schema` | R | exact props | per island actually used, or per compile error |
+| 7 | `lexsis_catalog.get` | R | current variant ids, prices | before binding BuyBox |
+| 8 | `lexsis_catalog.reviews` / `.review_collection_items` | R | `collectionId` or `productIds`, `minRating`, real totals | review islands only |
+| 9 | `lexsis_asset_library.search`, `lexsis_assets.view`, `lexsis_asset_import.import`, `lexsis_asset_upload.upload` | R/W | resolve `planned` slots; import supplied sources, upload for local-file UI only | never placeholders; wait for the user's uploaded-asset message for UI uploads |
+| 10 | `lexsis_workspace.credits` then `lexsis_drafts.asset_generate` | W $ | remaining ALLOW-list gaps | ask first |
+| 11 | `lexsis_pages.compile` | R | validation_errors as the work list | loop until clean |
+| 12 | `lexsis_page_create.create` (`publish: false`) | W | one hosted draft | once per page; reuse `remote.pageId` after |
+| 13 | host browser at 390 and 1280 | local | hosted design review | production-ready only |
+| 14 | `lexsis_drafts.page_update_section` / `.page_patch` (`expected_version`) | W | fix review findings | never a second draft |
+
+Output: `lexsis-source.html`, `page-theme.css`, `compile-artifact.json`,
+`DRAFT_CREATED`, later `DESIGN_APPROVED`.
+
+## Stage 3: Generate (sync + QA)
+
+| # | Call | Type | Purpose |
+|---|---|---|---|
+| 1 | `lexsis_pages.edit_context` then `.source` | R | detect version drift |
+| 2 | `lexsis_catalog.get` | R | refresh variants and prices |
+| 3 | `lexsis_design.island_schema` | R | islands still active |
+| 4 | `lexsis_pages.compile` | R | clean artifact |
+| 5 | `lexsis_pages.integrity` then `.qa` | R | hosted QA record |
+| 6 | `lexsis_drafts.page_record_qa` | W | store QA evidence |
+| 7 | `lexsis_drafts.page_update_head` | W | title, description, fonts |
+| 8 | `lexsis_cart.get` then `lexsis_drafts.cart_set` | R/W | cart profile matches the offer |
+| 9 | `lexsis_capture.get_funnel`, `.validate_funnel`, `.preview_funnel`; `lexsis_drafts.funnel_update` | R/W | a funnel draft's steps read back, validated, previewed and adjusted before review |
+| 10 | `lexsis_support.search_docs` | R | only when a Lexsis behaviour is unclear |
+
+Output: `DRAFT_READY`.
+
+## Stage 4: Publish and after
+
+| # | Call | Type | Purpose |
+|---|---|---|---|
+| 1 | `lexsis_live_ops.publish` | W ! | named page and version only |
+| 2 | `lexsis_analytics.page`, `.timeseries`, `.attribution` | R | first-week read |
+| 3 | `lexsis_drafts.page_variation` then `.experiment_create` | W | challengers (`/ab-test`) |
+| 4 | `lexsis_analytics.experiment` then `lexsis_live_ops.scale_winner` | R / W ! | evaluate, then scale |
+| 5 | `lexsis_live_ops.rollback` / `.unpublish` | W ! | undo |
+
+## Never
+
+- Never call `lexsis_page_create.create` when `remote.pageId` exists.
+- Never call `lexsis_drafts.asset_generate` before `lexsis_asset_library.search`
+  and `lexsis_catalog.get` have been checked for the same slot.
+- Never fill review props from anything other than `lexsis_catalog.reviews`
+  or `.review_collection_items`.
+- Never use `lexsis_discover` as a health check; a zero-count directory
+  result is a lookup miss.
+- Never call a `lexsis_live_ops` action without the user's explicit approval
+  for that page and version in the current conversation.

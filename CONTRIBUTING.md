@@ -70,8 +70,17 @@ Before opening a pull request:
 ```bash
 python3 scripts/build-distributions.py --check
 python3 scripts/validate-island-contracts.py
+python3 scripts/validate-page-types.py
 python3 -m unittest discover -s tests -p 'test_*.py'
 ```
+
+Page-type files under `skills/storefront-engine/references/page-types/`
+follow `_checklist-format.md`: fixed headings plus one JSON checklist block
+that `plan-page/scripts/plan_lint.py` enforces. Add a section id, proof kind
+or image job to the vocabulary in `_checklist-format.md` before using it.
+Shared reference sub-directories (`page-types/`, `proof/`, `offers/`,
+`assets/`, `anti-patterns/`, `copy/`, `mcp-playbooks/`) are declared as
+directory entries in `SKILL_SHARED_REFERENCES` and copied whole.
 
 Also run the skill validator for each new or substantially changed command:
 

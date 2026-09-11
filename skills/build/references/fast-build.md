@@ -6,9 +6,16 @@ approval, exhaustive QA, or live publishing.
 
 ## Inputs and Intent
 
-Reuse the saved store/theme binding from
-`work/storefront/setup/setup.json`. Read products, variants, prices,
-availability, permissions, assets, and island schemas live.
+Reuse a saved workspace, store and theme triple from
+`work/storefront/setup/setup.json`: the one the user names, otherwise the
+defaults, stated in one line. Read products, variants, prices, availability,
+permissions, assets, and island schemas live.
+
+Infer the campaign folder from the prompt with the table in
+`references/page-files.md` and create the page under
+`work/campaigns/<campaign-slug>/pages/<page-handle>/`, with `campaign.json`
+carrying the binding. A prompt with no campaign shape uses `adhoc-<yyyy-mm>`.
+Say which folder is in use.
 
 Accept:
 
@@ -42,13 +49,68 @@ without waiting for a picker. Wait only when the user explicitly asks to
 choose. If the shelf is empty, search sections and assemble the smallest
 coherent page.
 
+## Identify the Type Before Choosing a Kit
+
+Walk `references/page-types/_index.md` from the prompt and record
+`page.pageType`, `funnelStage`, `awareness` and `trafficSource` in the
+manifest before searching kits. Load only that type's file and skim its `## Workflow`. A fast build
+uses the type's checklist as the default anatomy; a kit whose structure
+differs is adapted where cheap and the difference is noted in the plan.
+Reviews render only from real data
+(`references/proof/reviews-sourcing.md`, tiers 1 and 2; the fast path never
+runs the external tier). Run
+`python3 <plan-page-skill>/scripts/plan_lint.py <page-workspace>` once before
+compiling when the script is available and note its WARN rows in the plan.
+
+## Assets First, Even on the Fast Path
+
+Speed changes how many questions are asked, never whether the page is built
+around real imagery. Every section gets its media decided before its copy, by
+the same loop as the reviewed route
+(`references/workflows/section-asset-workflow.md`): catalog media through
+`lexsis_catalog.get`, then `lexsis_asset_library.search` (tags, then semantic,
+then `mode: "similar"` from the first accepted asset to keep a section's set
+coherent), then merchant-owned sources including `lexsis_campaigns.creatives`.
+A section that would ship as a colour band, an emoji row, icon tiles or a wall
+of text is rebuilt around imagery.
+
+Three rules hold at fast-draft speed:
+
+1. **Nothing is used sight unseen.** Open every candidate with
+   `lexsis_assets.view` and run the fit review in section 1b of
+   `references/workflows/section-asset-workflow.md`: does the subject do the
+   job, does it crop to the slot without losing the product, is there a quiet
+   area where the copy sits, does it match the neighbouring slots, no baked-in
+   text or watermark. View a section's or gallery's candidates together so the
+   set reads as one shoot. This is the one check speed does not buy out,
+   because an unviewed image is the fastest way to a page that looks wrong.
+2. **A gap is reported, not hidden.** The fast path resolves what it can from
+   existing media and leaves the rest `planned`, then lists every missing slot
+   (section, job, aspect, count) in the plan and in the `DRAFT_CREATED`
+   summary so the merchant can upload files through
+   `lexsis_asset_upload.upload`, supply a URL or conversation attachment for
+   `lexsis_asset_import.import`, or authorise generation. Wait for the user's
+   uploaded-asset message when using the upload UI; without inline UI, use
+   the URL/attachment import route. Paid generation is
+   not part of the implicit fast path: ask once, with the exact slots, before
+   spending credits, and use only ALLOW purposes from
+   `references/assets/generation-policy.md`.
+3. **Islands are resolved live.** Take the section's interaction need to
+   `lexsis_design.islands`, then `lexsis_design.island_schema` for the one
+   island chosen, and set the variant and props from what that schema offers
+   (`references/workflows/island-selection-workflow.md`). Never carry a kit's
+   island props forward without checking them against the current schema, and
+   never use an island the catalog marks deprecated.
+
 ## Minimum Local Artifacts
 
 Create the ordinary page workspace with:
 
-- a concise `page-plan.md` containing objective, audience, product, CTA,
-  template direction, section order, design direction, asset decisions, and a
-  minimum Consumer decision model from `consumer-behavior-cro.md`;
+- a concise `page-plan.md` containing the Page type block, objective,
+  audience, product, CTA, template direction, section order, design
+  direction, asset decisions, a minimum Proof ledger (and Offer ledger when
+  the prompt names an offer), and a minimum Consumer decision model from
+  `consumer-behavior-cro.md`;
 - a compact schema-v3 `page-manifest.json`;
 - `lexsis-source.html`;
 - `page-theme.css`.
@@ -64,13 +126,12 @@ only changes needed to satisfy the prompt and current store:
 - replace sample copy and claims;
 - bind current products and variants;
 - apply the selected theme and brand tokens;
-- replace placeholder or foreign media;
+- replace placeholder or foreign media with viewed catalog or library assets;
 - resolve only islands actually used;
 - preserve the kit's coherent structure unless the prompt requires a change.
 
-Paid asset generation is not part of the implicit fast path. Reuse catalog and
-library media. Map the current gallery to its relevant decision jobs first; ask
-once before generating specific unresolved production gaps.
+Reuse catalog and library media, viewed before use. Map the current gallery to
+its relevant decision jobs first, then follow the three rules above for gaps.
 
 Select at most two behavioral patterns for the first draft. Prefer a complete
 first decision area and one page-specific uncertainty over adding many CRO

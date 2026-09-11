@@ -41,31 +41,62 @@ SHARED_RESOURCE_DIRS = {"storefront-engine"}
 SKILL_SHARED_REFERENCES = {
     "plan-page": {
         "animation-system.md",
+        "page-files.md",
         "consumer-behavior-cro.md",
         "design-rules.md",
         "island-presets.md",
         "workflow-intent.md",
+        "page-types/",
+        "workflows/",
+        "authoring/",
+        "proof/",
+        "offers/",
+        "assets/",
+        "copy/",
+        "mcp-playbooks/",
     },
     "design-page": {
         "animation-system.md",
+        "page-files.md",
         "consumer-behavior-cro.md",
         "design-concepts.md",
         "design-rules.md",
         "island-presets.md",
         "merchant-templates.md",
         "workflow-intent.md",
+        "page-types/",
+        "workflows/",
+        "authoring/",
+        "proof/",
+        "offers/",
+        "assets/",
+        "anti-patterns/",
+        "copy/",
+        "mcp-playbooks/",
     },
     "build": {
         "animation-system.md",
+        "page-files.md",
         "consumer-behavior-cro.md",
         "fast-build.md",
         "workflow-intent.md",
+        "page-types/",
+        "workflows/",
+        "authoring/",
+        "assets/generation-policy.md",
+        "proof/reviews-sourcing.md",
     },
     "build-with-template": {
         "animation-system.md",
+        "page-files.md",
         "consumer-behavior-cro.md",
         "fast-build.md",
         "workflow-intent.md",
+        "page-types/",
+        "workflows/",
+        "authoring/",
+        "assets/generation-policy.md",
+        "proof/reviews-sourcing.md",
     },
     "ab-test": {
         "animation-system.md",
@@ -74,18 +105,29 @@ SKILL_SHARED_REFERENCES = {
     },
     "generate": {
         "animation-system.md",
+        "page-files.md",
         "consumer-behavior-cro.md",
         "design-rules.md",
         "merchant-templates.md",
         "page-editing.md",
         "qa-recipe.md",
         "workflow-intent.md",
+        "page-types/",
+        "workflows/",
+        "authoring/",
+        "anti-patterns/",
+        "proof/proof-ledger.md",
     },
     "optimize": {
         "animation-system.md",
         "consumer-behavior-cro.md",
         "design-rules.md",
         "lexsis-design-capabilities.md",
+        "page-types/",
+        "workflows/",
+        "authoring/",
+        "anti-patterns/",
+        "proof/proof-ledger.md",
     },
     "publish": {
         "workflow-intent.md",
@@ -115,7 +157,7 @@ REFERENCE_PATH_RE = re.compile(
 )
 SHARED_REFERENCE_DEP_RE = re.compile(
     r"(?:`|\()(?:(?:skills/)?storefront-engine/references/|references/)?"
-    r"([A-Za-z0-9_-]+\.md)(?:`|\))"
+    r"((?:[a-z0-9_-]+/)?[A-Za-z0-9_-]+\.md)(?:`|\))"
 )
 
 # References worth shipping to a custom GPT (knowledge budget is finite;
@@ -144,6 +186,15 @@ GPT_REFERENCE_ALLOWLIST = [
     "lexsis-mcp-contract",
     "merchant-templates",
     "lexsis-design-capabilities",
+    "page-types/_index",
+    "page-types/_checklist-format",
+    "proof/reviews-sourcing",
+    "proof/proof-ledger",
+    "assets/generation-policy",
+    "offers/offer-types",
+    "anti-patterns/dark-patterns",
+    "anti-patterns/copy-anti-patterns",
+    "mcp-playbooks/tool-sequence-by-stage",
 ]
 
 def parse_frontmatter(path: Path) -> tuple[dict, str]:
@@ -180,7 +231,22 @@ def remove_legacy_claude_plugin(*, check: bool) -> list[str]:
     return changed
 
 
+def expand_reference_dirs(names: set[str]) -> set[str]:
+    """`page-types/` in SKILL_SHARED_REFERENCES means every .md in that directory."""
+    expanded: set[str] = set()
+    for name in names:
+        if name.endswith("/") and (REFERENCES / name).is_dir():
+            expanded.update(
+                str(path.relative_to(REFERENCES))
+                for path in sorted((REFERENCES / name).glob("*.md"))
+            )
+        else:
+            expanded.add(name)
+    return expanded
+
+
 def shared_reference_closure(names: set[str]) -> set[str]:
+    names = expand_reference_dirs(names)
     pending = list(names)
     resolved = set(names)
     while pending:
@@ -190,6 +256,11 @@ def shared_reference_closure(names: set[str]) -> set[str]:
             continue
         for dependency in SHARED_REFERENCE_DEP_RE.findall(source.read_text()):
             if dependency == name or not (REFERENCES / dependency).is_file():
+                continue
+            # Corpus files (page-types/, proof/, ...) cite the legacy flat
+            # docs for depth only; do not pull the whole corpus into every
+            # skill. Flat-to-flat and corpus-to-corpus edges still resolve.
+            if "/" in name and "/" not in dependency:
                 continue
             if dependency not in resolved:
                 resolved.add(dependency)
@@ -222,7 +293,7 @@ def sync_skill_shared_references(*, check: bool) -> list[str]:
             if not target.is_file() or target.read_text() != expected:
                 changed.append(str(target.relative_to(ROOT)))
                 if not check:
-                    target_dir.mkdir(parents=True, exist_ok=True)
+                    target.parent.mkdir(parents=True, exist_ok=True)
                     target.write_text(expected)
     return changed
 
@@ -327,7 +398,9 @@ def derived_counts() -> dict[str, int]:
     ]
     return {
         "skills": len([d for d in SKILLS.iterdir() if d.is_dir() and (d / "SKILL.md").exists()]),
-        "references": len(list(REFERENCES.glob("*.md"))),
+        "references": len(
+            [p for p in REFERENCES.rglob("*.md") if "islands" not in p.parts]
+        ),
         "island_schemas": len(schemas),
         "active_islands": sum(
             not schema.get("deprecated", False) for schema in schemas

@@ -39,7 +39,7 @@ Need an image or video for a section?
 │  └─ Specialized illustration (custom style beyond built-in)
 │     └─ External MCP: OpenArt
 │
-└─ After sourcing → lexsis_asset_upload action import
+└─ After sourcing → lexsis_asset_import action import
 ```
 
 ---
@@ -51,11 +51,20 @@ Need an image or video for a section?
 | `lexsis_asset_library` → `search` | Search workspace assets | Free |
 | `lexsis_drafts` → `asset_generate` | Generate, composite, inpaint, or restyle | Credits |
 | `lexsis_assets` → `view` | Verify an asset | Free |
-| `lexsis_asset_upload` → `import` | Import URL, base64, attachments; with no source it opens the upload panel and the resulting asset id arrives in a user message | Free |
+| `lexsis_asset_import` → `import` | Import exactly one source: URL, image base64 plus MIME type, or conversation attachments; never opens UI | Free |
+| `lexsis_asset_upload` → `upload` | Open the local image/video upload panel; wait for the user's uploaded-asset message with the resulting asset id and URL | Free |
 
 Ask the user whether they want to pick from the library before searching; an empty `query` browses and opens the asset picker (`Design asset selection:` carries `asset_ids` and `selection_order`). Pass `workspace_id` explicitly when multiple workspaces
 are available and the selected `theme_id` whenever the discovered action
 schema supports it.
+
+For import, supply exactly one of `url`, image `data` + `mime_type`, or a
+non-empty `attachments` array with `attachment_id` per entry. Never call
+import without a source. For the upload UI, call `lexsis_asset_upload` with
+`action: "upload"` and only `workspace_id` and `theme_id` in `args`.
+Opening the panel does not import an asset. Wait for the user's uploaded-asset
+message; if inline UI is unavailable, ask for a URL or conversation attachment
+and use `lexsis_asset_import` with `action: "import"` instead.
 
 See `design-enrichment.md` for detailed prompt patterns, style selection guide, compositing recipes, and HTML placement patterns.
 
@@ -73,7 +82,7 @@ web_search_exa({ query: "skincare brand hero photography editorial style" })
 
 Use for: mood boards, competitor visual research, finding reference imagery to brief `lexsis_drafts` action `asset_generate` more precisely, sourcing real lifestyle photos.
 
-**Flow:** Exa search → find URL → `lexsis_asset_upload` action `import` → use
+**Flow:** Exa search → find URL → `lexsis_asset_import` action `import` → use
 the returned permanent URL.
 
 ### HiggsField / Runway / Kling — Video Generation
@@ -84,7 +93,7 @@ Use when: TikTok traffic source, fashion/luxury vertical, product demo needed, b
 1. Generate video via external MCP (short clip, 3-8 seconds)
 2. `lexsis_campaigns.frames` → pull best frame as thumbnail
 3. Use video URL in HeroMedia island or `<video>` tag
-4. Set click-to-play (NEVER autoplay — costs 7% CVR)
+4. Set click-to-play; a muted loop is allowed only as the plan's single motion moment (`references/assets/video-rules.md`)
 
 **Video placement patterns:**
 - Hero: click-to-play with compelling thumbnail image
@@ -108,7 +117,7 @@ All external assets MUST be persisted before use:
 
 ```
 1. Source asset via external MCP → get URL
-2. lexsis_asset_upload({
+2. lexsis_asset_import({
      action: "import",
      args: { url, purpose: "hero_bg", tags: ["lifestyle", "summer"], workspace_id, theme_id }
    })
@@ -162,7 +171,7 @@ This ensures: the asset is stored in the brand's library, available for reuse, a
 ```
 
 ### Anti-Patterns
-- NEVER autoplay video (-7% CVR)
+- NEVER autoplay video with sound; see `references/assets/video-rules.md` for the muted-loop exception
 - NEVER use video as only hero content (needs fallback image)
 - NEVER serve uncompressed video; use the imported CDN URL
 
@@ -199,6 +208,6 @@ only permanent verified URLs.
 1. `lexsis_asset_library` action `search` first
 2. `lexsis_workspace` action `credits` before expensive operations
 3. Prefer `quality: "medium"` — reserve `"high"` for hero only
-4. External MCP assets → `lexsis_asset_upload` action `import`
+4. External MCP assets → `lexsis_asset_import` action `import`
 5. The page background for sections that don't need imagery
 6. Reuse: one hero image can serve as dimmed background for 2-3 sections

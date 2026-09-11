@@ -72,6 +72,26 @@ Both files are **generated** from the canonical skills by `scripts/build-distrib
 - **12 focused storefront commands** — five reviewed-workflow commands and seven optional or fast-path operations
 - **2 agents** (cro-analyzer, page-builder) for Claude Code
 - Shared CRO, vertical, traffic-source, workflow, and island references under `skills/storefront-engine/references/`, including the house `design-rules.md` and `island-presets.md`
+- **Page-type contracts** (`references/page-types/`): 30 ecommerce page types
+  (ad landing, PDP, advertorial, listicle, quiz funnel, bundle, offer, sale,
+  gifting, launch, subscription, UGC, homepage, collection and more), each with
+  mandatory and forbidden sections, an above-the-fold recipe, proof density,
+  CTA and price rules, imagery jobs, a step-by-step `## Workflow` (context reads, then per section:
+  media, island, copy) and a machine-readable default checklist that
+  `plan_lint.py` reviews
+- **Proof, offer, asset, anti-pattern and copy rule corpora**
+  (`references/proof/`, `offers/`, `assets/`, `anti-patterns/`, `copy/`):
+  review sourcing with a zero-review playbook, press and badge verification,
+  UGC rights, compare-at legality by jurisdiction, urgency rules, campaign
+  calendar, funnel stages, an ALLOW / ASK / NEVER image-generation policy,
+  slot specs, a dark-pattern catalogue with regulator text, a lintable AI-slop
+  copy blacklist, copy frameworks and a message-match scorecard
+- **Workflows** (`references/workflows/`): the assets-first per-section loop
+  (catalog media, library by tag, merchant sources, generation, then tell the
+  merchant and offer upload or generation) and how to pick and configure
+  islands live through `lexsis_design.islands` and `island_schema`
+- **MCP playbooks** (`references/mcp-playbooks/`): the exact `router.action`
+  sequence per stage and per page type
 - A consumer-behavior CRO framework that turns shopper uncertainty, gallery
   gaps, compatibility, solution completion, trust, and mobile context into
   page-specific hypotheses instead of generic conversion modules

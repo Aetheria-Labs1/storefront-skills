@@ -33,5 +33,8 @@ jobs:
       - name: Validate island example contracts
         run: python3 scripts/validate-island-contracts.py
 
+      - name: Validate page-type checklists
+        run: python3 scripts/validate-page-types.py
+
       - name: Test storefront skill workflows
         run: python3 -m unittest discover -s tests -p 'test_*.py'

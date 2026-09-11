@@ -27,7 +27,7 @@ Rules for applying it:
 
 ## 2. Design rules for generated storefront pages
 
-Format per rule: imperative sentence; rationale; a check the agent can run. Checks are written for macOS (BSD grep has no `-P`; use `perl -CSD`). `$W` is the page workspace, e.g. `work/visual-pages/<handle>`. Browser checks run in the hosted draft via the browser tool's evaluate call.
+Format per rule: imperative sentence; rationale; a check the agent can run. Checks are written for macOS (BSD grep has no `-P`; use `perl -CSD`). `$W` is the page workspace, e.g. `work/campaigns/<campaign-slug>/pages/<handle>`. Browser checks run in the hosted draft via the browser tool's evaluate call.
 
 ### 2.1 NEVER
 
@@ -83,6 +83,7 @@ Rationale: gradient + hover-lift is the SaaS-card kit that reads as generated re
 Check:
 ```bash
 grep -nE 'gradient\(|bg-gradient|shimmer|animate-pulse|pulseRing|float-|hover:scale|hover:-translate|scale\(1\.[0-9]|box-shadow:\s*0 0 ' $W/lexsis-source.html $W/page-theme.css | wc -l   # 0, or only the plan-named overlay
+grep -nE 'box-shadow:[^;}]*(--lx-accent|color-mix\()' $W/lexsis-source.html $W/page-theme.css | wc -l   # 0; a shadow tinted with the accent is a glow whatever its offsets
 ```
 
 N8. Never wrap plain text in a card. A card (`--lx-bg-surface`, border, or shadow with radius) surrounds a distinct object only: a product, a proof artefact with an image, a table, a form, a quoted review. Paragraphs, lists and FAQs sit on the page background.
@@ -198,4 +199,4 @@ Check: `grep -cE '>(Shop Now|Get Started|Learn More|Buy Now)\s*(→)?<' $W/lexsi
 
 Cream page + high-contrast serif + terracotta accent as the only idea; identical rounded cards with one radius and one grey shadow; tracked-out ALL-CAPS eyebrow above every heading; meta strings joined with middle dots; `WORD — fragment` labels; `→` appended to links and buttons; icon in a rounded tile above every heading; discount pills and "MOST POPULAR" ribbons; gradient washes; fade-up on every section; five gold stars with a round avatar and an italic quote; a monospace face for small labels; near-black `#0B0B0B` standing in for black.
 
-Source audit: `work/research/lexsis-design-rules.md` (2026-09-05).
+Source audit: internal design-rules research (2026-09-05).

@@ -26,7 +26,12 @@ independently invokable; explicit skips are recorded in the page manifest.
 - Skill frontmatter must satisfy the Agent Skills spec: `name` equals the
   directory name (≤64 chars, kebab-case); `description` ≤500 chars.
 - Shared reference docs live in `skills/storefront-engine/references/`; the
-  `storefront-engine` directory is not a public skill. Island schemas live in
+  `storefront-engine` directory is not a public skill. The rule corpora under
+  `references/page-types/` (one contract per page type with a JSON checklist),
+  `proof/`, `offers/`, `assets/`, `anti-patterns/`, `copy/` and
+  `mcp-playbooks/` are loaded by `plan-page` and `design-page` as workflows (each type file's
+  `## Workflow` plus the universal `workflows/` sub-procedures); `plan_lint.py`
+  reports deviations and `design_lint.py` checks house, proof and offer rules. Island schemas live in
   `references/islands/<name>/schema.json`. Do not invent island names or props.
 - Public skills installed individually must remain self-contained.
   `scripts/build-distributions.py` materializes the shared references declared
