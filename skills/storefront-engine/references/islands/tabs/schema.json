@@ -6,9 +6,9 @@
   "deprecated": true,
   "replacement": "CSS-only tabs with radio inputs or <details>",
   "deprecation_reason": "Generic tabs have no Shopify integration and can be authored with accessible HTML and CSS.",
-  "usage_hint": "DEPRECATED — use CSS-only tabs. Generic tabbed content container with three style variants.",
-  "when_to_use": "Legacy only. For new pages, use CSS radio-input tabs or grouped <details> elements.",
-  "when_not_to_use": "For navigation use Navbar. For vertical accordions use FAQ or IngredientExplorer. When content is short enough to stack without tabs.",
+  "usage_hint": "Compatibility contract for existing pages. Do not author this retired island in new source.",
+  "when_to_use": "Inspect an existing page only; use the replacement in workflows/island-selection-workflow.md for new source.",
+  "when_not_to_use": "Do not use for new page authoring.",
   "defaultHydrate": "immediate",
   "combine_with": [],
   "anti_patterns": [],
@@ -72,8 +72,6 @@
     ],
     "headless": {
       "supported": false
-    },
-    "example": "<lx-island name=\"Tabs\">\n  <script type=\"application/json\">\n{\n  \"tabs\": [\n    {\n      \"label\": \"example-label\",\n      \"content\": \"example-content\"\n    }\n  ]\n}\n  </script>\n</lx-island>",
-    "examples": []
+    }
   }
 }

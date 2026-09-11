@@ -93,166 +93,39 @@ teardowns in internal research audit (2026-09-10).
 
 ## Workflow
 
-Assets first: the routine, the delivery contents and the portal are shown
-before they are described. A section that would end up as a colour band, an
-emoji row, icon tiles or a wall of text is rebuilt around imagery or, on the
-merchant's call, merged or skipped. Per-slot sourcing:
-`references/workflows/section-asset-workflow.md`; island choice:
-`references/workflows/island-selection-workflow.md`. Missing media is never
-dropped silently: every Media line ends by telling the merchant what is
-missing (job, aspect, count), offering upload via `lexsis_asset_upload.upload`
-or MCP generation when the purpose is feasible under
-`references/assets/generation-policy.md`, and skipping or merging the section
-only if the merchant chooses. In fast-draft the agent proceeds with the closest
-existing asset or leaves the slot `planned`, and lists every missing asset in
-the plan and the draft summary.
+Apply `references/workflows/_how-to-read.md` to these type-specific
+decisions. It links the shared asset/fallback, fit, live-island and
+copy procedures; this table supplies their inputs, not another policy.
 
 ### Context reads
 
-1. `lexsis_catalog.get`: selling plans (ids, cadence, price or discount per
-   plan), the one-time price, `media[]` mapped to jobs per
-   `references/assets/image-jobs-by-page-type.md` (identity, included-items
-   for one delivery and any welcome kit, context in the routine, in-use,
-   packaging, label), inventory, servings on the label for a per-day line
-   (`references/offers/price-presentation.md` PP9).
-2. `lexsis_catalog.reviews_status`; `lexsis_catalog.reviews` with
-   `product_id` (band, newest date); `lexsis_catalog.reviews_search` with
-   `query` "month", "months", "year", "since", "still" for tenure quotes
-   (`pending` until confirmed, `references/proof/reviews-sourcing.md` RS16);
-   `review_collections` with `collection_status: "active"`.
-3. Offer ledger `subscribe-save` row and `policy-fact` rows
-   (`references/offers/offer-types.md` subscribe-save, first-order,
-   price-lock): renewal price, cadence, first charge date, renewal notice,
-   skip, pause and cancel path with the exact clicks; the merchant's
-   confirmation that one-time stays the default (or that subscription is the
-   primary offer, recorded).
+1. `lexsis_catalog.get`: selling plans (ids, cadence, price or discount per plan), the one-time price, `media[]` mapped to jobs per `references/assets/image-jobs-by-page-type.md` (identity, included-items for one delivery and any welcome kit, context in the routine, in-use, packaging, label), inventory, servings on the label for a per-day line (`references/offers/price-presentation.md` PP9).
+2. `lexsis_catalog.reviews_status`; `lexsis_catalog.reviews` with `product_id` (band, newest date); `lexsis_catalog.reviews_search` with `query` "month", "months", "year", "since", "still" for tenure quotes (`pending` until confirmed, `references/proof/reviews-sourcing.md` RS16); `review_collections` with `collection_status: "active"`.
+3. Offer ledger `subscribe-save` row and `policy-fact` rows (`references/offers/offer-types.md` subscribe-save, first-order, price-lock): renewal price, cadence, first charge date, renewal notice, skip, pause and cancel path with the exact clicks; the merchant's confirmation that one-time stays the default (or that subscription is the primary offer, recorded).
 4. `lexsis_brand.context`, `lexsis_brand.brand_kit`, `lexsis_brand.navigation`.
-5. `lexsis_asset_library.search` with `theme_id`, `mode: "tags"` for
-   `lifestyle`, `flat-lay`, `product-shot`, `social-proof`; then semantic
-   "<product> morning routine", "unboxing". Sequence and checks:
-   `references/assets/asset-sourcing-sequence.md`.
-6. `lexsis_asset_import.import` for real subscriber-portal screenshots from the
-   merchant (skip, swap, pause, cancel), cropped only, labelled as
-   screenshots; no mock-ups.
-7. `lexsis_cart.get`: how the selling plan is carried into the cart; cart v2.
-   `lexsis_design.islands`, then `lexsis_design.island_schema` for each island
-   named below. `lexsis_workspace.credits` only if a `product_composite` for
-   the routine context is planned.
+5. `lexsis_asset_library.search` with `theme_id`, `mode: "tags"` for `lifestyle`, `flat-lay`, `product-shot`, `social-proof`; then semantic "<product> morning routine", "unboxing". Sequence and checks: `references/assets/asset-sourcing-sequence.md`.
+6. `lexsis_asset_import.import` for real subscriber-portal screenshots from the merchant (skip, swap, pause, cancel), cropped only, labelled as screenshots; no mock-ups.
+7. `lexsis_cart.get`: how the selling plan is carried into the cart; cart v2. `lexsis_design.islands`, then `lexsis_design.island_schema` for each island named below. `lexsis_workspace.credits` only if a `product_composite` for the routine context is planned.
 
 ### Section by section
 
-No asset is used sight unseen: open every candidate with `lexsis_assets.view`
-and run the section 1b fit review in `references/workflows/section-asset-workflow.md`
-before use (subject does the job, crops to the slot without losing the product,
-quiet area for the copy, lighting and styling match neighbouring slots, palette,
-no baked-in text or watermark); view a section's or gallery's candidates
-together so the set reads as one shoot, and view a generated asset the same way
-after it returns.
-
-**`announcement`**
-- Purpose: one verified first-order term or free-shipping fact.
-- Media: none; text; never a countdown.
-- Island: SiteHeader announcement strip or AnnouncementBar, one message; resolve from `lexsis_design.island_schema`; preset `announcementbar/static-dark`. Omit without a ledger row.
-- Copy: under 60 characters; the renewal price is never hidden behind the intro line (`references/anti-patterns/copy-anti-patterns.md`).
-- Decide with: offer ledger row; `lexsis_cart.get` threshold.
-
-**`header`**
-- Purpose: minimal chrome; full nav only for a permanent store page.
-- Media: brand logo or wordmark. View every candidate with `lexsis_assets.view` and run the section fit review (section 1b of `references/workflows/section-asset-workflow.md`) before use.
-- Island: SiteHeader minimal with the CTA anchoring to the plan selector, or Navbar for the store-page override; resolve from `lexsis_design.island_schema`; preset `siteheader/minimal-light` or `navbar/sticky-light`.
-- Copy: store names.
-- Decide with: `lexsis_brand.navigation`.
-
-**`hero`**
-- Purpose: outcome headline, the product in its routine, review summary, one cadence sentence.
-- Media: yes, context (`product-in-context`): catalog media showing the routine, library `lifestyle`, merchant upload, then a `product_composite` (ALLOW) of the real cut-out on a plain surface, captioned when the surface is photoreal; `product_lifestyle` is ASK. Alternate `packshot` with the included items. Never a grid of plans, never a generated person. Missing: tell the merchant (context, landscape and portrait); offer upload or the composite; the packshot ships meanwhile. View the candidates together with `lexsis_assets.view` and run the section fit review so the set reads as one shoot, not a pile of found images.
-- Island: none (one static image with a portrait mobile crop); ProductHero in a split layout when three or more real images exist, no autoplay (N10); resolve from `lexsis_design.island_schema`; preset `producthero/split-rail-light`.
-- Copy: outcome plus cadence ("Your daily probiotic, delivered every 30 days"), 10 words; cadence sentence 14 words; review summary only at 5 or more reviews.
-- Decide with: context image found in steps 1 and 5; review band.
-
-**`plan-selector`**
-- Purpose: one-time and subscribe side by side with the saving, cadence, renewal price and cancel path in the same block; nothing pre-selected.
-- Media: none new; the hero image sits beside it in a split layout. The block is a form.
-- Island: one product, one-time vs subscribe: SubscriptionToggle bound to the selling plans, one-time default, paired with a BuyBox that listens to it. Two or three plans (prepay tiers) or one-time vs subscribe vs bundle: PlanSelector in card or stacked form bound to the selling plan ids, no default plan or the one-time plan, no badge (N9), paired with the listening BuyBox. A subscription default only with the merchant's recorded confirmation and both prices visible. Decision inputs: selling plan count and structure, the confirmation in step 3. Resolve variant and props from `lexsis_design.island_schema`.
-- Copy: 14 words per microcopy line: recurring amount, cadence, first charge date, "skip, pause or cancel anytime in your account"; per-delivery before totals; per-day line only when servings are on the label (PP9).
-- Decide with: step 1 selling plans; step 3 confirmation.
-
-**`how-it-works`**
-- Purpose: choose, we deliver, skip or pause or cancel, within one scroll of the selector.
-- Media: yes, sequence: three real frames (the product, the delivery packaging, the real portal screenshot) from catalog, merchant upload, library; an inline SVG flow authored in HTML when frames are missing (allowed for `sequence` in `image-jobs-by-page-type.md` section 7). Never generated frames or a mock portal. Missing: tell the merchant (packaging shot, portal screenshot); offer upload; the SVG flow ships meanwhile. View the candidates together with `lexsis_assets.view` and run the section fit review so the set reads as one shoot, not a pile of found images. View the frames in order so they read as one flow.
-- Island: none; optional click-to-play portal walkthrough per `references/assets/video-rules.md`.
-- Copy: 25 words per step; first charge date, renewal notice, cancel path each named once.
-- Decide with: packaging and portal assets from steps 5 and 6.
-
-**`savings-math`**
-- Purpose: per-delivery saving, first-order terms, prepay saving.
-- Media: none; a price table.
-- Island: none; the struck one-time price carries `data-source="compare_at_price"` or the ledger row id.
-- Copy: "first box 20% off, then $45 every 4 weeks"; per-delivery and per-month before any lump sum (PP9, PP10).
-- Decide with: offer ledger rows.
-
-**`benefits`**
-- Purpose: subscriber-only value shown as items with value (welcome kit, free shipping, early access).
-- Media: yes, included-items: flat lay of one delivery plus the welcome kit from catalog media, library `flat-lay`, or merchant upload; never generated. Missing: tell the merchant (included-items, landscape, one shot); offer upload; fold the facts into the plan-selector microcopy only on the merchant's call. View every candidate with `lexsis_assets.view` and run the section fit review before use.
-- Island: none.
-- Copy: item name plus value ("glass jar and travel vial, $18 value"); 18 words per item.
-- Decide with: flat lay found; kit item prices from the catalog.
-
-**`features`**
-- Purpose: flexibility proof: real portal screens for skip, swap, pause and cancel.
-- Media: yes, real screenshots imported in step 6, cropped only, labelled "screenshot of your account" (`policy-fact` rows). Missing: tell the merchant which four screens are needed; offer import; the cancel path stays in text meanwhile; skip only on the merchant's call. View the candidates together with `lexsis_assets.view` and run the section fit review so the set reads as one shoot, not a pile of found images.
-- Island: none.
-- Copy: one label per screen (6 words).
-- Decide with: screenshots supplied.
-
-**`comparison`**
-- Purpose: two or more plans, or one-time vs subscribe vs bundle, one "best for" line per column.
-- Media: optional identity image per column when plans differ physically; otherwise a plain HTML table. View the candidates together with `lexsis_assets.view` and run the section fit review so the set reads as one shoot, not a pile of found images.
-- Island: none; PlanSelector already renders the tiers, so this is the attribute table beneath it.
-- Copy: "best for" 12 words; per-delivery and per-month figures in every column.
-- Decide with: plan count from step 1.
-
-**`testimonial-spotlight`** or **`reviews`**
-- Purpose: tenure proof: quotes that say month fourteen.
-- Media: review photos from the records; avatars real or CSS initials. View every candidate with `lexsis_assets.view` and run the section fit review before use.
-- Island: by band per `references/proof/reviews-sourcing.md`: B1 static verbatim dated cards; B2 ReviewCarousel one card at a time, autoplay off (N10), bound to the product id or an active collection, tenure candidates once confirmed; B3 or more ReviewList sorted by recent with filters. Resolve from `lexsis_design.island_schema`; preset `reviewcarousel/single-quiet`.
-- Copy: quotes verbatim, 60 words, dated, tenure kept in the text.
-- Decide with: band and confirmed `reviews_search` candidates.
-
-**`guarantee`**
-- Purpose: money-back terms plus "cancel in two clicks" with the exact path.
-- Media: none.
-- Island: none.
-- Copy: two sentences; the minimum term stated if one exists.
-- Decide with: `policy-fact` rows.
-
-**`faq`**
-- Purpose: "Do I have to subscribe?" first, then billing date, changing frequency, cancelling, too much product, renewal price.
-- Media: none.
-- Island: none; native `<details>` (the FAQ island is deprecated).
-- Copy: answers 60 words; first sentence "Yes" or "No".
-- Decide with: terms from step 3.
-
-**`sticky-cta`**
-- Purpose: plan name plus price per delivery plus "Start my subscription".
-- Media: product thumbnail or a text-only bar. View every candidate with `lexsis_assets.view` and run the section fit review before use.
-- Island: StickyBar in product mode appearing after the selector; the schema has no plan sync, so it is used only when one plan (or the one-time price) is the label, otherwise omitted; resolve from `lexsis_design.island_schema`; preset `stickybar/product-light`.
-- Copy: the label names the plan and per-delivery price.
-- Decide with: plan count; page length past about three mobile screens.
-
-**`closing-cta`**
-- Purpose: restate plan, price per delivery, cancel path.
-- Media: hero context image reused small; no new asset.
-- Island: none; anchor to the plan selector.
-- Copy: price and cadence verbatim from the selector; cancel path one line.
-- Decide with: mirrors the plan selector.
-
-**`legal`** and **`footer`**
-- Purpose: full subscription terms link; footer chrome.
-- Media: brand logo. View every candidate with `lexsis_assets.view` and run the section fit review before use.
-- Island: Footer; the terms link as a column item; preset `footer/simple-light` or `footer/columns-dark`.
-- Copy: "Subscription terms"; the material terms are already beside the selector (ROSCA).
-- Decide with: terms URL confirmed.
+| Section | Purpose | Media job and source | Interactive decision | Copy constraints | Decision evidence |
+|---|---|---|---|---|---|
+| `announcement` | one verified first-order term or free-shipping fact. | none; text; never a countdown. | SiteHeader announcement strip or AnnouncementBar, one message. Omit without a ledger row. | under 60 characters; the renewal price is never hidden behind the intro line (`references/anti-patterns/copy-anti-patterns.md`). | offer ledger row; `lexsis_cart.get` threshold. |
+| `header` | minimal chrome; full nav only for a permanent store page. | brand logo or wordmark. | SiteHeader minimal with the CTA anchoring to the plan selector, or Navbar for the store-page override. | store names. | `lexsis_brand.navigation`. |
+| `hero` | outcome headline, the product in its routine, review summary, one cadence sentence. | yes, context (`product-in-context`): catalog media showing the routine, library `lifestyle`, merchant upload, then a `product_composite` of the real cut-out on a plain surface, captioned when the surface is photoreal; `product_lifestyle` is ASK. Alternate `packshot` with the included items. Never a grid of plans, never a generated person. Missing media: (context, landscape and portrait); alternative: the composite; the packshot ships meanwhile. | none (one static image with a portrait mobile crop); ProductHero in a split layout when three or more real images exist, no autoplay (N10). | outcome plus cadence ("Your daily probiotic, delivered every 30 days"), 10 words; cadence sentence 14 words; review summary only at 5 or more reviews. | context image found in steps 1 and 5; review band. |
+| `plan-selector` | one-time and subscribe side by side with the saving, cadence, renewal price and cancel path in the same block; nothing pre-selected. | none new; the hero image sits beside it in a split layout. The block is a form. | one product, one-time vs subscribe: SubscriptionToggle bound to the selling plans, one-time default, paired with a BuyBox that listens to it. Two or three plans (prepay tiers) or one-time vs subscribe vs bundle: PlanSelector in card or stacked form bound to the selling plan ids, no default plan or the one-time plan, no badge (N9), paired with the listening BuyBox. A subscription default only with the merchant's recorded confirmation and both prices visible. Decision inputs: selling plan count and structure, the confirmation in step 3. | 14 words per microcopy line: recurring amount, cadence, first charge date, "skip, pause or cancel anytime in your account"; per-delivery before totals; per-day line only when servings are on the label (PP9). | step 1 selling plans; step 3 confirmation. |
+| `how-it-works` | choose, we deliver, skip or pause or cancel, within one scroll of the selector. | yes, sequence: three real frames (the product, the delivery packaging, the real portal screenshot) from catalog, merchant upload, library; an inline SVG flow authored in HTML when frames are missing (allowed for `sequence` in `image-jobs-by-page-type.md` section 7). Never generated frames or a mock portal. Missing media: (packaging shot, portal screenshot); the SVG flow ships meanwhile. View the frames in order so they read as one flow. | none; optional click-to-play portal walkthrough per `references/assets/video-rules.md`. | 25 words per step; first charge date, renewal notice, cancel path each named once. | packaging and portal assets from steps 5 and 6. |
+| `savings-math` | per-delivery saving, first-order terms, prepay saving. | none; a price table. | none; the struck one-time price carries `data-source="compare_at_price"` or the ledger row id. | "first box 20% off, then $45 every 4 weeks"; per-delivery and per-month before any lump sum (PP9, PP10). | offer ledger rows. |
+| `benefits` | subscriber-only value shown as items with value (welcome kit, free shipping, early access). | yes, included-items: flat lay of one delivery plus the welcome kit from catalog media, library `flat-lay`, or merchant upload; never generated. Missing media: (included-items, landscape, one shot); fold the facts into the plan-selector microcopy as the agreed alternative. | none. | item name plus value ("glass jar and travel vial, $18 value"); 18 words per item. | flat lay found; kit item prices from the catalog. |
+| `features` | flexibility proof: real portal screens for skip, swap, pause and cancel. | yes, real screenshots imported in step 6, cropped only, labelled "screenshot of your account" (`policy-fact` rows). Missing: which four screens are needed; offer import; the cancel path stays in text meanwhile; | none. | one label per screen (6 words). | screenshots supplied. |
+| `comparison` | two or more plans, or one-time vs subscribe vs bundle, one "best for" line per column. | optional identity image per column when plans differ physically; otherwise a plain HTML table. | none; PlanSelector already renders the tiers, so this is the attribute table beneath it. | "best for" 12 words; per-delivery and per-month figures in every column. | plan count from step 1. |
+| `testimonial-spotlight` or `reviews` | tenure proof: quotes that say month fourteen. | review photos from the records; avatars real or CSS initials. | by band per `references/proof/reviews-sourcing.md`: B1 static verbatim dated cards; B2 ReviewCarousel one card at a time, autoplay off (N10), bound to the product id or an active collection, tenure candidates once confirmed; B3 or more ReviewList sorted by recent with filters. | quotes verbatim, 60 words, dated, tenure kept in the text. | band and confirmed `reviews_search` candidates. |
+| `guarantee` | money-back terms plus "cancel in two clicks" with the exact path. | none. | none. | two sentences; the minimum term stated if one exists. | `policy-fact` rows. |
+| `faq` | "Do I have to subscribe?" first, then billing date, changing frequency, cancelling, too much product, renewal price. | none. | none; native `<details>`. | answers 60 words; first sentence "Yes" or "No". | terms from step 3. |
+| `sticky-cta` | plan name plus price per delivery plus "Start my subscription". | product thumbnail or a text-only bar. | StickyBar in product mode appearing after the selector; resolve selling-plan and variant linkage through the live schema | the label names the plan and per-delivery price. | plan count; page length past about three mobile screens. |
+| `closing-cta` | restate plan, price per delivery, cancel path. | hero context image reused small; no new asset. | none; anchor to the plan selector. | price and cadence verbatim from the selector; cancel path one line. | mirrors the plan selector. |
+| `legal` and `footer` | full subscription terms link; footer chrome. | brand logo. | Footer; the terms link as a column item. | "Subscription terms"; the material terms are already beside the selector (ROSCA). | terms URL confirmed. |
 
 ### Asset budget
 
@@ -262,7 +135,7 @@ after it returns.
 | asset library | `lifestyle` routine scenes, `flat-lay` deliveries, `social-proof` with rights | portal screenshots (only present when the merchant imported them), tenure UGC | ask the merchant to upload; label imports as screenshots |
 | generation | backdrops, textures, a single-product composite only | the delivery contents, the portal, people, results, logos, text | never |
 
-Minimal assets (one identity image): packshot hero with the context slot `planned`, the plan selector, an SVG how-it-works flow, savings math, tenure quotes or static cards by band, guarantee, native FAQ; benefits and features wait on the merchant, and every missing asset is listed in the plan and draft summary. Generated assets: zero or one composite for the hero context, never more than the house cap of four. Every asset, generated ones included, is opened with `lexsis_assets.view` and passes the fit review in `references/workflows/section-asset-workflow.md` section 1b before it ships; a paid render earns no exemption.
+Minimal assets (one identity image): packshot hero with the context slot `planned`, the plan selector, an SVG how-it-works flow, savings math, tenure quotes or static cards by band, guarantee, native FAQ; benefits and features wait on the merchant, and every missing asset is listed in the plan and draft summary. Generated assets: zero or one composite for the hero context, never more than the house cap of four.
 
 ## Above the fold (390px)
 

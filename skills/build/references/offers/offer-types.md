@@ -1,6 +1,6 @@
 # Offer types
 
-The canonical offer catalogue. `page-manifest.json` `offer.type` takes exactly
+The canonical offer catalogue. `page record` `offer.type` takes exactly
 one id from this file; page-type checklists list the same ids under
 `offer_compat`. Every offer renders only from a verified row in the plan's
 `## Offer ledger` (`references/offers/offer-ledger.md`). Price display rules
@@ -218,25 +218,21 @@ Section ids come from `references/page-types/_checklist-format.md`.
 ## Cross-cutting rules
 
 OF1. One offer per page. `offer.type` holds one id; a second offer needs its own ledger block and a reason. Exempt page types: `sale-clearance-flash`, `seasonal-gifting` (offer-ledger rule 6).
-Check: `grep -c '<!-- section: offer' $W/lexsis-source.html` is 0 or 1 unless `page.pageType` is exempt.
 
 OF2. Rule of 100. Always show the currency saving (offer-ledger rule 2). Under $100 or ₹8,000 the percent may lead ("32% off, save $28"); above it currency leads and percent is optional ("Save $128 (18%)"); never a percent without the currency amount on high-ticket goods. RESEARCH: Berger; JBR 2015 three-study replication. The ₹8,000 crossover is HEURISTIC.
 Check: every `savings-math` line contains a currency figure; the leading figure matches the side of the line the ledger price falls on.
 
 OF3. Luxury never shows percent, a struck price, a timer, "sale" or "clearance". Allowed ids: `none`, `gwp`, `free-shipping` (phrased "complimentary shipping", no threshold), `limited-edition`, `pre-order-price`, `price-lock`, `loyalty`, `gift-card`. RESEARCH and OPERATOR: Kapferer and Bastien anti-laws; Langer on price volatility and equity decay.
-Check: when the plan loads `references/vertical-luxury.md`, `offer.type` is in the allowed list and `grep -ciE 'sale|% off|save [$₹£€]' $W/lexsis-source.html` is 0.
 
 OF4. Bundle, tiered and BOGO pages show their arithmetic. `bundle`, `bundle-decoy`, `tiered-volume`, `bogo` require a `savings-math` or `quantity-breaks` section whose figures are ledger rows.
-Check: `offer.type` in that set implies `grep -cE '<!-- section: (savings-math|quantity-breaks)' $W/lexsis-source.html` is at least 1.
 
 OF5. "Free", "gift", "bonus" and "complimentary" appear only when the buyer pays nothing extra and the conditions sit in the same section (LAW, FTC 16 CFR 251.1; UK banned practice; EU UCPD Annex I.20).
 Check: every section containing `\bfree\b` also contains the threshold, shipping cost or eligibility text; no `*` after "free".
 
 OF6. No pre-ticked add-on, subscription, gift wrap, insurance, donation or upsell (LAW, India CCPA basket sneaking; ROSCA; EU CRD Art 22). Detail in `references/anti-patterns/dark-patterns.md`.
-Check: `grep -cE '<input[^>]*checked' $W/lexsis-source.html` is 0 outside variant pickers.
 
 OF7. The offer moves down the page as awareness falls. On `tof` page types the offer section index is greater than the `mechanism`, `how-it-works` or `solution` index; on `bof` types the offer is in the hero (`funnel-stages.md` FS4).
-Check: compare section order in `page-manifest.json` against `page.funnelStage`.
+Check: compare section order in `page record` against `page.funnelStage`.
 
 OF8. Retargeting never shows a deeper discount than the visitor already saw, and never the first-order code (OPERATOR: trains abandonment).
 Check: `page.pageType` is `retargeting-warm` implies `offer.type` is not `first-order` and the ledger notes the prior offer depth.
@@ -245,7 +241,7 @@ OF9. Free-offer frequency. A size or SKU carries a Free or BOGO offer no more th
 Check: ledger row for `bogo` or `gwp` records the months this year the offer has run on that SKU.
 
 OF10. Compare-at is struck-through text only; no pills, ribbons or caps (design-rules N9).
-Check: design-rules N9 grep returns 0.
+Check: the hosted offer presentation passes N9.
 
 OF11. Promise only what the discount configuration can do. Native BXGY does not auto-add the get item; a GWP auto-add needs a Discount Function; tiered pricing needs an app or Function; shipping discounts never combine with each other; at most 25 active automatic discounts (Shopify Help).
 Check: ledger row O9 names the mechanic (code, automatic, Function, app) and the page instruction matches it.
@@ -254,7 +250,7 @@ OF12. Terms travel with the offer: exclusions, stacking, regions, code, minimum 
 Check: the `legal` or `disclaimer` text for the offer is in the same or the next section as the first `offer`, `pricing` or `buy-box`.
 
 OF13. Unknown market means the strictest rule: EU 30-day prior price, UK duration and volume, India MRP display and single-figure total.
-Check: `page-manifest.json` has a market list, or the ledger notes "strictest applied".
+Check: `page record` has a market list, or the ledger notes "strictest applied".
 
 OF14. Never render an offer the merchant has not confirmed on the offer-ledger "Claims to confirm" list. Missing timing, compare-at basis or stock answers mean the price renders alone: no strike, no urgency, no scarcity.
 Check: every offer-ledger row that the page uses has status `verified`.

@@ -35,14 +35,14 @@ failure; the real domain call determines whether the operation is available.
 
 ```text
 work/storefront/setup/
-├── setup.json
-└── workspaces/
-    └── <workspace-id>/
-        └── stores/
-            └── <store-id>/
-                ├── brand-design.md
-                └── themes/
-                    └── <theme-id>.css
++-- setup.json
++-- workspaces/
+    +-- <workspace-id>/
+        +-- stores/
+            +-- <store-id>/
+                +-- brand-design.md
+                +-- themes/
+                    +-- <theme-id>.css
 ```
 
 `setup.json` indexes every saved workspace, store and theme, and names one
@@ -106,7 +106,7 @@ as `workspaceId`, `storeId` and `themeId`, and it never silently changes.
   immediately.
 - Switching mid-campaign is a new binding, not an edit: a page already bound
   to one store keeps that binding, and a page for the other store belongs to
-  its own campaign folder or its own page workspace. Never combine design
+  its own campaign/page decision record. Never combine design
   files or theme CSS from two themes, stores or workspaces on one page.
 - `/setup` can be re-run to add a workspace, store or theme, or to change a
   default, without touching what is already saved.

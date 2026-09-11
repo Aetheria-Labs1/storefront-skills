@@ -126,7 +126,7 @@ module when rights exist; they do not justify creating content to fill one.
 | P5 | ugc-video | in-use proof | creator @<handle> | asset id <id>; post URL; consent email 2026-08-21 (website + Instagram, 12 months); gifted; audio replaced | merchant consent record | ugc-grid | verified |
 | P14 | ugc-photo | "fits true to size" | customer review 9a1c<id> (Judge.me) | media URL from `lexsis_catalog.reviews` has_media; caption verbatim; "Size M" | API 2026-09-10; app terms cover widget display | reviews | verified |
 | P15 | community-screenshot | "arrived in two days" | WhatsApp, 2026-03-04 | sender consent 2026-03-06 for website, 12 months; phone and surname redacted | consent record | shipping-returns | verified |
-| P16 | creator-video | hero | creator @<handle> | consent covers Instagram only | none for website | — | dropped (scope) |
+| P16 | creator-video | hero | creator @<handle> | consent covers Instagram only | none for website |  -  | dropped (scope) |
 ```
 
 ## Rules
@@ -135,29 +135,17 @@ UG1. Never render UGC without a rights record naming the item, the channels gran
 Check: every `ugc-*`, `creator-video` and `community-screenshot` row cites a consent record id or date; no row reads "tagged us" or "public post" as its evidence.
 
 UG2. A tag, hashtag, mention or purchase is not a licence. LAW Instagram terms; Reddit User Agreement; YouTube terms.
-Check: `grep -ciE 'tagged|hashtag|public post' page-plan.md` under the ledger is 0 in the Verified column.
 
 UG3. Paid or gifted content carries the jurisdiction's label in frame for the brand segment and as visible text beside the player; free product is a material connection. LAW FTC 16 CFR 255.5; ASCI Influencer Guidelines; ASA and CMA.
 Check: each `creator-video` row with paid or gifted flag renders "Paid partnership", "Ad", "Sponsored" or "Gifted" text inside its section.
-```bash
-perl -0ne 'while(/<!-- section: (ugc-grid|video-testimonials)[a-z-]* -->(.*?)(?=<!-- section: |\z)/gs){my $b=$2; print "unlabelled\n" if $b=~/creator/i && $b!~/(Paid partnership|Sponsored|Gifted|\bAd\b)/}' $W/lexsis-source.html   # no output when a paid or gifted creator item exists
-```
 
 UG4. Video renders at native 9:16 or 1:1, click to play or muted autoplay, captions present, poster from the video. LAW WCAG 2.1 SC 1.4.2; HEURISTIC display table.
-Check:
-```bash
-perl -ne 'print if /<video[^>]*autoplay(?![^>]*muted)/' $W/lexsis-source.html | wc -l   # 0
-grep -c '<track[^>]*kind="captions"' $W/lexsis-source.html   # >= number of <video> with speech
-```
 
 UG5. Every item carries a source label and, where consented, handle, date and the product, duration and frequency line; creator content is never labelled as a customer review. LAW FTC 465 (a creator is not a bona fide customer unless they bought it); HEURISTIC teardown pattern 20.
 Check: each item in a `ugc-grid` contains a `<figcaption>` or label element with one of "Customer photo", "Customer video", "Creator video", "via <channel>".
 
 UG6. Never stock people, generated people, staff or relatives as customers, or reused marketplace photos. LAW FTC 465.2 and 465.5; CAP 3.45; Amazon Conditions of Use.
-Check: every `ugc-*` asset in the manifest has provider = import or review-app media, never generated; no asset filename or alt contains "stock", "unsplash", "pexels", "shutterstock".
-```bash
-grep -ciE 'unsplash|pexels|shutterstock|istock|getty|generated' $W/lexsis-source.html   # 0 inside ugc sections
-```
+Check: every `ugc-*` asset in the page record has provider = import or review-app media, never generated; no asset filename or alt contains "stock", "unsplash", "pexels", "shutterstock".
 
 UG7. Strip or replace platform-licensed music before hosting a clip; record the audio status in the row. LAW platform music licences do not extend to brand sites.
 Check: each `ugc-video` and `creator-video` row states "audio replaced", "audio original (creator-owned)" or "muted".
@@ -166,10 +154,6 @@ UG8. Screenshot testimonials render only with the sender's written consent, phon
 Check: `community-screenshot` assets are imports with a consent record; no CSS or component that draws a chat bubble around typed text.
 
 UG9. Quantity stays inside the page-type table; 3 to 6 on a landing page, 6 to 12 on a PDP or UGC page; never a wall of 30. HEURISTIC; consistent with the type checklist's proof module ceilings.
-Check:
-```bash
-perl -0ne 'while(/<!-- section: ugc-grid[a-z-]* -->(.*?)(?=<!-- section: |\z)/gs){my $b=$1; my $n=()=$b=~/<(figure|video|img)/g; print "items=$n\n"}' $W/lexsis-source.html   # within the table's range for the page type
-```
 
 UG10. Withdraw within 30 days of a creator's request across every surface, including cached renders; record the removal in the ledger row as `dropped (withdrawn <date>)`. LAW GDPR Art. 17; CCPA.
 Check: the plan's ledger row and the asset library record agree.
@@ -178,7 +162,6 @@ UG11. UGC sits beside the claim it proves, never above the H1, never mixed into 
 Check: DOM order places `ugc-grid` after `hero`; no `hover:scale` inside it.
 
 UG12. Lift statistics from the evidence table never appear on a page. HEURISTIC; RESEARCH caveats above.
-Check: `grep -ciE '161%|79% of (shoppers|consumers)|2\.4x more authentic' $W/lexsis-source.html` is 0.
 
 ## Sources
 

@@ -1,7 +1,7 @@
 # Campaign calendar
 
 Campaign types, the occasions they attach to, and what each changes about the
-hero, urgency, proof and offer. `page-manifest.json` `campaign.type` takes one
+hero, urgency, proof and offer. `page record` `campaign.type` takes one
 id from the table below. The brief's campaign trigger vocabulary in
 `references/page-types/_index.md` section 1 maps as: seasonal/holiday to
 `seasonal` or `gifting`; sale window to `flash-sale`, `clearance`, `bfcm`,
@@ -94,7 +94,7 @@ Apply on `seasonal-gifting`, `gift-guide` and any page whose campaign is
 ## Rules
 
 CC1. Set exactly one `campaign.type` from the table and record it in the plan's `## Page type` block under "Campaign"; a page serving two campaigns is two pages. HEURISTIC.
-Check: `campaign.type` in `page-manifest.json` is one of the 14 ids.
+Check: `campaign.type` in `page record` is one of the 14 ids.
 
 CC2. Honour the lead time. If the page cannot be live by the lead time, downgrade: a BFCM page with no list built becomes an `offer-page` with `campaign.type: evergreen`; a launch with no waitlist window becomes a launch-day `pdp-hybrid-landing`. OPERATOR (Klaviyo, Gosh Digital BFCM playbooks).
 Check: the plan records the go-live date and the campaign's lead time; live date is on or before the deadline or the downgrade is written down.
@@ -118,7 +118,6 @@ CC8. A seasonal or end-of-season strike-through needs a was-price that ran throu
 Check: ledger `compare-at` row shows the was-price start date before the season start.
 
 CC9. Evergreen offers are never called a sale and never carry a permanent compare-at. LAW (UK duration rule) and OPERATOR (perpetual discounting trains waiting; AccelerOI reports 30%+ AOV drops six months after perpetual-discount tests).
-Check: `campaign.type: evergreen` implies `grep -ciE '\bsale\b' $W/lexsis-source.html` is 0 and no strike-through exists.
 
 CC10. Model BFCM depth against margin first. Shoppers expect about 30% sitewide or "up to" with SKU-variable depth; 10 to 15% reads as no offer. If margin cannot support 25%+, use `gwp` or `bundle` instead of a shallow percent. OPERATOR (CTC 3,000-brand database).
 Check: the plan records the contribution margin at the chosen depth and the ROAS target adjusted for it.
@@ -127,13 +126,11 @@ CC11. Put the deepest December discounts after Dec 26, not before; deadline-driv
 Check: a `percent-off` or `fixed-off` on a gifting page dated Dec 11 to 25 is flagged in the plan with the merchant's reason.
 
 CC12. Gifting pages carry gift note, un-ticked wrap, gift receipt wording, per-product ships-by and a sitewide cutoff. HEURISTIC and LAW (pre-ticked wrap is basket sneaking).
-Check: `campaign.type: gifting` implies `gift-options` and `delivery-cutoff` sections exist; `grep -c 'checked' $W/lexsis-source.html` inside `gift-options` is 0.
 
 CC13. India festive pages show the bank `cashback` strip, no-cost EMI line for items over ₹3,000, COD or UPI-on-delivery statement, "inclusive of all taxes", a pincode delivery date, and member early access mirroring BFCM VIP. OPERATOR and LAW (Redseer, GoKwik, Legal Metrology).
 Check: when `IN` is in markets and `campaign.type` in {`seasonal`, `gifting`, `bfcm`}, `payment-options`, `delivery-estimate` and the tax line are present.
 
 CC14. Collab and creator campaigns disclose the paid partnership on the page and never show a percent. LAW (FTC Endorsement Guides; UK DMCC banned practices 12 and 13; India ASCI influencer guidelines).
-Check: `campaign.type: collab-drop` implies `grep -ciE 'paid partnership|sponsored|in partnership with' $W/lexsis-source.html` is at least 1.
 
 CC15. Anniversary and founder-sale milestones ("10 years", "1 million customers") are proof-ledger rows with documents before they appear. LAW (design-rules N11).
 Check: every numeral in `founder-note`, `stats` or `story` maps to a proof-ledger row with status `verified`.

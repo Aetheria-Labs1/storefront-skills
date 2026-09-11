@@ -15,7 +15,7 @@
   ],
   "anti_patterns": [
     "Listing providers that aren't actually enabled at checkout (misleading, causes cart abandonment)",
-    "Using inline variant with >3 providers (too crowded — use expandable)",
+    "Using inline variant with >3 providers (too crowded \u2014 use expandable)",
     "Setting installments to anything other than 4 (most BNPL = 4 equal payments)"
   ],
   "props": {
@@ -114,21 +114,6 @@
     ],
     "headless": {
       "supported": false
-    },
-    "example": "<lx-island name=\"PaymentOptions\">\n  <script type=\"application/json\">\n{\n  \"price\": 0\n}\n  </script>\n</lx-island>",
-    "examples": [
-      {
-        "label": "Inline payment options",
-        "source": "<lx-island name=\"PaymentOptions\">\n  <script type=\"application/json\">{\"price\":9999,\"currency\":\"USD\",\"providers\":[\"klarna\",\"afterpay\",\"shop_pay\"],\"installments\":4,\"variant\":\"inline\"}</script>\n</lx-island>"
-      },
-      {
-        "label": "Expandable with auto-update from variant changes",
-        "source": "<lx-island name=\"PaymentOptions\">\n  <script type=\"application/json\">{\"price\":14999,\"providers\":[\"klarna\",\"afterpay\",\"affirm\",\"zip\"],\"installments\":4,\"variant\":\"expandable\",\"listenForEvents\":true}</script>\n</lx-island>"
-      },
-      {
-        "label": "Icons only footer badge",
-        "source": "<lx-island name=\"PaymentOptions\">\n  <script type=\"application/json\">{\"price\":0,\"providers\":[\"shop_pay\",\"klarna\",\"afterpay\"],\"variant\":\"icons_only\"}</script>\n</lx-island>"
-      }
-    ]
+    }
   }
 }

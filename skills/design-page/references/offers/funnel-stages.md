@@ -116,17 +116,17 @@ goes to `listicle` (`_index.md` tie-breaks). Tone and schema rules are in
 
 ## Rules
 
-FS1. Record `page.funnelStage` and `page.awareness` in `page-manifest.json` and in the plan's `## Page type` block, diagnosed from channel, creative and query, before choosing the page type. HEURISTIC.
+FS1. Record `page.funnelStage` and `page.awareness` in `page record` and in the plan's `## Page type` block, diagnosed from channel, creative and query, before choosing the page type. HEURISTIC.
 Check: both fields present; `awareness` is one of the five Schwartz values; `funnelStage` is one of `tof`, `mof`, `bof`, `retention`.
 
 FS2. Never assume a higher awareness than the traffic supplies: cold social is problem-aware at best; brand search is product-aware. HEURISTIC (`_index.md` section 5).
 Check: `trafficSource` in {`meta`, `tiktok`, `native`} implies `awareness` in {`unaware`, `problem-aware`, `solution-aware`}; `trafficSource: retargeting` implies `awareness` in {`product-aware`, `most-aware`}.
 
-FS3. The chosen page type's checklist `funnel_stage` and `awareness` arrays contain the manifest values. HEURISTIC.
-Check: `plan_lint.py` passes; the type file's checklist includes both values.
+FS3. The chosen page type's checklist `funnel_stage` and `awareness` arrays contain the page record values. HEURISTIC.
+Check: the type checklist review passes; the type file's checklist includes both values.
 
 FS4. The offer moves down the page and up in depth as awareness rises: on `tof` types the first offer element follows `mechanism`, `solution` or `how-it-works`; on `bof` types the offer is in the hero. HEURISTIC (offer-types OF7).
-Check: section index comparison in `page-manifest.json` against `funnelStage`.
+Check: section index comparison in `page record` against `funnelStage`.
 
 FS5. Headline leads with the stage's subject: problem for problem-aware, result plus mechanism for solution-aware, product plus claim for product-aware, product plus offer plus terms for most-aware, identity or story for unaware. HEURISTIC.
 Check: the `<h1>` on a problem-aware page names no product or brand; on a most-aware page it names the product and the offer.
@@ -147,7 +147,7 @@ FS10. Search pages answer first and never use `advertorial`, `listicle` or `vide
 Check: `trafficSource` in {`google-search`, `google-shopping`} implies `pageType` not in {`advertorial`, `listicle`, `video-sales-page`}; `pageType: seo-buyers-guide` implies `trafficSource` in {`google-search`, `organic`}.
 
 FS11. CTA copy follows the stage: `next-step` on unaware and problem-aware pages, `add-to-cart` from solution-aware onward, `claim-offer` only on most-aware; "Buy now" is never the primary CTA on `tof` or `mof` pages (design-rules A12 forbids it as generic copy anyway). HEURISTIC.
-Check: `cta.copy_pattern` in the type checklist matches the stage; design-rules A12 grep is 0.
+Check: `cta.copy_pattern` in the type checklist matches the stage; CTA wording satisfies A12.
 
 FS12. Length follows the awareness gap: no long-read type for most-aware traffic, no short offer page for unaware traffic. HEURISTIC.
 Check: `awareness: most-aware` implies section count at or below the `offer-page` or `retargeting-warm` checklist maximum; `awareness: unaware` implies `pageType` in the unaware row of the type table.

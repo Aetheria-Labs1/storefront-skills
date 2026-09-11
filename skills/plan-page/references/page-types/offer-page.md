@@ -95,149 +95,37 @@ offer. Most-aware visitors do not need the premise.
 
 ## Workflow
 
-Assets first: the product and, for a gift offer, the gift are shown as real
-media before the arithmetic is written. A section that would end up as a
-colour band, an emoji row, icon tiles or a wall of text is rebuilt around
-imagery or, on the merchant's call, merged or skipped. Per-slot sourcing:
-`references/workflows/section-asset-workflow.md`; island choice:
-`references/workflows/island-selection-workflow.md`. Missing media is never
-dropped silently: every Media line ends by telling the merchant what is
-missing (job, aspect, count), offering upload via `lexsis_asset_upload.upload`
-or MCP generation when the purpose is feasible under
-`references/assets/generation-policy.md`, and skipping or merging the section
-only if the merchant chooses. In fast-draft the agent proceeds with the closest
-existing asset or leaves the slot `planned`, and lists every missing asset in
-the plan and the draft summary.
+Apply `references/workflows/_how-to-read.md` to these type-specific
+decisions. It links the shared asset/fallback, fit, live-island and
+copy procedures; this table supplies their inputs, not another policy.
 
 ### Context reads
 
-1. Offer ledger block confirmed with the merchant (`references/offers/offer-types.md`
-   for the id's rules): `offer.type` (one id), depth, code or automatic,
-   exclusions, stacking, regions, minimum spend, `offer.endsAt` (ISO with
-   timezone) or none, `offer.compareAtBasis`, gift SKU and threshold for
-   `gwp`, eligibility for `first-order`.
-2. `lexsis_catalog.get` for the offered product(s): `media[]` mapped per
-   `references/assets/image-jobs-by-page-type.md` (identity at position 1,
-   one in-use, variation per variant), price, compare-at with a basis,
-   variants and availability, inventory. For `gwp`, `lexsis_catalog.get` for
-   the gift SKU: its identity image, its retail price (the stated value), its
-   live inventory (the only basis for "while supplies last").
-3. `lexsis_cart.get`: whether the code auto-applies from the URL and pre-fills
-   in cart, threshold behaviour, cart v2. A code that fails at checkout is the
-   page's worst failure; confirm before design.
-4. `lexsis_catalog.reviews_status` and `lexsis_catalog.reviews` with
-   `product_id` for the review summary band (`references/proof/reviews-sourcing.md`);
-   `review_collections`.
-5. `lexsis_brand.context`, `lexsis_brand.brand_kit`, `lexsis_brand.navigation`
-   (minimal nav).
-6. `lexsis_asset_library.search` with `theme_id`, `mode: "tags"` for
-   `product-shot`, `flat-lay` (gift beside product, both items of a BOGO),
-   `lifestyle` (one in-use); no video on this type. Sequence and checks:
-   `references/assets/asset-sourcing-sequence.md`.
-7. `lexsis_design.islands`, then `lexsis_design.island_schema` for each island
-   named below. No generation is planned on this type: the hero is a `packshot`
-   and the page is short.
+1. Offer ledger block confirmed with the merchant (`references/offers/offer-types.md` for the id's rules): `offer.type` (one id), depth, code or automatic, exclusions, stacking, regions, minimum spend, `offer.endsAt` (ISO with timezone) or none, `offer.compareAtBasis`, gift SKU and threshold for `gwp`, eligibility for `first-order`.
+2. `lexsis_catalog.get` for the offered product(s): `media[]` mapped per `references/assets/image-jobs-by-page-type.md` (identity at position 1, one in-use, variation per variant), price, compare-at with a basis, variants and availability, inventory. For `gwp`, `lexsis_catalog.get` for the gift SKU: its identity image, its retail price (the stated value), its live inventory (the only basis for "while supplies last").
+3. `lexsis_cart.get`: whether the code auto-applies from the URL and pre-fills in cart, threshold behaviour, cart v2. A code that fails at checkout is the page's worst failure; confirm before design.
+4. `lexsis_catalog.reviews_status` and `lexsis_catalog.reviews` with `product_id` for the review summary band (`references/proof/reviews-sourcing.md`); `review_collections`.
+5. `lexsis_brand.context`, `lexsis_brand.brand_kit`, `lexsis_brand.navigation` (minimal nav).
+6. `lexsis_asset_library.search` with `theme_id`, `mode: "tags"` for `product-shot`, `flat-lay` (gift beside product, both items of a BOGO), `lifestyle` (one in-use); no video on this type. Sequence and checks: `references/assets/asset-sourcing-sequence.md`.
+7. `lexsis_design.islands`, then `lexsis_design.island_schema` for each island named below. No generation is planned on this type: the hero is a `packshot` and the page is short.
 
 ### Section by section
 
-No asset is used sight unseen: open every candidate with `lexsis_assets.view`
-and run the section 1b fit review in `references/workflows/section-asset-workflow.md`
-before use (subject does the job, crops to the slot without losing the product,
-quiet area for the copy, lighting and styling match neighbouring slots, palette,
-no baked-in text or watermark); view a section's or gallery's candidates
-together so the set reads as one shoot, and view a generated asset the same way
-after it returns.
-
-**`announcement`**
-- Purpose: a sitewide fact that is not the offer (free-shipping threshold, or the end date as text).
-- Media: none.
-- Island: AnnouncementBar paired with Navbar, or the SiteHeader strip; one message, not sticky; never the offer headline, never a countdown, never two offers; resolve from `lexsis_design.island_schema`; preset `announcementbar/static-dark`.
-- Copy: under 60 characters.
-- Decide with: `lexsis_cart.get` threshold; `offer.endsAt` as text.
-
-**`header`**
-- Purpose: minimal chrome.
-- Media: brand logo or wordmark. View every candidate with `lexsis_assets.view` and run the section fit review (section 1b of `references/workflows/section-asset-workflow.md`) before use.
-- Island: SiteHeader minimal with the CTA anchoring to the buy block, or Navbar with one link; resolve from `lexsis_design.island_schema`; preset `siteheader/minimal-light` or `navbar/sticky-light`.
-- Copy: store names.
-- Decide with: `lexsis_brand.navigation`.
-
-**`hero`**
-- Purpose: the offer in plain arithmetic, the product packshot, the code status, the primary CTA, the guarantee line.
-- Media: yes, identity (`packshot`; alternate `product-in-hand`) from catalog media position 1; for BOGO both items pictured side by side from their own catalog media; for `gwp` the gift may appear beside the product. Never offer text baked into the image; never a generated product or gift render (GN1, GN2); mobile gets its own portrait crop (`references/assets/slot-spec.md`). Missing packshot or gift image: tell the merchant (identity, square and portrait, one each); offer upload; generation is not feasible; the offer is not run as `gwp` until the gift image exists. View every candidate with `lexsis_assets.view` and run the section fit review before use.
-- Island: none (one static image, preloaded); the CTA anchors to the buy block, or the BuyBox sits in the hero when hero and buy block are one section.
-- Copy: headline `[depth or gift] [scope], [terms or end]` in plain arithmetic, 14 words; subhead 16 words; code shown or "applied automatically"; one guarantee or shipping line; vocabulary per `references/anti-patterns/copy-anti-patterns.md`.
-- Decide with: `offer.type` and ledger figures; `media[]` position 1.
-
-**`offer`**
-- Purpose: mechanics in one to three lines within one scroll of the hero.
-- Media: none; text on the page background.
-- Island: none.
-- Copy: what qualifies, minimum spend, exclusions, stacking, regions, end date and time with timezone, code or automatic; three lines of 18 words; never an asterisk to a footnote (`offer-ledger.md` rule 4).
-- Decide with: the ledger block from step 1.
-
-**`buy-box`**, **`product-spotlight`** or **`product-grid`**
-- Purpose: price, struck compare-at with basis, computed saving, variants, add to cart.
-- Media: yes, identity per product from catalog media (uniform card aspect per `slot-spec.md`); variation images when variants exist. A grid card without an identity image: tell the merchant (identity, square, one per product); offer upload; never stock or generated; the card is left out until then. View the candidates together with `lexsis_assets.view` and run the section fit review so the set reads as one shoot, not a pile of found images.
-- Island: one product: BuyBox, with VariantSwatches when the colour axis carries images (BuyBox variants carry no image). Two to five products: an HTML grid with QuickAdd per card, or ProductCarousel with quick add and entry animation off (N10); both need cart v2. The struck price carries `data-source="compare_at_price"` or the ledger row id; saving as text, no pill (N9). Decision inputs: eligible product count, variant axes, cart v2. Resolve from `lexsis_design.island_schema`; presets `buybox/default-light`, `productcarousel/cards-quickadd-light`.
-- Copy: saving line per `references/offers/price-presentation.md` PP10 (currency first over the Rule-of-100 line); CTA "Add to cart" or "Add both to cart" for BOGO; two microcopy lines (code status, returns on promo items).
-- Decide with: eligible product count; `offer.compareAtBasis`; `lexsis_cart.get`.
-
-**`product-spotlight`** (`-gift`)
-- Purpose: the gift as a product with name, image, retail value, threshold and live stock.
-- Media: yes, gift identity and included-items from the gift SKU's catalog media; packaging when boxed. Missing gift image: tell the merchant; offer upload; never a generated gift render; no image means no gift module and no gift claim until it arrives. View every candidate with `lexsis_assets.view` and run the section fit review before use. View the gift photo to confirm it is the real gift SKU, not a sibling.
-- Island: InventoryIndicator bound to the gift variant so "while supplies last" reads live and the gift line comes off when it reads out; no purchase island, the gift is auto-added by the discount configuration, never theme script (`offer-types.md` OF11); resolve from `lexsis_design.island_schema`; preset `inventoryindicator/badge-outline` or `inventoryindicator/text-quiet`.
-- Copy: "Free travel kit ($30 value) on orders over $75" (retail value, never cost); CTA "Claim your free [gift]" only here.
-- Decide with: gift SKU media, price and inventory; `offer.stockVerified`.
-
-**`trust-bar`** or **`review-summary`**
-- Purpose: rating plus count, one guarantee or policy fact, at most one linked press quote.
-- Media: none; text facts with the page's single icon set or none; press as linked text, never unlinked logos.
-- Island: none; the review summary from the API total for the exact product per `reviews-sourcing.md` bands.
-- Copy: four facts of six words or fewer.
-- Decide with: band from step 4; `policy-fact` rows.
-
-**`benefits`**
-- Purpose: three statements on why the product is worth having at this price.
-- Media: yes, one in-use image beside the three facts from catalog media not used in the hero, library `lifestyle`, or merchant upload. Missing: tell the merchant (in-use, landscape, one shot); offer upload; generation of an in-use scene is not feasible (GP14); merge into the trust strip only on the merchant's call. No-go: three icon tiles, a colour band. View the candidates together with `lexsis_assets.view` and run the section fit review so the set reads as one shoot, not a pile of found images.
-- Island: none.
-- Copy: three items of 18 words, each with a number, material, time or test.
-- Decide with: in-use image found in steps 2 and 6.
-
-**`countdown`**
-- Purpose: the real end inside the final 48 hours; otherwise the end date is text in `offer`.
-- Media: none.
-- Island: CountdownTimer bound to `offer.endsAt`, hiding itself at zero while the price reverts server-side, beside the primary CTA; the Countdown island is deprecated; never client-side dates, never a reset (`references/offers/urgency-scarcity.md` UR2, UR7); resolve from `lexsis_design.island_schema`.
-- Copy: "Ends Sunday 11:59pm IST" beside the timer; never "Hurry".
-- Decide with: `offer.endsAt` confirmed and now within 48 hours of it.
-
-**`guarantee`** or **`shipping-returns`**
-- Purpose: returns on promotional items, shipping cost or threshold, delivery estimate.
-- Media: none.
-- Island: DeliveryEstimate for single-zone domestic shipping only, else none; resolve from `lexsis_design.island_schema`; preset `deliveryestimate/inline-quiet`.
-- Copy: 40 words; "expected delivery by [date]".
-- Decide with: `policy-fact` rows; shipping zones.
-
-**`faq`**
-- Purpose: stacking, expiry, returns on promo items, gift swap, eligibility.
-- Media: none.
-- Island: none; native `<details>` (the FAQ island is deprecated).
-- Copy: four to six questions; answers 50 words.
-- Decide with: ledger terms.
-
-**`final-offer`**
-- Purpose: restate the offer, the terms in one line, the CTA.
-- Media: the hero packshot reused small; no new asset.
-- Island: none; the CTA anchors to the buy block (one BuyBox per page).
-- Copy: headline repeated verbatim; terms one line of 18 words.
-- Decide with: mirrors the hero.
-
-**`legal`**, **`sticky-cta`** and **`footer`**
-- Purpose: full terms; a bar carrying the offer and price; chrome.
-- Media: product thumbnail for the bar; brand logo in the footer. View every candidate with `lexsis_assets.view` and run the section fit review before use.
-- Island: StickyBar in product mode, label identical to the hero CTA, appearing after the buy block, only when the page runs past about three mobile screens; Footer with the terms link as a column item; resolve from `lexsis_design.island_schema`; presets `stickybar/product-light`, `footer/simple-light`.
-- Copy: the bar label carries the price after the offer.
-- Decide with: page length; terms URL.
+| Section | Purpose | Media job and source | Interactive decision | Copy constraints | Decision evidence |
+|---|---|---|---|---|---|
+| `announcement` | a sitewide fact that is not the offer (free-shipping threshold, or the end date as text). | none. | AnnouncementBar paired with Navbar, or the SiteHeader strip; one message, not sticky; never the offer headline, never a countdown, never two offers. | under 60 characters. | `lexsis_cart.get` threshold; `offer.endsAt` as text. |
+| `header` | minimal chrome. | brand logo or wordmark. | SiteHeader minimal with the CTA anchoring to the buy block, or Navbar with one link. | store names. | `lexsis_brand.navigation`. |
+| `hero` | the offer in plain arithmetic, the product packshot, the code status, the primary CTA, the guarantee line. | yes, identity (`packshot`; alternate `product-in-hand`) from catalog media position 1; for BOGO both items pictured side by side from their own catalog media; for `gwp` the gift may appear beside the product. Never offer text baked into the image; never a generated product or gift render (GN1, GN2); mobile gets its own portrait crop (`references/assets/slot-spec.md`). Missing packshot or gift image: (identity, square and portrait, one each); generation is not feasible; the offer is not run as `gwp` until the gift image exists. | none (one static image, preloaded); the CTA anchors to the buy block, or the BuyBox sits in the hero when hero and buy block are one section. | headline `[depth or gift] [scope], [terms or end]` in plain arithmetic, 14 words; subhead 16 words; code shown or "applied automatically"; one guarantee or shipping line; vocabulary per `references/anti-patterns/copy-anti-patterns.md`. | `offer.type` and ledger figures; `media[]` position 1. |
+| `offer` | mechanics in one to three lines within one scroll of the hero. | none; text on the page background. | none. | what qualifies, minimum spend, exclusions, stacking, regions, end date and time with timezone, code or automatic; three lines of 18 words; never an asterisk to a footnote (`offer-ledger.md` rule 4). | the ledger block from step 1. |
+| `buy-box`, `product-spotlight` or `product-grid` | price, struck compare-at with basis, computed saving, variants, add to cart. | yes, identity per product from catalog media (uniform card aspect per `slot-spec.md`); variation images when variants exist. A grid card without an identity image: (identity, square, one per product); never stock or generated; the card is left out until then. | one product: BuyBox, with VariantSwatches when the colour axis carries images (resolve variant imagery from the live purchase contract). Two to five products: an HTML grid with QuickAdd per card, or ProductCarousel with quick add and entry animation off (N10); both need cart v2. The struck price carries `data-source="compare_at_price"` or the ledger row id; saving as text, no pill (N9). Decision inputs: eligible product count, variant axes, cart v2. | saving line per `references/offers/price-presentation.md` PP10 (currency first over the Rule-of-100 line); CTA "Add to cart" or "Add both to cart" for BOGO; two microcopy lines (code status, returns on promo items). | eligible product count; `offer.compareAtBasis`; `lexsis_cart.get`. |
+| `product-spotlight` (`-gift`) | the gift as a product with name, image, retail value, threshold and live stock. | yes, gift identity and included-items from the gift SKU's catalog media; packaging when boxed. Missing gift image: never a generated gift render; no image means no gift module and no gift claim until it arrives. View the gift photo to confirm it is the real gift SKU, not a sibling. | InventoryIndicator bound to the gift variant so "while supplies last" reads live and the gift line comes off when it reads out; no purchase island, the gift is auto-added by the discount configuration, never theme script (`offer-types.md` OF11). | "Free travel kit ($30 value) on orders over $75" (retail value, never cost); CTA "Claim your free [gift]" only here. | gift SKU media, price and inventory; `offer.stockVerified`. |
+| `trust-bar` or `review-summary` | rating plus count, one guarantee or policy fact, at most one linked press quote. | none; text facts with the page's single icon set or none; press as linked text, never unlinked logos. | none; the review summary from the API total for the exact product per `reviews-sourcing.md` bands. | four facts of six words or fewer. | band from step 4; `policy-fact` rows. |
+| `benefits` | three statements on why the product is worth having at this price. | yes, one in-use image beside the three facts from catalog media not used in the hero, library `lifestyle`, or merchant upload. Missing media: (in-use, landscape, one shot); generation of an in-use scene is not feasible (GP14); merge into the trust strip as the agreed alternative. No-go: three icon tiles, a colour band. | none. | three items of 18 words, each with a number, material, time or test. | in-use image found in steps 2 and 6. |
+| `countdown` | the real end inside the final 48 hours; otherwise the end date is text in `offer`. | none. | CountdownTimer bound to `offer.endsAt`, hiding itself at zero while the price reverts server-side, beside the primary CTA; the Countdown island is deprecated; never client-side dates, never a reset (`references/offers/urgency-scarcity.md` UR2, UR7) | "Ends Sunday 11:59pm IST" beside the timer; never "Hurry". | `offer.endsAt` confirmed and now within 48 hours of it. |
+| `guarantee` or `shipping-returns` | returns on promotional items, shipping cost or threshold, delivery estimate. | none. | DeliveryEstimate for single-zone domestic shipping only, else none. | 40 words; "expected delivery by [date]". | `policy-fact` rows; shipping zones. |
+| `faq` | stacking, expiry, returns on promo items, gift swap, eligibility. | none. | none; native `<details>`. | four to six questions; answers 50 words. | ledger terms. |
+| `final-offer` | restate the offer, the terms in one line, the CTA. | the hero packshot reused small; no new asset. | none; the CTA anchors to the buy block (one BuyBox per page). | headline repeated verbatim; terms one line of 18 words. | mirrors the hero. |
+| `legal`, `sticky-cta` and `footer` | full terms; a bar carrying the offer and price; chrome. | product thumbnail for the bar; brand logo in the footer. | StickyBar in product mode, label identical to the hero CTA, appearing after the buy block, only when the page runs past about three mobile screens; Footer with the terms link as a column item. | the bar label carries the price after the offer. | page length; terms URL. |
 
 ### Asset budget
 
@@ -247,7 +135,7 @@ after it returns.
 | asset library | `product-shot`, `flat-lay` of product plus gift, one `lifestyle` in-use | gift `packaging` | ask the merchant to upload; the gift module waits for the gift image |
 | generation | nothing on this type in practice (backdrops only, below the fold, ASK because the hero is a `packshot`) | product, gift, people, results, logos, text | never |
 
-Minimal assets (one packshot): hero, offer terms, buy box, review summary or policy facts, guarantee, native FAQ, final offer; benefits wait on an in-use shot and a `gwp` waits on its gift image, both listed in the plan and draft summary. Generated assets on an offer page: zero; the house cap of four is never approached. Every asset, generated ones included, is opened with `lexsis_assets.view` and passes the fit review in `references/workflows/section-asset-workflow.md` section 1b before it ships; a paid render earns no exemption.
+Minimal assets (one packshot): hero, offer terms, buy box, review summary or policy facts, guarantee, native FAQ, final offer; benefits wait on an in-use shot and a `gwp` waits on its gift image, both listed in the plan and draft summary. Generated assets on an offer page: zero; the house cap of four is never approached.
 
 ## Above the fold (390px)
 

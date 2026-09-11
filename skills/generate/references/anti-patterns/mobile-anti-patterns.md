@@ -11,7 +11,7 @@ https://baymard.com/research/mcommerce-usability ; https://baymard.com/blog/mobi
 Design-rules A8 (price and add-to-cart within 1.5 viewports at 390) and A11
 (48 px targets, focus, reduced motion) are house rules; the MA rules below
 add the checks around them. Severity BLOCK, FAIL, WARN. Tag LAW, RESEARCH,
-OPERATOR, HEURISTIC. `$W` is the page workspace.
+OPERATOR, HEURISTIC. Checks use persisted MCP source and the hosted draft.
 
 ## 1. Viewport set and budgets
 
@@ -32,40 +32,40 @@ Fixed-element budget at 390 x 844 (RESEARCH: Baymard mobile header findings; NN/
 
 ## 2. Layout and text
 
-| Id | Anti-pattern | Rule | Sev | Tag | Check |
-|---|---|---|---|---|---|
-| MA1 | Horizontal page scroll; element wider than the viewport | Nothing wider than 100vw at 320 to 430. Tables scroll inside their own container. | FAIL | RESEARCH | `document.documentElement.scrollWidth <= window.innerWidth` at 320, 375, 390, 430 |
-| MA2 | Body text under 16 px; captions under 13 px; anything under 12 px | Body `p, li` at least 16 px; captions at least 13 px. Shopify Theme Store: 4.5:1 body contrast, 3:1 at 18 pt and above. https://shopify.dev/docs/storefronts/themes/store/requirements | FAIL | RESEARCH, LAW | `[...document.querySelectorAll('p,li')].every(e => parseFloat(getComputedStyle(e).fontSize) >= 16)` |
-| MA3 | Inputs zoom on focus (iOS); zoom disabled | Inputs, selects, textareas and buttons at least 16 px computed. Never `maximum-scale=1` or `user-scalable=no` (WCAG 1.4.4; Shopify accessibility guidance). https://css-tricks.com/16px-or-larger-text-prevents-ios-form-zoom/ ; https://shopify.dev/docs/storefronts/themes/best-practices/accessibility | FAIL | LAW, RESEARCH | `[...document.querySelectorAll('input,select,textarea')].every(e => parseFloat(getComputedStyle(e).fontSize) >= 16) && !/maximum-scale|user-scalable\s*=\s*no/i.test(document.querySelector('meta[name=viewport]')?.content||'')` |
-| MA4 | Fixed header taller than 15 percent of the viewport | Top fixed region at most 126 px at 844; announcement collapses after the first scroll. | FAIL | RESEARCH | see budget script below, `top <= innerHeight * 0.15` |
-| MA5 | Stacked fixed elements (announcement + header + sticky CTA + consent + chat) | One top region, one bottom region, total at most 30 percent, at most 3 elements. Consent and sticky CTA never coexist; chat launcher hides while the sticky CTA shows. | FAIL | RESEARCH | budget script below |
-| MA6 | Images not sized for the device | Every `<img>` has `srcset` and `sizes`, `width` and `height` (CLS), `loading="lazy"` below the fold; the hero has `fetchpriority="high"` and no lazy attribute. Slot aspect from `references/assets/slot-spec.md`. | FAIL | RESEARCH | `[...document.querySelectorAll('img')].filter(i => !i.srcset && !i.src.endsWith('.svg')).length === 0 && [...document.querySelectorAll('img')].every(i => i.width && i.height)` |
-| MA7 | Text baked into images (headline, price, offer inside the hero image) | Headlines, prices and offer terms are live text (WCAG 1.4.5). Generation policy already forbids text in generated images. | FAIL | LAW | Visual: the 390 screenshot hero shows no rasterised words; `page-plan.md` asset slots carry no `text` purpose |
-| MA8 | Text over imagery without a scrim | Text on photographs measured against rendered pixels at 4.5:1 (A7); use the single permitted black-to-transparent overlay (N7) only in the plan's bold moment. | FAIL | LAW | axe `color-contrast` on the hosted draft at 390; sample five points under any hero text |
-| MA9 | Centred long paragraphs, measure over 80 characters or under 45 | Left-align body at 390; A4 measure rule. | WARN | RESEARCH | A4 browser script; `[...document.querySelectorAll('p')].filter(p => getComputedStyle(p).textAlign === 'center' && p.getBoundingClientRect().height > parseFloat(getComputedStyle(p).lineHeight) * 1.5).length === 0` |
+| Id | Anti-pattern | Rule | Sev | Tag |
+| --- | --- | --- | --- | --- |
+| MA1 | Horizontal page scroll; element wider than the viewport | Nothing wider than 100vw at 320 to 430. Tables scroll inside their own container. | FAIL | RESEARCH |
+| MA2 | Body text under 16 px; captions under 13 px; anything under 12 px | Body `p, li` at least 16 px; captions at least 13 px. Shopify Theme Store: 4.5:1 body contrast, 3:1 at 18 pt and above. https://shopify.dev/docs/storefronts/themes/store/requirements | FAIL | RESEARCH, LAW |
+| MA3 | Inputs zoom on focus (iOS); zoom disabled | Inputs, selects, textareas and buttons at least 16 px computed. Never `maximum-scale=1` or `user-scalable=no` (WCAG 1.4.4; Shopify accessibility guidance). https://css-tricks.com/16px-or-larger-text-prevents-ios-form-zoom/ ; https://shopify.dev/docs/storefronts/themes/best-practices/accessibility | FAIL | LAW, RESEARCH |
+| MA4 | Fixed header taller than 15 percent of the viewport | Top fixed region at most 126 px at 844; announcement collapses after the first scroll. | FAIL | RESEARCH |
+| MA5 | Stacked fixed elements (announcement + header + sticky CTA + consent + chat) | One top region, one bottom region, total at most 30 percent, at most 3 elements. Consent and sticky CTA never coexist; chat launcher hides while the sticky CTA shows. | FAIL | RESEARCH |
+| MA6 | Images not sized for the device | Every `<img>` has `srcset` and `sizes`, `width` and `height` (CLS), `loading="lazy"` below the fold; the hero has `fetchpriority="high"` and no lazy attribute. Slot aspect from `references/assets/slot-spec.md`. | FAIL | RESEARCH |
+| MA7 | Text baked into images (headline, price, offer inside the hero image) | Headlines, prices and offer terms are live text (WCAG 1.4.5). Generation policy already forbids text in generated images. | FAIL | LAW |
+| MA8 | Text over imagery without a scrim | Text on photographs measured against rendered pixels at 4.5:1 (A7); use the single permitted black-to-transparent overlay (N7) only in the plan's bold moment. | FAIL | LAW |
+| MA9 | Centred long paragraphs, measure over 80 characters or under 45 | Left-align body at 390; A4 measure rule. | WARN | RESEARCH |
 
 ## 3. Interaction and targets
 
-| Id | Anti-pattern | Rule | Sev | Tag | Check |
-|---|---|---|---|---|---|
-| MA10 | Hover-only interactions (tooltips, hover zoom, hover-reveal CTAs) | No hover; 76 percent of sites have unclear hit areas (Baymard). Every hover behaviour has a tap equivalent; image zoom supports tap or pinch. https://baymard.com/blog/mobile-commerce-design | FAIL | RESEARCH | `grep -cE ':hover\s*\{[^}]*(display|opacity|visibility)' $W/page-theme.css` is 0 unless a matching `:focus-within` or click handler exists |
-| MA11 | Tap targets under 24 x 24 CSS px; primary controls under 44 x 44; house rule 48 px for primary CTAs | WCAG 2.2 SC 2.5.8 (AA) minimum 24 x 24 or 24 px spacing; Shopify recommends 44 for menu, add-to-cart, close, swatches; design-rules A11 asks 48 px for primary. https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html | BLOCK | LAW | script in section 6, `minTarget` |
-| MA12 | Side-by-side buttons that wrap or fall under 140 px wide | Stack CTAs vertically under 480 px; only one is filled (CA4). | WARN | OPERATOR | at 375: no `button, a.btn, [role=button]` narrower than 140 px or with `scrollHeight` over one line |
-| MA13 | Carousels without cues | Peek the next card (about 15 percent), show dots or a counter, visible edge arrows on swatch scrollers (Baymard). https://baymard.com/blog/mobile-ux-ecommerce | WARN | RESEARCH | carousel island has visible pagination or partial next-slide overflow at 390 |
-| MA14 | Thumb-zone violations | Primary action reachable one-handed: within the first screen's lower 85 percent or in a sticky bar. Modals dismiss from a bottom-sheet button, not only a top-right X. | WARN | RESEARCH | primary CTA `getBoundingClientRect().top <= 0.85 * innerHeight` in the first viewport, or sticky |
-| MA15 | Drag-only interactions (before/after sliders, range inputs) | Offer tap or button alternatives (WCAG 2.5.7 AA). | FAIL | LAW | `before-after` island exposes `<button>` toggles; range inputs have +/- buttons |
-| MA16 | Sticky element covers the focused control or content | WCAG 2.4.11 focus not obscured. Sticky bar height is reserved with `scroll-padding-bottom` or body padding. | FAIL | LAW | tab through the page at 390; screenshot each focused element; none is under a fixed bar |
-| MA17 | Auto-rotating carousels on touch | CA1. | FAIL | RESEARCH | CA1 check |
+| Id | Anti-pattern | Rule | Sev | Tag |
+| --- | --- | --- | --- | --- |
+| MA10 | Hover-only interactions (tooltips, hover zoom, hover-reveal CTAs) | No hover; 76 percent of sites have unclear hit areas (Baymard). Every hover behaviour has a tap equivalent; image zoom supports tap or pinch. https://baymard.com/blog/mobile-commerce-design | FAIL | RESEARCH |
+| MA11 | Tap targets under the house 48 x 48 CSS px floor | House A11 requires 48 x 48 for every tap target; lower external minima do not reduce this requirement. https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html | BLOCK | LAW |
+| MA12 | Side-by-side buttons that wrap or fall under 140 px wide | Stack CTAs vertically under 480 px; only one is filled (CA4). | WARN | OPERATOR |
+| MA13 | Carousels without cues | Peek the next card (about 15 percent), show dots or a counter, visible edge arrows on swatch scrollers (Baymard). https://baymard.com/blog/mobile-ux-ecommerce | WARN | RESEARCH |
+| MA14 | Thumb-zone violations | Primary action reachable one-handed: within the first screen's lower 85 percent or in a sticky bar. Modals dismiss from a bottom-sheet button, not only a top-right X. | WARN | RESEARCH |
+| MA15 | Drag-only interactions (before/after sliders, range inputs) | Offer tap or button alternatives (WCAG 2.5.7 AA). | FAIL | LAW |
+| MA16 | Sticky element covers the focused control or content | WCAG 2.4.11 focus not obscured. Sticky bar height is reserved with `scroll-padding-bottom` or body padding. | FAIL | LAW |
+| MA17 | Auto-rotating carousels on touch | CA1. | FAIL | RESEARCH |
 
 ## 4. Forms
 
-| Id | Anti-pattern | Rule | Sev | Tag | Check |
-|---|---|---|---|---|---|
-| MA18 | Placeholder-only labels; labels beside fields | Visible `<label>` above each field (Baymard: inline or placeholder labels cause issues on 38 percent of sites); mark both required and optional. https://baymard.com/blog/mobile-ecommerce-checkout-forms | FAIL | RESEARCH | `[...document.querySelectorAll('input:not([type=hidden]):not([type=submit]),select,textarea')].every(i => { const l = i.id && document.querySelector('label[for="'+i.id+'"]'); return l && l.getBoundingClientRect().bottom <= i.getBoundingClientRect().top + 4; })` |
-| MA19 | Wrong keyboard | `type="email"` with `autocapitalize="off"` and `autocomplete="email"`; `type="tel"`; `inputmode="numeric"` for OTP, PIN, postcode; Baymard: 60 percent of sites fail two of five keyboard optimisations. | FAIL | RESEARCH | inputs named `email`, `phone|tel|mobile`, `zip|pin|postal` have the matching `type`, `inputmode` and `autocomplete` |
-| MA20 | Modal taller than the viewport or locking scroll | Dialogs scroll internally, `max-height: 85vh`, close control visible without scrolling; popups at most 60 percent of viewport height, bottom sheet preferred (CA3, DP14). | FAIL | RESEARCH | dialog `scrollHeight <= clientHeight` or internal `overflow: auto`; close button inside the viewport |
-| MA21 | Close control under 24 px, under 3:1 contrast, or not the first tappable element | Close at least 24 x 24 (44 preferred), 3:1, reachable; Esc and backdrop tap close (DP10). | BLOCK | LAW | `[data-part=close]` bounding box at least 24 x 24; axe contrast |
-| MA22 | Asking again for data already given | Prefill checkout email from the capture form (WCAG 3.3.7). | WARN | LAW | capture island forwards `email` to the checkout URL or cart attributes |
+| Id | Anti-pattern | Rule | Sev | Tag |
+| --- | --- | --- | --- | --- |
+| MA18 | Placeholder-only labels; labels beside fields | Visible `<label>` above each field (Baymard: inline or placeholder labels cause issues on 38 percent of sites); mark both required and optional. https://baymard.com/blog/mobile-ecommerce-checkout-forms | FAIL | RESEARCH |
+| MA19 | Wrong keyboard | `type="email"` with `autocapitalize="off"` and `autocomplete="email"`; `type="tel"`; `inputmode="numeric"` for OTP, PIN, postcode; Baymard: 60 percent of sites fail two of five keyboard optimisations. | FAIL | RESEARCH |
+| MA20 | Modal taller than the viewport or locking scroll | Dialogs scroll internally, `max-height: 85vh`, close control visible without scrolling; popups at most 60 percent of viewport height, bottom sheet preferred (CA3, DP14). | FAIL | RESEARCH |
+| MA21 | Close control under 48 px, under 3:1 contrast, or not the first tappable element | Close at least 48 x 48 under A11, 3:1, reachable; Esc and backdrop tap close (DP10). | BLOCK | LAW |
+| MA22 | Asking again for data already given | Prefill checkout email from the capture form (WCAG 3.3.7). | WARN | LAW |
 
 ## 5. First screen at 390
 
@@ -94,7 +94,7 @@ and compare against the type file's list; any extra element fails.
 ## 6. Check scripts
 
 Run in the hosted draft after load and again after scrolling to 50 and 100
-percent. Record results in `qa-report.md`.
+percent. Record results in `QA record`.
 
 ```js
 // MA4, MA5: fixed-element budget
@@ -106,11 +106,11 @@ percent. Record results in `qa-report.md`.
   return { count: f.length, top, total, ok: top <= innerHeight * 0.15 && total <= innerHeight * 0.30 && f.length <= 3 };
 })();
 
-// MA11: target size (24 minimum, 44 for primary and close, 48 for .btn-primary per A11)
+// MA11: all tap targets use the A11 house floor
 (() => [...document.querySelectorAll('a,button,[role=button],input:not([type=hidden]),select,summary')]
   .filter(e => e.offsetParent !== null && !e.closest('p'))
   .map(e => { const r = e.getBoundingClientRect();
-    const min = e.matches('.btn-primary,[data-primary]') ? 48 : e.matches('[data-part=close],[data-part=swatch],[data-part=qty]') ? 44 : 24;
+    const min = 48;
     return { el: e.textContent.trim().slice(0, 30) || e.tagName, w: Math.round(r.width), h: Math.round(r.height), min, ok: r.width >= min && r.height >= min }; })
   .filter(x => !x.ok))();   // []
 
@@ -118,33 +118,4 @@ percent. Record results in `qa-report.md`.
 (() => [...document.querySelectorAll('h1,h2,p,button,a.btn,[role=button],img,video,[data-part=price],[role=dialog],[data-part=chat-launcher]')]
   .filter(e => e.offsetParent !== null && e.getBoundingClientRect().top < innerHeight)
   .map(e => (e.closest('[data-section]')?.dataset.section || '?') + ':' + e.tagName + ':' + (e.dataset.part || e.textContent.trim().slice(0, 25))))();
-```
-
-```bash
-# Playwright runner sketch for all viewports
-for vp in 320x568 375x667 390x844 430x932; do
-  npx playwright screenshot --viewport-size="${vp/x/,}" --full-page "$PREVIEW_URL" "$W/qa/mobile-$vp.png"
-done
-npx @axe-core/cli "$PREVIEW_URL" --tags wcag2aa,wcag22aa --rules color-contrast,target-size,label,image-alt,link-name,button-name
-```
-
-## 7. Lint alignment
-
-Static checks `design_lint.py` can adopt (the rest need the browser):
-
-```python
-# MA3 NEW: zoom lock in the viewport meta
-r'<meta[^>]*name="viewport"[^>]*(maximum-scale|user-scalable\s*=\s*no)'   # expect 0
-# MA6 NEW: images without srcset / dimensions (exclude .svg)
-r'<img(?![^>]*srcset)(?![^>]*\.svg)[^>]*>'                                # expect 0
-r'<img(?![^>]*\bwidth=)[^>]*>'                                            # expect 0
-# MA6 NEW: hero image preloaded, not lazy
-# first <img> inside <!-- section: hero --> or gallery must carry fetchpriority="high" and no loading="lazy"
-# MA10 NEW: hover-only reveals in page-theme.css
-r':hover\s*\{[^}]*(display|opacity|visibility)'                           # expect 0 unless a :focus-within twin exists
-# MA19 NEW: input types
-r'<input(?![^>]*type="email")[^>]*(name|id)="[^"]*mail[^"]*"'             # expect 0
-r'<input(?![^>]*type="tel")[^>]*(name|id)="[^"]*(phone|mobile|tel)[^"]*"' # expect 0
-# MA23 NEW: no popup, chat or consent island inside the hero section markup
-# within <!-- section: hero --> body: no 'Popup', 'ChatLauncher', 'CookieConsent' island names
 ```

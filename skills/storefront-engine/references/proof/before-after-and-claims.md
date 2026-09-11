@@ -105,7 +105,7 @@ in the teardown sample carried an expert quote; homepages and bundles did
 | P17 | test-data | "87% reported softer skin" | merchant | study S-02: 60 participants, 12 weeks, self-assessment, Jan 2026, CRO <lab> | PDF on file | benefits | verified |
 | P18 | expert-quote | "the barrier repair is real" | Dr. <name>, MD, dermatologist, reg. no. | verbatim text; approval email 2026-07-02; "Paid advisor" | merchant record | expert-endorsement | verified |
 | P19 | founder-note | trust | <founder>, Founder | approved text 2026-09-01 | merchant approval | founder-note | verified |
-| P20 | before-after | "reverses hair loss" | merchant | supplier image; no subject data | none | — | dropped (supplier image; restricted claim) |
+| P20 | before-after | "reverses hair loss" | merchant | supplier image; no subject data | none |  -  | dropped (supplier image; restricted claim) |
 ```
 
 ## Rules
@@ -114,28 +114,15 @@ BA1. Never render a before/after pair without the full protocol: genuine, same s
 Check: the ledger row lists all nine protocol fields; a missing field makes the row `dropped`.
 
 BA2. State the generally expected result in the same visual field; "results may vary" or "results not typical" never stands alone. LAW 16 CFR 255.2(b); India CCPA 2022 (disclaimers cannot cure).
-Check:
-```bash
-perl -0ne 'while(/<!-- section: before-after[a-z-]* -->(.*?)(?=<!-- section: |\z)/gs){my $b=$1; print "hedge-only\n" if $b=~/results (may|will) vary|results not typical/i && $b!~/\d+%|\d+ (of|out of) \d+|average/i}' $W/lexsis-source.html   # no output
-```
 
 BA3. Never a supplier, stock, generated, composite or "illustrative" before/after image; a caption does not cure it. LAW ASA GTMC 2013; FTC 465.2; OPERATOR (no generated result imagery, `references/assets/generation-policy.md`).
-Check: both assets are imports with capture dates; provider is never generated; `grep -ciE 'illustrative|actor portrayal|dramatisation' $W/lexsis-source.html` is 0.
 
 BA4. Restricted verticals render before/after only with a study on file whose endpoints match the depicted result and with the study cited beside the image; prohibited claims are dropped and the merchant told why. LAW FTC health substantiation; DMR Act 1954 and Schedule J (India); EU 655/2013.
 Check: for restricted rows, the `test-data` row id is cited in the `before-after` row; for any "treat", "cure", "regrow", "heal" verb in source, the plan records regulatory sign-off or the verb is absent.
-```bash
-grep -ciE '\b(cures?|treats?|heals?|regrows?|reverses?|eliminates?) (acne|eczema|psoriasis|hair loss|baldness|obesity|wrinkles|greying)' $W/lexsis-source.html   # 0
-```
 
 BA5. Before/after never sits in the hero and never autoplays a wipe; labels "Before" and "After <interval>" on identical crops. HEURISTIC; consistent with `proof-ledger.md` display rule 9; `design-rules.md` N10.
-Check: DOM order places `before-after` after `mechanism`, `how-it-works` or `benefits`; `grep -c '@keyframes' $W/page-theme.css` unchanged by the section.
 
 BA6. Every efficacy, clinical, comparative, superlative and sustainability claim maps to a `test-data`, `certification`, `award` or `customer-count` row with method, n, date and source; the permitted phrasing carries the parameters. LAW CAP 3.7; FTC reasonable basis; EU 655/2013; CCPA 2022; Dir. 2024/825.
-Check:
-```bash
-grep -ciE 'clinically (proven|tested)|dermatologist (tested|recommended)|#1|number one|best[- ]selling|award[- ]winning|eco[- ]friendly|non[- ]toxic|chemical[- ]free|100% (natural|safe)|doctor[- ]formulated' $W/lexsis-source.html   # each hit maps to a ledger row id and carries n, date or issuer in the same element
-```
 
 BA7. "Clinically proven" is used only when the study's endpoints, population and formulation match the claim; otherwise "clinically tested" with the parameters, or nothing. LAW FTC; EU 655/2013.
 Check: the `test-data` row states formulation, endpoint and population; a mismatch downgrades the wording.
@@ -145,21 +132,16 @@ Check: every `\d+%` in a proof, benefits or stats section has `n=`, `of \d+`, or
 
 BA9. Expert quotes render only as verbatim approved text with name, credential line, registration number where applicable, date and connection label; the agent writes none of it. LAW 16 CFR 255.3 and 255.5; CCPA 2022; ASCI health addendum.
 Check: each `expert-quote` row has approval date and connection label; the rendered attribution contains a credential, not a logo.
-```bash
-grep -ciE '(doctors|dermatologists|experts|nutritionists) (recommend|agree|love|trust)' $W/lexsis-source.html   # 0 unless a survey row exists
-```
 
 BA10. Founder notes are signed with name and role, drafted only from the merchant's brief, approved before render, and contain no customer stories or numbers that lack their own rows. LAW FTC 465.5 (insider testimonial disclosed by role); HEURISTIC teardown pattern 22.
 Check: `founder-note` section contains a name and a role word ("Founder", "Co-founder"); every numeral inside it has a ledger row.
 
 BA11. Absolute safety words ("non-toxic", "chemical-free", "100% safe", "no side effects") are replaced by the specific fact or removed. LAW CAP 3.7 (ASA upheld against "chemical-free"); FTC; EU 655/2013 "free from" criteria.
-Check: `grep -ciE 'non[- ]toxic|chemical[- ]free|100% safe|no side effects|zero side effects' $W/lexsis-source.html` is 0.
 
 BA12. Comparative claims name the comparator truthfully and hold a head-to-head test with method and date; "vs other brands" without data is removed. LAW CAP 3.33 to 3.40; FTC; ASCI chapter IV.
 Check: each `\d+x` or "than" comparison in source cites a `test-data` row; no "leading brands" or "other serums" comparator without a named panel.
 
-BA13. Every claim row appears under "Claims to confirm" in `page-plan.md`; a claim the merchant cannot document is removed from copy, not softened with "up to" or "may help". LAW hedge words do not substitute for evidence (CAP 3.7; FTC). HEURISTIC `references/proof/numbers-and-counts.md`.
-Check: `grep -ciE 'up to \d+%|may help|can help (reduce|improve)|helps? support' $W/lexsis-source.html` is 0 in proof and benefits sections unless the row's evidence states a range.
+BA13. Every claim row appears under "Claims to confirm" in `page plan`; a claim the merchant cannot document is removed from copy, not softened with "up to" or "may help". LAW hedge words do not substitute for evidence (CAP 3.7; FTC). HEURISTIC `references/proof/numbers-and-counts.md`.
 
 ## Sources
 

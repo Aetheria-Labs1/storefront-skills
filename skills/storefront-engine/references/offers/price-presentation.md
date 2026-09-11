@@ -8,7 +8,7 @@ Offer mechanics are in `references/offers/offer-types.md`; deadline and stock
 wording in `references/offers/urgency-scarcity.md`.
 
 Format per rule: imperative sentence; tag; rationale; a check. Checks are
-written for macOS; `$W` is the page workspace. Tags: LAW, RESEARCH, OPERATOR,
+evaluated on the hosted draft; Checks use persisted MCP source and the hosted draft. Tags: LAW, RESEARCH, OPERATOR,
 HEURISTIC.
 
 ## Compare-at legality by jurisdiction
@@ -25,7 +25,6 @@ HEURISTIC.
 
 PP1. Render a struck-through price only when the ledger row records a `compare_at_basis` of `prior_30_day_low`, `regular_price_with_sales`, `mrp` or `rrp_substantiated`. No basis: show the sale price alone, no strike, no "save". LAW.
 Rationale: every market above treats an unsubstantiated former price as deception.
-Check: `grep -c '<s\|<del\|line-through' $W/lexsis-source.html` is 0 when `offer.compareAtBasis` is empty in `page-manifest.json`.
 
 PP2. For EU visitors, compute the percent and the "was" from the lowest price of the prior 30 days, including any earlier promotion in that window. LAW.
 Rationale: Art 6a; CJEU 2024 ruled the percent must also reference the 30-day low.
@@ -41,7 +40,6 @@ Check: ledger `compare-at` row basis is `regular_price_with_sales` or `rrp_subst
 
 PP5. For India, show "MRP ₹X (inclusive of all taxes)" for packaged goods, keep the selling price at or below MRP, phrase discounts as "off MRP", and include the mandatory declarations (net quantity, manufacturer or importer, country of origin, consumer-care contact, best-before where applicable) in `specs`. LAW.
 Rationale: Legal Metrology Rule 6(10); E-Commerce Rules 2020 Rule 6(5).
-Check: `grep -c 'inclusive of all taxes' $W/lexsis-source.html` is at least 1 when `IN` is in the market list; `specs` lists the declarations.
 
 PP6. Place the anchor before the paid price in reading direction (above or left), at equal or smaller size and lower contrast than the paid price. RESEARCH and LAW.
 Rationale: the first number seen becomes the reference (Tversky and Kahneman 1974; Ariely, Loewenstein and Prelec 2003). A compare-at larger than the paid price is "interface interference" under India CCPA.
@@ -59,7 +57,6 @@ Check: ledger row `per-unit price` exists for consumables sold by weight or volu
 
 PP9. Use per-day or per-serving framing only for consumables, subscriptions and memberships; never for a one-time purchase over the Rule-of-100 line unless it is a real BNPL split with the total shown first. RESEARCH.
 Rationale: Gourville 1998 "pennies a day" raised acceptance 52% vs 30% for the same annual cost; the frame backfires on large one-time purchases by naming the commitment (EightX).
-Check: `grep -cE '/day|per day|a day|/serving' $W/lexsis-source.html` is 0 unless the product is consumable or `offer.type` is `subscribe-save` or `bnpl`.
 
 PP10. Always show the currency saving; let percent lead only under $100 or ₹8,000, and lead with currency above it ("Save $128 (18%)"). SMS copy may lead with percent regardless (OPERATOR, Attentive: percent formats drove 10% higher SMS conversion). RESEARCH, consistent with offer-ledger rule 2.
 Rationale: Rule of 100 (Berger; JBR 2015). India crossover is HEURISTIC, no replication found.
@@ -73,25 +70,20 @@ Check: the ledger row for the headline depth records the count of SKUs at the ma
 
 PP12. Use 9-endings for mass and mid-market goods in comparison contexts (collection cards, tier tables, sale tags), and round prices for premium, hedonic and luxury goods and for subscription plans. RESEARCH.
 Rationale: Anderson and Simester 2003, three field experiments: $9 endings raised demand, most for new items and least when a "Sale" cue was present ($39 outsold $34). Wadhwa and Zhang 2015: round prices fit feeling-based purchases. Data Colada replication: the effect is weak on an isolated PDP for a known product.
-Check: `grep -oE '[₹$£€][0-9,]+\.99' $W/lexsis-source.html | wc -l` is 0 when the plan loads `vertical-luxury.md`; the plan's Design direction names the ending rule.
 
 PP13. Round Indian rupee prices to the whole rupee ("₹999", never "₹999.99"). LAW and HEURISTIC.
 Rationale: Legal Metrology requires MRP to the nearest rupee or 50 paise; paise endings are not idiomatic.
-Check: `grep -cE '₹[0-9,]+\.[0-9]{2}' $W/lexsis-source.html` is 0.
 
 ## Total-cost transparency
 
 PP14. Show a shipping estimate or the free-shipping threshold in the `buy-box` `shipping-returns` line, and the full total (items, shipping, tax, fees) before payment details are requested. RESEARCH and LAW.
 Rationale: Baymard: 40% of non-browsing abandoners cite extra costs, 12% could not see the total up front, 64% look for shipping cost on the product page. UK DMCC prohibits drip pricing; India Rule 6(5)(b) requires a single-figure total with breakup; FTC treats hidden mandatory fees as bait and switch.
-Check: `grep -cE 'shipping|delivery' $W/lexsis-source.html` inside the `buy-box` section is at least 1; the cart profile shows order summary with shipping before checkout.
 
 PP15. Include every mandatory fee (handling, COD fee, platform fee) in the displayed price or state it beside the price; taxes and shipping may follow later only if the page never calls the displayed price final. LAW.
 Rationale: FTC junk-fees rule and Section 5; UK DMCC invitation to purchase; India E-Commerce Rules 6(5)(b).
-Check: `grep -ciE 'final price|all-in|total' $W/lexsis-source.html` is 0 unless the figure shown includes tax and shipping.
 
 PP16. Write tax status the market's way: EU and UK B2C prices VAT-inclusive with no separate VAT line; India "inclusive of all taxes" and never add GST at checkout on B2C; US ex-tax with "plus tax" or "tax calculated at checkout" beside the price. LAW.
 Rationale: EU and UK consumer law; India MRP definition; US state sales-tax practice.
-Check: market list in `page-manifest.json` against `grep -ciE 'plus tax|excl\. VAT|\+ ?GST' $W/lexsis-source.html` (0 for EU, UK, IN; allowed for US).
 
 PP17. Match the on-page free-shipping threshold, the cart progress bar target and the checkout shipping rate to one number from store settings. LAW and OPERATOR.
 Rationale: a mismatch is a misleading price claim and the most common bar complaint.
@@ -101,7 +93,6 @@ Check: ledger row `shipping` cites the store shipping profile; `commerce_config.
 
 PP18. Never hide the price ("see price in cart", "DM for price", "login to see price") on a B2C page. A US MAP-constrained category may use "add to cart to see price" and the plan flags it as a conversion risk; `wholesale-b2b` may gate trade prices behind login. LAW.
 Rationale: UK DMCC and EU UCPD require the full price in an invitation to purchase; India Rule 6(5)(b).
-Check: `grep -ciE 'see price in cart|dm for price|login to see price' $W/lexsis-source.html` is 0 unless `page.pageType` is `wholesale-b2b` or the plan records the MAP exception.
 
 PP19. Time the first price to the awareness level: unaware and problem-aware pages reveal price after the mechanism and first proof, and always before the first CTA that leads to a cart or PDP; product-aware and most-aware pages show price in the hero. HEURISTIC, consistent with `references/page-types/_index.md` section 5.
 Rationale: a price before the premise reads as an ad to a cold reader; a hidden price to a hot one is friction.
@@ -109,13 +100,11 @@ Check: the page-type checklist `price_above_fold` value is satisfied; on `tof` t
 
 PP20. Show the shopper's currency with the ISO code whenever the symbol is ambiguous ("$" for AU, CA, NZ, SG shoppers) and never drop the symbol. OPERATOR.
 Rationale: cross-border was 16% of Shopify BFCM 2025 orders; the Cornell "no symbol" finding is restaurant-specific and mixed in ecommerce tests (49% win rate, AccelerOI).
-Check: when the market list has more than one dollar market, `grep -c 'USD\|AUD\|CAD\|NZD\|SGD' $W/lexsis-source.html` is at least 1 near the price.
 
 ## Indian rupee formatting
 
 PP21. Write rupees as "₹" followed by Indian digit grouping (₹1,24,999, not ₹124,999), whole rupees only, "MRP" label for the compare-at, "inclusive of all taxes" once beside the first price. LAW and HEURISTIC.
 Rationale: Legal Metrology labelling; the lakh grouping is the reading convention.
-Check: `grep -cE '₹[0-9]{4,}' $W/lexsis-source.html` is 0 (ungrouped); `grep -cE '₹[0-9]{1,3}(,[0-9]{3}){2,}' $W/lexsis-source.html` is 0 (Western grouping above 99,999).
 
 PP22. Put the payment facts India shoppers decide on beside the price: "Pay on delivery via UPI or cash" or "Cash on delivery not available for this pincode", a prepaid incentive if the merchant runs one, and the pincode `delivery-estimate` returning a date, not a speed. OPERATOR.
 Rationale: COD is still about 45 to 60% of D2C orders nationally and up to 75% in Tier-2 cities; COD RTO runs 20 to 30% versus 2 to 8% prepaid; Bain notes a shift to UPI-on-delivery (Financial Express, ET, Bain 2026).
@@ -139,7 +128,6 @@ Check: any line matching `cashback|instant discount` also matches `up to` and na
 
 PP26. On pre-orders, show the deposit and the full price as two labelled figures and never strike the full price against the deposit; put "Estimated to ship by [date]" beside the price and beside the button. LAW and OPERATOR.
 Rationale: Shopify pre-order UX guidelines; FTC Mail Order Rule.
-Check: `grep -c 'Estimated to ship\|Ships by' $W/lexsis-source.html` is at least 2 when `offer.type` is `pre-order-price`.
 
 PP27. Where "free" carries a shipping or handling charge, print the charge in the same phrase ("Free sample, $4.95 shipping"). LAW.
 Rationale: FTC 251.1 disclosure "at the outset"; UK banned practice on "free" with costs beyond unavoidable response cost.

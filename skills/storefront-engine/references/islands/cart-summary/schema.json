@@ -61,8 +61,6 @@
     ],
     "headless": {
       "supported": false
-    },
-    "example": "<lx-island name=\"CartSummary\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
-    "examples": []
+    }
   }
 }

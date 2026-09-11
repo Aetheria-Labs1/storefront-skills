@@ -56,6 +56,7 @@ SKILL_SHARED_REFERENCES = {
         "mcp-playbooks/",
     },
     "design-page": {
+        "page-layout.md",
         "animation-system.md",
         "page-files.md",
         "consumer-behavior-cro.md",
@@ -104,6 +105,7 @@ SKILL_SHARED_REFERENCES = {
         "consumer-behavior-cro.md",
     },
     "generate": {
+        "source-and-sync.md",
         "animation-system.md",
         "page-files.md",
         "consumer-behavior-cro.md",
@@ -119,6 +121,8 @@ SKILL_SHARED_REFERENCES = {
         "proof/proof-ledger.md",
     },
     "optimize": {
+        "industry-cro.md",
+        "evidence-led-cro.md",
         "animation-system.md",
         "consumer-behavior-cro.md",
         "design-rules.md",
@@ -157,8 +161,24 @@ REFERENCE_PATH_RE = re.compile(
 )
 SHARED_REFERENCE_DEP_RE = re.compile(
     r"(?:`|\()(?:(?:skills/)?storefront-engine/references/|references/)?"
-    r"((?:[a-z0-9_-]+/)?[A-Za-z0-9_-]+\.md)(?:`|\))"
+    r"((?:[a-z0-9_-]+/)*[A-Za-z0-9_-]+\.md)(?:`|\))"
 )
+
+CORPUS_REFERENCE_BRIDGES = {
+    "ab-testing.md", "ad-to-page.md", "animation-system.md", "asset-prep.md",
+    "blob-shapes.md", "cart-composition.md", "cart-profile-management.md",
+    "consumer-behavior-cro.md", "conversion-psychology.md", "cro-research.md",
+    "design-assets.md", "design-enrichment.md", "design-rules.md",
+    "generate-bundle-page.md", "generate-collection.md", "generate-editorial.md",
+    "generate-homepage.md", "generate-landing-page.md", "generate-listicle.md",
+    "generate-pdp.md", "generation-protocol.md", "island-patterns.md",
+    "island-presets.md", "lexsis-mcp-contract.md", "page-files.md", "plan-page.md",
+    "product-grid.md", "qa-recipe.md", "source-artifact-workflow.md",
+    "source-format.md", "traffic-source-google.md", "traffic-source-meta.md",
+    "traffic-source-tiktok.md", "vertical-beauty.md", "vertical-fashion.md",
+    "vertical-food.md", "vertical-home.md", "vertical-luxury.md",
+    "vertical-supplements.md", "visual-craft.md", "workflow-intent.md",
+}
 
 # References worth shipping to a custom GPT (knowledge budget is finite;
 # schemas and vertical deep-dives stay out — the GPT can't call tools to
@@ -195,6 +215,13 @@ GPT_REFERENCE_ALLOWLIST = [
     "anti-patterns/dark-patterns",
     "anti-patterns/copy-anti-patterns",
     "mcp-playbooks/tool-sequence-by-stage",
+    "mcp-playbooks/router-actions",
+    "workflows/_how-to-read",
+    "workflows/section-asset-workflow",
+    "workflows/island-selection-workflow",
+    "workflows/copy-workflow",
+    "authoring/source-authoring",
+    "authoring/css-and-styling",
 ]
 
 def parse_frontmatter(path: Path) -> tuple[dict, str]:
@@ -257,10 +284,7 @@ def shared_reference_closure(names: set[str]) -> set[str]:
         for dependency in SHARED_REFERENCE_DEP_RE.findall(source.read_text()):
             if dependency == name or not (REFERENCES / dependency).is_file():
                 continue
-            # Corpus files (page-types/, proof/, ...) cite the legacy flat
-            # docs for depth only; do not pull the whole corpus into every
-            # skill. Flat-to-flat and corpus-to-corpus edges still resolve.
-            if "/" in name and "/" not in dependency:
+            if "/" in name and "/" not in dependency and dependency not in CORPUS_REFERENCE_BRIDGES:
                 continue
             if dependency not in resolved:
                 resolved.add(dependency)
@@ -276,12 +300,31 @@ def packaged_reference_content(source: Path) -> str:
     )
 
 
+def skill_reference_roots(skill_name: str) -> set[str]:
+    roots = set(SKILL_SHARED_REFERENCES.get(skill_name, set()))
+    skill = SKILLS / skill_name / "SKILL.md"
+    for reference in REFERENCE_PATH_RE.findall(skill.read_text()):
+        roots.add(reference.split("references/", 1)[1])
+    return roots
+
+
 def sync_skill_shared_references(*, check: bool) -> list[str]:
     """Materialize shared docs inside public skills for per-skill installers."""
     changed: list[str] = []
-    for skill_name, names in sorted(SKILL_SHARED_REFERENCES.items()):
+    for skill in sorted(SKILLS.iterdir()):
+        if not (skill / "SKILL.md").is_file():
+            continue
+        skill_name = skill.name
+        names = skill_reference_roots(skill_name)
         target_dir = SKILLS / skill_name / "references"
-        for name in sorted(shared_reference_closure(names)):
+        resolved = shared_reference_closure(names)
+        for target in sorted(target_dir.rglob("*.md")):
+            name = str(target.relative_to(target_dir))
+            if name not in resolved:
+                changed.append(f"{target.relative_to(ROOT)} (obsolete generated reference)")
+                if not check:
+                    target.unlink()
+        for name in sorted(resolved):
             source = REFERENCES / name
             target = target_dir / name
             if not source.is_file():
@@ -369,15 +412,11 @@ def validate() -> list[str]:
             if bad_phase.search(line):
                 errors.append(f"{md.relative_to(ROOT)}:{i}: stale phase numbering: {line.strip()[:80]}")
 
-    # Reference docs may illustrate compiled renderer markup, but must label it
-    # so an agent does not copy it into source-authoring tools.
     for reference in REFERENCES.rglob("*.md"):
         text = reference.read_text()
-        if reference.name == "source-format.md":
-            continue
-        if re.search(r"<[^>]+data-island=|data-props=['\"]", text) and "Compiled runtime reference:" not in text:
+        if re.search(r"<[^>]+data-island=|data-props=['\"]", text):
             errors.append(
-                f"{reference.relative_to(ROOT)}: compiled island markup is missing the source-format notice"
+                f"{reference.relative_to(ROOT)}: use source-format markup, not compiled island examples"
             )
 
     # Local agent discovery remains a symlink to the canonical tree.
@@ -412,12 +451,12 @@ def build_gpt() -> dict[str, str]:
     version = plugin_version()
     counts = derived_counts()
     banner = (
-        f"<!-- GENERATED from skills/ by scripts/build-distributions.py — DO NOT EDIT.\n"
-        f"     storefront-skills v{version} · {counts['skills']} skills · "
+        f"<!-- GENERATED from skills/ by scripts/build-distributions.py - DO NOT EDIT.\n"
+        f"     storefront-skills v{version}; {counts['skills']} skills; "
         f"{counts['active_islands']} active islands -->\n\n"
     )
 
-    parts: list[str] = [banner, "# Lexsis Storefront Skills — Knowledge Base\n"]
+    parts: list[str] = [banner, "# Lexsis Storefront Skills - Knowledge Base\n"]
 
     parts.append("\n## Workflows\n")
     for skill_dir in sorted(SKILLS.iterdir()):
@@ -431,7 +470,7 @@ def build_gpt() -> dict[str, str]:
         local_references = skill_dir / "references"
         if local_references.is_dir():
             generated_shared = shared_reference_closure(
-                SKILL_SHARED_REFERENCES.get(skill_dir.name, set())
+                skill_reference_roots(skill_dir.name)
             )
             for reference in sorted(local_references.glob("*.md")):
                 if reference.name in generated_shared:
@@ -454,7 +493,7 @@ edit, and optimize AI-built Shopify storefront pages using the Lexsis AI MCP
 (https://mcp.trylexsis.com/mcp).
 
 Use the normal workflow when building a reviewed page:
-setup → plan-page → design-page → generate → publish.
+setup -> plan-page -> design-page -> generate -> publish.
 Use build for the fastest unpublished draft from a prompt or automatically
 selected template, and build-with-template when the user already supplied the
 template direction. Design-page may generate a mobile-first visual concept
@@ -474,6 +513,8 @@ Search page kits and section templates before custom composition. Load the
 selected LX theme, use --lx-* tokens and compile-time Tailwind utilities, and
 resolve every selected island schema before authoring it.
 Author pages in source format, never hand-written data-island/data-props JSON.
+Send source and optional theme_css directly through MCP. Do not create local
+page files, preview builds or local QA gates; review the hosted draft.
 Never invent island names or props; resolve the current schema first. Never use
 retired tools.
 """

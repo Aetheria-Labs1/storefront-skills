@@ -6,18 +6,14 @@
   "deprecated": true,
   "replacement": "CSS animation with static HTML",
   "deprecation_reason": "This component has no Shopify integration and its behavior is expressible with HTML and CSS.",
-  "usage_hint": "Infinite scrolling ticker/marquee for logos, text badges, trust signals, or announcements. Pure CSS animation — no JS dependencies.",
-  "when_to_use": "For press logo bars, scrolling trust badges, \"As seen in\" rows, announcement tickers, or decorative text loops (e.g. \"IN THE SPOTLIGHT\" repeating).",
-  "when_not_to_use": "For static logo rows (use plain flexbox HTML). For interactive carousels where users swipe/click (use Carousel island). For single announcement messages (use AnnouncementBar).",
+  "usage_hint": "Compatibility contract for existing pages. Do not author this retired island in new source.",
+  "when_to_use": "Inspect an existing page only; use the replacement in workflows/island-selection-workflow.md for new source.",
+  "when_not_to_use": "Do not use for new page authoring.",
   "defaultHydrate": "visible",
-  "combine_with": [
-    "HeroMedia (press bar below hero)",
-    "Navbar (announcement ticker above nav)",
-    "StatCards (adjacent trust signals)"
-  ],
+  "combine_with": [],
   "anti_patterns": [
-    "Too many items with long text (visual clutter — keep items short)",
-    "speed < 10 with few items (jerky/too fast — use speed 20-40 for smooth feel)",
+    "Too many items with long text (visual clutter \u2014 keep items short)",
+    "speed < 10 with few items (jerky/too fast \u2014 use speed 20-40 for smooth feel)",
     "Using for critical CTA content users must read (they can't pause reliably on mobile)",
     "Mixing logos and text items without consistent height (misaligned row)"
   ],
@@ -138,21 +134,6 @@
     ],
     "headless": {
       "supported": false
-    },
-    "example": "<lx-island name=\"Marquee\">\n  <script type=\"application/json\">\n{\n  \"items\": [\n    {}\n  ]\n}\n  </script>\n</lx-island>",
-    "examples": [
-      {
-        "label": "Press logos (grayscale)",
-        "source": "<lx-island name=\"Marquee\">\n  <script type=\"application/json\">{\"variant\":\"logos\",\"items\":[{\"imageSrc\":\"https://placehold.co/120x30\",\"imageAlt\":\"Forbes\"},{\"imageSrc\":\"https://placehold.co/120x30\",\"imageAlt\":\"TechCrunch\"},{\"imageSrc\":\"https://placehold.co/120x30\",\"imageAlt\":\"Wired\"}],\"grayscale\":true,\"speed\":30,\"logoHeight\":\"24px\"}</script>\n</lx-island>"
-      },
-      {
-        "label": "Text ticker",
-        "source": "<lx-island name=\"Marquee\">\n  <script type=\"application/json\">{\"variant\":\"text\",\"items\":[{\"text\":\"FREE SHIPPING\"},{\"text\":\"30-DAY RETURNS\"},{\"text\":\"LIFETIME WARRANTY\"}],\"separator\":\"★\",\"speed\":25,\"textColor\":\"#1a1a1a\",\"fontSize\":\"13px\"}</script>\n</lx-island>"
-      },
-      {
-        "label": "Scrolling headline",
-        "source": "<lx-island name=\"Marquee\">\n  <script type=\"application/json\">{\"variant\":\"text\",\"items\":[{\"text\":\"IN THE SPOTLIGHT\"}],\"speed\":20,\"fontSize\":\"48px\",\"fontWeight\":\"800\",\"gap\":\"4rem\",\"textColor\":\"rgba(255,255,255,0.8)\"}</script>\n</lx-island>"
-      }
-    ]
+    }
   }
 }

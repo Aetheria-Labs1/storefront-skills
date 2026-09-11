@@ -18,7 +18,7 @@
     "ProductPrice"
   ],
   "anti_patterns": [
-    "Setting lowStockThreshold too high (everything shows as \"low\" — loses urgency impact)",
+    "Setting lowStockThreshold too high (everything shows as \"low\" \u2014 loses urgency impact)",
     "Showing exact count when inventory is high (exposes supply chain data unnecessarily)",
     "Using variant=\"bar\" without enough horizontal space (bars need width to be readable)"
   ],
@@ -91,21 +91,6 @@
     ],
     "headless": {
       "supported": false
-    },
-    "example": "<lx-island name=\"InventoryIndicator\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
-    "examples": [
-      {
-        "label": "Badge variant with exact count",
-        "source": "<lx-island name=\"InventoryIndicator\">\n  <script type=\"application/json\">{\"variantId\":\"gid://shopify/ProductVariant/123\",\"quantity\":4,\"lowStockThreshold\":10,\"urgentThreshold\":3,\"showExactCount\":true,\"variant\":\"badge\"}</script>\n</lx-island>"
-      },
-      {
-        "label": "Bar variant that listens for variant changes",
-        "source": "<lx-island name=\"InventoryIndicator\">\n  <script type=\"application/json\">{\"quantity\":8,\"lowStockThreshold\":15,\"urgentThreshold\":5,\"listenForEvents\":true,\"variant\":\"bar\",\"showExactCount\":true}</script>\n</lx-island>"
-      },
-      {
-        "label": "Text variant without exact count",
-        "source": "<lx-island name=\"InventoryIndicator\">\n  <script type=\"application/json\">{\"variantId\":\"gid://shopify/ProductVariant/789\",\"quantity\":2,\"lowStockThreshold\":5,\"urgentThreshold\":3,\"showExactCount\":false,\"variant\":\"text\"}</script>\n</lx-island>"
-      }
-    ]
+    }
   }
 }

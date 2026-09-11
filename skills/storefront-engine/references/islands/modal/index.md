@@ -1,19 +1,12 @@
-# Modal — Island Directory
+# Modal
 
-Container island for overlay content. Holds other islands/content inside.
+For `Modal`, fetch `lexsis_design.islands` and
+`lexsis_design.island_schema` during the decision that needs this behavior.
+Use the current authoring example, variants, props, parts, hydration and
+headless support; the bundled JSON is a compatibility reference, not a
+second source of defaults.
 
-## Quick Reference
-
-- **Category**: engagement
-- **Props**: trigger, size, position, showClose, backdrop, animation, title, description, primaryAction, secondaryAction, preventClose, fullscreen, scrollable, id, children
-- **Required prop**: `trigger` (button text or element that opens modal)
-- **Schema**: `vibe://schema/island/Modal`
-- **Contract**: follows `_contract.md` rules (engagement: `max-w-7xl mx-auto px-4 sm:px-6 lg:px-8`)
-
-## Composition
-
-- Can contain: any island (SizeGuide, OptionResolver, forms, quick-view product)
-- Max 1 instance of same modal `id` per page
-- Trigger renders as a styled button/link in the page flow
-- Gallery shows modal in "open" state for preview purposes
-- Pair with: BuyBox (size guide trigger), ProductGallery (quick view), forms (email capture)
+`references/workflows/island-selection-workflow.md` owns selection and
+linked state. `references/authoring/source-authoring.md` owns source syntax;
+`references/authoring/css-and-styling.md` owns styling. Placement and evidence
+come from the selected page-type contract and its domain policies.

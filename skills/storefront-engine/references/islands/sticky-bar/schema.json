@@ -22,7 +22,7 @@
   "defaultHydrate": "immediate",
   "combine_with": [
     "BuyBox (StickyBar appears AFTER scrolling past BuyBox)",
-    "CartDrawer (REQUIRED for cart feedback)",
+    "Cart V2 via head.use_cart_v2",
     "ProductGallery or ProductHero (provides context above the fold)"
   ],
   "anti_patterns": [
@@ -109,29 +109,6 @@
     ],
     "headless": {
       "supported": false
-    },
-    "example": "<lx-island name=\"StickyBar\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
-    "examples": [
-      {
-        "label": "Default sticky bar (appears after BuyBox)",
-        "source": "<lx-island name=\"StickyBar\">\n  <script type=\"application/json\">{\"product\":{\"title\":\"Wireless Headphones\",\"price\":\"$99.00\",\"compareAtPrice\":\"$129.00\",\"image\":\"https://via.placeholder.com/40\",\"variantId\":\"v1\"},\"cta\":\"Add to Cart\"}</script>\n</lx-island>"
-      },
-      {
-        "label": "Sticky bar with custom trigger selector",
-        "source": "<lx-island name=\"StickyBar\">\n  <script type=\"application/json\">{\"product\":{\"title\":\"Watch\",\"price\":\"$249.00\",\"variantId\":\"v1\"},\"cta\":\"Buy Now\",\"showAfter\":\"#product-details\"}</script>\n</lx-island>"
-      },
-      {
-        "label": "Sticky bar revealed after 800px of scroll",
-        "source": "<lx-island name=\"StickyBar\">\n  <script type=\"application/json\">{\"product\":{\"title\":\"Watch\",\"price\":\"$249.00\",\"variantId\":\"v1\"},\"cta\":\"Buy Now\",\"showAfter\":800}</script>\n</lx-island>"
-      },
-      {
-        "label": "Sticky bar without animations",
-        "source": "<lx-island name=\"StickyBar\">\n  <script type=\"application/json\">{\"product\":{\"title\":\"Sneakers\",\"price\":\"$120.00\",\"image\":\"https://via.placeholder.com/40\",\"variantId\":\"v1\"},\"animate\":false}</script>\n</lx-island>"
-      },
-      {
-        "label": "Collection campaign CTA",
-        "source": "<lx-island name=\"StickyBar\">\n  <script type=\"application/json\">{\"collection\":{\"label\":\"Shop Karva Chauth gifts\",\"url\":\"#for-her\",\"subtitle\":\"Gifts from ₹899\"},\"showAfter\":\"#who-are-you-gifting\"}</script>\n</lx-island>"
-      }
-    ]
+    }
   }
 }

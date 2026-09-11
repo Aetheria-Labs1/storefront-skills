@@ -128,29 +128,6 @@
     ],
     "headless": {
       "supported": false
-    },
-    "example": "<lx-island name=\"VariantSwatches\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
-    "examples": [
-      {
-        "label": "Image swatches (color/pattern variants)",
-        "source": "<lx-island name=\"VariantSwatches\">\n  <script type=\"application/json\">{\"variants\":[{\"id\":\"v1\",\"title\":\"Red\",\"price\":\"$99.00\",\"available\":true,\"image\":\"https://via.placeholder.com/64/ff0000\"},{\"id\":\"v2\",\"title\":\"Blue\",\"price\":\"$99.00\",\"available\":true,\"image\":\"https://via.placeholder.com/64/0000ff\"}],\"type\":\"image\",\"label\":\"Color\"}</script>\n</lx-island>"
-      },
-      {
-        "label": "Color swatches (solid colors)",
-        "source": "<lx-island name=\"VariantSwatches\">\n  <script type=\"application/json\">{\"variants\":[{\"id\":\"v1\",\"title\":\"Black\",\"price\":\"$49.00\",\"available\":true,\"color\":\"#000000\"},{\"id\":\"v2\",\"title\":\"White\",\"price\":\"$49.00\",\"available\":false,\"color\":\"#ffffff\"}],\"type\":\"color\",\"label\":\"Choose Color\"}</script>\n</lx-island>"
-      },
-      {
-        "label": "Text swatches (simple variant names)",
-        "source": "<lx-island name=\"VariantSwatches\">\n  <script type=\"application/json\">{\"variants\":[{\"id\":\"v1\",\"title\":\"Small\",\"price\":\"$29.00\",\"available\":true},{\"id\":\"v2\",\"title\":\"Medium\",\"price\":\"$29.00\",\"available\":true},{\"id\":\"v3\",\"title\":\"Large\",\"price\":\"$29.00\",\"available\":false}],\"type\":\"text\",\"label\":\"Size\"}</script>\n</lx-island>"
-      },
-      {
-        "label": "Size grid (4-column grid layout)",
-        "source": "<lx-island name=\"VariantSwatches\">\n  <script type=\"application/json\">{\"variants\":[{\"id\":\"v1\",\"title\":\"XS\",\"price\":\"$39.00\",\"available\":true},{\"id\":\"v2\",\"title\":\"S\",\"price\":\"$39.00\",\"available\":true},{\"id\":\"v3\",\"title\":\"M\",\"price\":\"$39.00\",\"available\":true},{\"id\":\"v4\",\"title\":\"L\",\"price\":\"$39.00\",\"available\":false}],\"type\":\"size_grid\",\"columns\":4,\"label\":\"Size\"}</script>\n</lx-island>"
-      },
-      {
-        "label": "Axis mode (color option, used with multi-axis products)",
-        "source": "<lx-island name=\"VariantSwatches\">\n  <script type=\"application/json\">{\"axis\":\"Color\",\"values\":[{\"value\":\"Red\",\"image\":\"https://via.placeholder.com/64/ff0000\",\"available\":true},{\"value\":\"Blue\",\"image\":\"https://via.placeholder.com/64/0000ff\",\"available\":true}],\"type\":\"image\",\"label\":\"Color\"}</script>\n</lx-island>"
-      }
-    ]
+    }
   }
 }

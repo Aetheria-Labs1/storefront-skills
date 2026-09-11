@@ -1,6 +1,6 @@
 ---
 name: asset-prep
-description: Independently search, generate, import, or replace storefront media. Works from an asset brief or an existing page workspace and is not a required page-generation stage.
+description: Independently search, generate, import, or replace storefront media. Works from an asset brief or an existing MCP page and is not a required page-generation stage.
 ---
 
 # Prepare Assets
@@ -56,13 +56,15 @@ raster UI icons unless the brief explicitly requires custom artwork.
 
 When working on a page:
 
-- replace the asset in `lexsis-source.html`
-- store only the final binding in `page-manifest.json`
+- read the current page source through MCP and replace the requested asset
+- store the final binding in the page record
 - recompile once after all requested assets are updated
 - set `design.status` to `changes-pending-approval` for visible changes
 
 Do not create a second HTML source or local preview. Page source must use
-permanent Lexsis or Shopify media.
+permanent Lexsis or Shopify media. Apply the source edit with version
+protection as described in
+`references/source-artifact-workflow.md`.
 
 ## Asset Record
 
@@ -81,7 +83,7 @@ Keep the machine record compact:
 
 Shopify media uses `productId` and `mediaId`. Put crop guidance, alt-text
 intent, prompt history, and creative reasoning in the brief or plan, not the
-page manifest.
+page record.
 
 ## Return
 

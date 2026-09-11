@@ -173,19 +173,17 @@ internal teardown audit, 2026-09-10 (OPERATOR).
 
 ## 11. Rules
 
-`$W` is the page workspace.
+Checks use persisted MCP source and the hosted draft.
 
 IV1. Show the whole shade range on diverse skin tones and one applied image per shade for colour cosmetics; bind the gallery to the shade selector. RESEARCH.
 Rationale: Baymard health and beauty guidelines on arm swatches, human models per shade and applied makeup https://baymard.com/blog/health-and-beauty-ux-research .
-Check: `swatch` slot count is at least the shade count, or one swatch-strip slot exists; the `variant-picker` island binds to the gallery (yes/no in `qa-report.md`).
+Check: `swatch` slot count is at least the shade count, or one swatch-strip slot exists; the `variant-picker` island binds to the gallery (yes/no in `QA record`).
 
 IV2. Render every regulated label (supplement facts, nutrition, INCI, safety limits) as HTML text and keep any label photo legible at 1600 px or more. LAW.
 Rationale: 21 CFR 101.36 https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-C/section-101.36 ; WCAG 1.4.5 images of text https://www.w3.org/WAI/tutorials/images/ .
-Check: for consumable verticals `grep -ciE 'ingredients|supplement facts|nutrition' $W/lexsis-source.html` is at least 1 inside an HTML table or list, not only in alt text.
 
 IV3. Put a model height and size worn line in HTML beside every on-model fashion gallery, and photograph every colourway. RESEARCH.
 Rationale: fit is the top uncertainty for worn goods https://baymard.com/blog/human-model .
-Check: `grep -ciE 'model (is|height|wears)|wearing size' $W/lexsis-source.html` is at least 1 on fashion pages; `variation` slots equal the colourway count.
 
 IV4. Never generate food, ingredients or formula; photograph the real serving at scale. LAW.
 Rationale: GN11 in `generation-policy.md`; net-impression deception https://www.ftc.gov/business-guidance/resources/health-products-compliance-guidance .
@@ -193,7 +191,6 @@ Check: no manifest entry with `generated: true` on a food page has a `sectionId`
 
 IV5. Give every home and furniture product a room shot at true scale and a dimension diagram with numbers in HTML. RESEARCH.
 Rationale: 28 to 37% of sites miss in-scale imagery https://baymard.com/blog/in-scale-product-images .
-Check: one `context` or `scale` slot and one `diagram` slot exist; `grep -cE '[0-9]+ ?(cm|mm|in|inches|ft)\b' $W/lexsis-source.html` is at least 3.
 
 IV6. Photograph ports, connectors and the box contents for electronics; show real UI on screens. RESEARCH.
 Rationale: compatibility is Baymard's first image type; box contents lifted conversion 30.5% https://www.processcreative.com.au/blog/a-b-testing-does-showing-whats-in-the-box-actually-lift-conversions .
@@ -209,7 +206,6 @@ Check: the `in-use` slot alt names an animal and the caption or alt states breed
 
 IV9. Show baby products in correct, safe use with a caregiver; never synthetic children; never unsafe depictions. LAW.
 Rationale: ASCI prohibited tier covers unsafe situations and fabricated people regardless of label https://www.ascionline.in/wp-content/uploads/2026/05/asci-ai-labelling-guidelines.pdf .
-Check: `grep -oE 'alt="[^"]*"' $W/lexsis-source.html` for generated slot URLs contains no `baby|child|infant|toddler|kid`; the `in-use` slot was viewed and passed a safe-use yes/no in `qa-report.md`.
 
 IV10. Use fewer, larger, whitespace-framed images for luxury and keep UGC to a curated minimum. RESEARCH.
 Rationale: whitespace raised perceived value for experience goods https://speero.com/post/how-product-image-size-impacts-value-perception-original-research .
@@ -217,7 +213,7 @@ Check: image count is at or near the gallery minimum (6) and no product grid on 
 
 IV11. Route every before/after through the proof ledger and its file; none in the hero, none generated, none without interval and consent. LAW.
 Rationale: `references/proof/before-after-and-claims.md`; ASA https://www.asa.org.uk/advice-online/before-and-after-photos.html .
-Check: every `before-after` section cites a `P[0-9]+` id with status `verified`; IJ13 grep from `image-jobs-by-page-type.md` passes.
+Check: every `before-after` section cites a `P[0-9]+` id with status `verified`; the IJ13 acceptance rule from `image-jobs-by-page-type.md` passes.
 
 IV12. Match the vertical's added required jobs on top of the page type's row before the asset question is asked. OPERATOR.
 Rationale: the type fixes anatomy, the vertical fixes which modules fill the slots (`references/page-types/_index.md` section 8).

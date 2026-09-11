@@ -15,7 +15,7 @@ Near neighbours:
 - `pdp-hybrid-landing`: choose it when the comparison is one table inside a buy page; RISE DTC places it below the description.
 - `ingredient-science`: choose it when the brief is "how it works" without a rival.
 
-Search-intent structure lives in `references/traffic-source-google.md` (comparison intent, CompareTable strategy). This file holds the contract.
+Search-intent inputs live in `references/traffic-source-google.md`; this file owns the comparison structure and native table decisions.
 
 ## Variants
 
@@ -42,11 +42,12 @@ Forbidden: `header` beyond a logo and one utility link (nav is `minimal`), `prod
 
 ## Workflow
 
-Assets first: our product is photographed, the alternative is never shown, and the table is HTML. Every module below the table gets a real image (a detail macro per contested row, our identity in the header) or is put to the merchant. Each Media line runs the loop in `references/workflows/section-asset-workflow.md` (sourcing: `references/assets/asset-sourcing-sequence.md`; jobs: `references/assets/image-jobs-by-page-type.md`; ALLOW, ASK and NEVER: `references/assets/generation-policy.md`). Each Island line names the island and its decision inputs per `references/workflows/island-selection-workflow.md`, with the catalog from `lexsis_design.islands` and the variant and props resolved live from `lexsis_design.island_schema`.
-
-Ask rule, used by every Media line below: tell the merchant what is missing (job, aspect, count), offer upload via `lexsis_asset_upload.upload` or MCP generation when the purpose is feasible under `references/assets/generation-policy.md`, and skip or merge the section only if the merchant chooses. In fast-draft, proceed with the closest existing asset or leave the slot `planned`, and list every missing asset in the plan and the draft summary.
+Apply `references/workflows/_how-to-read.md` to these type-specific
+decisions. It links the shared asset/fallback, fit, live-island and
+copy procedures; this table supplies their inputs, not another policy.
 
 ### Context reads
+
 1. `lexsis_catalog.get` with the product id (each tier for the intra-brand variant): media mapped to jobs (`identity`, `detail`, `scale`, `in-use`, `included-items`), variant axes, price and compare-at (ledger basis; a compare-at never becomes a "sale" framing here, `references/offers/offer-types.md`), per-use arithmetic inputs, selling plans (subscribe-save only for the intra-brand variant), inventory (never shown).
 2. `lexsis_campaigns.creatives` and `analyze` only when a comparison ad drives the traffic: the two columns the ad shows and its claim, which the H1 repeats (`references/copy/message-match.md`). Search traffic: the query as typed supplies both names.
 3. `lexsis_catalog.reviews_status`, `review_collections` (active), `reviews` (`product_id`, `limit: 100`): band per `references/proof/reviews-sourcing.md`; `reviews_search` with "switched from", "tried other brands" and the alternative's category name for switcher quotes; product tag per review for tiers.
@@ -55,77 +56,22 @@ Ask rule, used by every Media line below: tell the merchant what is missing (job
 6. Competitor facts: merchant-confirmed, sourced to the rival's public page or a third-party test with a checked date, recorded in the ledger before any row is written. `lexsis_workspace.credits` is rarely needed; the hero is a packshot type and generation would sit below the fold behind the ASK line.
 
 ### Section by section
-**`hero`**
-- Purpose: a question or switching headline naming both sides, a one-line pain hook, the table one thumb-scroll away.
-- Media: yes; `packshot` of our product, or `product-in-hand` for accessories. Search: catalog media `identity`, then library `product-shot`, then merchant upload. Nothing found: ask rule; no generation is feasible for the product (GN1) and a backdrop does not fit a compact hero; fast-draft runs the headline over the page background and lists the hero as missing. No-go: a side-by-side with the rival's product photo, a competitor logo, a before-and-after. View every candidate with `lexsis_assets.view` and run the fit review in `references/workflows/section-asset-workflow.md` section 1b (subject, crop, quiet zone for the copy, consistency with neighbouring slots, palette, no baked-in text or watermark) before it is used.
-- Island: `none`; a static `<img>`. The header above it is plain HTML with the logo and one utility link, no `Navbar` island.
-- Copy: H1 at most 12 words with both names as typed in the query, or the ad's claim; a verified count only with a ledger row; no blacklist words (`references/anti-patterns/copy-anti-patterns.md`).
-- Decide with: the query or `lexsis_campaigns.analyze`; a `customer-count` row.
 
-**`verdict`**
-- Purpose: one sentence per option stating who it is best for, before the table.
-- Media: no.
-- Island: `none`.
-- Copy: one sentence per option; "best for", not "better".
-- Decide with: the merchant-confirmed positioning of each option.
-
-**`us-vs-them`** (`comparison` for the intra-brand variant)
-- Purpose: four to six decision rows, outcomes with numbers, our column emphasised by position and a hairline, one row the alternative wins, sources and a checked date under the table.
-- Media: yes; our `identity` image in the header cell (one per tier for the intra-brand variant), text labels for the others; one `comparison-visual` that shows our attribute physically (thickness, layers, capacity) without the rival's product. Search: catalog media `identity` and `detail`, then library `product-shot`, then merchant upload; the alternative as an inline SVG silhouette labelled "other brands". Nothing found: ask rule for the comparison visual; generation is not feasible (GN8) and the table is never an image; the table stands with the header photo meanwhile. View every candidate with `lexsis_assets.view` and run the fit review in `references/workflows/section-asset-workflow.md` section 1b (subject, crop, quiet zone for the copy, consistency with neighbouring slots, palette, no baked-in text or watermark) before it is used. Confirm by eye that no competitor product, logo or text is in frame.
-- Island: `none`; a static HTML table. On 390px the row-label column stays pinned and the option columns scroll, or the rows stack per option; the Tabs island is deprecated and a tabbed table hides the comparison (CSS-only tabs or `<details>` only if a layout truly needs them).
-- Copy: `comparison`; cells at most 6 words; row labels as shopper questions ("Cards it holds"); a price row only when the rival's price is confirmed and dated; "facts checked <month year>" with source URLs.
-- Decide with: `test-data` and `certification` rows for every cell; the ledger's competitor-fact rows.
-
-**`features`** or **`benefits`**
-- Purpose: row-by-row expansion with the proof beside each row.
-- Media: yes; one `detail` macro per contested row where a photo proves it (`scale` or `included-items` where the row is size or contents). Search: catalog media, then library `product-shot`, then merchant upload. Nothing found for a row: ask rule; no generation is feasible for detail, scale or contents (GP14); the row runs as sourced text meanwhile. View every candidate with `lexsis_assets.view` and run the fit review in `references/workflows/section-asset-workflow.md` section 1b (subject, crop, quiet zone for the copy, consistency with neighbouring slots, palette, no baked-in text or watermark) before it is used.
-- Island: `none`.
-- Copy: at most 60 words per row; metrics, not adjectives.
-- Decide with: the rows in the table; ledger rows per row.
-
-**`stats`**
-- Purpose: verified numbers: customers, reviews, years, warranty length.
-- Media: no photography; an award mark only as issuer artwork with a ledger row (`references/proof/press-and-media-mentions.md`). No-go: count-up animation, icon tiles. Any logo or mark is still opened with `lexsis_assets.view` before use.
-- Island: `none`; HTML numbers (StatCards is deprecated).
-- Copy: two to four numbers, each with unit and as-of date where older than 90 days.
-- Decide with: ledger rows for every numeral.
-
-**`reviews`**
-- Purpose: two or three switcher testimonials that name the alternative.
-- Media: `review-with-media` where rights exist; otherwise text; generation is never feasible (GN9). View every candidate with `lexsis_assets.view` and run the fit review in `references/workflows/section-asset-workflow.md` section 1b (subject, crop, quiet zone for the copy, consistency with neighbouring slots, palette, no baked-in text or watermark) before it is used.
-- Island: by band per `references/proof/reviews-sourcing.md`. B1: one quote that names the alternative, static. B2 and above: an average plus n near the verdict and static switcher quotes here; `ReviewCarousel` bound to an active collection built from the `reviews_search` hits only when three or more switcher reviews exist, autoplay off (its default is on, N10); resolve variant and props from `lexsis_design.island_schema`; preset `reviewcarousel/grid-flat`. Intra-brand: the product tag shown on each review. B0: `guarantee` plus product `test-data` replace it; the switching headline becomes a question headline; the omission is recorded.
-- Copy: verbatim, dated, attributed as stored; each quote mentions the switch or the rival category.
-- Decide with: `reviews_search` candidates confirmed by the merchant or an active collection; `reviews_status` band.
-
-**`guarantee`**
-- Purpose: migration and risk reversal: trial nights, returns, warranty, a switcher offer where ledgered.
-- Media: no; a certificate mark only as issuer artwork. Any logo or mark is still opened with `lexsis_assets.view` before use.
-- Island: `none`.
-- Copy: exact terms and policy URL; the switcher offer only from a ledger row (`references/offers/offer-types.md`).
-- Decide with: `guarantee` and offer ledger rows.
-
-**`product-spotlight`** or **`buy-box`**
-- Purpose: our product with price, variant and the CTA; one card per tier for the intra-brand variant.
-- Media: yes; one `identity` image per product or tier from catalog media; `included-items` where the box contents were a row. Nothing found: ask rule; no generation is feasible (GP11). View every candidate with `lexsis_assets.view` and run the fit review in `references/workflows/section-asset-workflow.md` section 1b (subject, crop, quiet zone for the copy, consistency with neighbouring slots, palette, no baked-in text or watermark) before it is used.
-- Island: `BuyBox`, one per page, for a single product, its form decided by the variant count and axes, with `VariantSwatches` when colour variants carry images. Intra-brand tiers: static cards with one identity image and a fit sentence each, `QuickAdd` per card when the page runs cart v2 and the tier needs a variant picker, otherwise a link per tier; at most three tiers. `StickyBar` bound to the buy section after the table for the single-product variant only, no timer. Resolve variant and props from `lexsis_design.island_schema`; presets `buybox/default-light`, `stickybar/product-light`.
-- Copy: `next-step` with a low-pressure verb for search traffic ("Try it for 30 nights"); `add-to-cart` on a buy box or card; per-use or per-meal framing when true; BNPL line under the price on high-ticket rows (`references/offers/offer-types.md`).
-- Decide with: the variant (named competitor, generic, intra-brand); variant count; offer ledger rows.
-
-**`faq`**
-- Purpose: "Is it really better than X?" and decision questions written as self-diagnosis.
-- Media: no.
-- Island: `none`; native `<details>` and `<summary>` (the FAQ island is deprecated).
-- Copy: answers at most 60 words; respectful about the rival.
-- Decide with: `reviews_search` on decision doubts; the concession row.
-
-**`closing-cta`**
-- Purpose: the conditional verdict in one line, then the CTA.
-- Media: optional reuse of the hero identity slot; no new job.
-- Island: `none`; the CTA anchors to the spotlight or buy box.
-- Copy: "If X, they are fine; if Y, choose us"; the same verb as the first CTA.
-- Decide with: the verdict section.
+| Section | Purpose | Media job and source | Interactive decision | Copy constraints | Decision evidence |
+|---|---|---|---|---|---|
+| `hero` | a question or switching headline naming both sides, a one-line pain hook, the table one thumb-scroll away. | yes; `packshot` of our product, or `product-in-hand` for accessories. Search: catalog media `identity`, then library `product-shot`, then merchant upload. Gap: no generation is feasible for the product (GN1) and a backdrop does not fit a compact hero; fast-draft runs the headline over the page background and lists the hero as missing. No-go: a side-by-side with the rival's product photo, a competitor logo, a before-and-after. | `none`; a static `<img>`. The header above it is plain HTML with the logo and one utility link, no `Navbar` island. | H1 at most 12 words with both names as typed in the query, or the ad's claim; a verified count only with a ledger row; no blacklist words (`references/anti-patterns/copy-anti-patterns.md`). | the query or `lexsis_campaigns.analyze`; a `customer-count` row. |
+| `verdict` | one sentence per option stating who it is best for, before the table. | no. | `none`. | one sentence per option; "best for", not "better". | the merchant-confirmed positioning of each option. |
+| `us-vs-them` (`comparison` for the intra-brand variant) | four to six decision rows, outcomes with numbers, our column emphasised by position and a hairline, one row the alternative wins, sources and a checked date under the table. | yes; our `identity` image in the header cell (one per tier for the intra-brand variant), text labels for the others; one `comparison-visual` that shows our attribute physically (thickness, layers, capacity) without the rival's product. Search: catalog media `identity` and `detail`, then library `product-shot`, then merchant upload; the alternative as an inline SVG silhouette labelled "other brands". Nothing found: shared fallback for the comparison visual; generation is not feasible (GN8) and the table is never an image; the table stands with the header photo meanwhile. Confirm by eye that no competitor product, logo or text is in frame. | `none`; a static HTML table. On 390px the row-label column stays pinned and the option columns scroll, or the rows stack per option; the Tabs island is deprecated and a tabbed table hides the comparison (CSS-only tabs or `<details>` only if a layout truly needs them). | `comparison`; cells at most 6 words; row labels as shopper questions ("Cards it holds"); a price row only when the rival's price is confirmed and dated; "facts checked <month year>" with source URLs. | `test-data` and `certification` rows for every cell; the ledger's competitor-fact rows. |
+| `features` or `benefits` | row-by-row expansion with the proof beside each row. | yes; one `detail` macro per contested row where a photo proves it (`scale` or `included-items` where the row is size or contents). Search: catalog media, then library `product-shot`, then merchant upload. Gap for a row: shared fallback; no generation is feasible for detail, scale or contents (GP14); the row runs as sourced text meanwhile. | `none`. | at most 60 words per row; metrics, not adjectives. | the rows in the table; ledger rows per row. |
+| `stats` | verified numbers: customers, reviews, years, warranty length. | no photography; an award mark only as issuer artwork with a ledger row (`references/proof/press-and-media-mentions.md`). No-go: count-up animation, icon tiles. Any logo or mark is still opened with `lexsis_assets.view` before use. | `none`; HTML numbers (StatCards is deprecated). | two to four numbers, each with unit and as-of date where older than 90 days. | ledger rows for every numeral. |
+| `reviews` | two or three switcher testimonials that name the alternative. | `review-with-media` where rights exist; otherwise text; generation is never feasible (GN9). | by band per `references/proof/reviews-sourcing.md`. B1: one quote that names the alternative, static. B2 and above: an average plus n near the verdict and static switcher quotes here; `ReviewCarousel` bound to an active collection built from the `reviews_search` hits only when three or more switcher reviews exist, autoplay off (its default is on, N10). Intra-brand: the product tag shown on each review. B0: `guarantee` plus product `test-data` replace it; the switching headline becomes a question headline; the omission is recorded. | verbatim, dated, attributed as stored; each quote mentions the switch or the rival category. | `reviews_search` candidates confirmed by the merchant or an active collection; `reviews_status` band. |
+| `guarantee` | migration and risk reversal: trial nights, returns, warranty, a switcher offer where ledgered. | no; a certificate mark only as issuer artwork. Any logo or mark is still opened with `lexsis_assets.view` before use. | `none`. | exact terms and policy URL; the switcher offer only from a ledger row (`references/offers/offer-types.md`). | `guarantee` and offer ledger rows. |
+| `product-spotlight` or `buy-box` | our product with price, variant and the CTA; one card per tier for the intra-brand variant. | yes; one `identity` image per product or tier from catalog media; `included-items` where the box contents were a row. Gap: no generation is feasible (GP11). | `BuyBox`, one per page, for a single product, its form decided by the variant count and axes, with `VariantSwatches` when colour variants carry images. Intra-brand tiers: static cards with one identity image and a fit sentence each, `QuickAdd` per card when the page runs cart v2 and the tier needs a variant picker, otherwise a link per tier; at most three tiers. `StickyBar` bound to the buy section after the table for the single-product variant only, no timer. | `next-step` with a low-pressure verb for search traffic ("Try it for 30 nights"); `add-to-cart` on a buy box or card; per-use or per-meal framing when true; BNPL line under the price on high-ticket rows (`references/offers/offer-types.md`). | the variant (named competitor, generic, intra-brand); variant count; offer ledger rows. |
+| `faq` | "Is it really better than X?" and decision questions written as self-diagnosis. | no. | `none`; native `<details>` and `<summary>`. | answers at most 60 words; respectful about the rival. | `reviews_search` on decision doubts; the concession row. |
+| `closing-cta` | the conditional verdict in one line, then the CTA. | optional reuse of the hero identity slot; no new job. | `none`; the CTA anchors to the spotlight or buy box. | "If X, they are fine; if Y, choose us"; the same verb as the first CTA. | the verdict section. |
 
 ### Asset budget
+
 | Source | Usually supplies | Usually missing | Per gap |
 |---|---|---|---|
 | catalog media (N images) | `identity`, some `detail` | the `comparison-visual` (attribute shown physically), a macro per contested row, `included-items` | ask the merchant to upload the row's photo (identity-bound, no generation); the row runs as sourced text meanwhile |
@@ -133,7 +79,7 @@ Ask rule, used by every Media line below: tell the merchant what is missing (job
 | ad creatives | the two columns and the claim for a comparison ad | imagery (the ad's rival side is never reused) | only the claim and column names travel to the page |
 | generation | `texture_fill`, a `decorative_element`; the alternative's silhouette is authored SVG, not generated | product, competitor products, people, results, logos, text | never; ask the merchant to upload instead |
 
-With only an identity shot the page still ships: hero, verdict, the HTML table with the identity image in its header, stats, switcher quotes at any band above B0, guarantee, spotlight with the same image, faq, closing; `features` runs as sourced text rows and the missing macros are listed with the upload offer. Generated assets: at most four per page, usually zero. Nothing is used sight unseen: every asset in this table is opened with `lexsis_assets.view` and passes the section 1b fit review before it is assigned.
+With only an identity shot the page still ships: hero, verdict, the HTML table with the identity image in its header, stats, switcher quotes at any band above B0, guarantee, spotlight with the same image, faq, closing; `features` runs as sourced text rows and the missing macros are listed with the upload offer. Generated assets: at most four per page, usually zero.
 
 ## Above the fold (390px)
 

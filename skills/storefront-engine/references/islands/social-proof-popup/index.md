@@ -1,19 +1,10 @@
-# SocialProofPopup — Island Directory
+# SocialProofPopup
 
-Displays real-time purchase notifications or activity counts as toast popups or banners.
+Do not use this component for new pages; the proof-ledger policy disallows
+activity-popup proof. Use `references/proof/proof-ledger.md` and the selected
+page type to choose an eligible form of evidence.
 
-## Quick Reference
-
-- **Variants**: none (position-controlled)
-- **Required props**: `position`, `delayMs`, `durationMs`
-- **Schema**: `vibe://schema/island/SocialProofPopup`
-- **Contract**: follows `_contract.md` rules
-
-## Composition
-
-- Always placed in a hidden/utility section (`class="hidden"`)
-- Island renders its own fixed-position overlay — section is just a mount point
-- Max 1 SocialProofPopup per page
-- Do not pair with StickyBar on same edge (visual collision)
-- `top-banner` conflicts with sticky Navbar — use bottom variants when Navbar is sticky
-- Default timing: 5000ms delay, 4000ms display duration
+`references/workflows/island-selection-workflow.md` owns selection and
+linked state. `references/authoring/source-authoring.md` owns source syntax;
+`references/authoring/css-and-styling.md` owns styling. Placement and evidence
+come from the selected page-type contract and its domain policies.

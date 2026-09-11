@@ -1,17 +1,12 @@
-# PaymentOptions — Island Directory
+# PaymentOptions
 
-Displays accepted payment methods (Visa, MC, Apple Pay, Shop Pay, etc.).
+For `PaymentOptions`, fetch `lexsis_design.islands` and
+`lexsis_design.island_schema` during the decision that needs this behavior.
+Use the current authoring example, variants, props, parts, hydration and
+headless support; the bundled JSON is a compatibility reference, not a
+second source of defaults.
 
-## Quick Reference
-
-- **Variants**: inline, expandable, icons_only
-- **Required prop**: none (auto-detects from store)
-- **Schema**: `vibe://schema/island/PaymentOptions`
-- **Contract**: follows `_contract.md` rules
-
-## Composition
-
-- Place below BuyBox CTA button
-- Or in footer trust section
-- Inline: single row, centered or left-aligned
-- Never above the CTA (distracts from purchase action)
+`references/workflows/island-selection-workflow.md` owns selection and
+linked state. `references/authoring/source-authoring.md` owns source syntax;
+`references/authoring/css-and-styling.md` owns styling. Placement and evidence
+come from the selected page-type contract and its domain policies.

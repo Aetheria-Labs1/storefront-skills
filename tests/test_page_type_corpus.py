@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 REFS = ROOT / "skills" / "storefront-engine" / "references"
 PAGE_TYPES = REFS / "page-types"
 FORMAT = (PAGE_TYPES / "_checklist-format.md").read_text(encoding="utf-8")
-LINT = ROOT / "skills" / "plan-page" / "scripts" / "plan_lint.py"
+LINT = ROOT / "tests/support/plan_lint.py"
 
 REQUIRED_HEADINGS = [
     "## Identify it", "## Anatomy", "## Workflow", "### Context reads",
@@ -62,6 +62,12 @@ class PageTypeCorpusTests(unittest.TestCase):
             text = path.read_text(encoding="utf-8")
             for heading in REQUIRED_HEADINGS:
                 self.assertIn(heading, text, (path.name, heading))
+            self.assertIn("references/workflows/_how-to-read.md", text, path.name)
+            self.assertIn(
+                "| Section | Purpose | Media job and source | Interactive decision | Copy constraints | Decision evidence |",
+                text,
+                path.name,
+            )
             data = checklist(path)
             self.assertEqual(data["page_type"], path.stem, path.name)
             self.assertTrue(REQUIRED_KEYS <= set(data), (path.name, REQUIRED_KEYS - set(data)))

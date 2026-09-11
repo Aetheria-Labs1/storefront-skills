@@ -1,17 +1,12 @@
-# ImageZoom — Island Directory
+# ImageZoom
 
-Product image magnification island. Enables close-up inspection of product details.
+For `ImageZoom`, fetch `lexsis_design.islands` and
+`lexsis_design.island_schema` during the decision that needs this behavior.
+Use the current authoring example, variants, props, parts, hydration and
+headless support; the bundled JSON is a compatibility reference, not a
+second source of defaults.
 
-## Quick Reference
-
-- **Variants**: hover, lightbox, magnifier
-- **Required prop**: `src` (image URL)
-- **Schema**: `vibe://schema/island/ImageZoom`
-- **Contract**: follows `_contract.md` rules
-
-## Composition
-
-- Pair with: ProductGallery, BuyBox, BeforeAfter
-- Use for product detail close-ups (texture, stitching, ingredients label)
-- Place within or adjacent to gallery area
-- Never stack multiple ImageZoom islands for the same product — use gallery carousel instead
+`references/workflows/island-selection-workflow.md` owns selection and
+linked state. `references/authoring/source-authoring.md` owns source syntax;
+`references/authoring/css-and-styling.md` owns styling. Placement and evidence
+come from the selected page-type contract and its domain policies.

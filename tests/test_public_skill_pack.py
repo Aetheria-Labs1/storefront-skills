@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import importlib.util
 import json
 import re
 import subprocess
@@ -121,7 +120,7 @@ class PublicSkillPackTests(unittest.TestCase):
             self.assertNotIn("visual-source.html", path.read_text(encoding="utf-8"), path)
 
     def test_design_lint_fixture_exit_codes(self) -> None:
-        script = SKILLS / "design-page" / "scripts" / "design_lint.py"
+        script = ROOT / "tests/support/design_lint.py"
         fixtures = ROOT / "tests" / "fixtures" / "design-lint"
         rejected = subprocess.run(
             [sys.executable, str(script), str(fixtures / "rejected")],
@@ -171,10 +170,11 @@ class PublicSkillPackTests(unittest.TestCase):
             "generation-protocol",
         ):
             text = (references / f"{name}.md").read_text(encoding="utf-8")
-            self.assertIn("House rules in `storefront-engine/references/design-rules.md`", text, name)
+            self.assertIn("design-rules.md", text, name)
             self.assertNotIn("hover:scale", text, name)
         motion = (references / "animation-system.md").read_text(encoding="utf-8")
-        self.assertIn("The active storefront design rules override every example below.", motion)
+        self.assertIn("references/design-rules.md", motion)
+        self.assertNotIn("override every example below", motion)
         self.assertNotIn(
             "Color Temperature Flow",
             (references / "plan-page.md").read_text(encoding="utf-8"),
@@ -188,7 +188,7 @@ class PublicSkillPackTests(unittest.TestCase):
             "## Design Direction Gate",
             "## Hosted Design Review",
             "## Asset Gap Confirmation",
-            "qa-report.md",
+            "hosted URL and tested version",
         ):
             self.assertIn(block, design)
 
@@ -206,7 +206,7 @@ class PublicSkillPackTests(unittest.TestCase):
             "Gallery Job Coverage",
             "two or three relevant products",
             "Do not add a carousel",
-            "Never ask “Do you want custom images?”",
+            'Never ask "Do you want custom images?"',
             "## Consumer decision model",
         ):
             self.assertIn(phrase, text)
@@ -242,7 +242,7 @@ class PublicSkillPackTests(unittest.TestCase):
         self.assertIn("### Proof ledger", text)
         self.assertIn("### Offer ledger", text)
         self.assertIn("## Identify the Page Type", text)
-        self.assertIn("plan_lint.py", text)
+        self.assertIn("Review the checklist", text)
         self.assertIn("lexsis_assets.view", text)
         self.assertIn("section-asset-workflow.md", text)
         self.assertIn("Design template selection", text)
@@ -273,7 +273,7 @@ class PublicSkillPackTests(unittest.TestCase):
         )
         self.assertIn("DRAFT_CREATED", text)
         self.assertIn("DRAFT_READY", text)
-        self.assertIn("--phase draft-created", text)
+        self.assertIn("No workspace adapter", text)
         self.assertIn("Do not call\n`lexsis_page_create.create` again", text)
 
     def test_design_page_supports_optional_existing_tool_concepts(self) -> None:
@@ -321,54 +321,17 @@ class PublicSkillPackTests(unittest.TestCase):
         self.assertIn("Sub-agents never spend credits", reference)
         self.assertFalse((SKILLS / "experiment").exists())
 
-    def test_workspace_compile_adapter_preserves_exact_inputs(self) -> None:
-        script_path = (
-            SKILLS / "generate" / "scripts" / "prepare_workspace_compile.py"
-        )
-        spec = importlib.util.spec_from_file_location(
-            "prepare_workspace_compile",
-            script_path,
-        )
-        assert spec and spec.loader
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
-
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            source = "<!-- section: hero -->\n<section id=\"hero\">Hello</section>\n"
-            theme = ":root { --lx-font-body: system-ui, sans-serif; }\n"
-            (root / "lexsis-source.html").write_text(source, encoding="utf-8")
-            (root / "page-theme.css").write_text(theme, encoding="utf-8")
-            (root / "page-manifest.json").write_text(
-                json.dumps(
-                    {
-                        "page": {
-                            "title": "Hello",
-                            "handle": "hello",
-                            "archetype": "landing",
-                        },
-                        "workspaceId": "workspace",
-                        "storeId": "store",
-                        "themeId": "theme",
-                        "config": {
-                            "head": {"title": "Hello"},
-                            "scripts": [],
-                            "productBinding": {"product_id": "product"},
-                            "commerceConfig": {},
-                        },
-                    }
-                ),
-                encoding="utf-8",
-            )
-            payload = module.prepare(root)
-
-        self.assertEqual(source, payload["compile"]["source"])
-        self.assertEqual(theme, payload["compile"]["theme_css"])
-        self.assertFalse(payload["create"]["publish"])
-        self.assertEqual(
-            {"product_id": "product"},
-            payload["create"]["product_binding"],
-        )
+    def test_public_skills_ship_no_local_page_qa_tooling(self) -> None:
+        for skill in ("generate", "design-page", "plan-page"):
+            self.assertEqual(list((SKILLS / skill / "scripts").glob("*.py")), [])
+        for path in [*SKILLS.glob("*/SKILL.md"), *PLUGIN_AGENTS.glob("*.md")]:
+            content = path.read_text()
+            for retired in ("lexsis-source.html", "page-theme.css", "plan_lint.py", "design_lint.py", "prepare_workspace_compile", "validate_page_workspace"):
+                self.assertNotIn(retired, content, path)
+        source = (SKILLS / "storefront-engine/references/source-artifact-workflow.md").read_text()
+        self.assertIn("Never combine the two input modes", source)
+        self.assertIn("expected_version", source)
+        self.assertIn("only preview", source)
 
     def test_visual_page_was_replaced(self) -> None:
         self.assertFalse((SKILLS / "visual-page").exists())

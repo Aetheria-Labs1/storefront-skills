@@ -77,8 +77,8 @@ Both files are **generated** from the canonical skills by `scripts/build-distrib
   gifting, launch, subscription, UGC, homepage, collection and more), each with
   mandatory and forbidden sections, an above-the-fold recipe, proof density,
   CTA and price rules, imagery jobs, a step-by-step `## Workflow` (context reads, then per section:
-  media, island, copy) and a machine-readable default checklist that
-  `plan_lint.py` reviews
+  media, island, copy) and a machine-readable default checklist shared by
+  hosted review and repository regression tests
 - **Proof, offer, asset, anti-pattern and copy rule corpora**
   (`references/proof/`, `offers/`, `assets/`, `anti-patterns/`, `copy/`):
   review sourcing with a zero-review playbook, press and badge verification,
@@ -95,7 +95,7 @@ Both files are **generated** from the canonical skills by `scripts/build-distrib
 - A consumer-behavior CRO framework that turns shopper uncertainty, gallery
   gaps, compatibility, solution completion, trust, and mobile context into
   page-specific hypotheses instead of generic conversion modules
-- **47 active islands** plus 7 deprecated compatibility contracts under
+- **47 active islands** plus 8 deprecated compatibility contracts under
   `skills/storefront-engine/references/islands/`
 - Vertical expertise: beauty, supplements, fashion, food, luxury, home
 - Traffic-source patterns: Meta, Google, TikTok
@@ -157,13 +157,15 @@ The fast unpublished-draft routes are:
 When several saved stores or themes are available, every page records the
 selected `storeId` and `themeId`; it never silently switches themes. Commands
 remain independently invokable, and explicitly skipped steps are recorded in
-the page manifest.
+the task handoff.
 
 `design-page` can first generate a mobile-first visual concept with the
 existing Lexsis image tools when the user wants to approve the look. Concept
 images remain non-production evidence. It then inventories existing assets,
 asks once before generating missing media, authors readable `<lx-island>`
-source, compiles it, and creates one unpublished hosted draft. The hosted
+source, compiles it, and creates one unpublished hosted draft. Source and
+optional theme CSS go directly to MCP; there are no per-page source files,
+compile artifacts, local preview builds or local QA steps. The hosted
 renderer is the only interactive preview. `/generate` reuses that draft for
 tablet, synchronization, and commerce QA.
 

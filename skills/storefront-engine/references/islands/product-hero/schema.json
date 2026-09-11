@@ -182,21 +182,6 @@
     ],
     "headless": {
       "supported": false
-    },
-    "example": "<lx-island name=\"ProductHero\">\n  <script type=\"application/json\">\n{\n  \"images\": [\n    {\n      \"url\": \"example-url\"\n    }\n  ]\n}\n  </script>\n</lx-island>",
-    "examples": [
-      {
-        "label": "Split-left hero with thumbnail rail and autoplay",
-        "source": "<lx-island name=\"ProductHero\">\n  <script type=\"application/json\">{\"images\":[{\"url\":\"https://via.placeholder.com/800x1000\",\"alt\":\"Product 1\"},{\"url\":\"https://via.placeholder.com/800x1000\",\"alt\":\"Product 2\"},{\"url\":\"https://via.placeholder.com/800x1000\",\"alt\":\"Product 3\"}],\"layout\":\"splitLeft\",\"thumbnails\":\"rail\",\"thumbnailPosition\":\"left\",\"autoplay\":true,\"transition\":\"fade\"}</script>\n</lx-island>"
-      },
-      {
-        "label": "Full-height cinematic with kenBurns",
-        "source": "<lx-island name=\"ProductHero\">\n  <script type=\"application/json\">{\"images\":[{\"url\":\"https://via.placeholder.com/1200x800\",\"alt\":\"Hero 1\"},{\"url\":\"https://via.placeholder.com/1200x800\",\"alt\":\"Hero 2\"}],\"layout\":\"fullHeight\",\"transition\":\"kenBurns\",\"autoplay\":true,\"thumbnails\":\"none\",\"navigation\":\"none\"}</script>\n</lx-island>"
-      },
-      {
-        "label": "Hover-advance, no arrows",
-        "source": "<lx-island name=\"ProductHero\">\n  <script type=\"application/json\">{\"images\":[{\"url\":\"https://via.placeholder.com/800\",\"alt\":\"A\"},{\"url\":\"https://via.placeholder.com/800\",\"alt\":\"B\"}],\"hoverAdvance\":true,\"thumbnails\":\"rail\",\"navigation\":\"none\"}</script>\n</lx-island>"
-      }
-    ]
+    }
   }
 }

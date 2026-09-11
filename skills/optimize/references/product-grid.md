@@ -1,166 +1,44 @@
-# Product Grid & Cards
+# Product grid mechanics
 
-> **One example below is not compilable.** The hover-advance card carousel uses
-> `addEventListener`, `setInterval` and `clearInterval`. Section JS is
-> lifecycle-wrapped and may not use raw listeners on elements it did not
-> receive, unmanaged timers or global access, so the compiler rejects it. Use
-> CSS scroll-snap for a swipeable row, a media or product island for an
-> advancing one, or a managed motion module for the plan's single motion
-> moment (`references/animation-system.md`). Hover-advance is also a
-> hover-only interaction, which fails on touch
-> (`references/anti-patterns/mobile-anti-patterns.md`).
+The collection contract in `references/page-types/collection-landing.md`
+owns product count, filtering decisions, placement, and card content.
+This file only implements a static, accessible product list.
 
-> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
-
-Use static HTML only for non-commerce editorial cards. For a live collection,
-use `FeaturedCollectionStage` so product IDs resolve complete titles, prices,
-media, options, variants, and availability and so the compiler can recognize
-cart capability.
-
-## Single Product Card
+## Source shape
 
 ```html
-<div style="display:flex; flex-direction:column; gap:0.75rem">
-  <div style="aspect-ratio:3/4; overflow:hidden; border-radius:0.5rem; background:#f9fafb">
-    <img src="https://cdn.shopify.com/..." alt="Product Name" style="width:100%; height:100%; object-fit:cover" />
-  </div>
-  <div>
-    <h3 style="font-size:0.875rem; font-weight:500; margin:0">Product Name</h3>
-    <p style="font-size:0.875rem; color:#6b7280; margin:0.25rem 0 0">$49.00</p>
-  </div>
-</div>
+<!-- section: product-grid -->
+<section id="product-grid" class="px-4 py-16">
+  <h2>Explore the collection</h2>
+  <ul class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+    <li>
+      <article>
+        <a href="{{PRODUCT_URL}}" class="block min-h-[48px]">
+          <img src="{{IMAGE_URL}}" alt="{{PRODUCT_ALT}}"
+               width="640" height="800" loading="lazy">
+          <h3>{{PRODUCT_TITLE}}</h3>
+        </a>
+        <p>{{PRODUCT_PRICE}}</p>
+      </article>
+    </li>
+  </ul>
+</section>
 ```
 
-## Responsive Grid (2-col mobile, 4-col desktop)
+Bind every token to real catalogue data before compiling. Repeat the article
+for each selected product; the product link is navigation, not an add-to-cart
+substitute. Reviews and price annotations follow the type's proof/offer
+references rather than fabricated card metadata.
 
-```html
-<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(min(100%,12rem),1fr)); gap:1.5rem">
-  <!-- product cards here -->
-</div>
-```
+## Interaction boundary
 
-## With Multi-Image Hover (CSS-only)
+Resolve quick-add or variant selection through
+`references/workflows/island-selection-workflow.md`. Keep its actual product
+binding and current availability; do not attach a parallel cart handler.
+Native links remain usable before hydration. Additional images may be
+explicitly selected or horizontally scrolled by the shopper; do not rotate
+card images on timers or hijack wheel input. See `references/scroll-patterns.md`.
 
-For product cards with image swap on hover (shows second image):
-
-```html
-<div class="product-card" style="position:relative; aspect-ratio:3/4; overflow:hidden; border-radius:0.5rem">
-  <img class="img-primary" src="https://cdn.shopify.com/.../front.jpg" alt="Product" style="width:100%; height:100%; object-fit:cover; transition:opacity 0.3s" />
-  <img class="img-hover" src="https://cdn.shopify.com/.../back.jpg" alt="" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity 0.3s" />
-</div>
-```
-
-CSS (in section css field):
-```css
-.product-card:hover .img-primary { opacity: 0; }
-.product-card:hover .img-hover { opacity: 1; }
-```
-
-## With Multi-Image Carousel (section JS)
-
-For a proper multi-image carousel within a card (auto-advance or swipe):
-
-```html
-<div class="card-carousel" data-images='["img1.jpg","img2.jpg","img3.jpg"]' style="position:relative; aspect-ratio:3/4; overflow:hidden; border-radius:0.5rem">
-  <img class="carousel-img" src="img1.jpg" alt="Product" style="width:100%; height:100%; object-fit:cover; transition:opacity 0.4s" />
-  <div class="carousel-dots" style="position:absolute; bottom:0.5rem; left:50%; transform:translateX(-50%); display:flex; gap:0.25rem">
-    <span style="width:6px; height:6px; border-radius:50%; background:#fff; opacity:1"></span>
-    <span style="width:6px; height:6px; border-radius:50%; background:#fff; opacity:0.5"></span>
-    <span style="width:6px; height:6px; border-radius:50%; background:#fff; opacity:0.5"></span>
-  </div>
-</div>
-```
-
-JS (in section js field):
-```js
-section.querySelectorAll('.card-carousel').forEach(carousel => {
-  const images = JSON.parse(carousel.dataset.images);
-  const img = carousel.querySelector('.carousel-img');
-  const dots = carousel.querySelectorAll('.carousel-dots span');
-  let idx = 0;
-  carousel.addEventListener('mouseenter', () => {
-    const timer = setInterval(() => {
-      idx = (idx + 1) % images.length;
-      img.src = images[idx];
-      dots.forEach((d, i) => d.style.opacity = i === idx ? '1' : '0.5');
-    }, 1200);
-    carousel._timer = timer;
-  });
-  carousel.addEventListener('mouseleave', () => {
-    clearInterval(carousel._timer);
-    idx = 0;
-    img.src = images[0];
-    dots.forEach((d, i) => d.style.opacity = i === 0 ? '1' : '0.5');
-  });
-});
-```
-
-## Native Collection Quick Add
-
-Author one source-format island and bind it with product IDs. Do not inject
-buttons with section JavaScript, mutation observers, or hardcoded variant IDs.
-
-```html
-<lx-island name="FeaturedCollectionStage" hydrate="immediate">
-  <script type="application/json">
-    {
-      "productIds": [
-        "gid://shopify/Product/PRODUCT_ONE",
-        "gid://shopify/Product/PRODUCT_TWO",
-        "gid://shopify/Product/PRODUCT_THREE"
-      ],
-      "quickAdd": {
-        "enabled": true,
-        "placement": "media-top-right",
-        "label": "Quick add",
-        "openCartOnAdd": true,
-        "picker": {
-          "desktop": "drawer-right",
-          "mobile": "bottom-sheet",
-          "title": "Choose a size",
-          "closeOnAdd": true
-        }
-      }
-    }
-  </script>
-</lx-island>
-```
-
-Key points:
-
-- Use either `productIds` or `products`, never both.
-- Prefer `productIds` when live catalogue resolution is available.
-- `products` is a lightweight resolution input and must not replace resolved
-  title, price, media, options, variants, or availability.
-- `media-top-right` anchors the action to the media container.
-- Multi-variant products open the responsive picker; only true single-variant
-  products add directly.
-- Sold-out variants remain visible but disabled.
-- Use `immediate` for above-the-fold commerce grids. If `visible` is used
-  below the fold, the runtime must pre-hydrate before entry and retain the
-  server-rendered cards until hydration is ready.
-
-## "Buy Together" / Upsell Grid
-
-```html
-<div style="display:flex; gap:1rem; align-items:center; padding:1.5rem; border:1px solid #e5e7eb; border-radius:0.75rem">
-  <!-- Main product -->
-  <div style="flex:1; text-align:center">
-    <img src="..." alt="Main" style="width:80px; height:80px; object-fit:cover; border-radius:0.5rem" />
-    <div style="font-size:0.75rem; margin-top:0.5rem">Main Product</div>
-  </div>
-  <span style="font-size:1.5rem; color:#6b7280">+</span>
-  <!-- Upsell -->
-  <div style="flex:1; text-align:center">
-    <img src="..." alt="Upsell" style="width:80px; height:80px; object-fit:cover; border-radius:0.5rem" />
-    <div style="font-size:0.75rem; margin-top:0.5rem">Complement Product</div>
-  </div>
-  <span style="font-size:1.5rem; color:#6b7280">=</span>
-  <!-- Bundle price -->
-  <div style="flex:1; text-align:center">
-    <div style="font-size:1.25rem; font-weight:700">$79</div>
-    <div style="font-size:0.75rem; color:#10b981">Save $20</div>
-    <!-- Use a supported bundle/cart island with live resolved variant data. -->
-  </div>
-</div>
-```
+For bundles or complementary products, the type and
+`references/consumer-behavior-cro.md` determine the relationship. A generic
+product list is not evidence that the products belong together.

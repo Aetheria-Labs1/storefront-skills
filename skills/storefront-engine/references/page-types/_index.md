@@ -5,7 +5,7 @@ exactly one before it searches templates, assets or proof, records it in the
 `## Page type` block and in `page.pageType`, and then loads only that type's
 file. `/design-page`, `/build` and `/generate` re-read the same file. Each
 type file follows `references/page-types/_checklist-format.md` and ends with
-a JSON checklist that `plan-page/scripts/plan_lint.py` enforces.
+a JSON checklist shared by the workflow and repository contract tests.
 
 ## 1. Inputs to read from the brief
 
@@ -29,45 +29,45 @@ section 4.
 
 ```text
 Is the visitor's job to BUY (or add to cart) on this page?
-├── no ─ what is the job?
-│   ├── answer questions / route to the right product ........... quiz-funnel
-│   ├── leave an email or phone (giveaway, waitlist, early access)
-│   │   ├── product not yet purchasable ....................... launch-waitlist-preorder
-│   │   └── incentive or contest ............................... lead-capture-giveaway
-│   ├── read a story, learn who we are ......................... brand-story-founder
-│   ├── understand the science, ingredients, materials, method . ingredient-science
-│   ├── browse many products
-│   │   ├── whole store, first visit ........................... homepage
-│   │   ├── one category or collection ......................... collection-landing
-│   │   ├── by recipient or price for a holiday ................ gift-guide
-│   │   └── outfits, rooms, looks with shoppable items ......... lookbook-shop-the-look
-│   ├── get help, policies, answers ............................ faq-support-led
-│   ├── refer a friend, join a programme, see tiers ............ referral-loyalty-vip
-│   ├── just paid; what next .................................... thank-you-post-purchase
-│   └── order in volume for resale ............................. wholesale-b2b
-└── yes ─ has the visitor already seen this product or brand?
-    ├── no (cold) ─ what brought them?
-    │   ├── a social ad with a story or problem hook (meta, tiktok, native)
-    │   │   ├── long-read wanted, price hidden until late ...... advertorial
-    │   │   ├── "N reasons / best X" list framing ............. listicle
-    │   │   ├── creator or customer video is the hero .......... ugc-creator-collab
-    │   │   ├── one long video does the selling ................ video-sales-page
-    │   │   └── direct-response, single product, single CTA .... ad-landing-page
-    │   ├── a search for the product or category (google, shopping)
-    │   │   ├── "X vs Y", "alternatives" ....................... comparison-us-vs-them
-    │   │   ├── "best X", "top N X", buyer's guide, roundup ..... seo-buyers-guide
-    │   │   └── product or category intent ..................... pdp (search-intent variant)
-    │   └── a sample, trial or starter offer ................... trial-sample
-    └── yes (warm or hot) ─ what is the page selling?
-        ├── one product at full price, full store context ....... pdp
-        ├── one product, paid-traffic focus, no navigation ...... pdp-hybrid-landing
-        ├── two or more products as a set or configurator ....... bundle-kit
-        ├── a recurring plan ..................................... subscription
-        ├── a specific discount, code, GWP or BOGO .............. offer-page
-        ├── many products at reduced prices for a window ........ sale-clearance-flash
-        ├── an occasion or holiday assortment .................... seasonal-gifting
-        ├── a product that is back or newly available ............ restock
-        └── a return visit after abandonment or a prior view ..... retargeting-warm
++-- no - what is the job?
+|   +-- answer questions / route to the right product ........... quiz-funnel
+|   +-- leave an email or phone (giveaway, waitlist, early access)
+|   |   +-- product not yet purchasable ....................... launch-waitlist-preorder
+|   |   +-- incentive or contest ............................... lead-capture-giveaway
+|   +-- read a story, learn who we are ......................... brand-story-founder
+|   +-- understand the science, ingredients, materials, method . ingredient-science
+|   +-- browse many products
+|   |   +-- whole store, first visit ........................... homepage
+|   |   +-- one category or collection ......................... collection-landing
+|   |   +-- by recipient or price for a holiday ................ gift-guide
+|   |   +-- outfits, rooms, looks with shoppable items ......... lookbook-shop-the-look
+|   +-- get help, policies, answers ............................ faq-support-led
+|   +-- refer a friend, join a programme, see tiers ............ referral-loyalty-vip
+|   +-- just paid; what next .................................... thank-you-post-purchase
+|   +-- order in volume for resale ............................. wholesale-b2b
++-- yes - has the visitor already seen this product or brand?
+    +-- no (cold) - what brought them?
+    |   +-- a social ad with a story or problem hook (meta, tiktok, native)
+    |   |   +-- long-read wanted, price hidden until late ...... advertorial
+    |   |   +-- "N reasons / best X" list framing ............. listicle
+    |   |   +-- creator or customer video is the hero .......... ugc-creator-collab
+    |   |   +-- one long video does the selling ................ video-sales-page
+    |   |   +-- direct-response, single product, single CTA .... ad-landing-page
+    |   +-- a search for the product or category (google, shopping)
+    |   |   +-- "X vs Y", "alternatives" ....................... comparison-us-vs-them
+    |   |   +-- "best X", "top N X", buyer's guide, roundup ..... seo-buyers-guide
+    |   |   +-- product or category intent ..................... pdp (search-intent variant)
+    |   +-- a sample, trial or starter offer ................... trial-sample
+    +-- yes (warm or hot) - what is the page selling?
+        +-- one product at full price, full store context ....... pdp
+        +-- one product, paid-traffic focus, no navigation ...... pdp-hybrid-landing
+        +-- two or more products as a set or configurator ....... bundle-kit
+        +-- a recurring plan ..................................... subscription
+        +-- a specific discount, code, GWP or BOGO .............. offer-page
+        +-- many products at reduced prices for a window ........ sale-clearance-flash
+        +-- an occasion or holiday assortment .................... seasonal-gifting
+        +-- a product that is back or newly available ............ restock
+        +-- a return visit after abandonment or a prior view ..... retargeting-warm
 ```
 
 ## 2b. Keyword lookup
@@ -115,36 +115,36 @@ A fast first pass before the tree. The tree still decides.
 
 | Type id | One line | Stage | Awareness | Typical traffic | Length | CTAs | Proof | Nav |
 |---|---|---|---|---|---|---|---|---|
-| `ad-landing-page` | Single product, single CTA, message-matched to a paid ad | tof/mof | problem→product | meta, tiktok, google | 8–11 | 3 | 2–4 | none |
-| `pdp` | Full product page inside the store; gallery, buy box, details, reviews | mof/bof | product/most | organic, search, email, nav | 7–11 | 2 | 2–4 | full |
-| `pdp-hybrid-landing` | PDP anatomy with landing-page focus: no nav, ad message match, one goal | mof | solution→product | meta, google shopping | 8–11 | 2–3 | 2–4 | none |
-| `advertorial` | Editorial article that sells by story; price and CTA arrive late | tof | unaware/problem | meta, native, tiktok | 8–12 | 1–3 | 2–4 | none |
-| `listicle` | Numbered reasons for one product; each reason answers an objection and earns a click | tof/mof | problem/solution | meta, tiktok | 8–13 | 3–6 | 2–4 | none/minimal |
-| `seo-buyers-guide` | Search-intent roundup or "best X" guide: TOC, methodology, ranked entries, comparison table | tof/mof | problem/solution | google organic, google ads | 9–14 | per entry + 1 | 2–4 | full |
-| `comparison-us-vs-them` | Attribute table against named or generic alternatives | mof | solution/product | google, retargeting | 7–10 | 2–3 | 2–3 | minimal |
-| `quiz-funnel` | Questions route the visitor to a recommendation | tof/mof | problem/solution | meta, tiktok, email | 4–7 | 1 + result | 1–2 | none |
-| `bundle-kit` | Fixed or build-your-own set with visible savings math | mof/bof | product | email, pdp cross-link, ads | 7–10 | 2 | 2–3 | minimal/full |
-| `offer-page` | One named promotion (code, GWP, BOGO, first order) | mof/bof | product/most | email, sms, retargeting | 6–9 | 2–3 | 1–3 | minimal |
-| `sale-clearance-flash` | Many products, reduced prices, real window | bof | most | email, sms, social | 5–8 | per card | 1–2 | full |
-| `seasonal-gifting` | Occasion assortment with delivery cutoffs and gift options | mof | solution/product | email, social, search | 7–10 | per card + 1 | 1–3 | full |
-| `gift-guide` | Curated picks by recipient or price band | tof/mof | solution | organic, email, social | 6–9 | per card | 1–2 | full |
-| `launch-waitlist-preorder` | Not yet buyable: capture intent or take pre-orders | tof/mof | problem/solution | email, social, PR | 6–9 | 1–2 | 1–3 | minimal |
-| `restock` | Product is back; convert the demand already there | bof/retention | most | email, sms | 5–7 | 2 | 1–2 | minimal |
-| `subscription` | Recurring plan; cadence, savings, cancellation clarity | mof/bof | product | pdp, email, ads | 7–10 | 2 | 2–3 | minimal/full |
-| `ugc-creator-collab` | Creator or customer content is the hero and the proof | tof/mof | problem/solution | tiktok, instagram, influencer | 6–9 | 2–3 | 3–5 | none |
-| `video-sales-page` | One long video, then the offer | tof/mof | problem/solution | meta, youtube, email | 5–8 | 1–2 | 1–3 | none |
-| `brand-story-founder` | Who we are and why; sells belief, not a SKU | tof/retention | unaware/problem | organic, nav, PR | 6–9 | 1–2 | 1–2 | full |
-| `ingredient-science` | Mechanism, ingredients, materials, studies | mof | solution/product | organic, pdp link, google | 7–10 | 1–2 | 2–4 | full |
-| `collection-landing` | One category; grid with filters and a short story | mof | solution | organic, nav, google | 5–8 | per card | 1–2 | full |
-| `homepage` | Store front door; route to collections, best sellers, story | tof/retention | all | direct, organic, brand search | 7–10 | 2–3 | 2–3 | full |
-| `lookbook-shop-the-look` | Editorial imagery with shoppable items | tof/mof | solution | instagram, organic, email | 5–8 | per look | 1–2 | full |
-| `lead-capture-giveaway` | Email or SMS in exchange for an incentive | tof | unaware/problem | social, partner, ads | 3–6 | 1 | 1–2 | none |
-| `referral-loyalty-vip` | Programme rules, tiers, rewards, join | retention | most | email, account, nav | 5–8 | 1–2 | 1–2 | full |
-| `retargeting-warm` | Visitor saw it already; handle objections, restate offer | bof | product/most | meta/google retargeting | 5–8 | 2–3 | 2–4 | none/minimal |
-| `thank-you-post-purchase` | Order confirmed; next steps, one relevant add-on, referral | retention | most | checkout | 3–6 | 1–2 | 0–1 | minimal |
-| `faq-support-led` | Answers first; policies, shipping, sizing, care | mof/retention | product | organic, nav, support links | 4–7 | 1 | 0–2 | full |
-| `trial-sample` | Low-risk first purchase; what happens after is explicit | tof/mof | solution | ads, email | 6–9 | 2 | 2–3 | minimal |
-| `wholesale-b2b` | MOQ, tiers, lead times, line sheet, inquiry | mof | product | organic, outreach | 5–8 | 1–2 | 1–3 | minimal |
+| `ad-landing-page` | Single product, single CTA, message-matched to a paid ad | tof/mof | problemU+2192product | meta, tiktok, google | 8-11 | 3 | 2-4 | none |
+| `pdp` | Full product page inside the store; gallery, buy box, details, reviews | mof/bof | product/most | organic, search, email, nav | 7-11 | 2 | 2-4 | full |
+| `pdp-hybrid-landing` | PDP anatomy with landing-page focus: no nav, ad message match, one goal | mof | solutionU+2192product | meta, google shopping | 8-11 | 2-3 | 2-4 | none |
+| `advertorial` | Editorial article that sells by story; price and CTA arrive late | tof | unaware/problem | meta, native, tiktok | 8-12 | 1-3 | 2-4 | none |
+| `listicle` | Numbered reasons for one product; each reason answers an objection and earns a click | tof/mof | problem/solution | meta, tiktok | 8-13 | 3-6 | 2-4 | none/minimal |
+| `seo-buyers-guide` | Search-intent roundup or "best X" guide: TOC, methodology, ranked entries, comparison table | tof/mof | problem/solution | google organic, google ads | 9-14 | per entry + 1 | 2-4 | full |
+| `comparison-us-vs-them` | Attribute table against named or generic alternatives | mof | solution/product | google, retargeting | 7-10 | 2-3 | 2-3 | minimal |
+| `quiz-funnel` | Questions route the visitor to a recommendation | tof/mof | problem/solution | meta, tiktok, email | 4-7 | 1 + result | 1-2 | none |
+| `bundle-kit` | Fixed or build-your-own set with visible savings math | mof/bof | product | email, pdp cross-link, ads | 7-10 | 2 | 2-3 | minimal/full |
+| `offer-page` | One named promotion (code, GWP, BOGO, first order) | mof/bof | product/most | email, sms, retargeting | 6-9 | 2-3 | 1-3 | minimal |
+| `sale-clearance-flash` | Many products, reduced prices, real window | bof | most | email, sms, social | 5-8 | per card | 1-2 | full |
+| `seasonal-gifting` | Occasion assortment with delivery cutoffs and gift options | mof | solution/product | email, social, search | 7-10 | per card + 1 | 1-3 | full |
+| `gift-guide` | Curated picks by recipient or price band | tof/mof | solution | organic, email, social | 6-9 | per card | 1-2 | full |
+| `launch-waitlist-preorder` | Not yet buyable: capture intent or take pre-orders | tof/mof | problem/solution | email, social, PR | 6-9 | 1-2 | 1-3 | minimal |
+| `restock` | Product is back; convert the demand already there | bof/retention | most | email, sms | 5-7 | 2 | 1-2 | minimal |
+| `subscription` | Recurring plan; cadence, savings, cancellation clarity | mof/bof | product | pdp, email, ads | 7-10 | 2 | 2-3 | minimal/full |
+| `ugc-creator-collab` | Creator or customer content is the hero and the proof | tof/mof | problem/solution | tiktok, instagram, influencer | 6-9 | 2-3 | 3-5 | none |
+| `video-sales-page` | One long video, then the offer | tof/mof | problem/solution | meta, youtube, email | 5-8 | 1-2 | 1-3 | none |
+| `brand-story-founder` | Who we are and why; sells belief, not a SKU | tof/retention | unaware/problem | organic, nav, PR | 6-9 | 1-2 | 1-2 | full |
+| `ingredient-science` | Mechanism, ingredients, materials, studies | mof | solution/product | organic, pdp link, google | 7-10 | 1-2 | 2-4 | full |
+| `collection-landing` | One category; grid with filters and a short story | mof | solution | organic, nav, google | 5-8 | per card | 1-2 | full |
+| `homepage` | Store front door; route to collections, best sellers, story | tof/retention | all | direct, organic, brand search | 7-10 | 2-3 | 2-3 | full |
+| `lookbook-shop-the-look` | Editorial imagery with shoppable items | tof/mof | solution | instagram, organic, email | 5-8 | per look | 1-2 | full |
+| `lead-capture-giveaway` | Email or SMS in exchange for an incentive | tof | unaware/problem | social, partner, ads | 3-6 | 1 | 1-2 | none |
+| `referral-loyalty-vip` | Programme rules, tiers, rewards, join | retention | most | email, account, nav | 5-8 | 1-2 | 1-2 | full |
+| `retargeting-warm` | Visitor saw it already; handle objections, restate offer | bof | product/most | meta/google retargeting | 5-8 | 2-3 | 2-4 | none/minimal |
+| `thank-you-post-purchase` | Order confirmed; next steps, one relevant add-on, referral | retention | most | checkout | 3-6 | 1-2 | 0-1 | minimal |
+| `faq-support-led` | Answers first; policies, shipping, sizing, care | mof/retention | product | organic, nav, support links | 4-7 | 1 | 0-2 | full |
+| `trial-sample` | Low-risk first purchase; what happens after is explicit | tof/mof | solution | ads, email | 6-9 | 2 | 2-3 | minimal |
+| `wholesale-b2b` | MOQ, tiers, lead times, line sheet, inquiry | mof | product | organic, outreach | 5-8 | 1-2 | 1-3 | minimal |
 
 ## 4. Tie-breaks between near neighbours
 
@@ -167,7 +167,7 @@ A fast first pass before the tree. The tree still decides.
 | `brand-story-founder` vs `ingredient-science` | science when the brief names ingredients, studies or "how it works" | mechanism vs meaning |
 | Brief is silent on stage | the type that assumes less (`ad-landing-page` over `retargeting-warm`, `advertorial` over `ad-landing-page` for unaware audiences) | over-assuming knowledge loses cold visitors |
 
-## 5. Awareness level → headline and page posture
+## 5. Awareness level U+2192 headline and page posture
 
 Eugene Schwartz's five stages decide how much the page may assume and what
 the headline leads with.
@@ -196,7 +196,7 @@ social traffic is problem-aware at best. Brand search is product-aware.
 
 ## 7. Recording the choice
 
-Plan block (`page-plan.md`):
+Plan block (`page plan`):
 
 ```markdown
 ## Page type
@@ -211,7 +211,7 @@ Plan block (`page-plan.md`):
 **Mandatory sections omitted.** none
 ```
 
-Manifest (`page-manifest.json`): `page.pageType`, `page.funnelStage`,
+Manifest (`page record`): `page.pageType`, `page.funnelStage`,
 `page.awareness`, `page.trafficSource`, plus `offer` and `campaign` blocks
 (`references/page-files.md`).
 

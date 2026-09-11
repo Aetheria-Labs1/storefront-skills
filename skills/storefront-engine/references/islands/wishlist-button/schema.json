@@ -59,21 +59,6 @@
     ],
     "headless": {
       "supported": false
-    },
-    "example": "<lx-island name=\"WishlistButton\">\n  <script type=\"application/json\">\n{\n  \"productId\": \"example-productId\"\n}\n  </script>\n</lx-island>",
-    "examples": [
-      {
-        "label": "Standard wishlist button",
-        "source": "<lx-island name=\"WishlistButton\">\n  <script type=\"application/json\">{\"productId\":\"gid://shopify/Product/123\",\"size\":\"md\"}</script>\n</lx-island>"
-      },
-      {
-        "label": "Small wishlist icon for product cards",
-        "source": "<lx-island name=\"WishlistButton\">\n  <script type=\"application/json\">{\"productId\":\"gid://shopify/Product/456\",\"size\":\"sm\",\"className\":\"absolute top-2 right-2\"}</script>\n</lx-island>"
-      },
-      {
-        "label": "Large wishlist button with variant tracking",
-        "source": "<lx-island name=\"WishlistButton\">\n  <script type=\"application/json\">{\"productId\":\"gid://shopify/Product/789\",\"variantId\":\"gid://shopify/ProductVariant/1011\",\"size\":\"lg\"}</script>\n</lx-island>"
-      }
-    ]
+    }
   }
 }

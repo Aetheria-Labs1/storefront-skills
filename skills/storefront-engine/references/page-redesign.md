@@ -10,18 +10,18 @@ Visually refresh an existing page using performance data to preserve what works 
 
 ## Workflow
 
-### Step 1 — Context Gathering
+### Step 1  -  Context Gathering
 
 ```
-lexsis_workspace.get()          → workspace ID, plan tier
-lexsis_workspace.stores()           → store domain, Shopify data
-lexsis_brand(action: "brand_kit", args: {})                  → logo, fonts, colors, voice, radius
-lexsis_design.guide()                  → brand brief, design philosophy, constraints
+lexsis_workspace.get()          U+2192 workspace ID, plan tier
+lexsis_workspace.stores()           U+2192 store domain, Shopify data
+lexsis_brand(action: "brand_kit", args: {})                  U+2192 logo, fonts, colors, voice, radius
+lexsis_design.guide()                  U+2192 brand brief, design philosophy, constraints
 ```
 
 These four calls ALWAYS run first. No exceptions.
 
-### Step 2 — Locate and Inspect Target Page
+### Step 2  -  Locate and Inspect Target Page
 
 ```
 lexsis_pages.find({ query: "page name or slug" })
@@ -39,27 +39,25 @@ lexsis_pages.inspect(page_id)
 
 Understand: section count, section types, content blocks, current `--lx-*` variables, islands in use.
 
-### Step 3 — Analyze Performance
+### Step 3  -  Analyze Performance
 
 ```
 lexsis_analytics.page(page_id)
 ```
 
 Categorize each section:
-- **KEEP** — high CVR, proven copy, minor visual polish only
-- **REDESIGN** — same content, new layout/styling
-- **REPLACE** — low-performing, rebuild approach
-- **REMOVE** — adds friction, no conversion value
+- **KEEP**  -  high CVR, proven copy, minor visual polish only
+- **REDESIGN**  -  same content, new layout/styling
+- **REPLACE**  -  low-performing, rebuild approach
+- **REMOVE**  -  adds friction, no conversion value
 
 Key rule: NEVER redesign sections that are converting well. Analytics data overrides aesthetic preferences.
 
-### Step 4 — Apply Section-by-Section Updates
+### Step 4  -  Apply Section-by-Section Updates
 
-Open the existing local workspace. If the page predates local artifacts, create
-them from the current remote page and record a synchronized baseline. Confirm
-that the page's store and theme match a saved setup choice. Modify
-`lexsis-source.html`, run the source gate, compile the complete source, and
-compare section hashes with the saved baseline.
+Read current source and edit context through MCP. Confirm the existing
+binding and version, modify the source value, compile the complete inputs,
+and compare section changes against that persisted baseline.
 
 For one changed section:
 ```
@@ -80,7 +78,7 @@ lexsis_drafts({
 Update manifest version and source hashes only after success. All updated
 sections must use `--lx-*` CSS variables from the current theme.
 
-### Step 5 — Validate
+### Step 5  -  Validate
 
 ```
 lexsis_pages.integrity({ page_id, archetype })
@@ -88,7 +86,7 @@ lexsis_pages.integrity({ page_id, archetype })
 
 Ensure no broken islands, valid HTML structure, responsive layout intact.
 
-### Step 6 — Show Before/After
+### Step 6  -  Show Before/After
 
 ```
 lexsis_pages.diff(page_id, { from: previous_version, to: current_version })
@@ -96,7 +94,7 @@ lexsis_pages.diff(page_id, { from: previous_version, to: current_version })
 
 Present structural diff to user for approval before publishing.
 
-### Step 7 — Load Preview and Verify Visually
+### Step 7  -  Load Preview and Verify Visually
 
 ```
 lexsis_pages.get(page_id)
@@ -123,10 +121,10 @@ Checklist:
 - [ ] Section spacing consistent
 - [ ] No horizontal scroll on mobile
 
-If issues are found, update local source, compile, patch changed sections with
-`expected_version`, update the manifest, then re-verify.
+If issues are found, update editable source, compile, patch changed sections with
+`expected_version`, update the page record, then re-verify.
 
-### Step 8 — Go Live (User Confirms)
+### Step 8  -  Go Live (User Confirms)
 
 Only after user approves:
 ```

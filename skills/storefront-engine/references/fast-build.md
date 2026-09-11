@@ -11,11 +11,8 @@ Reuse a saved workspace, store and theme triple from
 defaults, stated in one line. Read products, variants, prices, availability,
 permissions, assets, and island schemas live.
 
-Infer the campaign folder from the prompt with the table in
-`references/page-files.md` and create the page under
-`work/campaigns/<campaign-slug>/pages/<page-handle>/`, with `campaign.json`
-carrying the binding. A prompt with no campaign shape uses `adhoc-<yyyy-mm>`.
-Say which folder is in use.
+Group the page with its campaign evidence under `references/page-files.md`.
+Keep planning and source values in the task; create no local page files.
 
 Accept:
 
@@ -58,67 +55,30 @@ uses the type's checklist as the default anatomy; a kit whose structure
 differs is adapted where cheap and the difference is noted in the plan.
 Reviews render only from real data
 (`references/proof/reviews-sourcing.md`, tiers 1 and 2; the fast path never
-runs the external tier). Run
-`python3 <plan-page-skill>/scripts/plan_lint.py <page-workspace>` once before
-compiling when the script is available and note its WARN rows in the plan.
+runs the external tier). Review the type checklist and record intentional
+deviations before compilation.
 
 ## Assets First, Even on the Fast Path
 
-Speed changes how many questions are asked, never whether the page is built
-around real imagery. Every section gets its media decided before its copy, by
-the same loop as the reviewed route
-(`references/workflows/section-asset-workflow.md`): catalog media through
-`lexsis_catalog.get`, then `lexsis_asset_library.search` (tags, then semantic,
-then `mode: "similar"` from the first accepted asset to keep a section's set
-coherent), then merchant-owned sources including `lexsis_campaigns.creatives`.
-A section that would ship as a colour band, an emoji row, icon tiles or a wall
-of text is rebuilt around imagery.
+Apply `references/workflows/_how-to-read.md` to the selected type. Fast mode
+changes the repair/question budget, not source eligibility, inspection,
+interactive schema resolution or copy policy. Use the shared workflow's
+fast-draft fallback and return unresolved slots with `DRAFT_CREATED`.
 
-Three rules hold at fast-draft speed:
+Local-file UI remains `lexsis_asset_upload.upload`; supplied sources use
+`lexsis_asset_import.import`. The exact split and fallback are owned by
+`references/lexsis-mcp-contract.md`. A fast build grants neither paid asset
+generation nor publication permission.
 
-1. **Nothing is used sight unseen.** Open every candidate with
-   `lexsis_assets.view` and run the fit review in section 1b of
-   `references/workflows/section-asset-workflow.md`: does the subject do the
-   job, does it crop to the slot without losing the product, is there a quiet
-   area where the copy sits, does it match the neighbouring slots, no baked-in
-   text or watermark. View a section's or gallery's candidates together so the
-   set reads as one shoot. This is the one check speed does not buy out,
-   because an unviewed image is the fastest way to a page that looks wrong.
-2. **A gap is reported, not hidden.** The fast path resolves what it can from
-   existing media and leaves the rest `planned`, then lists every missing slot
-   (section, job, aspect, count) in the plan and in the `DRAFT_CREATED`
-   summary so the merchant can upload files through
-   `lexsis_asset_upload.upload`, supply a URL or conversation attachment for
-   `lexsis_asset_import.import`, or authorise generation. Wait for the user's
-   uploaded-asset message when using the upload UI; without inline UI, use
-   the URL/attachment import route. Paid generation is
-   not part of the implicit fast path: ask once, with the exact slots, before
-   spending credits, and use only ALLOW purposes from
-   `references/assets/generation-policy.md`.
-3. **Islands are resolved live.** Take the section's interaction need to
-   `lexsis_design.islands`, then `lexsis_design.island_schema` for the one
-   island chosen, and set the variant and props from what that schema offers
-   (`references/workflows/island-selection-workflow.md`). Never carry a kit's
-   island props forward without checking them against the current schema, and
-   never use an island the catalog marks deprecated.
+## Minimum decision evidence
 
-## Minimum Local Artifacts
-
-Create the ordinary page workspace with:
-
-- a concise `page-plan.md` containing the Page type block, objective,
-  audience, product, CTA, template direction, section order, design
-  direction, asset decisions, a minimum Proof ledger (and Offer ledger when
-  the prompt names an offer), and a minimum Consumer decision model from
-  `consumer-behavior-cro.md`;
-- a compact schema-v3 `page-manifest.json`;
-- `lexsis-source.html`;
-- `page-theme.css`.
-
-Record `plan-page` and `design-page` in `workflow.skippedSkills`; the minimum
-artifacts do not imply those approval workflows ran. Record the inferred intent
-evidence. Use current catalog bindings and permanent asset URLs. Custom fonts
-must use complete HTTPS stylesheet URLs or an intentional system stack.
+Record the page type, objective, audience, product, CTA, template direction,
+section order, design direction, asset decisions and proof/offer ledgers.
+Use the minimum Consumer decision model from `consumer-behavior-cro.md`.
+Record skipped stages in `workflow.skippedSkills`; this does not imply those
+approval workflows ran. Prepare source values directly for MCP under
+`references/source-artifact-workflow.md`, with current catalog bindings,
+permanent asset URLs and valid font URLs or an intentional system stack.
 
 Use template source as the starting point, not an untouchable artifact. Make
 only changes needed to satisfy the prompt and current store:
@@ -147,7 +107,7 @@ relationship, and a reason for every recommendation.
    errors and compile once more.
 4. Immediately call `lexsis_page_create` action `create` with
    `publish:false`.
-5. Return the page id, version, preview URL, workspace paths, selected template,
+5. Return the page id, version, preview URL, selected template,
    skipped skills, and `DRAFT_CREATED`.
 
 If the compile id expires, recompile the same verified inputs once. Expiry is
@@ -155,9 +115,9 @@ not permission to repeat template search, planning, asset selection, critique,
 or approval.
 
 Do not block the first preview on screenshots, design critique, hosted QA,
-commerce QA, remote/local hash reconciliation, or a `DRAFT_READY` validator.
+commerce QA, reviewed/persisted hash reconciliation, or completed production-readiness checks.
 Do not run repeated repair loops. If the one targeted repair still fails,
-return the compiler blockers and the current source paths without claiming a
+return the compiler blockers and the retained source values without claiming a
 draft.
 
 ## After the First Draft

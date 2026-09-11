@@ -11,11 +11,11 @@ Before asking the merchant or choosing a module:
 1. Read the product, variants, price, inventory, existing media, reviews,
    policies, audience, traffic source, and available analytics.
 2. Classify the visitor's likely primary mode:
-   - **confirm** — knows the product and wants confidence to buy;
-   - **compare** — deciding between options or alternatives;
-   - **explore** — needs inspiration or use-case education;
-   - **complete** — wants the full solution, routine, or setup;
-   - **replenish** — returning for a refill, replacement, or repeat order.
+   - **confirm**  -  knows the product and wants confidence to buy;
+   - **compare**  -  deciding between options or alternatives;
+   - **explore**  -  needs inspiration or use-case education;
+   - **complete**  -  wants the full solution, routine, or setup;
+   - **replenish**  -  returning for a refill, replacement, or repeat order.
 3. Write the three most important questions the shopper must answer before
    buying.
 4. Select at most three behavioral patterns that answer those questions.
@@ -34,22 +34,22 @@ three questions in one turn.
 
 Useful conditional questions include:
 
-- **Gallery gap:** “The current media shows the pack and texture, but not scale
-  or in-use context. Should I use existing media only, or generate two custom
-  gallery images for those jobs?”
-- **Relationship:** “Should the recommendation help shoppers complete the
+- **Gallery gap:** "The current media shows the pack and texture, but not scale
+  or in-use context. Can you supply the real scale and
+  in-use photos, or should those jobs remain pending?"
+- **Relationship:** "Should the recommendation help shoppers complete the
   routine, compare alternatives, replenish later, or should this page avoid
-  recommendations?”
-- **Compatibility:** “Do you have a verified model, size, shade, ingredient,
-  room-dimension, or usage mapping for these add-ons?”
-- **Risk:** “Which verified shipping, returns, trial, warranty, cancellation,
-  or guarantee terms can appear beside the purchase decision?”
-- **Audience state:** “Is this primarily a first purchase, an experienced
-  buyer, or a returning/replenishment visit?”
-- **Traffic context:** “Which promise or creative brought this traffic here,
-  if the page must preserve message match?”
+  recommendations?"
+- **Compatibility:** "Do you have a verified model, size, shade, ingredient,
+  room-dimension, or usage mapping for these add-ons?"
+- **Risk:** "Which verified shipping, returns, trial, warranty, cancellation,
+  or guarantee terms can appear beside the purchase decision?"
+- **Audience state:** "Is this primarily a first purchase, an experienced
+  buyer, or a returning/replenishment visit?"
+- **Traffic context:** "Which promise or creative brought this traffic here,
+  if the page must preserve message match?"
 
-Never ask “Do you want custom images?” without first identifying the missing
+Never ask "Do you want custom images?" without first identifying the missing
 decision job, proposed image count, purpose, and likely placement. Paid image
 generation remains separately credit-gated.
 
@@ -62,13 +62,13 @@ generation remains separately credit-gated.
 | Scale, fit, and sensory confidence | Size, fit, texture, finish, shade, or quantity is hard to judge | Add dimension diagrams, familiar-object scale, model measurements, texture close-ups, swatches, or use-context imagery | Returns, fit questions, conversion |
 | Information scent | Shoppers need detail but will not parse a wall of copy | Lead with benefit and decision fact, then expose specifications, ingredients, care, or methodology through clear progressive disclosure | Detail interaction, conversion |
 | Choice reduction | Too many variants, bundles, or recommendations compete | Prioritize the likely default, explain differences, and keep the first recommendation set to two or three choices | Variant completion, conversion |
-| Guided comparison | Visitor is deciding between products or tiers | Compare only decision-driving attributes; state “best for” and meaningful trade-offs without manufacturing a winner | Comparison interaction, product selection |
+| Guided comparison | Visitor is deciding between products or tiers | Compare only decision-driving attributes; state "best for" and meaningful trade-offs without manufacturing a winner | Comparison interaction, product selection |
 | Compatibility confidence | Add-on usefulness depends on model, shade, size, ingredient, room, or regimen fit | Show the verified fit reason beside each recommendation and suppress incompatible or unavailable items | Attach rate, support questions, returns |
 | Solution completeness | The hero SKU is only one part of the shopper's job | Present the minimum complete outfit, routine, stack, recipe, room, setup, care kit, or commissioning kit with individually selectable items | Attach rate, AOV, revenue per visitor |
 | Sequence and next step | Products are understood as stages or order of use | Show when, how, and in what order products are used; distinguish morning/evening, setup/use/care, or beginner/advanced | Bundle attach rate, education engagement |
 | Context and mental simulation | Shopper cannot picture ownership or final use | Show the product in the actual scene, occasion, room, routine, task, or before/after context using truthful media | Context-image engagement, conversion |
 | Replenishment and continuity | Consumable, maintenance item, size progression, or replacement cycle exists | Explain serving/use count, refill timing, cadence, compatible replacement, or easy reorder without inventing depletion dates | Repeat purchase, subscription opt-in |
-| Returning-customer shortcut | Existing buyers need less education and more continuity | Prefer refill, reorder, saved configuration, compatible replacement, or “what changed” paths when reliable customer context exists | Repeat conversion, time to purchase |
+| Returning-customer shortcut | Existing buyers need less education and more continuity | Prefer refill, reorder, saved configuration, compatible replacement, or "what changed" paths when reliable customer context exists | Repeat conversion, time to purchase |
 | Proof proximity | A claim creates doubt at a specific decision point | Place sourced review excerpts, customer media, certification, test evidence, or expert proof beside the claim it supports | Proof interaction, conversion |
 | Risk reversal | Delivery, fit, efficacy expectations, warranty, returns, or subscription cancellation creates hesitation | Put verified policy and guarantee language beside the relevant CTA or choice; make conditions legible | Checkout progression, support contacts |
 | Price comprehension | Shopper cannot understand total value or recurring cost | Show current price, factual compare-at price, unit/cost-per-use where accurate, bundle contents, cadence, and savings calculation without deceptive anchoring | Conversion, AOV, margin |
@@ -82,7 +82,7 @@ generation remains separately credit-gated.
 
 ## Relationship-Based Merchandising
 
-Name the customer's job instead of using a generic “Recommended for You.”
+Name the customer's job instead of using a generic "Recommended for You."
 Start with two or three relevant products and show why each belongs.
 
 | Vertical | Useful relationship names and jobs |
@@ -116,14 +116,13 @@ Treat the gallery as decision support. Check only jobs relevant to the product:
 - installation, sequence, routine, or setup;
 - sourced result, proof, or customer media.
 
-Existing media wins. When a decision-critical job is missing, create a planned
-asset slot with the job as its purpose. Ask once whether to use existing media,
-import a supplied asset, or generate the named gaps. Never generate a
-replacement product identity image when verified Shopify media exists.
+Use `references/workflows/section-asset-workflow.md` for unresolved gallery
+jobs and inspection. That procedure applies the source/generation policies;
+a behavioral hypothesis does not authorize synthetic product or result media.
 
 ## Plan Handoff
 
-Add this compact block to `page-plan.md`:
+Add this compact block to `page plan`:
 
 ```markdown
 ## Consumer decision model
@@ -133,7 +132,7 @@ Add this compact block to `page-plan.md`:
 **Selected behavioral patterns.** At most three, each with observed evidence.
 **First decision area.** Facts, proof, and action visible before deeper detail.
 **Gallery jobs.** covered; missing; asset slots created for missing jobs.
-**Guided merchandising.** relationship name, reason, 2–3 products or none.
+**Guided merchandising.** relationship name, reason, 2-3 products or none.
 **Risk and trust.** sourced proof/policy placed beside the relevant decision.
 **Mobile context.** what remains visible or is repeated during long scroll.
 **Hypothesis and metric.** one primary behavior change and measurement.

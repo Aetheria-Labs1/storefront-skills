@@ -1,17 +1,12 @@
-# SizeGuide — Island Directory
+# SizeGuide
 
-Size/measurement reference island. Displays sizing tables, unit conversion, and body diagrams.
+For `SizeGuide`, fetch `lexsis_design.islands` and
+`lexsis_design.island_schema` during the decision that needs this behavior.
+Use the current authoring example, variants, props, parts, hydration and
+headless support; the bundled JSON is a compatibility reference, not a
+second source of defaults.
 
-## Quick Reference
-
-- **Variants**: modal, inline, visual
-- **Required prop**: `headers` (array of column headers)
-- **Schema**: `vibe://schema/island/SizeGuide`
-- **Contract**: follows `_contract.md` rules
-
-## Composition
-
-- Pair with: BuyBox, OptionResolver, Modal (as container)
-- Trigger from "Size Guide" link near size selector in BuyBox
-- Place within 1 scroll of size options
-- Modal variant uses Modal island as container
+`references/workflows/island-selection-workflow.md` owns selection and
+linked state. `references/authoring/source-authoring.md` owns source syntax;
+`references/authoring/css-and-styling.md` owns styling. Placement and evidence
+come from the selected page-type contract and its domain policies.

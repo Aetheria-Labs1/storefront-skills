@@ -1,171 +1,63 @@
-# Storefront Page Files
+# MCP source and verification state
 
-Use local files to pass work between commands without depending on chat
-history.
+Author pages directly through MCP. Do not create local page decision records,
+source/CSS files, compile artifacts, preview builds or local QA reports.
+The persisted page source and bundle are the baseline; the hosted draft is
+the only preview used by these workflows.
 
-## Workspace
+## Create one draft
 
-```text
-work/campaigns/<campaign-slug>/pages/<page-handle>/
-├── page-plan.md
-├── page-manifest.json
-├── lexsis-source.html
-├── page-theme.css
-├── compile-artifact.json
-├── qa-report.md
-└── assets/
-```
+1. Confirm the workspace, store and theme binding through saved context or
+   current MCP reads. Prepare `source` and structured `head` with a title.
+   Include `theme_css` only when supplying page-wide CSS. Omitting the field
+   does not excuse missing theme tokens or accessibility styles.
+2. Send the exact values to `lexsis_pages.compile`. Read blocking errors,
+   warnings, missing utilities, hashes and the short-lived `compile_id`.
+   Repair source, not compiled JSON.
+3. Call `lexsis_page_create.create` with `compile_id`, creation metadata and
+   `publish:false`. Omit `source`, `head`, `theme_css`, `scripts` and
+   `runtime_dependencies` when passing `compile_id`. Alternatively send the
+   exact source/head and optional CSS/scripts directly; create compiles them
+   server-side. Never combine the two input modes.
+4. Reuse an existing page id rather than spending another creation credit.
+   If the compile id expires, recompile the unchanged inputs once.
+5. Record the returned page id, version, preview URL and compile hash in the
+   task handoff. Surface `DRAFT_CREATED` immediately; it is not a QA pass.
 
-Files appear progressively. Planning creates only the plan, compact manifest,
-and assets directory. Design creates source, CSS, a compile artifact, and the
-unpublished hosted draft. Generation creates or updates the QA report and
-remote synchronization state.
+`lexsis_pages.compile_artifact` retrieves an existing compile result for
+inspection; it is not another compile route. `lexsis_drafts.page_attach_bundle`
+is recovery for a source write whose bundle attachment failed, with
+`expected_version`; it is not a normal creation step.
 
-## Compact Manifest
+## Edit the persisted source
 
-Use `schemaVersion: 3`.
+1. Read `lexsis_pages.edit_context` and `lexsis_pages.source` or
+   `lexsis_pages.section_source`. Confirm the target and current version.
+2. Reconcile unexpected version drift before writing. Edit the source value
+   returned by MCP, keeping stable section ids.
+3. Compile changed inputs, compare the intended section changes and use the
+   smallest source-based draft action with `expected_version`.
+4. Update recorded version/hash evidence only after a successful write.
+   Read back source and run `lexsis_pages.diff` and `lexsis_pages.integrity`.
+5. Review the updated hosted draft. Editing a draft is not publishing it.
 
-The manifest is a machine state ledger. Store only:
+## Evidence without files
 
-- page, workspace, store, and theme IDs
-- compact inferred workflow intent and any user override
-- selected template and section IDs
-- compact product and final asset bindings
-- section order and compact island schema evidence
-- approved local hashes
-- remote page ID, version, hashes, and section hashes
-- compact QA status
+Keep the plan, proof/offer ledgers, confirmed asset decisions, approvals and
+QA findings in the task's handoff record. `references/page-files.md` defines
+the fields, not a filesystem requirement. Do not invent an MCP action for
+storing a plan or manifest.
 
-Do not store copy intent, claims research, template-search transcripts,
-omitted-component explanations, generation prompts, crop prose, or QA
-narrative. Those belong in `page-plan.md`, an asset brief, or `qa-report.md`.
+On continuation, recover the page through MCP and recover or re-establish
+any missing evidence and approvals. A page id is not evidence that a claim,
+asset right or previous approval was verified.
 
-Do not prefill future stages with null fields.
+For production readiness, compare the reviewed inputs with the persisted
+source, bundle and version; perform `references/qa-recipe.md` against the
+hosted draft. Use `lexsis_pages.qa` to read recorded QA and
+`lexsis_drafts.page_record_qa` to save supported evidence fields according to
+the current schema. A tool acknowledgment does not replace browser evidence.
+Missing browser access, evidence or matching hashes keeps QA pending.
 
-## Design State
-
-`/design-page` adds:
-
-```json
-{
-  "config": {
-    "head": {},
-    "scripts": [],
-    "productBinding": {},
-    "commerceConfig": {}
-  },
-  "assets": [],
-  "islands": [],
-  "design": {
-    "status": "pending-approval",
-    "stylePack": "editorial",
-    "compiledStyleManifest": {},
-    "sourceHash": "...",
-    "themeCssHash": "...",
-    "configHash": "...",
-    "structureHash": "...",
-    "bundleHash": "...",
-    "compiledBundleHash": "..."
-  }
-}
-```
-
-`lexsis-source.html` and `page-theme.css` are the only editable design inputs.
-`compile-artifact.json` is generated. The hosted draft is the only interactive
-preview and the renderer source of truth.
-
-## Remote State
-
-Immediately after unpublished creation, `/design-page`, `/build`, or
-`/generate` adds:
-
-```json
-{
-  "status": "draft_created",
-  "workflow": {
-    "intentMode": "fast-draft",
-    "intentConfidence": "high",
-    "intentSignals": ["requested a preview"],
-    "userOverride": false
-  },
-  "sync": {
-    "lastCompiledBundleHash": "..."
-  },
-  "remote": {
-    "pageId": "...",
-    "lastKnownVersion": 1,
-    "previewUrl": "https://..."
-  },
-  "qa": {
-    "status": "pending"
-  }
-}
-```
-
-This state is `DRAFT_CREATED`; it does not claim remote synchronization or
-hosted QA.
-
-After production-ready verification, `/generate` upgrades the state:
-
-```json
-{
-  "status": "qa_passed",
-  "sync": {
-    "lastCompiledBundleHash": "...",
-    "lastSyncedBundleHash": "...",
-    "lastSyncedSectionHashes": {},
-    "lastChangedSections": [],
-    "remoteSourceHash": "...",
-    "remoteBundleHash": "..."
-  },
-  "remote": {
-    "pageId": "...",
-    "lastKnownVersion": 1,
-    "previewUrl": "https://..."
-  },
-  "qa": {
-    "status": "passed",
-    "version": 1,
-    "bundleHash": "...",
-    "checks": {
-      "responsive": true,
-      "visualRegression": true,
-      "commerce": true,
-      "copy": true,
-      "claims": true,
-      "assets": true,
-      "integrity": true
-    }
-  }
-}
-```
-
-Detailed screenshots, interaction results, blockers, and publish readiness stay
-in `qa-report.md`.
-
-## Synchronization
-
-For creation, use the clean design compile artifact when its input hashes still
-match. Recompile only after an input changes. After draft creation, fetch the
-persisted source and remote bundle and reject hash drift.
-
-`lexsis_page_create` action `create` consumes the `compile_id` directly, so a
-normal build never fetches the bundle itself. `lexsis_pages` action
-`compile_artifact` retrieves a stored bundle by `compile_id` for inspection
-only, and `lexsis_drafts` action `page_attach_bundle` exists solely to recover
-a page whose source was stored but whose bundle attachment failed (pass
-`expected_version`).
-
-For editing:
-
-1. Fetch the remote version and stop on drift.
-2. Change local source first.
-3. Compile only if an input changed.
-4. Compare section hashes.
-5. Patch only changed sections with `expected_version`.
-6. Update synchronization state only after success.
-
-Legacy schema-v1 and schema-v2 workspaces use
-`skills/generate/scripts/migrate_page_workspace_v3.py`. Existing local preview
-files and hydration fields are ignored for compatibility; they are never
-required or regenerated.
+Publication requires explicit approval for that same page and version under
+`references/publishing.md`. No local validator or file can grant approval.

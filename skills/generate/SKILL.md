@@ -5,7 +5,7 @@ description: Create an unpublished Lexsis storefront draft early, then synchroni
 
 # Generate the Draft
 
-Create a remote draft from canonical local source. Draft creation is
+Create a remote draft directly from editable source. Draft creation is
 reversible; publishing remains a separate explicit action.
 
 Read:
@@ -49,12 +49,12 @@ generation, publication, deletion, or destructive replacement.
 
 ## Inputs and Setup Reuse
 
-Use `lexsis-source.html`, `page-theme.css`, and the compact schema-v3 manifest
-from the page workspace inside its campaign folder. Reuse the workspace, store
-and theme binding recorded in the manifest and `campaign.json`, resolved
-through `work/storefront/setup/setup.json`. Do not call setup again when that
-binding is valid, and never switch workspace, store or theme for an existing
-page.
+Follow `references/source-artifact-workflow.md`: source and optional
+`theme_css` are direct MCP values; editable source files are not required.
+Reuse the confirmed workspace, store and theme binding in the page record
+or current MCP context. Saved setup and campaign records are useful when
+available. Do not call setup again when the binding is valid, and never switch
+workspace, store or theme for an existing page.
 
 Refresh only volatile creation data: selected products and variants, prices,
 availability, permissions, active island schemas, and an existing page's
@@ -62,7 +62,7 @@ version. Never preserve a stale hardcoded Shopify variant ID when current
 catalog data or a dynamic product binding can resolve it.
 
 If `/plan-page` or `/design-page` was intentionally skipped, create the minimum
-missing local artifact, record the skip, and continue. Use
+missing planning/evidence record, record the skip, and continue. Use
 `references/consumer-behavior-cro.md` to record a minimum visitor mode, top
 decision questions, at most two relevant patterns, gallery gaps, and primary
 metric. Do not claim design approval that did not happen.
@@ -72,7 +72,7 @@ metric. Do not claim design approval that did not happen.
 Before the first remote draft, require only:
 
 - a valid saved store/theme binding and draft-write permission
-- non-empty canonical source, theme CSS, title, and page handle
+- non-empty editable source, title and page handle; any required theme values
 - current product/variant bindings with no known invalid hardcoded variant
 - permanent assets rather than local URLs
 - custom fonts backed by full HTTPS stylesheet URLs in `head.fonts`, or an
@@ -83,44 +83,38 @@ Do not block first draft creation on critique screenshots, exhaustive hashes,
 hosted responsive QA, commerce QA, or a `DRAFT_READY` validator result.
 
 Optional design or QA guidance that cannot be read produces one warning and
-does not block the draft. Missing source-format, manifest, or compile-contract
+does not block the draft. Missing source-format, binding or compile-contract
 inputs remain blocking.
 
-## Compile from the Workspace
+## Compile Directly
 
-Prepare exact tool inputs with the bundled adapter:
-
-```bash
-python3 <generate-skill>/scripts/prepare_workspace_compile.py \
-  <page-workspace> \
-  --output <page-workspace>/compile-request.json
-```
-
-Use the adapter's `compile` object as the exact arguments to
+Pass the exact source, head, optional theme CSS and scripts to
 `lexsis_pages.compile`. Use summary mode; do not request or echo the full
-compiled bundle merely to inspect it.
+compiled bundle merely to inspect it. No workspace adapter, source file or
+local QA step is part of this workflow.
 
 If `remote.pageId`, `remote.lastKnownVersion`, and `remote.previewUrl` already
 exist, fetch the current edit context and reuse that draft. Do not call
-`lexsis_page_create.create` again. Compile only when local inputs changed, then
+`lexsis_page_create.create` again. Compile only when inputs changed, then
 patch the existing draft with expected-version protection.
 
-When no remote draft exists, compile once from the current files. Immediately
-pass the returned `compile_id` and the adapter's `create` fields to
+When no remote draft exists, compile once from the current source values.
+Immediately pass the returned `compile_id` and creation metadata to
 `lexsis_page_create.create` with `publish:false`.
 
 If a compile ID expires before creation, recompile the same verified inputs
 once. If the client cannot reuse the ID, create with the exact source, head,
-theme CSS, and scripts from the adapter. Expiry is not a reason to repeat
+optional theme CSS and scripts. Never send source fields alongside a
+`compile_id`. Expiry is not a reason to repeat
 planning, critique, asset search, or approval.
 
 ## Return or Reuse the Reversible Draft
 
 As soon as creation succeeds, or after an existing draft is confirmed current:
 
-1. Record page ID, version, preview URL, local hashes, and compile bundle hash.
+1. Record page ID, version, preview URL, input hashes and compile bundle hash.
 2. Set manifest `status` to `draft_created` and QA to `pending`.
-3. Run the validator with `--phase draft-created`.
+3. Confirm the returned binding, page id, version and preview URL.
 4. Surface the preview immediately as `DRAFT_CREATED`.
 
 Do not delete, replace, or conceal a working draft because later QA finds an
@@ -134,25 +128,25 @@ asked to stop at a first draft.
 For `production-ready`, or when upgrading an existing `DRAFT_CREATED`:
 
 1. Fetch persisted source, bundle, and version evidence.
-2. Reject remote/local hash drift and repair the draft from current local
-   source.
+2. Reject drift between the reviewed source/bundle and persisted version;
+   reconcile from current MCP source before repairing.
 3. Review the page's imagery as one campaign, not merely as individually valid
    assets.
 4. Run hosted QA at 390px, 768px, and 1280px.
 5. Verify typography, media, hydration, overflow, responsive geometry,
    expected Shopify variant, cart opening, quantity, subtotal, Quick Add,
    product-grid stability, thumbnails, and authored header/footer order.
-6. Run `python3 <plan-page-skill>/scripts/plan_lint.py <page-workspace>` and
-   `python3 <design-page-skill>/scripts/design_lint.py <page-workspace>`.
+6. Review the type checklist, proof/offer ledgers and house rules against
+   the persisted source and hosted draft under `references/qa-recipe.md`.
    Proof and offer findings (a proof element outside the Proof ledger, an
    offer element outside the Offer ledger, a dark-pattern hit) block; type
    deviations and copy findings are review notes unless the plan did not
    record them. Check the 390px first screen against the type file's
    "Above the fold" list and every numeral in proof sections against the
    ledger.
-7. Write evidence and blockers to `qa-report.md`.
-8. Set `status: qa_passed` only when all blocking checks pass, then run the
-   validator with `--phase draft` and live remote hashes.
+7. Record evidence and blockers with the tested page id and version.
+8. Set `status: qa_passed` only when all blocking checks pass for the same
+   live version and hashes. Read/write supported QA evidence through MCP.
 
 Return `DRAFT_READY` only after synchronization and every blocking QA check
 passes. Otherwise return the existing `DRAFT_CREATED` with specific blockers
@@ -160,12 +154,11 @@ and the next repair action.
 
 ## Later Edits
 
-Fetch edit context and stop on unexpected version drift. Change local source
+Fetch edit context and stop on unexpected version drift. Change editable source
 first, compile changed inputs once, patch only changed sections with
 `expected_version`, and update synchronization state only after success.
 
 ## Return
 
-Always return the working directory, source path, page ID, version, preview
-URL, inferred intent mode, and current state: `DRAFT_CREATED` or
-`DRAFT_READY`. Include the QA report when QA was attempted.
+Always return page ID, version, preview URL, inferred intent mode and current
+state: `DRAFT_CREATED` or `DRAFT_READY`. Include hosted QA evidence when attempted.

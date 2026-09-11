@@ -2,7 +2,7 @@
 name: cro-analyzer
 description: |
   Evidence-led storefront diagnosis for a specific business outcome. Produces
-  a focused optimization brief that can be reviewed before local-first edits.
+  a focused optimization brief that can be reviewed before source-first edits.
 
   <example>
   Context: User wants to improve an existing product page
@@ -73,6 +73,6 @@ Measurement:
 Evidence limits:
 ```
 
-When edits are approved, hand this brief to the local-first `/optimize`
+When edits are approved, hand this brief to the source-first `/optimize`
 workflow. When the proposed change is uncertain and measurable, recommend
 `/ab-test`.

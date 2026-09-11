@@ -104,145 +104,36 @@ results.
 
 ## Workflow
 
-Assets first: answer options that can be pictured are pictured with real
-swatches or scenes, and every recommended product on the results screen is a
-real catalog image. A section that would end up as a colour band, an emoji
-row, icon tiles or a wall of text is rebuilt around imagery or, on the
-merchant's call, merged or skipped. Per-slot sourcing:
-`references/workflows/section-asset-workflow.md`; island choice:
-`references/workflows/island-selection-workflow.md`. Missing media is never
-dropped silently: every Media line ends by telling the merchant what is
-missing (job, aspect, count), offering upload via `lexsis_asset_upload.upload`
-or MCP generation when the purpose is feasible under
-`references/assets/generation-policy.md`, and skipping or merging the section
-only if the merchant chooses. In fast-draft the agent proceeds with the closest
-existing asset or leaves the slot `planned`, and lists every missing asset in
-the plan and the draft summary.
+Apply `references/workflows/_how-to-read.md` to these type-specific
+decisions. It links the shared asset/fallback, fit, live-island and
+copy procedures; this table supplies their inputs, not another policy.
 
 ### Context reads
 
-1. `lexsis_capture.funnel_templates` then `lexsis_capture.funnel_template`
-   for the quiz shape (shade or fit finder, routine builder, assessment): step
-   types, branching, whether options carry images, how results map to
-   products, whether the results step carries product slots or hands off to
-   page sections.
-2. `lexsis_catalog.list` then `lexsis_catalog.get` for the 3 to 30 candidate
-   SKUs: identity media per product (results screen), per-variant images and
-   colour hex for shade options (`swatch`, `variation` per
-   `references/assets/image-jobs-by-page-type.md`), price, inventory
-   (sold-out products never appear in results), selling plans (a plan option
-   on results is `ask` in `references/offers/offer-types.md`).
-3. `lexsis_catalog.reviews_status`; `lexsis_catalog.reviews` per candidate SKU
-   for the results-screen summary band; `lexsis_catalog.reviews_search` with
-   the result-profile words ("dry skin", "curly") for same-profile quotes
-   (`pending` until confirmed); brand-level reviews for the start screen only
-   as a labelled store rating (`references/proof/reviews-sourcing.md`).
-4. Proof ledger: taker count from an export (`customer-count`), an authorship
-   line with the named person's approval; guarantee terms for a shade or fit
-   guarantee.
-5. `lexsis_brand.context`, `lexsis_brand.brand_kit` (typographic start-screen
-   tokens, voice); `lexsis_brand.navigation` is not needed (nav `none`).
-6. `lexsis_asset_library.search` with `theme_id`, `mode: "tags"` for
-   `lifestyle` (start-screen alternate when the ad was a lifestyle frame;
-   scene options such as "morning" or "evening"), `product-shot`,
-   `social-proof`; the ad frame from `lexsis_campaigns` when traffic is paid,
-   for message match. Sequence and checks:
-   `references/assets/asset-sourcing-sequence.md`.
-7. `lexsis_cart.get`: the side cart keeps the shopper on results; quiz discount
-   auto-applied (`first-order`, first-time visitors only); cart v2. Then
-   `lexsis_drafts.funnel_create`, `lexsis_capture.validate_funnel`,
-   `lexsis_capture.preview_funnel`; the returned key feeds FunnelRuntime.
-   `lexsis_design.islands`, then `lexsis_design.island_schema` for each island
-   named below.
-8. `lexsis_workspace.credits` only when the plan names the typographic start
-   screen as the bold moment with a generated `hero_bg` (ALLOW).
+1. `lexsis_capture.funnel_templates` then `lexsis_capture.funnel_template` for the quiz shape (shade or fit finder, routine builder, assessment): step types, branching, whether options carry images, how results map to products, whether the results step carries product slots or hands off to page sections.
+2. `lexsis_catalog.list` then `lexsis_catalog.get` for the 3 to 30 candidate SKUs: identity media per product (results screen), per-variant images and colour hex for shade options (`swatch`, `variation` per `references/assets/image-jobs-by-page-type.md`), price, inventory (sold-out products never appear in results), selling plans (a plan option on results is `ask` in `references/offers/offer-types.md`).
+3. `lexsis_catalog.reviews_status`; `lexsis_catalog.reviews` per candidate SKU for the results-screen summary band; `lexsis_catalog.reviews_search` with the result-profile words ("dry skin", "curly") for same-profile quotes (`pending` until confirmed); brand-level reviews for the start screen only as a labelled store rating (`references/proof/reviews-sourcing.md`).
+4. Proof ledger: taker count from an export (`customer-count`), an authorship line with the named person's approval; guarantee terms for a shade or fit guarantee.
+5. `lexsis_brand.context`, `lexsis_brand.brand_kit` (typographic start-screen tokens, voice); `lexsis_brand.navigation` is not needed (nav `none`).
+6. `lexsis_asset_library.search` with `theme_id`, `mode: "tags"` for `lifestyle` (start-screen alternate when the ad was a lifestyle frame; scene options such as "morning" or "evening"), `product-shot`, `social-proof`; the ad frame from `lexsis_campaigns` when traffic is paid, for message match. Sequence and checks: `references/assets/asset-sourcing-sequence.md`.
+7. `lexsis_cart.get`: the side cart keeps the shopper on results; quiz discount auto-applied (`first-order`, first-time visitors only); cart v2. Then `lexsis_drafts.funnel_create`, `lexsis_capture.validate_funnel`, `lexsis_capture.preview_funnel`; the returned key feeds FunnelRuntime. `lexsis_design.islands`, then `lexsis_design.island_schema` for each island named below.
+8. `lexsis_workspace.credits` only when the plan names the typographic start screen as the bold moment with a generated `hero_bg`.
 
 ### Section by section
 
-No asset is used sight unseen: open every candidate with `lexsis_assets.view`
-and run the section 1b fit review in `references/workflows/section-asset-workflow.md`
-before use (subject does the job, crops to the slot without losing the product,
-quiet area for the copy, lighting and styling match neighbouring slots, palette,
-no baked-in text or watermark); view a section's or gallery's candidates
-together so the set reads as one shoot, and view a generated asset the same way
-after it returns.
-
-**`header`**
-- Purpose: logo only, not clickable; the only exit is the quiz.
-- Media: brand logo or text wordmark; missing logo: tell the merchant, wordmark meanwhile. View every candidate with `lexsis_assets.view` and run the section fit review (section 1b of `references/workflows/section-asset-workflow.md`) before use.
-- Island: none; a plain HTML header (Navbar carries navigation, and none belongs here).
-- Copy: none.
-- Decide with: `lexsis_brand.brand_kit` logo asset.
-
-**`hero`** (start screen)
-- Purpose: outcome headline, what they get, time estimate, one Start button, one verified proof line.
-- Media: `typographic` by default: HTML text on the page background, or on one generated `hero_bg` (ALLOW, landscape plus portrait, quiet zone, only as the plan's bold moment). Alternate `editorial-lifestyle` from library `lifestyle` when the sending ad was a lifestyle frame. Never a packshot before routing, never a generated person. Missing lifestyle frame for a message-matched start: tell the merchant (context, landscape and portrait); offer upload or the `hero_bg` generation with its credit cost; typographic ships meanwhile. View every candidate with `lexsis_assets.view` and run the section fit review before use.
-- Island: none; the Start button is HTML anchoring to the quiz, or the FunnelRuntime click trigger bound to it; concern chips as the first question belong to the funnel.
-- Copy: headline outcome plus time ("Find your shade in 60 seconds"), 8 words; one sentence on what they get (16 words); proof line ledgered or a labelled store rating; authorship only when real; vocabulary per `references/anti-patterns/copy-anti-patterns.md`.
-- Decide with: the ad frame from step 6; ledger rows from step 4; credits from step 8.
-
-**`quiz`**
-- Purpose: 5 to 8 questions, one per screen, image choice where possible, every answer mapped to a product or collection, skip logic, progress, no open text.
-- Media: yes for visual questions: each option image from catalog variant media (real shade swatch on skin, fabric, texture) or library `lifestyle` scenes ("morning", "on the go"); CSS colour chips from the catalog hex only when the template's option type is colour and the real swatch appears on results; text options with 48 px targets for use-case and budget questions. Never stock or generated people as "you"; never product photography on question screens. Missing option imagery: tell the merchant (swatch or scene, square, count per question); offer upload; generation is not feasible for swatches or skin; text options ship meanwhile. View the candidates together with `lexsis_assets.view` and run the section fit review so the set reads as one shoot, not a pile of found images. View option images at thumbnail size to confirm they are visually distinguishable from each other.
-- Island: FunnelRuntime inline on the page, started immediately or from the Start button, keyed to the funnel created in step 7 and validated before design; title and subtitle only when the template does not render its own; ceiling 10 questions, and a question that does not change the recommendation is removed before `validate_funnel`. Resolve from `lexsis_design.island_schema`.
-- Copy: questions 12 words; options 4 words; "why we ask" 16 words; second person.
-- Decide with: template step schema from step 1; option imagery found in steps 2 and 6.
-
-**`email-capture`**
-- Purpose: after the last question and before results; skippable; consent un-ticked.
-- Media: none.
-- Island: the funnel template's capture step when it has one; otherwise EmailCapture in compact form labelled "Show my results" with a plain "Show my results without email" link beside it; marketing consent is a separate un-ticked HTML checkbox; a hard gate only with the merchant's recorded confirmation. Resolve from `lexsis_design.island_schema`.
-- Copy: "we will send these results to you" (12 words) and the skip link in plain words.
-- Decide with: lead goal in the brief; the template's capture step.
-
-**`quiz-results`**
-- Purpose: personalised header using the answers, a summary of what was learned, the reason for the result.
-- Media: yes, the first recommended product's identity from catalog media leads the screen; an inline SVG diagram (AM and PM routine, stage) authored in HTML when the result is a routine or stage; never a generated result image (GN4). Missing identity for a recommended product: tell the merchant; offer upload; the product is held out of the mapping until then. View every candidate with `lexsis_assets.view` and run the section fit review before use.
-- Island: none when the template hands results to page sections keyed by result; the funnel's own results step when the template renders them; `lexsis_capture.preview_funnel` shows which.
-- Copy: the header repeats the shopper's words ("You said your skin feels tight by noon"); summary 3 lines of 18 words; "results", never "diagnosis" without a clinician and disclaimer.
-- Decide with: the results step shape from step 1.
-
-**`product-spotlight`**
-- Purpose: one card per recommended product (one to three) with image, price, review summary and a "why this matches you" line tied to an answer.
-- Media: yes, identity per product from catalog media; never stock or generated. Missing: tell the merchant (identity, square, per product); offer upload; the product waits out of the results until then. View the candidates together with `lexsis_assets.view` and run the section fit review so the set reads as one shoot, not a pile of found images.
-- Island: none (HTML cards) for one to three products; FeaturedCollectionStage when two or three products should share one large stage, quick add off, badges off, no autoplay or entry animation (N10); ProductCarousel is not used (it needs four or more products). Review summary per product by band. Resolve from `lexsis_design.island_schema`.
-- Copy: "why this matches you" 18 words per product, each naming a specific answer.
-- Decide with: result mapping from step 1; product bands from step 3.
-
-**`buy-box`**
-- Purpose: one "Add my set" CTA with the recommended set pre-loaded and trimmable, set price and any saving as arithmetic, quiz discount applied automatically.
-- Media: component images already shown above; the builder reuses each product's catalog identity image.
-- Island: two or three products: BundleBuilder with every recommended item pre-selected (per-item remove), the set saving from the ledger; one product: BuyBox with the recommended variant pre-selected through VariantSwatches; any plan option: SubscriptionToggle with one-time default and both prices visible, only when the merchant confirmed the `ask`; one BuyBox per page; never a redirect to a PDP per item. Resolve from `lexsis_design.island_schema`.
-- Copy: "Add my set", "Add my routine"; the saving as arithmetic (`references/offers/price-presentation.md` PP10); the discount stated in one line ("10% off applied at checkout, first order only").
-- Decide with: product count per result; offer ledger; `lexsis_cart.get`.
-
-**`guarantee`**
-- Purpose: shade or fit guarantee in one line beside the CTA.
-- Media: none.
-- Island: none.
-- Copy: "If we miss, we send the right shade free" (12 words), exact terms.
-- Decide with: `policy-fact` row.
-
-**`reviews`** (`-same-profile`)
-- Purpose: two or three verbatim quotes from reviewers with the same result type.
-- Media: reviewer photos only from records; avatars real or CSS initials. View every candidate with `lexsis_assets.view` and run the section fit review before use.
-- Island: none; static verbatim dated cards from confirmed `reviews_search` candidates (RS16); no carousel, three quotes do not need motion.
-- Copy: quote 60 words; the profile label from the record's fields only.
-- Decide with: confirmed candidates from step 3.
-
-**`faq`**
-- Purpose: on results only: change answers, wrong shade, returns.
-- Media: none.
-- Island: none; native `<details>` (the FAQ island is deprecated).
-- Copy: three to five questions; answers 50 words.
-- Decide with: guarantee and returns policy rows.
-
-**`footer`**
-- Purpose: legal links only.
-- Media: brand logo. View every candidate with `lexsis_assets.view` and run the section fit review before use.
-- Island: Footer with links limited to privacy, terms, contact; preset `footer/simple-light`.
-- Copy: the store's.
-- Decide with: legal URLs.
+| Section | Purpose | Media job and source | Interactive decision | Copy constraints | Decision evidence |
+|---|---|---|---|---|---|
+| `header` | logo only, not clickable; the only exit is the quiz. | brand logo or text wordmark; without a logo, use the wordmark. | none; a plain HTML header (Navbar carries navigation, and none belongs here). | none. | `lexsis_brand.brand_kit` logo asset. |
+| `hero` (start screen) | outcome headline, what they get, time estimate, one Start button, one verified proof line. | `typographic` by default: HTML text on the page background, or on one generated `hero_bg` (ALLOW, landscape plus portrait, quiet zone, only as the plan's bold moment). Alternate `editorial-lifestyle` from library `lifestyle` when the sending ad was a lifestyle frame. Never a packshot before routing, never a generated person. Missing lifestyle frame for a message-matched start: (context, landscape and portrait); alternative: the `hero_bg` generation with its credit cost; typographic ships meanwhile. | none; the Start button is HTML anchoring to the quiz, or the FunnelRuntime click trigger bound to it; concern chips as the first question belong to the funnel. | headline outcome plus time ("Find your shade in 60 seconds"), 8 words; one sentence on what they get (16 words); proof line ledgered or a labelled store rating; authorship only when real; vocabulary per `references/anti-patterns/copy-anti-patterns.md`. | the ad frame from step 6; ledger rows from step 4; credits from step 8. |
+| `quiz` | 5 to 8 questions, one per screen, image choice where possible, every answer mapped to a product or collection, skip logic, progress, no open text. | yes for visual questions: each option image from catalog variant media (real shade swatch on skin, fabric, texture) or library `lifestyle` scenes ("morning", "on the go"); CSS colour chips from the catalog hex only when the template's option type is colour and the real swatch appears on results; text options with 48 px targets for use-case and budget questions. Never stock or generated people as "you"; never product photography on question screens. Missing option imagery: (swatch or scene, square, count per question); generation is not feasible for swatches or skin; text options ship meanwhile. View option images at thumbnail size to confirm they are visually distinguishable from each other. | FunnelRuntime inline on the page, started immediately or from the Start button, keyed to the funnel created in step 7 and validated before design; title and subtitle only when the template does not render its own; ceiling 10 questions, and a question that does not change the recommendation is removed before `validate_funnel`. | questions 12 words; options 4 words; "why we ask" 16 words; second person. | template step schema from step 1; option imagery found in steps 2 and 6. |
+| `email-capture` | after the last question and before results; skippable; consent un-ticked. | none. | the funnel template's capture step when it has one; otherwise EmailCapture in compact form labelled "Show my results" with a plain "Show my results without email" link beside it; marketing consent is a separate un-ticked HTML checkbox; a hard gate only with the merchant's recorded confirmation. | "we will send these results to you" (12 words) and the skip link in plain words. | lead goal in the brief; the template's capture step. |
+| `quiz-results` | personalised header using the answers, a summary of what was learned, the reason for the result. | yes, the first recommended product's identity from catalog media leads the screen; an inline SVG diagram (AM and PM routine, stage) authored in HTML when the result is a routine or stage; never a generated result image (GN4). Without an identity image, keep the recommended product out of the mapping until its media is supplied. | none when the template hands results to page sections keyed by result; the funnel's own results step when the template renders them; `lexsis_capture.preview_funnel` shows which. | the header repeats the shopper's words ("You said your skin feels tight by noon"); summary 3 lines of 18 words; "results", never "diagnosis" without a clinician and disclaimer. | the results step shape from step 1. |
+| `product-spotlight` | one card per recommended product (one to three) with image, price, review summary and a "why this matches you" line tied to an answer. | yes, identity per product from catalog media; never stock or generated. Missing media: (identity, square, per product); the product waits out of the results until then. | none (HTML cards) for one to three products; FeaturedCollectionStage when two or three products should share one large stage, quick add off, badges off, no autoplay or entry animation (N10); ProductCarousel is not used (it needs four or more products). Review summary per product by band. | "why this matches you" 18 words per product, each naming a specific answer. | result mapping from step 1; product bands from step 3. |
+| `buy-box` | one "Add my set" CTA with the recommended set pre-loaded and trimmable, set price and any saving as arithmetic, quiz discount applied automatically. | component images already shown above; the builder reuses each product's catalog identity image. | two or three products: BundleBuilder with every recommended item pre-selected (per-item remove), the set saving from the ledger; one product: BuyBox with the recommended variant pre-selected through VariantSwatches; any plan option: SubscriptionToggle with one-time default and both prices visible, only when the merchant confirmed the `ask`; one BuyBox per page; never a redirect to a PDP per item. | "Add my set", "Add my routine"; the saving as arithmetic (`references/offers/price-presentation.md` PP10); the discount stated in one line ("10% off applied at checkout, first order only"). | product count per result; offer ledger; `lexsis_cart.get`. |
+| `guarantee` | shade or fit guarantee in one line beside the CTA. | none. | none. | "If we miss, we send the right shade free" (12 words), exact terms. | `policy-fact` row. |
+| `reviews` (`-same-profile`) | two or three verbatim quotes from reviewers with the same result type. | reviewer photos only from records; avatars real or CSS initials. | none; static verbatim dated cards from confirmed `reviews_search` candidates (RS16); no carousel, three quotes do not need motion. | quote 60 words; the profile label from the record's fields only. | confirmed candidates from step 3. |
+| `faq` | on results only: change answers, wrong shade, returns. | none. | none; native `<details>`. | three to five questions; answers 50 words. | guarantee and returns policy rows. |
+| `footer` | legal links only. | brand logo. | Footer with links limited to privacy, terms, contact. | the store's. | legal URLs. |
 
 ### Asset budget
 
@@ -252,7 +143,7 @@ after it returns.
 | asset library | `lifestyle` scenes for the start screen and scene options, `social-proof` with rights | a scene per option | ask the merchant to upload; text option meanwhile; never stock people as the shopper |
 | generation | one `hero_bg` for the typographic start screen as the bold moment; at most one or two `decorative_element` | products, swatches, skin, people, results, diagrams as raster | never |
 
-Minimal assets (identity per product only): a typographic start screen on the page background, text-option questions, results led by the catalog identity image, the set builder, guarantee, native FAQ; missing swatches and scenes are listed in the plan and draft summary. Generated assets on a quiz funnel: zero or one start-screen backdrop, never more than the house cap of four. Every asset, generated ones included, is opened with `lexsis_assets.view` and passes the fit review in `references/workflows/section-asset-workflow.md` section 1b before it ships; a paid render earns no exemption.
+Minimal assets (identity per product only): a typographic start screen on the page background, text-option questions, results led by the catalog identity image, the set builder, guarantee, native FAQ; missing swatches and scenes are listed in the plan and draft summary. Generated assets on a quiz funnel: zero or one start-screen backdrop, never more than the house cap of four.
 
 ## Above the fold (390px)
 

@@ -91,142 +91,36 @@ product (that is `offer-page`).
 
 ## Workflow
 
-Assets first: the grid is the page, and every card exists only because a real
-identity image of that SKU exists. A section that would end up as a colour
-band, an emoji row, icon tiles or a wall of text is rebuilt around imagery or,
-on the merchant's call, merged or skipped. Per-slot sourcing:
-`references/workflows/section-asset-workflow.md`; island choice:
-`references/workflows/island-selection-workflow.md`. Missing media is never
-dropped silently: every Media line ends by telling the merchant what is
-missing (job, aspect, count), offering upload via `lexsis_asset_upload.upload`
-or MCP generation when the purpose is feasible under
-`references/assets/generation-policy.md`, and skipping or merging the section
-only if the merchant chooses. In fast-draft the agent proceeds with the closest
-existing asset or leaves the slot `planned`, and lists every missing asset in
-the plan and the draft summary.
+Apply `references/workflows/_how-to-read.md` to these type-specific
+decisions. It links the shared asset/fallback, fit, live-island and
+copy procedures; this table supplies their inputs, not another policy.
 
 ### Context reads
 
-1. Offer ledger: `offer.endsAt` (ISO with timezone, confirmed, never
-   extended), code or "prices as marked", exclusions, stacking, regions,
-   final-sale flag, and a `compareAtBasis` per SKU for the market
-   (`references/offers/price-presentation.md` PP1 to PP5, PP11;
-   `references/offers/offer-types.md` flash-sale, clearance).
-2. `lexsis_catalog.list` filtered to the sale items, then `lexsis_catalog.get`
-   per SKU: first media item as the card identity (view every card image
-   together with `lexsis_assets.view` for one background, crop and
-   orientation, `image-jobs-by-page-type.md` IJ9), price, compare-at,
-   variants with availability, live inventory per variant, per-variant images
-   for swatches where colour drives the choice.
-3. `lexsis_catalog.reviews_status`; `lexsis_catalog.reviews` per SKU for card
-   summaries (B2 or more), or the store-level aggregate labelled as a store
-   rating and linked to its source (`references/proof/reviews-sourcing.md`).
+1. Offer ledger: `offer.endsAt` (ISO with timezone, confirmed, never extended), code or "prices as marked", exclusions, stacking, regions, final-sale flag, and a `compareAtBasis` per SKU for the market (`references/offers/price-presentation.md` PP1 to PP5, PP11; `references/offers/offer-types.md` flash-sale, clearance).
+2. `lexsis_catalog.list` filtered to the sale items, then `lexsis_catalog.get` per SKU: first media item as the card identity (view every card image together with `lexsis_assets.view` for one background, crop and orientation, `image-jobs-by-page-type.md` IJ9), price, compare-at, variants with availability, live inventory per variant, per-variant images for swatches where colour drives the choice.
+3. `lexsis_catalog.reviews_status`; `lexsis_catalog.reviews` per SKU for card summaries (B2 or more), or the store-level aggregate labelled as a store rating and linked to its source (`references/proof/reviews-sourcing.md`).
 4. `lexsis_cart.get`: code auto-apply, threshold, cart v2 (QuickAdd needs it).
-5. `lexsis_brand.context`, `lexsis_brand.brand_kit`, `lexsis_brand.navigation`
-   (full nav; the sale lives inside the store). India festive: market tokens
-   and MRP wording (PP5, PP21, PP22, PP25).
-6. `lexsis_asset_library.search` with `theme_id`, `mode: "tags"` for
-   `product-shot` (cards missing a catalog image) and `banner` (a real campaign
-   backdrop for a typographic hero); no `lifestyle` sections on this type.
-   Sequence and checks: `references/assets/asset-sourcing-sequence.md`.
-7. `lexsis_design.islands`, then `lexsis_design.island_schema` for each island
-   named below. `lexsis_workspace.credits` only when the hero is typographic
-   and the plan names it as the bold moment: one `hero_bg` (landscape plus
-   portrait) is the only ALLOW generation on this type.
+5. `lexsis_brand.context`, `lexsis_brand.brand_kit`, `lexsis_brand.navigation` (full nav; the sale lives inside the store). India festive: market tokens and MRP wording (PP5, PP21, PP22, PP25).
+6. `lexsis_asset_library.search` with `theme_id`, `mode: "tags"` for `product-shot` (cards missing a catalog image) and `banner` (a real campaign backdrop for a typographic hero); no `lifestyle` sections on this type. Sequence and checks: `references/assets/asset-sourcing-sequence.md`.
+7. `lexsis_design.islands`, then `lexsis_design.island_schema` for each island named below. `lexsis_workspace.credits` only when the hero is typographic and the plan names it as the bold moment: one `hero_bg` (landscape plus portrait) is the only permitted generation on this type.
 
 ### Section by section
 
-No asset is used sight unseen: open every candidate with `lexsis_assets.view`
-and run the section 1b fit review in `references/workflows/section-asset-workflow.md`
-before use (subject does the job, crops to the slot without losing the product,
-quiet area for the copy, lighting and styling match neighbouring slots, palette,
-no baked-in text or watermark); view a section's or gallery's candidates
-together so the set reads as one shoot, and view a generated asset the same way
-after it returns.
-
-**`announcement`**
-- Purpose: end date and time with timezone as text, code or "prices as marked".
-- Media: none.
-- Island: SiteHeader strip or AnnouncementBar with one message ("Ends Sunday 11:59pm IST. Prices as marked."); inside the final 48 hours the bar keeps the text and the timer sits beside the hero CTA, since the bar has no timer slot; resolve from `lexsis_design.island_schema`; preset `siteheader/sticky-light`.
-- Copy: under 60 characters; plain time; vocabulary per `references/anti-patterns/copy-anti-patterns.md`.
-- Decide with: `offer.endsAt`; code from `lexsis_cart.get`.
-
-**`header`**
-- Purpose: full store navigation.
-- Media: brand logo. View every candidate with `lexsis_assets.view` and run the section fit review (section 1b of `references/workflows/section-asset-workflow.md`) before use.
-- Island: SiteHeader, sticky, cart drawer, links from `lexsis_brand.navigation`; hydration mode allowed; resolve from `lexsis_design.island_schema`.
-- Copy: store names.
-- Decide with: `lexsis_brand.navigation`.
-
-**`hero`**
-- Purpose: depth, scope and end time in one sentence; anchor to the grid.
-- Media: yes, `grid` of four to six card identity images reused from the product grid (no new asset), or `typographic` on a real `banner` asset or a generated `hero_bg` (ALLOW, only as the plan's bold moment, quiet zone under the HTML sentence, one legibility overlay at most). Never a single-product hero, a lifestyle campaign image that hides the products, or a homepage carousel (IJ8). Missing backdrop for a typographic hero: tell the merchant; offer upload or the `hero_bg` generation with its credit cost; the card grid hero ships meanwhile. View every backdrop candidate, generated ones included, with `lexsis_assets.view` and run the section fit review (quiet zone under the sentence, palette, no baked-in text) before use.
-- Island: none (HTML); or FeaturedCollectionStage for a curated hero set of four to eight products with quick add, badges off, no autoplay or entry animation (N10); resolve from `lexsis_design.island_schema`.
-- Copy: `[depth] off [scope]. Ends [day, time, timezone].`, 14 words; CTA "Shop the sale".
-- Decide with: card images available; whether the plan names a bold moment.
-
-**`offer`**
-- Purpose: the terms line within one scroll of the hero.
-- Media: none.
-- Island: none.
-- Copy: automatic or code, exclusions, stacking, regions, "final sale" where it applies; three lines of 18 words.
-- Decide with: ledger terms.
-
-**`product-grid`**
-- Purpose: the sale, 10 to 30 curated SKUs (broader with filters for clearance), best sellers and high-margin first.
-- Media: yes, one identity image per card from that SKU's catalog media (uniform aspect per `slot-spec.md`, SS10), library `product-shot` for a card whose catalog lacks one. Never stock, never generated, never a hero image cropped into a card; swatch chips from the catalog hex only beside a real variant image. Missing card images: tell the merchant which SKUs (identity, square, one each); offer upload; those cards wait off the grid until then. View the candidates together with `lexsis_assets.view` and run the section fit review so the set reads as one shoot, not a pile of found images.
-- Island: an HTML grid per `references/product-grid.md` with QuickAdd per card (variant picker when sizes or colours exist), or ProductCarousel with quick add and animation off for a "best sellers first" rail above the grid; each card carries name, `<s data-source="compare_at_price">` (or the ledger row id) with a per-SKU basis, sale price larger and higher-contrast, saving as text, review summary at B2 or more, variant availability inline; no pills or ribbons (N9, `offer-types.md` OF10). Resolve from `lexsis_design.island_schema`; preset `productcarousel/cards-quickadd-light`.
-- Copy: card saving text 4 words ("Save $28"; "Save 30%" under $100, PP10); no microcopy under card CTAs.
-- Decide with: SKU list and images from step 2; per-SKU basis from step 1; cart v2.
-
-**`stock-indicator`**
-- Purpose: "12 left in size M" on the card from live inventory.
-- Media: none.
-- Island: InventoryIndicator in its inline text form bound to the card's variant, conservative threshold, hiding itself above it and on replenish; never on made-to-order or pre-order stock, never a fixed number in copy (`urgency-scarcity.md` UR3); resolve from `lexsis_design.island_schema`; preset `inventoryindicator/text-quiet`.
-- Copy: island-rendered; no "Selling fast", no "N people viewing".
-- Decide with: `offer.stockVerified` and a live inventory binding (`plan_lint.py` T10).
-
-**`countdown`**
-- Purpose: the real end inside the final 48 hours, beside the primary CTA.
-- Media: none.
-- Island: CountdownTimer bound to `offer.endsAt`, hiding itself at zero while prices revert server-side; never inside grid cards; the Countdown island is deprecated (UR2, UR7); resolve from `lexsis_design.island_schema`.
-- Copy: the end time as text beside the timer.
-- Decide with: `offer.endsAt` confirmed and now within 48 hours.
-
-**`review-summary`**
-- Purpose: store-level aggregate linked to its source, or per-card summaries.
-- Media: none.
-- Island: none; an HTML line "4.8 from 12,400 reviews on Judge.me" with the link, labelled as a store rating, never relabelled as a product rating (RS7).
-- Copy: one line.
-- Decide with: `reviews_status` source and count.
-
-**`shipping-returns`**
-- Purpose: returns on sale items, final-sale wording, threshold, delivery estimate or festive cutoff.
-- Media: none.
-- Island: DeliveryEstimate for single-zone domestic shipping before a festival cutoff, else none; the India pincode line is static HTML (no pincode prop); resolve from `lexsis_design.island_schema`; preset `deliveryestimate/inline-quiet`.
-- Copy: 40 words; statutory rights survive "final sale".
-- Decide with: `policy-fact` rows; shipping zones.
-
-**`waitlist-form`**
-- Purpose: "Notify me" on a sold-out card, variant-specific.
-- Media: the card's identity image stays; no new asset.
-- Island: EmailCapture in compact form, one per sold-out variant in the card's add position, labelled "Notify me"; marketing consent is a separate un-ticked HTML checkbox or absent; resolve from `lexsis_design.island_schema`.
-- Copy: "One email when it is back."
-- Decide with: variant availability from step 2.
-
-**`closing-cta`**
-- Purpose: anchor back to the grid plus the end time restated as text.
-- Media: no new asset.
-- Island: StickyBar in collection mode ("Shop the sale" to the grid, end time as the subtitle), animation off; never a product-level add to cart; resolve from `lexsis_design.island_schema`; preset `stickybar/collection-light`.
-- Copy: "Shop the sale" or "Shop all outerwear"; the end as text.
-- Decide with: page length; `offer.endsAt`.
-
-**`legal`** and **`footer`**
-- Purpose: full sale terms; chrome.
-- Media: brand logo. View every candidate with `lexsis_assets.view` and run the section fit review before use.
-- Island: Footer with the terms as a column link; preset `footer/columns-dark`.
-- Copy: the store's.
-- Decide with: terms URL.
+| Section | Purpose | Media job and source | Interactive decision | Copy constraints | Decision evidence |
+|---|---|---|---|---|---|
+| `announcement` | end date and time with timezone as text, code or "prices as marked". | none. | SiteHeader strip or AnnouncementBar with one message ("Ends Sunday 11:59pm IST. Prices as marked."); inside the final 48 hours the bar keeps the text and the timer sits beside the hero CTA, since the bar has no timer slot. | under 60 characters; plain time; vocabulary per `references/anti-patterns/copy-anti-patterns.md`. | `offer.endsAt`; code from `lexsis_cart.get`. |
+| `header` | full store navigation. | brand logo. | SiteHeader, sticky, cart drawer, links from `lexsis_brand.navigation`; hydration mode from the live schema | store names. | `lexsis_brand.navigation`. |
+| `hero` | depth, scope and end time in one sentence; anchor to the grid. | yes, `grid` of four to six card identity images reused from the product grid (no new asset), or `typographic` on a real `banner` asset or a generated `hero_bg` (ALLOW, only as the plan's bold moment, quiet zone under the HTML sentence, one legibility overlay at most). Never a single-product hero, a lifestyle campaign image that hides the products, or a homepage carousel (IJ8). Missing backdrop for a typographic hero: alternative: the `hero_bg` generation with its credit cost; the card grid hero ships meanwhile. | none (HTML); or FeaturedCollectionStage for a curated hero set of four to eight products with quick add, badges off, no autoplay or entry animation (N10) | `[depth] off [scope]. Ends [day, time, timezone].`, 14 words; CTA "Shop the sale". | card images available; whether the plan names a bold moment. |
+| `offer` | the terms line within one scroll of the hero. | none. | none. | automatic or code, exclusions, stacking, regions, "final sale" where it applies; three lines of 18 words. | ledger terms. |
+| `product-grid` | the sale, 10 to 30 curated SKUs (broader with filters for clearance), best sellers and high-margin first. | yes, one identity image per card from that SKU's catalog media (uniform aspect per `slot-spec.md`, SS10), library `product-shot` for a card whose catalog lacks one. Never stock, never generated, never a hero image cropped into a card; swatch chips from the catalog hex only beside a real variant image. Missing card images: which SKUs (identity, square, one each); those cards wait off the grid until then. | an HTML grid per `references/product-grid.md` with QuickAdd per card (variant picker when sizes or colours exist), or ProductCarousel with quick add and animation off for a "best sellers first" rail above the grid; each card carries name, `<s data-source="compare_at_price">` (or the ledger row id) with a per-SKU basis, sale price larger and higher-contrast, saving as text, review summary at B2 or more, variant availability inline; no pills or ribbons (N9, `offer-types.md` OF10). | card saving text 4 words ("Save $28"; "Save 30%" under $100, PP10); no microcopy under card CTAs. | SKU list and images from step 2; per-SKU basis from step 1; cart v2. |
+| `stock-indicator` | "12 left in size M" on the card from live inventory. | none. | InventoryIndicator in its inline text form bound to the card's variant, conservative threshold, hiding itself above it and on replenish; never on made-to-order or pre-order stock, never a fixed number in copy (`urgency-scarcity.md` UR3). | island-rendered; no "Selling fast", no "N people viewing". | `offer.stockVerified` and a live inventory binding (the urgency evidence requirement). |
+| `countdown` | the real end inside the final 48 hours, beside the primary CTA. | none. | CountdownTimer bound to `offer.endsAt`, hiding itself at zero while prices revert server-side; never inside grid cards; the Countdown island is deprecated (UR2, UR7) | the end time as text beside the timer. | `offer.endsAt` confirmed and now within 48 hours. |
+| `review-summary` | store-level aggregate linked to its source, or per-card summaries. | none. | none; an HTML line "4.8 from 12,400 reviews on Judge.me" with the link, labelled as a store rating, never relabelled as a product rating (RS7). | one line. | `reviews_status` source and count. |
+| `shipping-returns` | returns on sale items, final-sale wording, threshold, delivery estimate or festive cutoff. | none. | DeliveryEstimate for single-zone domestic shipping before a festival cutoff, else none; the India pincode line is static HTML (no pincode prop). | 40 words; statutory rights survive "final sale". | `policy-fact` rows; shipping zones. |
+| `waitlist-form` | "Notify me" on a sold-out card, variant-specific. | the card's identity image stays; no new asset. | EmailCapture in compact form, one per sold-out variant in the card's add position, labelled "Notify me"; marketing consent is a separate un-ticked HTML checkbox or absent | "One email when it is back." | variant availability from step 2. |
+| `closing-cta` | anchor back to the grid plus the end time restated as text. | no new asset. | StickyBar in collection mode ("Shop the sale" to the grid, end time as the subtitle), animation off; never a product-level add to cart. | "Shop the sale" or "Shop all outerwear"; the end as text. | page length; `offer.endsAt`. |
+| `legal` and `footer` | full sale terms; chrome. | brand logo. | Footer with the terms as a column link. | the store's. | terms URL. |
 
 ### Asset budget
 
@@ -236,7 +130,7 @@ after it returns.
 | asset library | `product-shot` fills, a real `banner` for a typographic hero | nothing else is needed on this type | none |
 | generation | one `hero_bg` for a typographic hero named as the bold moment (landscape plus portrait) | products, card images, people, badges, text, timers | never |
 
-Minimal assets (identity per SKU, nothing else): announcement, hero built from the card images, terms, the grid with struck prices and QuickAdd, shipping and returns, closing anchor; SKUs without an image are listed in the plan and draft summary and no lifestyle section is added to fill space. Generated assets on a sale page: zero or one backdrop, never more than the house cap of four. Every asset, generated ones included, is opened with `lexsis_assets.view` and passes the fit review in `references/workflows/section-asset-workflow.md` section 1b before it ships; a paid render earns no exemption.
+Minimal assets (identity per SKU, nothing else): announcement, hero built from the card images, terms, the grid with struck prices and QuickAdd, shipping and returns, closing anchor; SKUs without an image are listed in the plan and draft summary and no lifestyle section is added to fill space. Generated assets on a sale page: zero or one backdrop, never more than the house cap of four.
 
 ## Above the fold (390px)
 
@@ -408,7 +302,7 @@ product hero.
 since fewer than six discounted products is an `offer-page`) plus the hero and
 closing anchors. `imagery.min_images` is one identity image per card at the
 six-card floor. `countdown` and `stock-indicator` are conditional: they render
-only from `offer.endsAt` and a live inventory binding (`plan_lint.py` T10).
+only from `offer.endsAt` and a live inventory binding (the urgency evidence requirement).
 `urgency: encouraged` still means verified.
 
 ## Sources

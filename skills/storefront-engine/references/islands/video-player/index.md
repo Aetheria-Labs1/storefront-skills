@@ -1,17 +1,12 @@
-# VideoPlayer — Island Directory
+# VideoPlayer
 
-Content video playback island. Supports inline, hero, and background loop modes.
+For `VideoPlayer`, fetch `lexsis_design.islands` and
+`lexsis_design.island_schema` during the decision that needs this behavior.
+Use the current authoring example, variants, props, parts, hydration and
+headless support; the bundled JSON is a compatibility reference, not a
+second source of defaults.
 
-## Quick Reference
-
-- **Variants**: default, autoplay, background
-- **Required prop**: `src` (video URL)
-- **Schema**: `vibe://schema/island/VideoPlayer`
-- **Contract**: follows `_contract.md` rules
-
-## Composition
-
-- Hero usage: pair with headline overlay text, CTA buttons
-- Inline: pair with product details, testimonials, feature descriptions
-- Background: replaces static hero image, overlay with Hero or Headline island
-- Pair with: Hero, BuyBox, TestimonialCarousel, FeatureGrid
+`references/workflows/island-selection-workflow.md` owns selection and
+linked state. `references/authoring/source-authoring.md` owns source syntax;
+`references/authoring/css-and-styling.md` owns styling. Placement and evidence
+come from the selected page-type contract and its domain policies.

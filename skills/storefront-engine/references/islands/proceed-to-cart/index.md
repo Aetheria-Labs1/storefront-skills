@@ -1,18 +1,12 @@
-# ProceedToCart — Island Directory
+# ProceedToCart
 
-"View Cart" button that navigates to cart page or opens cart drawer.
+For `ProceedToCart`, fetch `lexsis_design.islands` and
+`lexsis_design.island_schema` during the decision that needs this behavior.
+Use the current authoring example, variants, props, parts, hydration and
+headless support; the bundled JSON is a compatibility reference, not a
+second source of defaults.
 
-## Quick Reference
-
-- **Variants**: outline, primary, minimal
-- **Required prop**: none (reads cart state)
-- **Schema**: `vibe://schema/island/ProceedToCart`
-- **Contract**: follows `_contract.md` rules
-
-## Composition
-
-- Place after add-to-cart confirmation
-- Or as secondary CTA below BuyBox
-- Primary: standalone section or below product grid
-- Minimal: inline text link in navbar or after quick-add
-- Shows item count badge automatically
+`references/workflows/island-selection-workflow.md` owns selection and
+linked state. `references/authoring/source-authoring.md` owns source syntax;
+`references/authoring/css-and-styling.md` owns styling. Placement and evidence
+come from the selected page-type contract and its domain policies.

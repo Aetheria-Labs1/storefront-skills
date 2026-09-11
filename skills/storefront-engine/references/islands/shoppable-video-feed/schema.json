@@ -560,29 +560,6 @@
     ],
     "headless": {
       "supported": false
-    },
-    "example": "<lx-island name=\"ShoppableVideoFeed\">\n  <script type=\"application/json\">\n{\n  \"items\": [\n    {\n      \"id\": \"example-id\",\n      \"alt\": \"example-alt\",\n      \"products\": \"example-products\"\n    }\n  ]\n}\n  </script>\n</lx-island>",
-    "examples": [
-      {
-        "label": "Active reel",
-        "source": "<lx-island name=\"ShoppableVideoFeed\">\n  <script type=\"application/json\">{\"variant\":\"reel\",\"playbackMode\":\"active\",\"items\":[{\"id\":\"demo-1\",\"media\":{\"provider\":\"cloudflare_cdn\",\"poster\":\"https://cdn.example.com/demo.jpg\",\"sources\":[{\"url\":\"https://cdn.example.com/demo.mp4\",\"type\":\"video/mp4\"}]},\"alt\":\"Creator demonstrates the serum\",\"products\":[{\"productId\":\"gid://shopify/Product/1\"}]}]}</script>\n</lx-island>"
-      },
-      {
-        "label": "Vertical swipe reel",
-        "source": "<lx-island name=\"ShoppableVideoFeed\">\n  <script type=\"application/json\">{\"variant\":\"reel\",\"reelMode\":\"vertical-scroll\",\"playbackMode\":\"active\",\"soundMode\":\"toggle\",\"controlsVisibility\":\"always\",\"navigationMode\":\"none\",\"mobileNavigationMode\":\"none\",\"items\":[{\"id\":\"demo-1\",\"src\":\"https://cdn.example.com/demo.mp4\",\"poster\":\"https://cdn.example.com/demo.jpg\",\"alt\":\"Creator demonstrates the product\",\"products\":[{\"productId\":\"gid://shopify/Product/1\"}]}]}</script>\n</lx-island>"
-      },
-      {
-        "label": "Auto rail without controls",
-        "source": "<lx-island name=\"ShoppableVideoFeed\">\n  <script type=\"application/json\">{\"variant\":\"rail\",\"controlsVisibility\":\"never\",\"navigationMode\":\"none\",\"mobileNavigationMode\":\"swipe\",\"autoAdvance\":true,\"items\":[{\"id\":\"demo-1\",\"src\":\"https://cdn.example.com/demo.mp4\",\"poster\":\"https://cdn.example.com/demo.jpg\",\"alt\":\"Customer demonstrates the product\",\"products\":[{\"productId\":\"gid://shopify/Product/1\"}]}]}</script>\n</lx-island>"
-      },
-      {
-        "label": "Testimonial coverflow",
-        "source": "<lx-island name=\"ShoppableVideoFeed\">\n  <script type=\"application/json\">{\"variant\":\"rail\",\"railPresentation\":\"coverflow\",\"aspectRatio\":\"4:5\",\"productPresentation\":\"hidden\",\"playbackMode\":\"active\",\"navigationMode\":\"buttons\",\"mobileNavigationMode\":\"swipe\",\"items\":[{\"id\":\"review-1\",\"src\":\"https://cdn.example.com/review.mp4\",\"poster\":\"https://cdn.example.com/review.jpg\",\"alt\":\"Customer reviews the product\",\"testimonial\":{\"author\":\"Maya F.\",\"productLabel\":\"Blue Velvet Blazer\",\"rating\":5,\"verified\":true},\"products\":[]}]}</script>\n</lx-island>"
-      },
-      {
-        "label": "Animated preview grid",
-        "source": "<lx-island name=\"ShoppableVideoFeed\">\n  <script type=\"application/json\">{\"variant\":\"grid\",\"previewMode\":\"hover\",\"items\":[{\"id\":\"demo-1\",\"media\":{\"poster\":\"https://cdn.example.com/demo.jpg\",\"preview\":{\"url\":\"https://cdn.example.com/demo.webp\",\"type\":\"image/webp\"},\"sources\":[{\"url\":\"https://cdn.example.com/demo.m3u8\",\"type\":\"application/x-mpegURL\"},{\"url\":\"https://cdn.example.com/demo.mp4\",\"type\":\"video/mp4\"}]},\"alt\":\"Creator demonstrates the product\",\"products\":[{\"productId\":\"gid://shopify/Product/1\"}]}]}</script>\n</lx-island>"
-      }
-    ]
+    }
   }
 }

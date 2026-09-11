@@ -49,38 +49,17 @@ Never scrape third-party posts, competitor sites or marketplaces for images.
 Never hotlink; every external file is imported before use so it lives in the
 brand library and survives the source going away.
 
-Search-mode notes: tags are free-form, so a zero-result tag query means the
-tag is unused rather than the library being empty; `mode: "semantic"` is the
-fallback. After the first asset for a section is chosen, `mode: "similar"`
-with `similar_to_asset_id` finds its neighbours so the section reads as one
-shoot. `mode: "ocr"` locates baked-in text before a candidate is opened.
-Result `width`, `height` and `preview_candidates[]` settle aspect and
-resolution before viewing (`references/workflows/section-asset-workflow.md`
-section 1a).
+## 3. Acceptance
 
-## 3. Universal checks at every step
-
-Every candidate passes all of these before the slot becomes `verified`.
-Thresholds by slot are in `references/assets/slot-spec.md`.
-
-| Check | Threshold | How to run |
-|---|---|---|
-| Identity verified | The image shows the SKU, variant, shade or component the slot needs | Open it with `lexsis_assets.view` (asset id, or URL where the discovered schema allows). Never trust a filename, tag or alt text |
-| Resolution | Short side at or above the slot's min px; hero 1920 wide or more (1600 absolute floor) | `width` and `height` from the import response or `lexsis_assets.view`; for local files `sips -g pixelWidth -g pixelHeight <file>` |
-| Aspect fit | Crops to the slot aspect without cutting the product; mobile hero needs its own portrait crop or focal point | View at both crops; record `object-position` or focal point in the plan row |
-| Colour profile | sRGB | `sips -g space <file>` prints `RGB`; CMYK or wide-gamut files are rejected or converted before import |
-| No watermark, border, badge or promo overlay | None visible | View; Google disapproves such images https://support.google.com/merchants/answer/6101131 |
-| No baked-in text | Only text printed on the physical product or label | View; WCAG 1.4.5 https://www.w3.org/WAI/tutorials/images/ ; Shopify Theme Store forbids embedded text in images https://shopify.dev/docs/storefronts/themes/store/requirements |
-| No duplicate | No near-identical image already assigned in the same gallery or grid | View candidates side by side; two images that differ only by crop count as one |
-| No stretched or clipped product | Uniform scale; whole product visible for `identity` | View |
-| Rights recorded | Source decision string carries the basis (section 2) | Plan row is non-empty |
-| Focal point | Set for every hero, lifestyle or cover-cropped asset | Plan row or `object-position` in source |
-| Section fit | The asset does the section's job, crops to the slot without losing the subject, leaves a quiet area where the copy sits, and matches the lighting and styling of the neighbouring slots | The fit review in section 1b of `references/workflows/section-asset-workflow.md`, run on the viewed image |
-| Set coherence | Slots in the same section or gallery read as one shoot | View the candidates together, not one at a time |
+`references/workflows/section-asset-workflow.md` section 2 owns visual fit
+and set review. `references/assets/slot-spec.md` owns dimensions, crop,
+focal point and color-profile requirements. Check source rights through
+section 2 of this file before accepting a slot. The original research
+sources remain under Rules and Sources below.
 
 ## 4. Recording the result
 
-Plan (`page-plan.md`, "## Asset slots"). Columns are fixed by
+Plan (`page plan`, "## Asset slots"). Columns are fixed by
 `skills/plan-page/SKILL.md`; put the job and the rights basis inside
 Role/purpose and Source decision:
 
@@ -94,8 +73,8 @@ Role/purpose and Source decision:
 | A5 | benefits | product_media (in-use) | 3:2 | pending: no in-use media; NEVER for generation | | planned |
 ```
 
-Manifest (`page-manifest.json`, `assets[]`, schema in
-`skills/plan-page/references/page-files.md`). One entry per slot; the manifest
+Manifest (`page record`, `assets[]`, schema in
+`skills/plan-page/references/page-files.md`). One entry per slot; the page record
 holds ids and status only, never prompts, licences or reasoning:
 
 ```json
@@ -109,74 +88,30 @@ after import; the origin step survives only in the plan's Source decision.
 Licence ids, consent references and prompts live in the plan, never in the
 manifest.
 
-## 5. The single asset question
+## 5. Acquisition and unresolved slots
 
-Ask once, after steps 1 and 2 have run for every slot, and only when a slot
-remains unresolved or generation would spend credits. Group with any other
-open questions; never more than three questions in one turn
-(`references/consumer-behavior-cro.md`). Name the slot ids, jobs, count,
-aspects, placements and credit cost. Never ask "Do you want custom images?".
-
-```text
-Asset slots: 6 of 9 resolved from the catalog and library.
-Unresolved: A4 (scale, gallery), A7 (in-use, benefits), A3 (hero backdrop).
-Options:
-  1. You pick: choose from the library or upload files for A4 and A7.
-  2. I pick: I use the best existing match for A3 (library asset 5e2...); A4 and A7 have no match.
-  3. Generate the gaps: A3 only, hero_bg, landscape + portrait, 2 credits (balance 40).
-     A4 and A7 need the real product in use and cannot be generated; they stay planned unless you upload.
-```
-
-Answer handling:
-
-| Answer | Action | Status after |
-|---|---|---|
-| User picks | Call `lexsis_asset_library.search` with `query: ""` per slot group; wait for the `Design asset selection:` message; map `assets[]` to slot ids in `selection_order`; local files not in the library use `lexsis_asset_upload.upload`, then wait for the user's uploaded-asset message; supplied URLs or attachments use `lexsis_asset_import.import` | `verified` after viewing |
-| I pick | Use the best match per slot from steps 1 and 2; view identity-sensitive picks | `verified`, or `planned` where nothing matched |
-| Generate the gaps | Check `lexsis_workspace.credits`; run section 8 of `generation-policy.md` per slot; generate ALLOW purposes; ASK purposes only with the merchant's explicit yes in the same reply | `verified` with `generated: true` |
-| No answer, fast-draft | Proceed with "I pick"; leave the rest `planned`; state it in the summary | mixed |
-| No answer, production-ready | Plan is not approved while any hero or `R` job slot is `planned` | `planned` |
-
-If the host has no inline UI, ask for a URL or conversation attachment and
-import it with `lexsis_asset_import.import`. Never call import with no source
-to open a panel; never treat opening the upload UI as a completed upload.
-Keep every import and upload scoped to the selected workspace and theme.
-
-## 6. User postponed the slot
-
-| Slot situation | fast-draft | production-ready | Never |
-|---|---|---|---|
-| Identity-bound job (identity, variation, included-items, swatch, label, packaging, founder, ugc, result) | Stays `planned`; `/design-page` builds the section without it or removes the section with a note; the return summary lists it under Unresolved assets | Same; `PLAN_APPROVED` may be given only with the merchant's acknowledgement that the section ships without the image | A placeholder, a stock stand-in, a generated stand-in, or a product from another merchant |
-| Backdrop or context job (hero_bg, section_bg, context via composite) | `/design-page` resolves from library or Shopify; asks before paid generation | `/design-page` asks once: generate or pick existing | Generation without a credit confirmation |
-| Hero image postponed | Use the first Shopify identity image as a `packshot` hero; record "hero pending merchant media" in the plan | Plan not approved until resolved | Typographic hero as a workaround where section 5 of `image-jobs-by-page-type.md` forbids it |
-| Video slot postponed | Build without video; drop the poster slot; `imagery.video: optional` types lose nothing | Same, unless `imagery.video: required` (`video-sales-page`, `ugc-creator-collab`): return blocked with the reason | A generated video of the product or of people |
-| Icon set postponed | Text labels only; no icons (allowed by N3 in `references/design-rules.md`) | Same | Emoji or raster icons |
-| Logo missing | Accessible text wordmark | Same | Product image or generic logo placeholder |
-| UGC rights pending | No UGC section; proof ledger row stays `pending` | Same | Rendering pending UGC |
+Execute `references/workflows/section-asset-workflow.md` sections 1 and 2.
+That owner defines the grouped merchant question, UI/import split, missing
+slot handling and view-and-fit review. This file defines source eligibility,
+not a second fallback procedure or draft/production state table.
 
 ## 7. Rules
 
-`$W` is the page workspace.
+Checks use persisted MCP source and the hosted draft.
 
-AS1. Run the six steps in order for every slot and stop at the first passing asset. OPERATOR.
-Rationale: existing media wins (`references/consumer-behavior-cro.md`); each later step adds cost or rights risk.
-Check: every slot row's Source decision begins with one of `shopify media`, `library`, `merchant-upload`, `supplier`, `stock`, `generated`, `pending`.
+AS1. Execute the acquisition procedure in `references/workflows/section-asset-workflow.md` section 1; use this file to decide source eligibility. OPERATOR.
 
 AS2. Search Shopify media and the library before any generation call. OPERATOR.
 Rationale: generation is the last step and spends credits; duplicates of existing brand media are waste.
 Check: every `generated` Source decision carries `library: none`; no `lexsis_drafts.asset_generate` call precedes the slot's `lexsis_asset_library.search` in the session.
 
-AS3. Verify identity by viewing the asset, never by filename, tag or alt text. OPERATOR.
-Rationale: `references/asset-prep.md`: asset names alone do not establish identity; a wrong shade or sibling model on the page is a misrepresentation.
-Check: every `verified` slot for an identity-bound job carries `viewed` in its Source decision.
+AS3. Verify identity through the shared fit procedure in `references/workflows/section-asset-workflow.md` section 2. OPERATOR.
 
 AS4. Never source the product, customers, founders, staff, before/after pairs or press from stock. LAW, RESEARCH.
 Rationale: fake testimonials and endorsements are banned under 16 CFR 465 https://www.ftc.gov/business-guidance/resources/consumer-reviews-testimonials-rule-questions-answers ; stock people are ignored and read as filler https://www.nngroup.com/articles/photos-as-web-content/ .
-Check: `grep -E '^\| A[0-9]+ .*(product_media|proof).*\| stock' $W/page-plan.md | wc -l` prints 0.
 
 AS5. Import every external file before use; no hotlinks, no local files, no placeholders. OPERATOR.
 Rationale: assets must survive the source disappearing and be reusable from the library (`references/asset-prep.md`).
-Check: `grep -oE '(src|poster)="https?://[^"]+"' $W/lexsis-source.html | grep -vE 'cdn\.trylexsis\.com|cdn\.shopify\.com' | wc -l` prints 0 after adding the store's configured CDN host to the pattern.
 
 AS6. Record the rights basis for every slot in the Source decision. LAW.
 Rationale: UGC needs recorded, scoped permission; a tag or hashtag is not a licence https://later.com/blog/user-generated-content-rules/ ; stock needs a commercial licence for the territories.
@@ -184,15 +119,12 @@ Check: no slot row has an empty Source decision; every `proof (ugc...)` row cite
 
 AS7. Reject near-duplicates within one gallery or grid. RESEARCH.
 Rationale: every gallery position must add information; truncated or repeated images waste the positions shoppers do see https://baymard.com/blog/truncating-product-gallery-thumbnails .
-Check: view all slots of one section together; near-identical pairs count is 0 (yes/no in `qa-report.md`).
+Check: view all slots of one section together; near-identical pairs count is 0 (yes/no in `QA record`).
 
-AS8. Ask the asset question once, naming slot ids, jobs, count, aspects, placements and credits; group at most three questions per turn. OPERATOR.
-Rationale: `references/consumer-behavior-cro.md` merchant-question rules.
-Check: the question text contains at least one slot id and job; the phrase "custom images?" does not appear.
+AS8. Use the grouped unresolved-slot handling in `references/workflows/section-asset-workflow.md` section 1. OPERATOR.
 
-AS9. Follow the postponed-slot table; never ship a placeholder. OPERATOR.
+AS9. Follow the shared asset workflow for postponed slots; never ship a placeholder. OPERATOR.
 Rationale: `/design-page` forbids local or temporary placeholder assets.
-Check: `grep -ciE 'placeholder|placehold\.(it|co)|via\.placeholder|picsum\.photos|unsplash\.com/random|lorem' $W/lexsis-source.html` prints 0.
 
 AS10. Accept an asset only after the slot-spec resolution and aspect checks; art-direct the mobile hero instead of scaling the desktop crop. RESEARCH.
 Rationale: scaled-down landscape heroes shrink the product and push the CTA below the fold https://www.nngroup.com/articles/big-pictures-small-screens/ ; https://developer.mozilla.org/en-US/docs/Web/HTML/Guides/Responsive_images .

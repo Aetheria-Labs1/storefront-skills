@@ -30,7 +30,7 @@
   "defaultHydrate": "visible",
   "combine_with": [
     "Navbar",
-    "CartDrawer",
+    "Cart V2 via head.use_cart_v2",
     "AnnouncementBar"
   ],
   "anti_patterns": [
@@ -495,25 +495,6 @@
     ],
     "headless": {
       "supported": false
-    },
-    "example": "<lx-island name=\"FeaturedCollectionStage\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
-    "examples": [
-      {
-        "label": "Full-bleed best sellers with quick add",
-        "source": "<lx-island name=\"FeaturedCollectionStage\">\n  <script type=\"application/json\">{\"heading\":\"Best Sellers\",\"collectionLabel\":\"Shop all\",\"collectionUrl\":\"/collections/best-sellers\",\"products\":[{\"id\":\"cup-1\",\"handle\":\"navy-mug\",\"variantId\":\"gid://shopify/ProductVariant/1\",\"title\":\"Navy Mug\",\"price\":\"$32.00\",\"badge\":\"Last chance\",\"media\":[{\"src\":\"https://example.com/navy-mug.png\",\"type\":\"image\",\"alt\":\"Navy ceramic mug\"}]},{\"id\":\"cup-2\",\"handle\":\"spoon-mug\",\"variantId\":\"gid://shopify/ProductVariant/2\",\"title\":\"Shortbread Spoon Mug\",\"subtitle\":\"4 in H x 4 in W\",\"price\":\"$32.00\",\"badge\":\"Last chance\",\"media\":[{\"src\":\"https://example.com/spoon-mug.png\",\"type\":\"image\",\"alt\":\"Cream ceramic spoon mug\"}]},{\"id\":\"cup-3\",\"handle\":\"green-mug\",\"variantId\":\"gid://shopify/ProductVariant/3\",\"title\":\"Green Mug\",\"price\":\"$30.00\",\"badge\":\"Selling fast\",\"media\":[{\"src\":\"https://example.com/green-mug.png\",\"type\":\"image\",\"alt\":\"Green ceramic mug\"}]}]}</script>\n</lx-island>"
-      },
-      {
-        "label": "Contained collection stage",
-        "source": "<lx-island name=\"FeaturedCollectionStage\">\n  <script type=\"application/json\">{\"variant\":\"contained\",\"heading\":\"Explore our products\",\"activation\":\"centered\",\"productIds\":[\"gid://shopify/Product/1\",\"gid://shopify/Product/2\",\"gid://shopify/Product/3\"]}</script>\n</lx-island>"
-      },
-      {
-        "label": "Minimal new-arrivals rail",
-        "source": "<lx-island name=\"FeaturedCollectionStage\">\n  <script type=\"application/json\">{\"variant\":\"minimal\",\"heading\":\"New in\",\"activation\":\"click\",\"showBadges\":false,\"products\":[{\"id\":\"look-1\",\"handle\":\"look-one\",\"title\":\"Relaxed Tee\",\"price\":\"$25.00\",\"media\":[{\"src\":\"https://example.com/look-one.mp4\",\"type\":\"video\",\"poster\":\"https://example.com/look-one.jpg\",\"alt\":\"Model wearing a relaxed tee\"}]},{\"id\":\"look-2\",\"handle\":\"look-two\",\"title\":\"Everyday Hoodie\",\"price\":\"$58.00\",\"media\":[{\"src\":\"https://example.com/look-two.jpg\",\"type\":\"image\",\"alt\":\"Model wearing an everyday hoodie\"}]}]}</script>\n</lx-island>"
-      },
-      {
-        "label": "Per-product media galleries",
-        "source": "<lx-island name=\"FeaturedCollectionStage\">\n  <script type=\"application/json\">{\"variant\":\"gallery\",\"heading\":\"Shop every angle\",\"initialIndex\":1,\"products\":[{\"id\":\"mug-1\",\"handle\":\"navy-mug\",\"title\":\"Navy Mug\",\"price\":\"$32.00\",\"media\":[{\"src\":\"https://example.com/navy-front.jpg\",\"type\":\"image\",\"alt\":\"Navy mug front\"},{\"src\":\"https://example.com/navy-side.jpg\",\"type\":\"image\",\"alt\":\"Navy mug side\"}]},{\"id\":\"mug-2\",\"handle\":\"cream-mug\",\"title\":\"Cream Mug\",\"price\":\"$34.00\",\"media\":[{\"src\":\"https://example.com/cream-front.jpg\",\"type\":\"image\",\"alt\":\"Cream mug front\"},{\"src\":\"https://example.com/cream-detail.jpg\",\"type\":\"image\",\"alt\":\"Cream mug detail\"}]}]}</script>\n</lx-island>"
-      }
-    ]
+    }
   }
 }

@@ -69,19 +69,6 @@ PLACEHOLDER_RE = re.compile(r"\{\{[^{}]+\}\}")
 PSEUDOCODE_RE = re.compile(r"\.\.\.|<[^>]+>")
 PLACEHOLDER = "__LEXIS_PLACEHOLDER__"
 GENERIC_EXAMPLE_NAMES = {"IslandName", "Name"}
-REFERENCE_EXAMPLE_FILES = {
-    "generate-collection.md",
-    "generate-editorial.md",
-    "generate-landing-page.md",
-    "generate-pdp.md",
-    "generation-protocol.md",
-    "island-patterns.md",
-    "product-grid.md",
-    "section-library.md",
-    "source-format.md",
-}
-
-
 @dataclass(frozen=True)
 class Example:
     path: Path
@@ -138,7 +125,7 @@ def string_values(value: object, pointer: str = "") -> Iterator[tuple[str, str]]
 
 def collect_examples() -> Iterator[Example]:
     markdown_paths = set(SKILLS.glob("*/SKILL.md"))
-    markdown_paths.update(REFERENCES / name for name in REFERENCE_EXAMPLE_FILES)
+    markdown_paths.update(REFERENCES.rglob("*.md"))
     for path in sorted(markdown_paths):
         yield from examples_from_text(path, path.read_text(encoding="utf-8"))
 

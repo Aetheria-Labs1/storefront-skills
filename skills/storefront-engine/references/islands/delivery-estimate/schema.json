@@ -9,14 +9,14 @@
   "defaultHydrate": "immediate",
   "combine_with": [
     "BuyBox",
-    "AddToCart",
+    "BuyBox or ProceedToCart",
     "ProductPrice",
     "ProceedToCart"
   ],
   "anti_patterns": [
     "Setting estimatedDays without considering weekends/holidays (inaccurate dates)",
     "Using cutoffHour in timezone that doesn't match customer location (shows wrong countdown)",
-    "Showing countdown after cutoff passes (it returns null — no message, looks broken)"
+    "Showing countdown after cutoff passes (it returns null \u2014 no message, looks broken)"
   ],
   "props": {
     "estimatedDays": {
@@ -76,21 +76,6 @@
     ],
     "headless": {
       "supported": false
-    },
-    "example": "<lx-island name=\"DeliveryEstimate\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
-    "examples": [
-      {
-        "label": "Inline delivery estimate",
-        "source": "<lx-island name=\"DeliveryEstimate\">\n  <script type=\"application/json\">{\"estimatedDays\":4,\"cutoffHour\":14,\"showCountdown\":true,\"variant\":\"inline\"}</script>\n</lx-island>"
-      },
-      {
-        "label": "Card with free shipping threshold",
-        "source": "<lx-island name=\"DeliveryEstimate\">\n  <script type=\"application/json\">{\"estimatedDays\":3,\"cutoffHour\":16,\"showCountdown\":true,\"freeShippingThreshold\":5000,\"variant\":\"card\"}</script>\n</lx-island>"
-      },
-      {
-        "label": "Banner promo style",
-        "source": "<lx-island name=\"DeliveryEstimate\">\n  <script type=\"application/json\">{\"estimatedDays\":2,\"cutoffHour\":12,\"showCountdown\":true,\"variant\":\"banner\"}</script>\n</lx-island>"
-      }
-    ]
+    }
   }
 }

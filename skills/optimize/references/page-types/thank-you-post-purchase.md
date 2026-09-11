@@ -57,175 +57,41 @@ A page with only sections 1, 2 and 5 is complete. Six is the ceiling.
 
 ## Workflow
 
+Apply `references/workflows/_how-to-read.md` to these type-specific
+decisions. It links the shared asset/fallback, fit, live-island and
+copy procedures; this table supplies their inputs, not another policy.
+
 ### Context reads
-1. The order object from the Shopify order status surface: order number,
-   line items with variant, quantity and total, the confirmation email
-   address, tracking URL when present, whether a one-click post-purchase
-   offer already ran. This page's facts come from the order, not from copy.
-2. `lexsis_catalog.get` for each line item (variant image for the
-   thumbnails, viewed against the variant bought) and for the one add-on
-   candidate: media position one as its `identity` packshot, price as listed,
-   inventory (suppress when zero), variant count (a single variant adds in
-   one tap), selling plans on the bought SKU (only then may "make this a
-   subscription" appear). Jobs per
-   `references/assets/image-jobs-by-page-type.md`.
-3. The delivery source, confirmed by the merchant: carrier estimate or
-   store policy in business days with cutoff hour, or pincode service; the
-   returns window, warranty and support hours and channel copied from the
-   policy page URL. Each is an offer ledger `shipping` row or a proof ledger
-   `policy-fact` row.
-4. `lexsis_brand.context` and `lexsis_brand.brand_kit` for `theme_id`,
-   logo, voice; `lexsis_brand.navigation` only for the "Continue shopping"
-   and account URLs (nav is `minimal`).
-5. The add-on relationship from the merchant: which item, the relationship
-   name from `references/consumer-behavior-cro.md` (Complete the Routine,
-   Protect It, Refill the Stack, Make It Work), its kind and the mapping
-   source; placement and consent guardrails in
-   `references/offers/aov-levers.md` (post-purchase row) and
-   `references/anti-patterns/dark-patterns.md` (DP4, DP5, DP6, DP10).
-6. `lexsis_asset_library.search` with `theme_id`, `mode: "tags"`:
-   `lifestyle` and `product-shot`; then semantic "setup <product>", "how to
-   use <product>", "unboxing" for `sequence`; `packaging` only when the
-   shopper must recognise the box; view with `lexsis_assets.view`.
-7. Referral programme values (both sides in currency, friend's terms) from
-   the programme configuration; `lexsis_capture.form_schemas` for the
-   referral and SMS schemas; the checkout marketing-consent setting, which
-   decides whether `sms-capture` or `email-capture` exists at all.
-8. `lexsis_design.islands`, then `lexsis_design.island_schema` for
-   `DeliveryEstimate`, `QuickAdd`, `EmailCapture` and, with a real video,
-   `VideoPlayer` (`references/workflows/island-selection-workflow.md`).
+
+1. The order object from the Shopify order status surface: order number, line items with variant, quantity and total, the confirmation email address, tracking URL when present, whether a one-click post-purchase offer already ran. This page's facts come from the order, not from copy.
+2. `lexsis_catalog.get` for each line item (variant image for the thumbnails, viewed against the variant bought) and for the one add-on candidate: media position one as its `identity` packshot, price as listed, inventory (suppress when zero), variant count (a single variant adds in one tap), selling plans on the bought SKU (only then may "make this a subscription" appear). Jobs per `references/assets/image-jobs-by-page-type.md`.
+3. The delivery source, confirmed by the merchant: carrier estimate or store policy in business days with cutoff hour, or pincode service; the returns window, warranty and support hours and channel copied from the policy page URL. Each is an offer ledger `shipping` row or a proof ledger `policy-fact` row.
+4. `lexsis_brand.context` and `lexsis_brand.brand_kit` for `theme_id`, logo, voice; `lexsis_brand.navigation` only for the "Continue shopping" and account URLs (nav is `minimal`).
+5. The add-on relationship from the merchant: which item, the relationship name from `references/consumer-behavior-cro.md` (Complete the Routine, Protect It, Refill the Stack, Make It Work), its kind and the mapping source; placement and consent guardrails in `references/offers/aov-levers.md` (post-purchase row) and `references/anti-patterns/dark-patterns.md` (DP4, DP5, DP6, DP10).
+6. `lexsis_asset_library.search` with `theme_id`, `mode: "tags"`: `lifestyle` and `product-shot`; then semantic "setup <product>", "how to use <product>", "unboxing" for `sequence`; `packaging` only when the shopper must recognise the box; view with `lexsis_assets.view`.
+7. Referral programme values (both sides in currency, friend's terms) from the programme configuration; `lexsis_capture.form_schemas` for the referral and SMS schemas; the checkout marketing-consent setting, which decides whether `sms-capture` or `email-capture` exists at all.
+8. `lexsis_design.islands`, then `lexsis_design.island_schema` for `DeliveryEstimate`, `QuickAdd`, `EmailCapture` and, with a real video, `VideoPlayer` (`references/workflows/island-selection-workflow.md`).
 
 ### Section by section
-Media lines follow `references/workflows/section-asset-workflow.md` and
-`references/assets/asset-sourcing-sequence.md`; video per
-`references/assets/video-rules.md`. When every step finds nothing: tell the
-merchant what is missing (job, aspect, count), offer upload via
-`lexsis_asset_upload.upload` or generation when the purpose is feasible
-under `references/assets/generation-policy.md`, and skip or merge the section
-only if the merchant chooses; in fast-draft, proceed with the closest
-existing asset or leave the slot `planned` and list it in the plan and draft
-summary. Island lines name the island and the decision inputs; variants and
-props are resolved live from `lexsis_design.island_schema`. Copy ceilings
-follow this file's Copy section and
-`references/anti-patterns/copy-anti-patterns.md`. No asset is
-used sight unseen: every candidate is opened with `lexsis_assets.view` and
-judged against its section with the fit review in section 1b of
-`references/workflows/section-asset-workflow.md` (the subject does the job,
-it crops to the slot aspect without losing the subject, a quiet area holds
-the copy, lighting and palette match the neighbouring slots, no baked-in
-text, watermark or promo overlay); a generated backdrop or texture is viewed
-the same way when it returns.
 
-**`hero`**
-- Purpose: "Order confirmed" with the number, the items with thumbnails, the
-  total, the confirmation email address. No selling.
-- Media: yes. The line-item thumbnails are `identity` images from catalog
-  media (read 2), each viewed with `lexsis_assets.view` and matched to the
-  variant bought. The hero itself is
-  `typographic`; a `packshot` of the ordered item is the alternate. Gap: a
-  line item with no variant image is reported to the merchant (SKU, square)
-  and shown as text until they upload; never generated. No-go: a lifestyle
-  hero, celebration graphics, confetti.
-- Island: `none`. Header `SiteHeader` with the cart hidden (the cart is
-  empty), preset `siteheader/minimal-light` when it fits.
-- Copy: "Order confirmed" or "Thanks, <first name>. Your order is on its
-  way" with the order number beneath; 30 words.
-- Decide with: which order fields the surface exposes (read 1).
-
-**`post-purchase-next-steps`**
-- Purpose: delivery date range, tracking, wrong-address path, support with
-  hours, returns window and warranty as the policy states them.
-- Media: no by default; an inline SVG `diagram` of the delivery timeline is
-  optional. No stock couriers or parcels.
-- Island: `DeliveryEstimate` when the store has a single-country estimate in
-  business days (inputs: the shipping ledger row, cutoff hour); preset
-  `deliveryestimate/inline-quiet` when it fits, with the cutoff countdown
-  turned off because the order is placed. India pincode copy is static HTML
-  (no pincode prop). When the order status surface supplies a carrier date,
-  write that date range in HTML and drop the island; skip the island for
-  international or variable transit.
-- Copy: one sentence per step; dates as dates ("Arrives 14 to 17 Sept"),
-  never speeds; support hours and channel in one line.
-- Decide with: the shipping source and policy rows from read 3; whether a
-  tracking URL exists in read 1.
-
-**`usage`** (conditional)
-- Purpose: setup, first use, care or routine with no marketing copy.
-- Media: yes. Job `sequence`: three real step photos, or one captioned video
-  under 60 seconds. Catalog media (routine or setup shots), then library tag
-  `lifestyle`, semantic "setup <product>", then merchant upload; view each
-  step with `lexsis_assets.view` and confirm it shows the ordered product
-  and the action is legible at 390px. Gap: ask the merchant for step photos
-  (three, square or 4:5); never generated; folding
-  the steps as text into next-steps is the merchant's call. No icon tiles.
-- Island: `VideoPlayer` when a real video exists; otherwise `none`.
-- Copy: three steps, one sentence each; step text in HTML, not in the image.
-- Decide with: does the product need setup (brief), `sequence` coverage from
-  read 6 and the merchant's answer.
-
-**`cross-sell`** (conditional)
-- Purpose: one add-on with a named relationship to the item bought, at the
-  listed price.
-- Media: yes. Job `identity` for the add-on from catalog media position one,
-  viewed with `lexsis_assets.view` to confirm the exact SKU on the same
-  background as the order thumbnails. Gap: ask the
-  merchant for the add-on packshot (square, one); never generated; a
-  different add-on with an image is the merchant's call. No-go: a grid or
-  carousel, more than one item, a generated composite, a discount by default,
-  a pre-ticked add.
-- Island: `QuickAdd` for the single add-on (inputs: variant count, inventory,
-  Cart V2 via `head.use_cart_v2`); a product rail island needs four or more
-  products and this section shows one. Resolve props from
-  `lexsis_design.island_schema`; the button label carries the amount ("Add to
-  a new order for ₹X"); the decline is a plain HTML link of equal size and
-  contrast with neutral text ("No thanks, continue"). Amending the paid order
-  belongs to the Shopify post-purchase surface; when that surface already
-  ran, this section is omitted.
-- Copy: one sentence naming the relationship ("Fits the Transit Cabin you
-  ordered"); price as listed; no "don't miss out".
-- Decide with: the Guided merchandising line from read 5 (relationship,
-  kind, mapping source), inventory above zero in read 2, no prior one-click
-  offer in read 1.
-
-**`referral-form`** (recommended)
-- Purpose: both sides of the reward in currency, email share first,
-  copy-link second.
-- Media: no.
-- Island: `EmailCapture` for the friend-email share (inputs: the referral
-  schema in read 7); resolve props from `lexsis_design.island_schema`; the
-  reward maths sit in HTML beside the form, not in a discount line; copy-link
-  as a plain HTML button after it.
-- Copy: 25 words plus the friend's terms in one line; the friend's landing
-  says who referred them.
-- Decide with: programme values and the schema from read 7; no programme,
-  no section.
-
-**`sms-capture`** or **`email-capture`** (conditional)
-- Purpose: consent not taken at checkout, one field, separate unticked
-  consent, full disclosure; an app link may share the block.
-- Media: no.
-- Island: `EmailCapture` for email; `FunnelRuntime` inline with a single
-  phone step from the read-7 SMS schema for SMS, or a plain HTML form to the
-  messaging provider. Resolve props from `lexsis_design.island_schema`. The
-  consent checkbox and disclosure are authored in HTML under the field,
-  unticked, never `required` (DP5).
-- Copy: the market's consent text in full; frequency as a number.
-- Decide with: the checkout consent setting from read 7; consent already
-  given at checkout means the section does not exist.
+| Section | Purpose | Media job and source | Interactive decision | Copy constraints | Decision evidence |
+|---|---|---|---|---|---|
+| `hero` | "Order confirmed" with the number, the items with thumbnails, the total, the confirmation email address. No selling. | yes. The line-item thumbnails are `identity` images from catalog media (read 2), each viewed with `lexsis_assets.view` and matched to the variant bought. The hero itself is `typographic`; a `packshot` of the ordered item is the alternate. Gap: a line item with no variant image is reported to the merchant (SKU, square) and shown as text until they upload; never generated. No-go: a lifestyle hero, celebration graphics, confetti. | `none`. Header `SiteHeader` with the cart hidden (the cart is empty),. | "Order confirmed" or "Thanks, <first name>. Your order is on its way" with the order number beneath; 30 words. | which order fields the surface exposes (read 1). |
+| `post-purchase-next-steps` | delivery date range, tracking, wrong-address path, support with hours, returns window and warranty as the policy states them. | no by default; an inline SVG `diagram` of the delivery timeline is optional. No stock couriers or parcels. | `DeliveryEstimate` when the store has a single-country estimate in business days (inputs: the shipping ledger row, cutoff hour). India pincode copy is static HTML (no pincode prop). When the order status surface supplies a carrier date, write that date range in HTML and drop the island; skip the island for international or variable transit. | one sentence per step; dates as dates ("Arrives 14 to 17 Sept"), never speeds; support hours and channel in one line. | the shipping source and policy rows from read 3; whether a tracking URL exists in read 1. |
+| `usage` (conditional) | setup, first use, care or routine with no marketing copy. | yes. Job `sequence`: three real step photos, or one captioned video under 60 seconds. Catalog media (routine or setup shots), then library tag `lifestyle`, semantic "setup <product>", then merchant upload; view each step with `lexsis_assets.view` and confirm it shows the ordered product and the action is legible at 390px. Gap: ask the merchant for step photos (three, square or 4:5); never generated; folding the steps as text into next-steps is the merchant's call. No icon tiles. | `VideoPlayer` when a real video exists; otherwise `none`. | three steps, one sentence each; step text in HTML, not in the image. | does the product need setup (brief), `sequence` coverage from read 6 and the merchant's answer. |
+| `cross-sell` (conditional) | one add-on with a named relationship to the item bought, at the listed price. | yes. Job `identity` for the add-on from catalog media position one, viewed with `lexsis_assets.view` to confirm the exact SKU on the same background as the order thumbnails. Gap: ask the merchant for the add-on packshot (square, one); never generated; a different add-on with an image is the merchant's call. No-go: a grid or carousel, more than one item, a generated composite, a discount by default, a pre-ticked add. | `QuickAdd` for the single add-on (inputs: variant count, inventory, Cart V2 via `head.use_cart_v2`); a product rail island needs four or more products and this section shows one. Resolve props from `lexsis_design.island_schema`; the button label carries the amount ("Add to a new order for ₹X"); the decline is a plain HTML link of equal size and contrast with neutral text ("No thanks, continue"). Amending the paid order belongs to the Shopify post-purchase surface; when that surface already ran, this section is omitted. | one sentence naming the relationship ("Fits the Transit Cabin you ordered"); price as listed; no "don't miss out". | the Guided merchandising line from read 5 (relationship, kind, mapping source), inventory above zero in read 2, no prior one-click offer in read 1. |
+| `referral-form` (recommended) | both sides of the reward in currency, email share first, copy-link second. | no. | `EmailCapture` for the friend-email share (inputs: the referral schema in read 7); resolve props from `lexsis_design.island_schema`; the reward maths sit in HTML beside the form, not in a discount line; copy-link as a plain HTML button after it. | 25 words plus the friend's terms in one line; the friend's landing says who referred them. | programme values and the schema from read 7; no programme, no section. |
+| `sms-capture` or `email-capture` (conditional) | consent not taken at checkout, one field, separate unticked consent, full disclosure; an app link may share the block. | no. | `EmailCapture` for email; `FunnelRuntime` inline with a single phone step from the read-7 SMS schema for SMS, or a plain HTML form to the messaging provider. Resolve props from `lexsis_design.island_schema`. The consent checkbox and disclosure are authored in HTML under the field, unticked, never `required` (DP5). | the market's consent text in full; frequency as a number. | the checkout consent setting from read 7; consent already given at checkout means the section does not exist. |
 
 ### Asset budget
+
 | Source | Usually supplies | Usually missing | Per gap |
 |---|---|---|---|
 | catalog media | line-item thumbnails, the add-on `identity` packshot | `sequence` setup photos, a setup video | ask the merchant to upload step photos or a captioned video; fold the steps into next-steps as text only if they choose |
 | asset library | occasional setup or routine photos (`lifestyle`) | `packaging` when the box matters | ask the merchant to upload; keep the text and drop the image only on their call |
 | generation | nothing on this page (typographic hero, no bold-moment backdrop) | product, people, parcels, couriers, badges, text | never |
 
-With minimal assets the page is order facts with catalog thumbnails, a
-delivery date range, support and returns lines, one add-on packshot with its
-button and decline, and the referral form; it is complete without any other
-image. Generated assets on this type are zero; the house cap of four per page
-is never approached. Every asset placed, generated ones included, was
-opened with `lexsis_assets.view` and passed the fit review before use.
+With minimal assets the page is order facts with catalog thumbnails, a delivery date range, support and returns lines, one add-on packshot with its button and decline, and the referral form; it is complete without any other image. Generated assets on this type are zero; the house cap of four per page is never approached. Every asset placed, generated ones included, was opened with `lexsis_assets.view` and passed the fit review before use.
 
 ## Above the fold (390px)
 

@@ -18,7 +18,7 @@ mean of all published ratings for that scope, never of a `minRating` subset.
 | Step | Call | Read | Then |
 |---|---|---|---|
 | 0.1 | `lexsis_catalog.reviews_status` | source connected (Judge.me), imported count, last sync | connected and count > 0: tier 1. Otherwise: tier 4 |
-| 0.2 | write "Proof sources" line in `page-plan.md` | source, count, sync date, tier reached | always, even when the answer is "none" |
+| 0.2 | write "Proof sources" line in `page plan` | source, count, sync date, tier reached | always, even when the answer is "none" |
 
 ## Tier 1: active collections
 
@@ -83,7 +83,7 @@ Render a field only when the record contains it. Never fill a gap.
 | Field | Render only if | Rendering |
 |---|---|---|
 | Rating | `rating` present, integer 1 to 5 from the author | as given; never recalculated (IS 19000 cl. 5.7.3) |
-| Body | `body` present | verbatim; `[…]` trim only; "Read more" reveals the full text |
+| Body | `body` present | verbatim; `[...]` trim only; "Read more" reveals the full text |
 | Title | `title` present | verbatim |
 | Name | `reviewer_name` present | first name + last initial, or as the app displays it publicly |
 | Location | `location` present | city or region as stored |
@@ -173,22 +173,18 @@ kind; none is review-shaped.
 ## Rules
 
 RS1. Never render a review element that is not a ledger row from tiers 0 to 3 or an `external-verified` row from tier 4. OPERATOR.
-Check: every `ReviewCarousel` or `ReviewList` `data-props` carries `collectionId` or `productIds`; any static `reviews[]` item id appears in the ledger.
-```bash
-perl -ne 'while(/data-island="Review[A-Za-z]*"[^>]*data-props=\x27([^\x27]*)\x27/g){print "unbound\n" unless $1=~/collectionId|productIds/}' $W/lexsis-source.html | wc -l   # 0
-```
+Check: each authored review island's `application/json` child binds the
+confirmed collection or product scope using its live schema. Every static
+quote id appears in the ledger. Inspect source-format JSON, not compiled
+`data-props` markers in the source file.
 
 RS2. Run tiers in order and stop at the first tier that yields usable rows; never open tier 4 while tier 1 or 2 has data. OPERATOR.
 Check: the plan's "Proof sources" line names the tier reached and the calls made.
 
 RS3. Show an average only at n >= 5, always beside n, to one decimal, computed from all published ratings for the scope. RESEARCH [H] Baymard; LAW (a headline 5.0 from two ratings is misleading by omission, FTC 465.7, CMA "publishing in a misleading way").
 Check: every rating string is followed by a count in the same element (review the hits; prices also match the pattern).
-```bash
-grep -oE '[0-5]\.[0-9](/5| out of 5)[^<]{0,40}' $W/lexsis-source.html | grep -vcE '[0-9][0-9,]* (reviews|ratings)'   # 0
-```
 
 RS4. Never show 5.0 unless every review is five stars and n >= 20; never show two decimals. HEURISTIC, mirrors `proof-ledger.md` display rule 3.
-Check: `grep -c '5\.0' $W/lexsis-source.html` is 0 unless the ledger row records n >= 20 and a distribution of 100% five-star.
 
 RS5. Show the distribution at n >= 20 (optional at 10 to 19, hidden below 10), expanded, every bar present including one-star, bars acting as mutually exclusive filters. RESEARCH [H] Baymard distribution summary.
 Check: in the hosted draft the distribution element exists when the ledger's n >= 20 and lists five bars.
@@ -200,10 +196,6 @@ RS7. Never relabel a store-level aggregate as a product rating, never average bu
 Check: each `review-summary` row names the exact `product_id` or `collectionId` its numbers came from.
 
 RS8. A `minRating` filter is allowed only on a carousel that is labelled as a selection ("Selected reviews"), links to the full list ("Read all n reviews"), and sits with an unfiltered avg + n. Never on the full list, never for `averageRating` or `totalReviews`. LAW FTC 465.7(b); DMCC banned practice 13.
-Check:
-```bash
-grep -oE '"minRating":[[:space:]]*[2-5]' $W/lexsis-source.html | wc -l   # 0, or each carousel section also contains 'Read all' and the ledger avg + n
-```
 
 RS9. Negative reviews stay reachable: at n >= 20 at least one review rated 3 or lower is visible without filtering when one exists; sort default is disclosed in one line and does not bury low ratings. LAW FTC 465.7; FTC v. Fashion Nova ($4.2M, 2022); IS 19000 (no discouraging negatives). RESEARCH [H] Baymard: presence of negatives makes positives believable.
 Check: hosted draft at 1280 shows the sort label and, for B3+, at least one card with rating <= 3 in the default view.
@@ -211,20 +203,15 @@ Check: hosted draft at 1280 shows the sort label and, for B3+, at least one card
 RS10. Render each review field only when the record contains it (field-gating table). Verified badge only with order linkage or Shop source. LAW EU Annex I 23b (verification is material information); Shopify Shop badge semantics.
 Check: no `verified` prop set to true on a static item whose ledger row lacks order linkage; no `avatar` URL that is not the reviewer's own media.
 
-RS11. Quote verbatim. Trim with `[…]` only; keep the reviewer's specifics (variant, timeframe, use); prefer a quote that includes a limitation; never stitch sentences from two reviews; never fix grammar. LAW CAP 3.47; Trustpilot "quote reviews exactly as written"; IS 19000 (administrator may not edit content).
-Check: each `review-quote` body is a substring of the API record with `[…]` removed.
+RS11. Quote verbatim. Trim with `[...]` only; keep the reviewer's specifics (variant, timeframe, use); prefer a quote that includes a limitation; never stitch sentences from two reviews; never fix grammar. LAW CAP 3.47; Trustpilot "quote reviews exactly as written"; IS 19000 (administrator may not edit content).
+Check: each `review-quote` body is a substring of the API record with `[...]` removed.
 
 RS12. Render merchant replies when present, visually distinct and labelled as the store's reply. RESEARCH [H] Baymard: 37% weigh the reply; 87% of sites never reply.
 Check: reply markup uses a distinct class and the label "Reply from <store>".
 
 RS13. Label incentivised reviews on the card and beside the summary when the app flags them; incentives may never be conditioned on sentiment. LAW FTC 465.4 and 465.5; CMA208; Google review-snippet policy.
-Check: if any record has the incentivised flag, `grep -c 'Incentivised' $W/lexsis-source.html` >= 2.
 
 RS14. Review islands take `collectionId` or `productIds`, `minRating`, `pageSize` <= 12; `averageRating` and `totalReviews` come only from the API total for the same scope; never `reviewsEndpoint`; never `SocialProofPopup`. OPERATOR.
-Check:
-```bash
-grep -cE 'SocialProofPopup|reviewsEndpoint|"pageSize":[[:space:]]*(1[3-9]|[2-9][0-9])' $W/lexsis-source.html   # 0
-```
 
 RS15. Only `active` collections bind to `collectionId`; a draft collection is `pending` until the merchant activates it. The plan never activates a collection. OPERATOR.
 Check: the `collectionId` in source matches an id returned with `collection_status: "active"` on the plan date.
@@ -239,13 +226,8 @@ RS18. When B0 persists after tier 4, use tier 5 substitutes in order; "nothing" 
 Check: plan records the substitute chosen and why the higher rows were unavailable.
 
 RS19. Never write, paraphrase, summarise as if quoted, or generate a review; never present staff or founders as customers; never reuse a review for a different product. LAW FTC 16 CFR 465.2 and 465.5; FTC v. Rytr 2024; FTC v. Sunday Riley 2020; India E-Commerce Rules 2020 r.5(2).
-Check: `grep -ciE 'lorem|example review|sample review|\[name\]|\[city\]' $W/lexsis-source.html` is 0; no review text exists in source that is absent from the API.
 
 RS20. Autoplay video reviews muted only; sound on tap; captions present. LAW WCAG 2.1 SC 1.4.2.
-Check:
-```bash
-perl -ne 'print if /<video[^>]*autoplay(?![^>]*muted)/' $W/lexsis-source.html | wc -l   # 0
-```
 
 ## Regulatory spine
 

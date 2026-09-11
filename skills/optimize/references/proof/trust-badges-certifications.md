@@ -113,7 +113,7 @@ The set below is what may fill `certifications` when the ledger verifies it.
 | P4 | certification | "FSSAI licensed" | merchant | licence no. 10012345678901; issuer FSSAI; scope: manufacturing unit, Pune; valid to 2027-03-31 | merchant document 2026-09-08 | trust-bar | verified |
 | P11 | certification | "GMP facility" | merchant | NSF/ANSI 455-2 certificate C0123456 to <manufacturer>; issuer NSF; expiry 2027-01-15 | PDF on file; NSF listing URL | certifications | verified |
 | P12 | policy-fact | "30-day returns" | store policy | https://<store>/policies/refund-policy ; "30 days, unopened" | fetched 2026-09-10 | trust-bar | verified |
-| P13 | certification | "dermatologist tested" | merchant | none supplied | none | — | dropped (no test report) |
+| P13 | certification | "dermatologist tested" | merchant | none supplied | none |  -  | dropped (no test report) |
 ```
 
 ## Rules
@@ -122,25 +122,15 @@ TB1. Render a certification mark only when the ledger row holds issuer, certific
 Check: every `certification` row has four evidence fields; rows with "none" are `dropped`.
 
 TB2. Use the issuer's permitted wording from the table; never "approved", "certified" or "registered" for an issuer that does not approve, certify or register that thing. LAW FDA (cosmetics, supplements and foods are not FDA approved); ISO and IAF rules; FSSAI licensing; AAFCO.
-Check:
-```bash
-grep -ciE 'FDA[- ]approved|FDA[- ]registered|FSSAI[- ](approved|certified)|ISO[- ]certified product|AAFCO[- ](approved|certified)|CE[- ](certified|approved)|UL[- ]approved|AYUSH[- ](approved|certified)|BIS[- ]approved' $W/lexsis-source.html   # 0
-```
 
 TB3. Never render the ISO logo, the government "Make in India" lion, an Amazon badge, or any issuer's mark for which the merchant holds no logo licence. LAW ISO logo policy; Legal Metrology and DPIIT logo permission; Amazon trademark licence.
-Check: `grep -ciE 'iso\.org|make-in-india|amazon.?s choice|best seller badge' $W/lexsis-source.html` is 0 in `<img` and `<svg` contexts.
 
 TB4. Payment logos show only methods enabled in the store; security seals appear at checkout only; a self-drawn padlock is never labelled a certification or given a vendor name. RESEARCH [H] Baymard perceived security; OPERATOR (payment methods from the catalogue or merchant).
-Check: each payment logo in source matches the store's enabled methods list recorded in the plan; `grep -ciE 'norton|mcafee|ssl secured|256-bit' $W/lexsis-source.html` is 0 on non-checkout pages.
 
 TB5. Guarantee and returns badges mirror the policy page text and link to it; "money-back" only for cash refunds; "free returns" only when the shopper pays nothing. LAW CAP 3.1; CCPA 2022; consistent with `references/offers/offer-ledger.md`.
 Check: each guarantee string in source is a substring of the fetched policy page or the merchant's written confirmation; the element is inside `<a href="<policy URL>">` or adjacent to one.
 
 TB6. For EU-facing pages after 27 Sep 2026, a sustainability label renders only when based on a third-party certification scheme or set by a public authority; generic environmental claims and offset-based carbon-neutral claims are removed. LAW Directive (EU) 2024/825 Annex I 2a, 4a, 4c.
-Check:
-```bash
-grep -ciE 'eco[- ]friendly|planet[- ]friendly|earth[- ]friendly|carbon[- ]neutral|climate[- ]neutral|100% sustainable|green product' $W/lexsis-source.html   # 0 unless the ledger names a recognised scheme for that exact claim
-```
 
 TB7. "Dermatologist tested", "clinically tested", "hypoallergenic", "non-comedogenic" render only as the specific fact with the study parameters, never as a standalone badge. LAW FTC substantiation; EU Reg. 655/2013 common criteria; `references/proof/before-after-and-claims.md`.
 Check: each such phrase in source is followed within the same element by a parenthetical or footnote carrying n and date, or the ledger `test-data` row id.
@@ -149,21 +139,16 @@ TB8. Third-party review platform badges are the platform's live widget on the pl
 Check: no `<img` whose `alt` or filename contains "trustpilot", "google reviews" or "stars"; widgets are the platform's script or iframe.
 
 TB9. Three to five marks per row, one height, monochrome unless the issuer requires colour, issuer text beside each, one section, never in the hero, never repeated. HEURISTIC; consistent with `proof-ledger.md` display rule 7.
-Check:
-```bash
-perl -0ne 'my $n=()=/<!-- section: certifications/g; print "sections=$n\n"; while(/<!-- section: certifications[a-z-]* -->(.*?)(?=<!-- section: |\z)/gs){my $b=$1; my $m=()=$b=~/<(svg|img)/g; print "marks=$m\n"}' $W/lexsis-source.html   # sections <= 1, 3 <= marks <= 5
-```
 
 TB10. No generated badge art: a badge asset never comes from `lexsis_drafts.asset_generate`; only issuer files or a monochrome SVG redraw the issuer permits. OPERATOR; consistent with `references/assets/generation-policy.md`.
-Check: no asset with purpose `badge`, `seal` or `certification` has provider = generated in the manifest.
+Check: no asset with purpose `badge`, `seal` or `certification` has provider = generated in the page record.
 
 TB11. Never a percentage or superlative inside a badge ("100% safe", "clinically proven", "#1 dermatologist choice"); badges carry facts and issuers. LAW CAP 3.7; FTC reasonable basis; `design-rules.md` N9 forbids ALL-CAPS pills.
-Check: `grep -ciE '100% (safe|natural|pure|secure)|#1 ' $W/lexsis-source.html` is 0 within `certifications` and `trust-bar` sections.
 
 TB12. India `legal` block carries what the law requires (marketed by, country of origin, licence numbers, customer care) as text, not badges; nine of nine Indian PDPs in the teardown sample do this. LAW Legal Metrology (Packaged Commodities) Rules; FSSAI labelling. RESEARCH teardowns Part D.1.
 Check: for `en-IN` stores, the `legal` section exists and contains "Marketed by" and "Country of origin".
 
-TB13. Every badge row appears under "Claims to confirm" in `page-plan.md`; a badge the merchant cannot document by design time is `dropped`, not "pending in place". OPERATOR.
+TB13. Every badge row appears under "Claims to confirm" in `page plan`; a badge the merchant cannot document by design time is `dropped`, not "pending in place". OPERATOR.
 Check: no `certification` row with status `pending` has a section assigned.
 
 ## Sources

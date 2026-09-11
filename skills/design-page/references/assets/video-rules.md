@@ -103,7 +103,7 @@ to 15 s for loops (secondary source) https://www.mbadv.agency/meta-ads/meta-ads-
 
 ## 7. Recording a video slot
 
-Plan (`page-plan.md`, "## Asset slots"): one row for the video and one for its
+Plan (`page plan`, "## Asset slots"): one row for the video and one for its
 poster. Aspect names the video ratio; Source decision names the origin step,
 the rights basis, the duration, and whether captions are burned in or a
 track. UGC rows cite the proof-ledger id.
@@ -115,7 +115,7 @@ track. UGC rows cite the proof-ledger id.
 | A10 | ugc-grid | proof (poster for A9) | 9:16 | derived frame, viewed | asset 71bc... | verified |
 ```
 
-Manifest (`page-manifest.json`): one `assets[]` entry per row. A Shopify video
+Manifest (`page record`): one `assets[]` entry per row. A Shopify video
 uses `sourceType: shopify` with `productId` and `mediaId`; an imported clip
 uses `sourceType: lexsis` with `assetId`. The poster is its own entry. Caption
 files and transcripts are not manifest entries; the plan row records how
@@ -124,7 +124,7 @@ the Consumer decision model names the objection a demo video answers.
 
 ## 8. Rules
 
-`$W` is the page workspace.
+Checks use persisted MCP source and the hosted draft.
 
 VR1. Plan a video slot only when the checklist requires it or the plan names the decision question the video answers. RESEARCH.
 Rationale: video pages did not out-convert non-video pages https://unbounce.com/landing-pages/video-on-landing-pages-means-more-conversions-right-wrong-heres-why/ ; 59% skip product videos https://baymard.com/ecommerce-design-examples/video-and-360-views .
@@ -132,11 +132,9 @@ Check: every slot row containing "video" names a section and, unless `imagery.vi
 
 VR2. Never autoplay with sound; autoplay only muted, looped, silent, 6 to 15 s, and only as the plan's single motion moment. LAW.
 Rationale: WCAG 1.4.2 and F93 https://www.w3.org/WAI/WCAG22/Techniques/failures/F93.html ; N10 in `references/design-rules.md`.
-Check: `perl -ne 'print if /<video[^>]*autoplay/ && !/muted/' $W/lexsis-source.html | wc -l` prints 0; `grep -c '<video[^>]*autoplay' $W/lexsis-source.html` is 0 or 1 and, if 1, the plan's Motion line names it.
 
 VR3. Give every video a `poster` that is a real frame showing the product. RESEARCH.
 Rationale: auto-selected black frames read as broken; users must see what they get https://baymard.com/blog/embedding-product-page-videos .
-Check: `perl -ne 'print if /<video(?![^>]*poster=)/' $W/lexsis-source.html | wc -l` prints 0; view each poster.
 
 VR4. Caption every video that has speech and provide a transcript or media alternative for information not in the page copy. LAW.
 Rationale: WCAG 1.2.2 https://www.w3.org/WAI/WCAG22/Understanding/captions-prerecorded ; 69% watch with sound off (section 1).
@@ -144,7 +142,6 @@ Check: each speech video has `<track kind="captions"` or its plan row says "capt
 
 VR5. Default to click to play with `preload="none"`; nothing but the poster is fetched before interaction. RESEARCH.
 Rationale: video bytes compete with the LCP image https://web.dev/articles/optimize-lcp .
-Check: `perl -ne 'print if /<video(?![^>]*autoplay)(?![^>]*preload="none")/' $W/lexsis-source.html | wc -l` prints 0.
 
 VR6. Keep the video file out of the LCP path; the poster carries the LCP role on video-led pages with `fetchpriority="high"` on the poster image. RESEARCH.
 Rationale: LCP candidates include the poster and the first frame of autoplaying video https://web.dev/articles/lcp .
@@ -164,11 +161,10 @@ Check: each `<video>` `width`/`height` ratio matches the source file's ratio (fr
 
 VR10. Provide a pause control for any motion over five seconds and disable autoplay under `prefers-reduced-motion` and `saveData`. LAW.
 Rationale: WCAG 2.2.2 https://www.w3.org/WAI/WCAG22/Understanding/pause-stop-hide .
-Check: if `grep -c '<video[^>]*autoplay' $W/lexsis-source.html` is 1, then `grep -c 'prefers-reduced-motion' $W/lexsis-source.html $W/page-theme.css` is at least 1 and a visible pause button exists in the hero section.
 
 VR11. Stay inside the weight ceilings: loop 1.5 MB, UGC clip 8 MB, demo 15 MB; H.264 MP4 always. HEURISTIC.
 Rationale: video is the heaviest asset class on the page; the loop competes with the hero image.
-Check: `curl -sI "<video url>" | grep -i content-length` per file is at or under the ceiling.
+Check: the hosted response's Content-Length or measured transfer size per file is at or under the ceiling.
 
 VR12. Show UGC video only with a `verified` proof-ledger row that records rights, consent and paid disclosure. LAW.
 Rationale: creator copyright and 16 CFR 465 material-connection rules https://later.com/blog/user-generated-content-rules/ ; `references/proof/proof-ledger.md`.

@@ -66,15 +66,20 @@ class AssetToolSplitTests(unittest.TestCase):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, text)
 
-    def test_page_type_upload_offers_use_the_upload_action(self) -> None:
+    def test_page_type_upload_offers_use_the_shared_asset_workflow(self) -> None:
         page_types = REFERENCES / "page-types"
         for path in page_types.glob("*.md"):
             if path.name.startswith("_"):
                 continue
             with self.subTest(page_type=path.stem):
                 self.assertIn(
-                    "lexsis_asset_upload.upload", path.read_text(encoding="utf-8")
+                    "references/workflows/_how-to-read.md", path.read_text(encoding="utf-8")
                 )
+        workflow = (REFERENCES / "workflows" / "_how-to-read.md").read_text(encoding="utf-8")
+        self.assertIn("references/workflows/section-asset-workflow.md", workflow)
+        assets = (REFERENCES / "workflows" / "section-asset-workflow.md").read_text(encoding="utf-8")
+        self.assertIn("lexsis_asset_upload.upload", assets)
+        self.assertIn("lexsis_asset_import.import", assets)
 
 
 if __name__ == "__main__":

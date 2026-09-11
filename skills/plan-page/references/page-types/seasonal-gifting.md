@@ -96,264 +96,48 @@ Sections between chrome: 7 to 10. Word budget 300 to 700.
 
 ## Workflow
 
+Apply `references/workflows/_how-to-read.md` to these type-specific
+decisions. It links the shared asset/fallback, fit, live-island and
+copy procedures; this table supplies their inputs, not another policy.
+
 ### Context reads
-1. Merchant facts first: the occasion and its date (lunar and Hindu dates
-   confirmed against an almanac, CC3), markets, shipping speeds with carrier
-   last-ship dates, processing days and buffer. Run the cutoff procedure in
-   `references/offers/campaign-calendar.md` and write one offer-ledger
-   delivery row per speed and destination. Gift wrap price, note character
-   limit, gift receipt wording and gift returns window from the policy page
-   URL (`references/offers/offer-ledger.md`).
-2. `lexsis_catalog.list` for the gift edit: ids, prices (to place round
-   bands), option axes, inventory, media count per product.
-   `lexsis_catalog.get` per candidate: first media item as the identity
-   image, lifestyle, packaging or gift-box shots, variant images. Record
-   which products lack an identity image or a ships-by row; they are
-   raised with the merchant, not silently excluded.
-3. `lexsis_brand.navigation` for header and footer; `lexsis_brand.brand_kit`
-   for tokens, voice and banned phrases; `lexsis_brand.context` for the
-   `theme_id` every asset call needs.
-4. `lexsis_catalog.reviews_status`, then `lexsis_catalog.reviews_search` per
-   grouping with "gift", "for my", "she loved", "arrived in time";
-   candidates stay `pending` until confirmed
-   (`references/proof/reviews-sourcing.md`, tier 3 and band table).
-5. `lexsis_asset_library.search` with `theme_id`, `mode: "tags"`, one call
-   per tag `banner`, `hero`, `lifestyle`, `flat-lay`, `product-shot`,
-   `social-proof`; record counts; then semantic "<occasion> gift table with
-   <category>". View candidates with `lexsis_assets.view`
-   (`references/assets/asset-sourcing-sequence.md`).
-6. `lexsis_cart.get` for the cart profile: gift note field, wrap add-on SKU
-   and price, nothing pre-ticked (`references/cart-profile-management.md`).
-7. `lexsis_design.islands` for the active catalog; `lexsis_workspace.credits`
-   before any generation is planned (`references/assets/generation-policy.md`).
+
+1. Merchant facts first: the occasion and its date (lunar and Hindu dates confirmed against an almanac, CC3), markets, shipping speeds with carrier last-ship dates, processing days and buffer. Run the cutoff procedure in `references/offers/campaign-calendar.md` and write one offer-ledger delivery row per speed and destination. Gift wrap price, note character limit, gift receipt wording and gift returns window from the policy page URL (`references/offers/offer-ledger.md`).
+2. `lexsis_catalog.list` for the gift edit: ids, prices (to place round bands), option axes, inventory, media count per product. `lexsis_catalog.get` per candidate: first media item as the identity image, lifestyle, packaging or gift-box shots, variant images. Record which products lack an identity image or a ships-by row; they are raised with the merchant, not silently excluded.
+3. `lexsis_brand.navigation` for header and footer; `lexsis_brand.brand_kit` for tokens, voice and banned phrases; `lexsis_brand.context` for the `theme_id` every asset call needs.
+4. `lexsis_catalog.reviews_status`, then `lexsis_catalog.reviews_search` per grouping with "gift", "for my", "she loved", "arrived in time"; candidates stay `pending` until confirmed (`references/proof/reviews-sourcing.md`, tier 3 and band table).
+5. `lexsis_asset_library.search` with `theme_id`, `mode: "tags"`, one call per tag `banner`, `hero`, `lifestyle`, `flat-lay`, `product-shot`, `social-proof`; record counts; then semantic "<occasion> gift table with <category>". View candidates with `lexsis_assets.view` (`references/assets/asset-sourcing-sequence.md`).
+6. `lexsis_cart.get` for the cart profile: gift note field, wrap add-on SKU and price, nothing pre-ticked (`references/cart-profile-management.md`).
+7. `lexsis_design.islands` for the active catalog; `lexsis_workspace.credits` before any generation is planned (`references/assets/generation-policy.md`).
 
 ### Section by section
-Media per section follows `references/workflows/section-asset-workflow.md`:
-when nothing covers a slot, tell the merchant what is missing (job, aspect,
-count), offer upload via `lexsis_asset_upload.upload` or generation where the
-purpose is ALLOW or ASK in `references/assets/generation-policy.md`, and skip
-or merge the section only when the merchant chooses; a fast draft uses the
-closest existing asset or leaves the slot `planned` and lists every gap in the
-plan and the draft summary. No asset is used sight unseen: every candidate is
-opened with `lexsis_assets.view` and judged against the section per section 1b
-of that file (subject, crop to the slot aspect, a quiet area for the copy, the
-lighting and styling of the neighbouring slots, the plan's palette, no
-baked-in text, watermark or overlay); candidates for one grid, set or lookbook
-are viewed together so the set reads as one shoot, and a generated asset is
-viewed the same way after it returns. Islands follow
-`references/workflows/island-selection-workflow.md`: the lines below name the
-island and the inputs; variants and props are resolved live from
-`lexsis_design.island_schema`, with autoplay, hover-advance and entry motion
-off unless the plan names that motion moment (N10). Copy ceilings follow
-`references/copy/copy-frameworks.md` and
-`references/anti-patterns/copy-anti-patterns.md`.
 
-**`announcement`** (conditional: verified cutoff or offer row)
-- Purpose: standard and express cutoff in one line.
-- Media: no (chrome, outside the loop).
-- Island: SiteHeader announcement strip, or AnnouncementBar when the strip
-  should scroll away; one message, no dismissal, never CountdownTimer;
-  resolve from `lexsis_design.island_schema`; preset
-  `announcementbar/static-dark`.
-- Copy: "Order by Dec 18 (IST) for standard delivery before Dec 24", under
-  60 characters.
-- Decide with: the offer-ledger delivery row; no row, no announcement.
-
-**`header`**
-- Purpose: full navigation; occasion shoppers browse onward.
-- Media: logo from the brand kit; a text wordmark when none.
-- Island: SiteHeader when an announcement exists, else Navbar; links from
-  `lexsis_brand.navigation`; resolve from `lexsis_design.island_schema`;
-  preset `siteheader/sticky-light` or `navbar/sticky-light`.
-- Copy: nav labels only.
-- Decide with: the navigation result and the announcement decision.
-
-**`hero`**
-- Purpose: name the occasion and the recipient, state the standard cutoff,
-  send the giver to the first grouping.
-- Media: yes; job `context`, treatment `product-in-context`
-  (`references/assets/image-jobs-by-page-type.md`, section 5). Search catalog
-  lifestyle media of the flagship set, then library `banner`, `hero`,
-  `lifestyle`, then semantic, then merchant upload. Generation: `hero_bg`
-  (ALLOW) behind a real cut-out, bold moment only. Missing: tell the merchant
-  (context scene, 16:9 plus 4:5, one image) and offer upload or `hero_bg`; if
-  skipped, the first catalog identity image serves as a packshot hero and the
-  plan records "hero pending merchant media". No-go: a festive motif as
-  wallpaper; a generated product; text in the image. View every candidate with
-  `lexsis_assets.view` and run the section fit review; view it beside the
-  first grid row so lighting and backgrounds agree.
-- Island: none by default (static art-directed `<picture>`,
-  `references/assets/slot-spec.md`); HeroMedia only when the hero is the
-  plan's full-bleed bold moment, image mode, no autoplay; resolve from
-  `lexsis_design.island_schema`.
-- Copy: H1 recipient-first, 10 words or fewer; one cutoff line as
-  information; one CTA "Shop gifts under ₹999"; 40 words total.
-- Decide with: `lexsis_assets.view` of the chosen frame at both crops; the
-  ledger date row; the grouping list for the CTA target.
-
-**`delivery-cutoff`**
-- Purpose: the only urgency on the page: dates per speed and destination.
-- Media: no (buy-box sub-element, outside the loop).
-- Island: DeliveryEstimate for the dispatch line, ticking countdown off
-  (this type forbids a clock); the occasion "Order by" lines per speed are
-  HTML bound to the ledger rows because the island has no occasion-date or
-  pincode input, and the publish schedule removes each passed line (CC5);
-  international rows are text only; resolve from
-  `lexsis_design.island_schema`; preset `deliveryestimate/inline-quiet` or
-  `deliveryestimate/card-outline`.
-- Copy: "Order by Dec 18 for expected delivery by Dec 24 with standard
-  shipping", one line per speed with timezone and destination, three to
-  five lines; never "guaranteed".
-- Decide with: the cutoff procedure output in the offer ledger.
-
-**`product-grid`**
-- Purpose: gifts grouped by recipient or by price band, four to six groups.
-- Media: yes; job `identity` per card from catalog media, one aspect across
-  every card (`references/product-grid.md`), second image where present.
-  Generation: none ("needs a real photo"). Missing: list the products without
-  an image to the merchant with a count and offer upload; if skipped, those
-  cards leave and a group under three products merges into its neighbour.
-  No-go: a generated or stock product; mixed aspects; a countdown on a card.
-  View every candidate with `lexsis_assets.view` and run the section fit
-  review; view the grid images together so lighting, backgrounds and crops
-  agree.
-- Island: FeaturedCollectionStage per group of three or more, or the card
-  composition from `references/product-grid.md` with QuickAdd per card for
-  smaller groups; decide from group size, image availability and variant
-  axes; quick add opens the picker for multi-variant items; motion off;
-  resolve from `lexsis_design.island_schema`. Ships-by per card is HTML from
-  the ledger; a product that cannot arrive is hidden or marked "arrives
-  after <occasion>" (gifting deltas, `campaign-calendar.md`).
-- Copy: group heading 6 words or fewer; one reason per card under 15 words;
-  price on every card; rating and count only at 5 or more reviews.
-- Decide with: `lexsis_catalog.list` price distribution, product count per
-  group, image availability per product, the ledger ships-by rows.
-
-**`product-spotlight`** (conditional: curated sets exist)
-- Purpose: two or three sets at round prices, shown together and apart.
-- Media: yes; jobs `included-items` and `identity`. Search catalog media of
-  the set SKU, then library `product-shot` and `flat-lay`, then merchant
-  upload. Generation: none (identity-bound, GN1, GP13). Missing: tell the
-  merchant (set flat lay, 1:1, one per set) and offer upload; fast draft shows
-  the set image beside each component's identity image; skip only on the
-  merchant's call. View every candidate with `lexsis_assets.view` and run the
-  section fit review; view the set images together so lighting, backgrounds
-  and crops agree.
-- Island: QuickAdd per set; decide from variant count (direct add or
-  picker); resolve from `lexsis_design.island_schema`.
-- Copy: 30 words per set; "vs buying separately" only from a computed
-  offer-ledger savings row.
-- Decide with: set SKUs in the catalog and the savings row.
-
-**`gift-options`**
-- Purpose: note, un-ticked priced wrap, gift receipt wording, gift returns.
-- Media: yes; job `gift-presentation` (the real box, wrap and card that ship).
-  Search catalog media of the wrap SKU, then library `product-shot` and
-  `lifestyle`, then semantic "<brand> gift box", then merchant upload.
-  Generation: none (identity-bound; a composite may not add wrap, GP13).
-  Missing: tell the merchant (a photo of what ships, 1:1 or 4:5, one image)
-  and offer upload; if skipped, the note and wrap controls stay as the
-  section's object and the production-ready plan waits for the photo
-  (`gift-presentation` is required for this type). View every candidate with
-  `lexsis_assets.view` and run the section fit review before use.
-- Island: note field and wrap add-on come from the cart profile
-  (`lexsis_cart.get`, `head.use_cart_v2`); QuickAdd on the wrap SKU when
-  wrap is a product; resolve from `lexsis_design.island_schema`. Nothing
-  pre-ticked (CC12).
-- Copy: label with the character limit, wrap price beside the control,
-  "Gift receipt hides prices", returns window; four lines.
-- Decide with: cart profile flags and the policy URL.
-
-**`shipping-returns`** (recommended)
-- Purpose: express options with prices, holiday returns, international
-  notes.
-- Media: no (stands without an image per the asset workflow).
-- Island: none; DeliveryEstimate with the free-shipping threshold only when
-  the threshold is a ledger row and shipping is domestic; resolve from
-  `lexsis_design.island_schema`; preset `deliveryestimate/card-outline`.
-- Copy: one line per speed with its price, the extended returns date, five
-  lines at most.
-- Decide with: the policy URL and the offer ledger.
-
-**`payment-options`** (conditional: India in store markets)
-- Purpose: COD or UPI on delivery, no-cost EMI over ₹3,000, bank cashback,
-  tax-inclusive wording, pincode delivery date (CC13).
-- Media: provider marks only as issuer artwork with a ledger row; never
-  generated (GN5).
-- Island: PaymentOptions for providers enabled at checkout; decide from
-  `lexsis_workspace.stores` markets and the enabled rails; COD, UPI, EMI and
-  the pincode line are static HTML from the ledger because the island has no
-  pincode input; resolve from `lexsis_design.island_schema`.
-- Copy: three lines; "inclusive of all taxes".
-- Decide with: store markets and enabled checkout providers.
-
-**`reviews`** (conditional: recipient-reaction quotes verified)
-- Purpose: "will they like it" answered in customers' words.
-- Media: quotes are the artefact; reviewer photos only real with consent,
-  else CSS initials (`references/proof/proof-ledger.md`, display rules).
-- Island: ReviewCarousel for three to six quotes bound to an active
-  collection, static blockquotes for one or two, nothing review-shaped in
-  band B0; decide from the band in `references/proof/reviews-sourcing.md`;
-  autoplay off; resolve from `lexsis_design.island_schema`; preset
-  `reviewcarousel/grid-flat`.
-- Copy: verbatim, dated, two or three quotes, 60 words each.
-- Decide with: `reviews_status` band and confirmed candidates.
-
-**`offer`** (conditional: verified offer row)
-- Purpose: the one offer, or the gift card after the cutoffs.
-- Media: yes; job `identity` of the GWP item or the gift-card product from
-  catalog media. Generation: none. Missing: tell the merchant and offer
-  upload; if skipped, the offer terms sit as one line beside the grid. View
-  every candidate with `lexsis_assets.view` and run the section fit review
-  before use.
-- Island: QuickAdd on the gift-card product after the express cutoff; none
-  for a threshold line; resolve from `lexsis_design.island_schema`.
-- Copy: one sentence, no percentage pill (N9), 25 words.
-- Decide with: the offer-ledger row and the current cutoff state.
-
-**`faq`** (recommended)
-- Purpose: cutoffs by speed and destination, gift returns, wrap and note,
-  the packing slip.
-- Media: no.
-- Island: none; native `<details>` and `<summary>` (the FAQ island is
-  deprecated).
-- Copy: four to six questions, answer in the first sentence, 60 words each.
-- Decide with: support data and the ledger rows.
-
-**`email-capture`** (conditional: more than five days to the standard
-cutoff)
-- Purpose: last-call alerts before the cutoff.
-- Media: the hero or a set image sits beside the form; the form is the
-  object when no image is spare (N8).
-- Island: EmailCapture, one per page, or the Footer newsletter layout
-  when the footer carries the form; incentive only with a ledger row;
-  resolve from `lexsis_design.island_schema`; preset
-  `footer/newsletter-split-light` in the footer case.
-- Copy: one line and one field.
-- Decide with: days remaining to the standard cutoff;
-  `lexsis_capture.form_schemas`.
-
-**`footer`**
-- Purpose: policies, contact with hours during the window.
-- Media: logo only.
-- Island: Footer with columns from `lexsis_brand.navigation`; resolve from
-  `lexsis_design.island_schema`; preset `footer/columns-dark`.
-- Decide with: the navigation result.
+| Section | Purpose | Media job and source | Interactive decision | Copy constraints | Decision evidence |
+|---|---|---|---|---|---|
+| `announcement` (conditional: verified cutoff or offer row) | standard and express cutoff in one line. | no (chrome, outside the loop). | SiteHeader announcement strip, or AnnouncementBar when the strip should scroll away; one message, no dismissal, never CountdownTimer. | "Order by Dec 18 (IST) for standard delivery before Dec 24", under 60 characters. | the offer-ledger delivery row; no row, no announcement. |
+| `header` | full navigation; occasion shoppers browse onward. | logo from the brand kit; a text wordmark when none. | SiteHeader when an announcement exists, else Navbar; links from `lexsis_brand.navigation`. | nav labels only. | the navigation result and the announcement decision. |
+| `hero` | name the occasion and the recipient, state the standard cutoff, send the giver to the first grouping. | yes; job `context`, treatment `product-in-context` (`references/assets/image-jobs-by-page-type.md`, section 5). Search catalog lifestyle media of the flagship set, then library `banner`, `hero`, `lifestyle`, then semantic, then merchant upload. Generation: `hero_bg` behind a real cut-out, bold moment only. Missing media: (context scene, 16:9 plus 4:5, one image) ; alternative: `hero_bg`; if skipped, the first catalog identity image serves as a packshot hero and the plan records "hero pending merchant media". No-go: a festive motif as wallpaper; a generated product; text in the image. view it beside the first grid row so lighting and backgrounds agree. | none by default (static art-directed `<picture>`, `references/assets/slot-spec.md`); HeroMedia only when the hero is the plan's full-bleed bold moment, image mode, no autoplay | H1 recipient-first, 10 words or fewer; one cutoff line as information; one CTA "Shop gifts under ₹999"; 40 words total. | `lexsis_assets.view` of the chosen frame at both crops; the ledger date row; the grouping list for the CTA target. |
+| `delivery-cutoff` | the only urgency on the page: dates per speed and destination. | no (buy-box sub-element, outside the loop). | DeliveryEstimate for the dispatch line, ticking countdown off (this type forbids a clock); the occasion "Order by" lines per speed are HTML bound to the ledger rows because the island has no occasion-date or pincode input, and the publish schedule removes each passed line (CC5); international rows are text only. | "Order by Dec 18 for expected delivery by Dec 24 with standard shipping", one line per speed with timezone and destination, three to five lines; never "guaranteed". | the cutoff procedure output in the offer ledger. |
+| `product-grid` | gifts grouped by recipient or by price band, four to six groups. | yes; job `identity` per card from catalog media, one aspect across every card (`references/product-grid.md`), second image where present. Generation: none ("needs a real photo"). Missing: list the products without an image to the merchant with a count and; if skipped, those cards leave and a group under three products merges into its neighbour. No-go: a generated or stock product; mixed aspects; a countdown on a card. view the grid images together so lighting, backgrounds and crops agree. | FeaturedCollectionStage per group of three or more, or the card composition from `references/product-grid.md` with QuickAdd per card for smaller groups; decide from group size, image availability and variant axes; quick add opens the picker for multi-variant items; motion off Ships-by per card is HTML from the ledger; a product that cannot arrive is hidden or marked "arrives after <occasion>" (gifting deltas, `campaign-calendar.md`). | group heading 6 words or fewer; one reason per card under 15 words; price on every card; rating and count only at 5 or more reviews. | `lexsis_catalog.list` price distribution, product count per group, image availability per product, the ledger ships-by rows. |
+| `product-spotlight` (conditional: curated sets exist) | two or three sets at round prices, shown together and apart. | yes; jobs `included-items` and `identity`. Search catalog media of the set SKU, then library `product-shot` and `flat-lay`, then merchant upload. Generation: none (identity-bound, GN1, GP13). Missing media: (set flat lay, 1:1, one per set) and; fast draft shows the set image beside each component's identity image; view the set images together so lighting, backgrounds and crops agree. | QuickAdd per set; decide from variant count (direct add or picker) | 30 words per set; "vs buying separately" only from a computed offer-ledger savings row. | set SKUs in the catalog and the savings row. |
+| `gift-options` | note, un-ticked priced wrap, gift receipt wording, gift returns. | yes; job `gift-presentation` (the real box, wrap and card that ship). Search catalog media of the wrap SKU, then library `product-shot` and `lifestyle`, then semantic "<brand> gift box", then merchant upload. Generation: none (identity-bound; a composite may not add wrap, GP13). Missing media: (a photo of what ships, 1:1 or 4:5, one image) and; if skipped, the note and wrap controls stay as the section's object and the production-ready plan waits for the photo (`gift-presentation` is required for this type). | note field and wrap add-on come from the cart profile (`lexsis_cart.get`, `head.use_cart_v2`); QuickAdd on the wrap SKU when wrap is a product Nothing pre-ticked (CC12). | label with the character limit, wrap price beside the control, "Gift receipt hides prices", returns window; four lines. | cart profile flags and the policy URL. |
+| `shipping-returns` (recommended) | express options with prices, holiday returns, international notes. | no (stands without an image per the asset workflow). | none; DeliveryEstimate with the free-shipping threshold only when the threshold is a ledger row and shipping is domestic. | one line per speed with its price, the extended returns date, five lines at most. | the policy URL and the offer ledger. |
+| `payment-options` (conditional: India in store markets) | COD or UPI on delivery, no-cost EMI over ₹3,000, bank cashback, tax-inclusive wording, pincode delivery date (CC13). | provider marks only as issuer artwork with a ledger row; never generated (GN5). | PaymentOptions for providers enabled at checkout; decide from `lexsis_workspace.stores` markets and the enabled rails; COD, UPI, EMI and the pincode line are static HTML from the ledger because the island has no pincode input | three lines; "inclusive of all taxes". | store markets and enabled checkout providers. |
+| `reviews` (conditional: recipient-reaction quotes verified) | "will they like it" answered in customers' words. | quotes are the artefact; reviewer photos only real with consent, else CSS initials (`references/proof/proof-ledger.md`, display rules). | ReviewCarousel for three to six quotes bound to an active collection, static blockquotes for one or two, nothing review-shaped in band B0; decide from the band in `references/proof/reviews-sourcing.md`; autoplay off. | verbatim, dated, two or three quotes, 60 words each. | `reviews_status` band and confirmed candidates. |
+| `offer` (conditional: verified offer row) | the one offer, or the gift card after the cutoffs. | yes; job `identity` of the GWP item or the gift-card product from catalog media. Generation: none. Missing:; if skipped, the offer terms sit as one line beside the grid. | QuickAdd on the gift-card product after the express cutoff; none for a threshold line | one sentence, no percentage pill (N9), 25 words. | the offer-ledger row and the current cutoff state. |
+| `faq` (recommended) | cutoffs by speed and destination, gift returns, wrap and note, the packing slip. | no. | none; native `<details>` and `<summary>`. | four to six questions, answer in the first sentence, 60 words each. | support data and the ledger rows. |
+| `email-capture` (conditional: more than five days to the standard | last-call alerts before the cutoff. | the hero or a set image sits beside the form; the form is the object when no image is spare (N8). | EmailCapture, one per page, or the Footer newsletter layout when the footer carries the form; incentive only with a ledger row. | one line and one field. | days remaining to the standard cutoff; `lexsis_capture.form_schemas`. |
+| `footer` | policies, contact with hours during the window. | logo only. | Footer with columns from `lexsis_brand.navigation`. | Use the shared procedure. | the navigation result. |
 
 ### Asset budget
+
 | Source | Usually supplies | Usually missing | Per gap |
 |---|---|---|---|
 | catalog media | `identity` per card, set images, wrap SKU image | `context` occasion scene, `gift-presentation`, `included-items` flat lay | reuse the best set lifestyle shot for the hero; generate `hero_bg` (ALLOW) or `product_composite` for `context` (ALLOW over a real cut-out); ask the merchant to upload the box, wrap and flat lay; skip a set only on the merchant's call |
 | asset library | `banner` and `hero` occasion imagery, `lifestyle`, `social-proof` UGC with rights | occasion-specific scenes for a new festival, unboxing UGC | semantic query, then ask the merchant to upload; UGC only with a ledger row; skip only on the merchant's call |
 | generation | backdrops, textures, composites only | product, people, results, logos, text | never; these are "needs a real photo" in the merchant message |
 
-With minimal assets the page is a header, a hero built from the best set
-photo, the cutoff lines, one price-band grid of real catalog cards, the gift
-options with the merchant's own box photo and a footer; at most one generated
-asset (`hero_bg`), never more than four per page, and every missing asset
-listed in the plan and the draft summary with upload, generate or skip. Every
-asset, found or generated, was viewed and passed the section fit review before
-use.
+With minimal assets the page is a header, a hero built from the best set photo, the cutoff lines, one price-band grid of real catalog cards, the gift options with the merchant's own box photo and a footer; at most one generated asset (`hero_bg`), never more than four per page, and every missing asset listed in the plan and the draft summary with upload, generate or skip.
 
 ## Above the fold (390px)
 

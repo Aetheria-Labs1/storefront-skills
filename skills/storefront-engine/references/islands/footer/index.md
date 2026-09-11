@@ -1,19 +1,12 @@
-# Footer — Island Directory
+# Footer
 
-Site-wide footer with links, branding, and social. Always last section on page. Max 1 per page.
+For `Footer`, fetch `lexsis_design.islands` and
+`lexsis_design.island_schema` during the decision that needs this behavior.
+Use the current authoring example, variants, props, parts, hydration and
+headless support; the bundled JSON is a compatibility reference, not a
+second source of defaults.
 
-## Quick Reference
-
-- **Variants**: none (single default)
-- **Props**: links, columns, logo, socialLinks, style, newsletter — 10 total
-- **Schema**: `vibe://schema/island/Footer`
-- **Contract**: follows `_contract.md` rules
-
-## Composition
-
-- ALWAYS last section on page
-- Max 1 per page
-- Typically uses `--lx-surface-alt` or inverted (dark) background
-- Pair with: AnnouncementBar (top), Navbar (first) — footer anchors the bottom
-- Container: `w-full` outer, `max-w-7xl mx-auto` inner content
-- py-16 standard vertical padding (more generous than body sections)
+`references/workflows/island-selection-workflow.md` owns selection and
+linked state. `references/authoring/source-authoring.md` owns source syntax;
+`references/authoring/css-and-styling.md` owns styling. Placement and evidence
+come from the selected page-type contract and its domain policies.

@@ -10,11 +10,11 @@
   "combine_with": [
     "QuickAdd (add-to-cart after selection)",
     "MediaCarousel (switch images on variant change)",
-    "CartDrawer (cart feedback)"
+    "Cart V2 via head.use_cart_v2"
   ],
   "anti_patterns": [
     "Using without data-scope when multiple VariantSelectors on page (events will collide)",
-    "Using render:\"swatches\" for non-color options (confusing UX — use \"buttons\" for sizes)",
+    "Using render:\"swatches\" for non-color options (confusing UX \u2014 use \"buttons\" for sizes)",
     "Providing variants without options array (selector won't know axis names)"
   ],
   "props": {
@@ -68,21 +68,6 @@
     ],
     "headless": {
       "supported": false
-    },
-    "example": "<lx-island name=\"VariantSelector\">\n  <script type=\"application/json\">\n{\n  \"product\": {\n    \"variants\": [],\n    \"options\": []\n  }\n}\n  </script>\n</lx-island>",
-    "examples": [
-      {
-        "label": "Color swatches",
-        "source": "<lx-island name=\"VariantSelector\">\n  <script type=\"application/json\">{\"product\":{\"variants\":[{\"id\":\"v1\",\"title\":\"Black / M\",\"price\":\"$49\",\"available\":true,\"options\":{\"Color\":\"Black\",\"Size\":\"M\"}},{\"id\":\"v2\",\"title\":\"White / M\",\"price\":\"$49\",\"available\":true,\"options\":{\"Color\":\"White\",\"Size\":\"M\"}}],\"options\":[{\"name\":\"Color\",\"values\":[\"Black\",\"White\"]},{\"name\":\"Size\",\"values\":[\"M\",\"L\"]}]},\"render\":\"swatches\"}</script>\n</lx-island>"
-      },
-      {
-        "label": "Button pills for sizes",
-        "source": "<lx-island name=\"VariantSelector\">\n  <script type=\"application/json\">{\"product\":{\"variants\":[{\"id\":\"v1\",\"title\":\"S\",\"price\":\"$29\",\"available\":true,\"options\":{\"Size\":\"S\"}},{\"id\":\"v2\",\"title\":\"M\",\"price\":\"$29\",\"available\":true,\"options\":{\"Size\":\"M\"}},{\"id\":\"v3\",\"title\":\"L\",\"price\":\"$29\",\"available\":false,\"options\":{\"Size\":\"L\"}}],\"options\":[{\"name\":\"Size\",\"values\":[\"S\",\"M\",\"L\"]}]},\"render\":\"buttons\"}</script>\n</lx-island>"
-      },
-      {
-        "label": "Dropdown selector",
-        "source": "<lx-island name=\"VariantSelector\">\n  <script type=\"application/json\">{\"product\":{\"variants\":[{\"id\":\"v1\",\"title\":\"Default\",\"price\":\"$99\",\"available\":true,\"options\":{\"Style\":\"Classic\"}},{\"id\":\"v2\",\"title\":\"Modern\",\"price\":\"$109\",\"available\":true,\"options\":{\"Style\":\"Modern\"}}],\"options\":[{\"name\":\"Style\",\"values\":[\"Classic\",\"Modern\"]}]},\"render\":\"dropdown\"}</script>\n</lx-island>"
-      }
-    ]
+    }
   }
 }

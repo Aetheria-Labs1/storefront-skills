@@ -59,11 +59,9 @@ Section CSS can override earlier rules at equal specificity. Keep global
 tokens and page-wide rules in theme CSS, and scope section overrides by
 section ID.
 
-The renderer already supplies its reset, base typography, smooth scrolling,
-and shared keyframes:
-
-`fadeUp`, `fadeIn`, `scaleIn`, `slideInLeft`, `slideInRight`, `marquee`,
-`float`, `shimmer`, `wordFade`, and `pulseRing`.
+The renderer supplies base styles; do not recreate its reset. Motion follows
+`references/design-rules.md` N10 and `references/animation-system.md`, not
+a list of renderer keyframes to reuse by default.
 
 ## Template-First Composition
 
@@ -109,7 +107,7 @@ For every interactive element:
 Author islands as `<lx-island>` with one readable `application/json` child.
 Never hand-author compiled `data-island` or `data-props` markup.
 
-If the catalogue marks an island deprecated or superseded, follow its
+If the catalogue marks an island deprecated or retired, follow its
 replacement guidance. The replacement may be another island or supported
 native HTML/CSS such as `<details>`; do not force a deprecated island into the
 page.
@@ -156,7 +154,7 @@ Record the design decision:
 ```
 
 `template.mode` is `page-kit`, `sections`, or `custom`. Keep selection reasons
-and evaluated alternatives in `page-plan.md`, not the manifest. After
+and evaluated alternatives in `page plan`, not the page record. After
 compilation, store the returned style manifest under
 `design.compiledStyleManifest`.
 

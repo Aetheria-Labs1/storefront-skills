@@ -1,6 +1,6 @@
 ---
 name: optimize
-description: Diagnose and improve an existing Lexsis storefront page for a specific business outcome. Starts with a focused optimization brief before making local-first section edits.
+description: Diagnose and improve an existing Lexsis storefront page for a specific business outcome. Starts with a focused optimization brief before making versioned source edits.
 ---
 
 # Optimize a Page
@@ -8,6 +8,7 @@ description: Diagnose and improve an existing Lexsis storefront page for a speci
 Read:
 
 - `references/evidence-led-cro.md`
+- `references/source-artifact-workflow.md`
 - `references/consumer-behavior-cro.md`
 - `references/authoring/css-and-styling.md` before any CSS or class change
 - `references/animation-system.md` before adding or editing motion
@@ -56,9 +57,9 @@ behavior as stronger evidence than generic patterns.
 
 1. Locate the page and read its analytics, structure, source, and current
    remote version.
-2. Open its local page workspace. If missing, adopt the remote source into the
-   standard local files before editing.
-3. Compare the remote version with the manifest and stop on unexpected drift.
+2. Use the current MCP source as the editable baseline. Retain its version
+   with the intended change; do not create local source or QA files.
+3. Compare the remote version with the page record and stop on unexpected drift.
 4. For a structural redesign, search relevant page kits and sections and
    compare them with the current structure. Do not force template comparison
    for copy-only, offer-only, metadata, or minor visual changes.
@@ -84,14 +85,14 @@ Obtain approval before making material changes.
 
 ## Apply Approved Changes
 
-Modify `lexsis-source.html` first. Validate and compile the complete local
-source with `page-theme.css`, compare section hashes, and patch only changed
-sections with `expected_version`. A visible source or CSS change requires a
-new compiled preview and design approval before the remote patch. Update the
-manifest only after the remote write succeeds. Then run `diff`, `integrity`,
+Modify editable source. Validate and compile it with any page-wide
+`theme_css`, compare section hashes, and patch only changed sections with
+`expected_version`. Review visible changes on the updated unpublished hosted
+draft; never require a local preview before the patch. Update the operation
+record only after the remote write succeeds. Run `diff`, `integrity`,
 responsive checks, and affected commerce checks.
 
-Never make an intentional remote-only edit. Preserve the URL and SEO fields
+Never edit compiled output in place of source. Preserve the URL and SEO fields
 unless the user approved changing them.
 
 ## Experiment Handoff

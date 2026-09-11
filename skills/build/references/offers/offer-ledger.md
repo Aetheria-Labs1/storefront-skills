@@ -20,25 +20,25 @@ and `references/offers/urgency-scarcity.md`.
 
 | # | Item | Value shown on page | Basis | Confirmed | Status |
 |---|---|---|---|---|---|
-| O1 | bundle price | ₹2,499 | Shopify bundle product gid://…/456 | catalog 2026-09-10 | verified |
+| O1 | bundle price | ₹2,499 | Shopify bundle product gid://.../456 | catalog 2026-09-10 | verified |
 | O2 | compare-at | ₹3,297 | sum of component list prices, all currently sold at list | catalog 2026-09-10 | verified |
-| O3 | savings | Save ₹798 (24%) | O2 − O1 | computed | verified |
-| O4 | per-day price | ₹83/day | O1 ÷ 30-day supply on label | label photo | verified |
+| O3 | savings | Save ₹798 (24%) | O2 - O1 | computed | verified |
+| O4 | per-day price | ₹83/day | O1 U+00F7 30-day supply on label | label photo | verified |
 | O5 | end date | none | evergreen bundle | merchant | verified |
-| O6 | stock statement | none | not planned | — | — |
+| O6 | stock statement | none | not planned |  -  |  -  |
 | O7 | shipping | Free shipping over ₹999 | store policy page URL | fetched | verified |
-| O8 | delivery estimate | 2–5 days, pincode-based | DeliveryEstimate island, live | live | verified |
+| O8 | delivery estimate | 2-5 days, pincode-based | DeliveryEstimate island, live | live | verified |
 | O9 | code | none needed | automatic bundle price | merchant | verified |
 | O10 | exclusions / stacking | not with WELCOME15 | merchant | merchant | verified |
 | O11 | regions | India only | store markets | catalog | verified |
-| O12 | subscription terms | none | — | — | — |
+| O12 | subscription terms | none |  -  |  -  |  -  |
 | O13 | guarantee | 30-day returns, unopened | policy URL | fetched | verified |
-| O14 | BNPL | none | store payment methods | catalog | — |
+| O14 | BNPL | none | store payment methods | catalog |  -  |
 ```
 
 Columns:
 
-- **Item**: one of the fixed rows above. Keep the row with `—` when not
+- **Item**: one of the fixed rows above. Keep the row with ` - ` when not
   applicable; do not delete rows, so reviewers see what was considered.
 - **Value shown on page**: the exact string the page will display, in the
   store currency and locale.
@@ -47,7 +47,7 @@ Columns:
 - **Confirmed**: source and date. Prices and availability come from
   `lexsis_catalog.get` on the planning day and are re-read in
   `/design-page` and `/generate`.
-- **Status**: `verified`, `pending` (not rendered), `—` (not applicable).
+- **Status**: `verified`, `pending` (not rendered), ` - ` (not applicable).
 
 ## Rules the ledger enforces
 
@@ -56,7 +56,7 @@ Columns:
    history, or the sum of components sold at list). No basis, no
    strike-through. Every `<s>`, `<del>` or compare-at element carries
    `data-source="compare_at_price"` or the ledger row id (`data-source="O2"`)
-   so `design_lint.py` O12 can trace it. Jurisdiction rules are in
+   so the source/hosted review O12 can trace it. Jurisdiction rules are in
    `references/offers/price-presentation.md`.
 2. **Savings are computed, not typed.** Show currency first, percent only
    when the rule for the type allows (`offer-types.md`). Never a percent
@@ -78,7 +78,7 @@ Columns:
    `seasonal-gifting`. A second offer needs its own ledger block and a
    reason.
 7. **Manifest mirror.** `offer.type`, `offer.summary`, `offer.endsAt`,
-   `offer.stockVerified`, `offer.compareAtBasis` in `page-manifest.json`.
+   `offer.stockVerified`, `offer.compareAtBasis` in `page record`.
 
 ## Claims to confirm before design (ask once, together)
 
@@ -94,13 +94,3 @@ Columns:
   renewal notice.
 - BNPL providers actually enabled on the store.
 - Guarantee and returns terms as written on the policy page.
-
-## Lint hooks
-
-- `plan_lint.py` T7: `## Offer ledger` present when `manifest.offer.type` is
-  not `none`. T10: `countdown` or `stock-indicator` sections require
-  `offer.endsAt` or `offer.stockVerified`.
-- `design_lint.py`: N9 (discount pills), stock phrases in static copy
-  ("only N left", "N people viewing"), countdown islands without an
-  `endsAt`, pre-checked add-on inputs, confirmshaming dismiss copy
-  (`references/anti-patterns/dark-patterns.md`).

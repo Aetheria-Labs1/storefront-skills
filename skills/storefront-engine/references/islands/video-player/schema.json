@@ -8,13 +8,13 @@
   "when_not_to_use": "For background ambient video use HTML5 video tag directly. For short animated clips consider GIF or CSS animations. When video isn't core to conversion.",
   "defaultHydrate": "immediate",
   "combine_with": [
-    "ProductImage",
+    "ProductGallery or a native product image",
     "Hero sections",
     "ProductDescription"
   ],
   "anti_patterns": [
     "Autoplaying unmuted video (violates accessibility and most browsers block it)",
-    "Using large uncompressed video files (>5MB — slows page load)",
+    "Using large uncompressed video files (>5MB \u2014 slows page load)",
     "Not providing poster image (shows blank frame until video loads)"
   ],
   "props": {
@@ -175,21 +175,6 @@
     ],
     "headless": {
       "supported": false
-    },
-    "example": "<lx-island name=\"VideoPlayer\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
-    "examples": [
-      {
-        "label": "Direct video with poster",
-        "source": "<lx-island name=\"VideoPlayer\">\n  <script type=\"application/json\">{\"src\":\"/videos/product-demo.mp4\",\"poster\":\"/images/video-poster.jpg\",\"autoplay\":false,\"muted\":false,\"loop\":false,\"aspectRatio\":\"16/9\"}</script>\n</lx-island>"
-      },
-      {
-        "label": "YouTube embed with autoplay",
-        "source": "<lx-island name=\"VideoPlayer\">\n  <script type=\"application/json\">{\"src\":\"https://www.youtube.com/watch?v=dQw4w9WgXcQ\",\"poster\":\"/images/yt-thumb.jpg\",\"autoplay\":true,\"aspectRatio\":\"16/9\"}</script>\n</lx-island>"
-      },
-      {
-        "label": "Vimeo embed looping",
-        "source": "<lx-island name=\"VideoPlayer\">\n  <script type=\"application/json\">{\"src\":\"https://vimeo.com/123456789\",\"autoplay\":true,\"muted\":true,\"loop\":true,\"aspectRatio\":\"16/9\"}</script>\n</lx-island>"
-      }
-    ]
+    }
   }
 }

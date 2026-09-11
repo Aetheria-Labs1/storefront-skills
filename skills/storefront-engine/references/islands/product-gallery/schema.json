@@ -387,25 +387,6 @@
     ],
     "headless": {
       "supported": false
-    },
-    "example": "<lx-island name=\"ProductGallery\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
-    "examples": [
-      {
-        "label": "Horizontal gallery with fade transition",
-        "source": "<lx-island name=\"ProductGallery\">\n  <script type=\"application/json\">{\"media\":[{\"type\":\"image\",\"src\":\"https://via.placeholder.com/600\",\"alt\":\"Product front\"},{\"type\":\"image\",\"src\":\"https://via.placeholder.com/600\",\"alt\":\"Product back\"}],\"layout\":\"horizontal\",\"transition\":\"fade\"}</script>\n</lx-island>"
-      },
-      {
-        "label": "Vertical gallery with thumbnail rail on left",
-        "source": "<lx-island name=\"ProductGallery\">\n  <script type=\"application/json\">{\"media\":[{\"type\":\"image\",\"src\":\"https://via.placeholder.com/600\"},{\"type\":\"video\",\"poster\":\"https://via.placeholder.com/600\",\"sources\":[{\"url\":\"https://example.com/product.m3u8\"}]}],\"layout\":\"vertical\",\"thumbPosition\":\"left\",\"transition\":\"slide\"}</script>\n</lx-island>"
-      },
-      {
-        "label": "Left collage with lightbox",
-        "source": "<lx-island name=\"ProductGallery\">\n  <script type=\"application/json\">{\"media\":[{\"type\":\"image\",\"src\":\"https://via.placeholder.com/900\"},{\"type\":\"image\",\"src\":\"https://via.placeholder.com/600\"},{\"type\":\"image\",\"src\":\"https://via.placeholder.com/600\"}],\"layout\":\"collageLeft\",\"enableLightbox\":true}</script>\n</lx-island>"
-      },
-      {
-        "label": "Autoplay gallery with variant sync",
-        "source": "<lx-island name=\"ProductGallery\">\n  <script type=\"application/json\">{\"media\":[{\"type\":\"image\",\"src\":\"https://via.placeholder.com/600\"}],\"autoplay\":true,\"interval\":5000,\"listenForVariant\":true,\"transition\":\"zoom\"}</script>\n</lx-island>"
-      }
-    ]
+    }
   }
 }

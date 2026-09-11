@@ -38,11 +38,12 @@ Forbidden: `header`, `announcement` (a bar competes with the player), `product-g
 
 ## Workflow
 
-Assets first: the video and its honest poster are the page's media, and nothing competes with the player until the pitch is made. Below it, every module gets a real still (product identity at the offer, raw proof screenshots with consent) or is put to the merchant. Each Media line runs the loop in `references/workflows/section-asset-workflow.md` (sourcing: `references/assets/asset-sourcing-sequence.md`; video: `references/assets/video-rules.md`; jobs: `references/assets/image-jobs-by-page-type.md`; ALLOW, ASK and NEVER: `references/assets/generation-policy.md`). Each Island line names the island and its decision inputs per `references/workflows/island-selection-workflow.md`, with the catalog from `lexsis_design.islands` and the variant and props resolved live from `lexsis_design.island_schema`.
-
-Ask rule, used by every Media line below: tell the merchant what is missing (job, aspect, count), offer upload via `lexsis_asset_upload.upload` or MCP generation when the purpose is feasible under `references/assets/generation-policy.md`, and skip or merge the section only if the merchant chooses. In fast-draft, proceed with the closest existing asset or leave the slot `planned`, and list every missing asset in the plan and the draft summary. The video itself is the one exception: `imagery.video` is required, so without a real video the build returns blocked with the reason and the upload offer.
+Apply `references/workflows/_how-to-read.md` to these type-specific
+decisions. It links the shared asset/fallback, fit, live-island and
+copy procedures; this table supplies their inputs, not another policy.
 
 ### Context reads
+
 1. `lexsis_catalog.get` with the product id: media of type video (the VSL itself may live here), the `identity` image for `offer`, `ingredient-or-material` or `label-or-facts-panel` media for the summary, variant count (decides the offer block's form), price and compare-at (ledger basis; the value stack needs the component prices, `references/offers/offer-types.md`), selling plans (ignored: subscribe-save is a misfit), inventory (never shown).
 2. `lexsis_campaigns.creatives`, `analyze` and `frames`: the video ad's opening line (the headline repeats it, `references/copy/message-match.md`), its length, the presenter or product frame that becomes the poster, and the offer it states.
 3. `lexsis_catalog.reviews_status`, `review_collections` (active), `reviews` (`product_id`, `limit: 100`, `has_media`): band and dated quotes for the proof wall per `references/proof/reviews-sourcing.md`; `reviews_search` with the mechanism claim and the top objections. The video's own testimonials are not page proof unless each speaker has a ledger row.
@@ -51,70 +52,21 @@ Ask rule, used by every Media line below: tell the merchant what is missing (job
 6. `lexsis_workspace.credits` is not needed; nothing on this page is generated.
 
 ### Section by section
-**`hero`**
-- Purpose: the headline that is an ad for the video, a one-line subhead with the length, directly above the player.
-- Media: no image of its own; the video poster below is the LCP image and is preloaded (`references/assets/slot-spec.md`). No-go: a hero photo above the player, press logos above the headline, a second video, an announcement bar. Any logo or mark is still opened with `lexsis_assets.view` before use.
-- Island: `none`.
-- Copy: headline at most 12 words matching the video's opening line (60% token overlap with the ad, `references/copy/message-match.md`); subhead at most 20 words with the duration ("4 minutes") and what the viewer will learn; no price, no CTA for long-form; no "shocking" or "miracle" (`references/anti-patterns/copy-anti-patterns.md`).
-- Decide with: `lexsis_campaigns.analyze` opening line and length.
 
-**`video`**
-- Purpose: the one video, click to play, poster frame, captions, length indicator, transcript toggle.
-- Media: yes; the real VSL (16:9 or 1:1, never letterboxed 9:16) from catalog media or the library, or imported with `lexsis_asset_import.import`; the poster a real frame with the presenter or product chosen from `lexsis_campaigns.frames` or by viewing frames, never the auto-selected black frame; captions carried with the media or burned in; music rights recorded. Nothing found: ask rule for the video and its poster; generation is never feasible for video or a still (VR13); the type is blocked until the merchant supplies the clip. No-go: a third-party embed that injects autoplay or cookies without consent; autoplay with sound. View every candidate with `lexsis_assets.view` and run the fit review in `references/workflows/section-asset-workflow.md` section 1b (subject, crop, quiet zone for the copy, consistency with neighbouring slots, palette, no baked-in text or watermark) before it is used. View the chosen poster frame and confirm it shows what the video opens with, so the click is not a bait.
-- Island: `VideoPlayer`: click to play with the poster, the file fetched only on interaction, captions supplied with the media object; resolve variant and props from `lexsis_design.island_schema`. On mobile the player wrapper may stick as a mini-player while scrolling, a layout choice, not a `StickyBar` (forbidden on this type). The transcript is a native `<details>` block under the player.
-- Copy: duration in HTML ("4:12"); play control drawn in HTML at 48px or more; transcript verbatim, under 2,000 words on the page.
-- Decide with: the video's source, length and aspect from the import response; `references/assets/video-rules.md` section 3.
-
-**`benefits`** or **`solution`**
-- Purpose: the non-viewer path: the argument in five to eight bullets or 150 to 250 words.
-- Media: yes; one or two stills beside the text: `identity` from catalog media, a `diagram` as authored inline SVG, or `ingredient-or-material` as a real flat lay. Search: catalog media, then library `product-shot` and `flat-lay`, then merchant or supplier upload. Nothing found: ask rule; generation is not feasible for ingredients or a raster diagram (GN11); the authored SVG carries the section meanwhile. No-go: a wall of text without an image, icon tiles, stock lab scenes. View every candidate with `lexsis_assets.view` and run the fit review in `references/workflows/section-asset-workflow.md` section 1b (subject, crop, quiet zone for the copy, consistency with neighbouring slots, palette, no baked-in text or watermark) before it is used.
-- Island: `none`.
-- Copy: `pas`; problem, mechanism, result; test data footnoted with journal, year, n and design; typical-results disclosure where the claim is an outcome.
-- Decide with: the video's beat map from `lexsis_campaigns.analyze`; `test-data` ledger rows.
-
-**`offer`**
-- Purpose: product, price, guarantee, terms and the CTA, after the video and the summary.
-- Media: yes; the `identity` image from catalog media; `included-items` flat lay when the offer is a bundle or value stack. Nothing found: ask rule; no generation is feasible (GP11, GP13); the offer runs as HTML with the price meanwhile. View every candidate with `lexsis_assets.view` and run the fit review in `references/workflows/section-asset-workflow.md` section 1b (subject, crop, quiet zone for the copy, consistency with neighbouring slots, palette, no baked-in text or watermark) before it is used.
-- Island: `BuyBox`, one per page, its form decided by the variant count, badges off; the value stack with struck free items is HTML from the offer ledger. DTC variant: visible from load, below the player. Long-form variant: revealed at the pitch timestamp only when the plan records how it is wired; otherwise the DTC placement is used and recorded as a deviation. No `StickyBar`. Resolve variant and props from `lexsis_design.island_schema`; presets `buybox/compact-dark` or `buybox/default-light`.
-- Copy: `add-to-cart` ("Get the <product>, $59") or `claim-offer` with a real ledger offer (`references/offers/offer-types.md`); the price on the page before the first CTA to cart; at most 80 words plus terms; guarantee beside the button.
-- Decide with: variant count; offer ledger rows; the variant (DTC or long-form).
-
-**`reviews`**
-- Purpose: the proof wall: three to six verbatim quotes, screenshots or UGC tiles.
-- Media: yes; `ugc` and `review-with-media` tiles from `reviews` with `has_media: true` and library `social-proof`, each with a `P` row; raw screenshots only with the sender's written consent, channel and month labelled, phone numbers and surnames redacted. Nothing found: the wall runs as dated text quotes; generation is never feasible (GN9). No-go: fabricated chat UI, stock faces, polished quote cards with no source. View every candidate with `lexsis_assets.view` and run the fit review in `references/workflows/section-asset-workflow.md` section 1b (subject, crop, quiet zone for the copy, consistency with neighbouring slots, palette, no baked-in text or watermark) before it is used.
-- Island: `none`; two or three dated quotes inline as HTML, never a carousel on this type (display table in `references/proof/reviews-sourcing.md`); at band B3 or higher an average plus n sits at `offer` from the API total. B0: `guarantee`, `certifications`, `test-data` and a named `founder-note` replace the wall and the omission is recorded.
-- Copy: verbatim, dated, attributed as stored, at most 60 words; one mentions a limitation.
-- Decide with: `reviews_status` band; `has_media` count; consent records.
-
-**`ugc-grid`** (recommended beside the wall)
-- Purpose: creator or customer clips with rights, click to play.
-- Media: yes; 9:16 `ugc` clips with `P` rows (rights, paid disclosure, captions, music cleared); posters as real frames (`references/proof/ugc-rights-and-display.md`). Search: library `social-proof` with `kind: "video"`, then merchant upload with the creator's consent. Fewer than three: ask rule naming the count and rights each clip needs; generation is never feasible; a smaller grid or none only on the merchant's call. View every candidate with `lexsis_assets.view` and run the fit review in `references/workflows/section-asset-workflow.md` section 1b (subject, crop, quiet zone for the copy, consistency with neighbouring slots, palette, no baked-in text or watermark) before it is used.
-- Island: `ShoppableVideoFeed` when three or more clips exist, posters on every item, sound off until tapped, the product tagged; native `<video>` tiles for one or two clips. Resolve variant and props from `lexsis_design.island_schema`.
-- Copy: handle and "Paid partnership" in frame where paid; duration in HTML.
-- Decide with: UGC ledger rows; clip count.
-
-**`faq`**
-- Purpose: the top five objections; shipping cost and time, returns, who it is not for.
-- Media: no.
-- Island: `none`; native `<details>` and `<summary>` (the FAQ island is deprecated).
-- Copy: answers at most 60 words.
-- Decide with: `reviews_search` on objection topics; questions the video leaves open.
-
-**`guarantee`**
-- Purpose: risk reversal restated before the close, with more space than any scarcity (there is none).
-- Media: no; a certification mark only as issuer artwork. Any logo or mark is still opened with `lexsis_assets.view` before use.
-- Island: `none`.
-- Copy: exact terms and policy URL.
-- Decide with: the `guarantee` ledger row.
-
-**`closing-cta`**
-- Purpose: the same action as the offer CTA; the last-word quote above it.
-- Media: optional reuse of the offer identity slot; no new job.
-- Island: `none`; the CTA anchors to the offer block.
-- Copy: the same verb, object and destination as `offer`; at most two CTAs on the page.
-- Decide with: the last-word `review-quote` row.
+| Section | Purpose | Media job and source | Interactive decision | Copy constraints | Decision evidence |
+|---|---|---|---|---|---|
+| `hero` | the headline that is an ad for the video, a one-line subhead with the length, directly above the player. | no image of its own; the video poster below is the LCP image and is preloaded (`references/assets/slot-spec.md`). No-go: a hero photo above the player, press logos above the headline, a second video, an announcement bar. Any logo or mark is still opened with `lexsis_assets.view` before use. | `none`. | headline at most 12 words matching the video's opening line (60% token overlap with the ad, `references/copy/message-match.md`); subhead at most 20 words with the duration ("4 minutes") and what the viewer will learn; no price, no CTA for long-form; no "shocking" or "miracle" (`references/anti-patterns/copy-anti-patterns.md`). | `lexsis_campaigns.analyze` opening line and length. |
+| `video` | the one video, click to play, poster frame, captions, length indicator, transcript toggle. | yes; the real VSL (16:9 or 1:1, never letterboxed 9:16) from catalog media or the library, or imported with `lexsis_asset_import.import`; the poster a real frame with the presenter or product chosen from `lexsis_campaigns.frames` or by viewing frames, never the auto-selected black frame; captions carried with the media or burned in; music rights recorded. Nothing found: shared fallback for the video and its poster; generation is never feasible for video or a still (VR13); the type is blocked until the merchant supplies the clip. No-go: a third-party embed that injects autoplay or cookies without consent; autoplay with sound. View the chosen poster frame and confirm it shows what the video opens with, so the click is not a bait. | `VideoPlayer`: click to play with the poster, the file fetched only on interaction, captions supplied with the media object On mobile the player wrapper may stick as a mini-player while scrolling, a layout choice, not a `StickyBar` (forbidden on this type). The transcript is a native `<details>` block under the player. | duration in HTML ("4:12"); play control drawn in HTML at 48px or more; transcript verbatim, under 2,000 words on the page. | the video's source, length and aspect from the import response; `references/assets/video-rules.md` section 3. |
+| `benefits` or `solution` | the non-viewer path: the argument in five to eight bullets or 150 to 250 words. | yes; one or two stills beside the text: `identity` from catalog media, a `diagram` as authored inline SVG, or `ingredient-or-material` as a real flat lay. Search: catalog media, then library `product-shot` and `flat-lay`, then merchant or supplier upload. Gap: generation is not feasible for ingredients or a raster diagram (GN11); the authored SVG carries the section meanwhile. No-go: a wall of text without an image, icon tiles, stock lab scenes. | `none`. | `pas`; problem, mechanism, result; test data footnoted with journal, year, n and design; typical-results disclosure where the claim is an outcome. | the video's beat map from `lexsis_campaigns.analyze`; `test-data` ledger rows. |
+| `offer` | product, price, guarantee, terms and the CTA, after the video and the summary. | yes; the `identity` image from catalog media; `included-items` flat lay when the offer is a bundle or value stack. Gap: no generation is feasible (GP11, GP13); the offer runs as HTML with the price meanwhile. | `BuyBox`, one per page, its form decided by the variant count, badges off; the value stack with struck free items is HTML from the offer ledger. DTC variant: visible from load, below the player. Long-form variant: revealed at the pitch timestamp only when the plan records how it is wired; otherwise the DTC placement is used and recorded as a deviation. No `StickyBar`. | `add-to-cart` ("Get the <product>, $59") or `claim-offer` with a real ledger offer (`references/offers/offer-types.md`); the price on the page before the first CTA to cart; at most 80 words plus terms; guarantee beside the button. | variant count; offer ledger rows; the variant (DTC or long-form). |
+| `reviews` | the proof wall: three to six verbatim quotes, screenshots or UGC tiles. | yes; `ugc` and `review-with-media` tiles from `reviews` with `has_media: true` and library `social-proof`, each with a `P` row; raw screenshots only with the sender's written consent, channel and month labelled, phone numbers and surnames redacted. Nothing found: the wall runs as dated text quotes; generation is never feasible (GN9). No-go: fabricated chat UI, stock faces, polished quote cards with no source. | `none`; two or three dated quotes inline as HTML, never a carousel on this type (display table in `references/proof/reviews-sourcing.md`); at band B3 or higher an average plus n sits at `offer` from the API total. B0: `guarantee`, `certifications`, `test-data` and a named `founder-note` replace the wall and the omission is recorded. | verbatim, dated, attributed as stored, at most 60 words; one mentions a limitation. | `reviews_status` band; `has_media` count; consent records. |
+| `ugc-grid` (recommended beside the wall) | creator or customer clips with rights, click to play. | yes; 9:16 `ugc` clips with `P` rows (rights, paid disclosure, captions, music cleared); posters as real frames (`references/proof/ugc-rights-and-display.md`). Search: library `social-proof` with `kind: "video"`, then merchant upload with the creator's consent. Fewer than three: ask rule naming the count and rights each clip needs; generation is never feasible; a smaller grid or none as the agreed alternative. | `ShoppableVideoFeed` when three or more clips exist, posters on every item, sound off until tapped, the product tagged; native `<video>` tiles for one or two clips. | handle and "Paid partnership" in frame where paid; duration in HTML. | UGC ledger rows; clip count. |
+| `faq` | the top five objections; shipping cost and time, returns, who it is not for. | no. | `none`; native `<details>` and `<summary>`. | answers at most 60 words. | `reviews_search` on objection topics; questions the video leaves open. |
+| `guarantee` | risk reversal restated before the close, with more space than any scarcity (there is none). | no; a certification mark only as issuer artwork. Any logo or mark is still opened with `lexsis_assets.view` before use. | `none`. | exact terms and policy URL. | the `guarantee` ledger row. |
+| `closing-cta` | the same action as the offer CTA; the last-word quote above it. | optional reuse of the offer identity slot; no new job. | `none`; the CTA anchors to the offer block. | the same verb, object and destination as `offer`; at most two CTAs on the page. | the last-word `review-quote` row. |
 
 ### Asset budget
+
 | Source | Usually supplies | Usually missing | Per gap |
 |---|---|---|---|
 | catalog media (N images) | `identity`, sometimes the demo video and `label-or-facts-panel` | the VSL itself, an honest poster frame, `included-items` for a value stack | the video is required: ask the merchant to import it (blocked until then); the poster is derived by viewing frames, never chosen by filename; contents: ask to upload, no generation |
@@ -122,7 +74,7 @@ Ask rule, used by every Media line below: tell the merchant what is missing (job
 | ad creatives | the opening line, the poster frame, the stated offer | anything below the player | import the brand-owned video and frame with `lexsis_asset_import.import`; a creator ad needs scoped rights |
 | generation | nothing on this type in practice (`texture_fill` at most) | video, poster, product, people, results, logos, text | never; ask the merchant to upload instead |
 
-With only the video and one identity shot the page still ships: headline, player with a real poster and transcript, the summary with an authored SVG, the offer around the identity image, guarantee and closing; the proof wall runs as dated text quotes at any band above B0, and `ugc-grid` is listed as a missing asset with the upload offer, leaving the page only on the merchant's decision. Generated assets: zero on this type; the four-per-page cap is never reached. Nothing is used sight unseen: every asset in this table is opened with `lexsis_assets.view` and passes the section 1b fit review before it is assigned.
+With only the video and one identity shot the page still ships: headline, player with a real poster and transcript, the summary with an authored SVG, the offer around the identity image, guarantee and closing; the proof wall runs as dated text quotes at any band above B0, and `ugc-grid` is listed as a missing asset with the upload offer, leaving the page only on the merchant's decision. Generated assets: zero on this type; the four-per-page cap is never reached.
 
 ## Above the fold (390px)
 

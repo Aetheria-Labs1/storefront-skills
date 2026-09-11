@@ -1,8 +1,8 @@
-# Managed Motion — Storefront Agent Reference
+# Managed Motion  -  Storefront Agent Reference
 
-> The active storefront design rules override every example below.
-> Motion is not a default decoration. Use it when the page plan names one
-> meaningful moment or when motion directly answers a shopper action.
+House motion requirements are defined in `references/design-rules.md` N10.
+Choose at most the plan-named moment or a response to a shopper action;
+this reference owns the managed runtime APIs, not another motion budget.
 
 Lexsis supports open-ended custom animation without requiring a named scene or
 a custom island for every visual idea. Agents author the composition; the MCP
@@ -13,8 +13,8 @@ cleanup, reduced motion, and performance limits.
 
 | Need | Use |
 |---|---|
-| Hover, focus, or a small entrance | CSS transition or shared keyframe |
-| Common reveal, parallax, pin, or marquee behavior | `data-behavior="gsap-*"` preset |
+| Hover or focus feedback | CSS color or border transition |
+| The approved single motion moment | A managed module with explicit capabilities |
 | Custom timeline or interaction | Managed motion with WAAPI or GSAP |
 | Procedural drawing | Managed Canvas 2D |
 | Custom shaders | Managed WebGL |
@@ -30,8 +30,8 @@ field, 3D object, or scroll composition.
 Place the motion block in the same source section as its markup:
 
 ```html
-<!-- section: product-object -->
-<section class="product-object">
+<!-- section: product-hero-object -->
+<section id="product-hero-object" class="product-object">
   <canvas class="product-canvas" aria-label="Interactive product view"></canvas>
   <img
     class="product-fallback"
@@ -42,7 +42,7 @@ Place the motion block in the same source section as its markup:
 
 <script
   type="application/lexsis-motion"
-  data-motion-id="product-object"
+  data-motion-id="product-hero-object"
   data-capabilities="three resize"
   data-mode="interaction"
   data-importance="decorative"
@@ -339,7 +339,7 @@ Use the managed context equivalents.
 
 ## MCP compile workflow
 
-1. Author the source section and motion block in `lexsis-source.html`.
+1. Author the source section and motion block in `MCP source`.
 2. Call `lexsis_pages` action `compile` with complete source, head, theme CSS,
    and approved page scripts.
 3. Fix every `motion_*`, `unmanaged_*`, or capability error.

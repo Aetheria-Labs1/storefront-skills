@@ -61,18 +61,18 @@ Write `ab-test-plan.md` with:
 
 Return `AB_TEST_PLAN_READY` and obtain approval before paid page duplication.
 
-## Create Local-First Challengers
+## Create Source-First Challengers
 
 Check credits and state the number of paid duplicates before creating them.
 For each approved challenger:
 
-1. Create an isolated local directory from the synchronized control source.
+1. Prepare an isolated source value from the current persisted control.
 2. Apply only its planned change.
 3. Compile the complete source and fix blocking compiler errors.
 4. Call `lexsis_drafts` action `page_duplicate` with a stable idempotency key.
 5. Apply the compiled challenger source to the duplicate with `page_replace`
    or the smallest safe section action using `expected_version`.
-6. Record the duplicate page id, blueprint id, version, source path, and
+6. Record the duplicate page id, blueprint id, version and
    compile evidence.
 7. Run page integrity, affected commerce checks, and browser checks at mobile
    and desktop widths.
@@ -80,7 +80,7 @@ For each approved challenger:
 Do not use `page_variation` for this workflow: it creates a 50/50 experiment
 before the challenger has been authored and verified.
 
-When sub-agents are available, give one isolated local challenger to each
+When sub-agents are available, give one isolated source challenger to each
 sub-agent. The parent owns the control, shared plan, compilation review,
 credit confirmation, duplicate calls, remote writes, and experiment creation.
 Sub-agents never spend credits or mutate remote pages. Without sub-agents,
@@ -123,4 +123,3 @@ For later evaluation, read `lexsis_analytics` action `experiment` and report:
 
 Do not call a winner from directional movement alone. `scale_winner` is a live
 operation and requires explicit approval for the reported winning variant.
-

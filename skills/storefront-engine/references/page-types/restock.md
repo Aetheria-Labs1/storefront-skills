@@ -85,140 +85,35 @@ Never include `problem`, `agitation`, `mechanism`, `story`, `comparison`,
 
 ## Workflow
 
-Assets first: the exact variant the shopper asked for is shown before
-anything is written. A section that would end up as a colour band, an emoji
-row, icon tiles or a wall of text is rebuilt around imagery or, on the
-merchant's call, merged or skipped. Per-slot sourcing:
-`references/workflows/section-asset-workflow.md`; island choice:
-`references/workflows/island-selection-workflow.md`. Missing media is never
-dropped silently: every Media line ends by telling the merchant what is
-missing (job, aspect, count), offering upload via `lexsis_asset_upload.upload`
-or MCP generation when the purpose is feasible under
-`references/assets/generation-policy.md`, and skipping or merging the section
-only if the merchant chooses. In fast-draft the agent proceeds with the closest
-existing asset or leaves the slot `planned`, and lists every missing asset in
-the plan and the draft summary.
+Apply `references/workflows/_how-to-read.md` to these type-specific
+decisions. It links the shared asset/fallback, fit, live-island and
+copy procedures; this table supplies their inputs, not another policy.
 
 ### Context reads
 
-1. `lexsis_catalog.get`: variants with live inventory per variant (which are
-   back, which are still out), per-variant images (the `variation` job, so
-   the gallery swaps on selection), `media[]` mapped per
-   `references/assets/image-jobs-by-page-type.md` (identity, detail, in-use),
-   price now versus the price before the stock-out ("same price" only when
-   true), selling plans (subscribe-save for replenishables), the variant named
-   in the send's deep link.
-2. `lexsis_catalog.reviews_status`; `lexsis_catalog.reviews` with `product_id`
-   (n, average, newest date, `has_media`). With zero reviews the page is not
-   this type: route to `launch-waitlist-preorder`. `review_collections` with
-   `collection_status: "active"`; bands per `references/proof/reviews-sourcing.md`.
-3. Proof ledger: the prior sell-out fact or waitlist size from a merchant
-   export, dated, rounded down (`sales-count`, `customer-count`); an estimated
-   restock date for still-out variants only with a stated basis.
-4. `lexsis_brand.context`, `lexsis_brand.brand_kit`, `lexsis_brand.navigation`
-   (minimal nav).
-5. `lexsis_asset_library.search` with `theme_id`, `mode: "tags"` for
-   `product-shot` (variant cut-outs), `social-proof` (rights-cleared UGC of
-   this product); no lifestyle expansion. Sequence and checks:
-   `references/assets/asset-sourcing-sequence.md`.
-6. `lexsis_cart.get`: cart v2, threshold. `lexsis_design.islands`, then
-   `lexsis_design.island_schema` for each island named below. No generation is
-   planned on this type: the hero is a `packshot` and every job is
-   identity-bound.
+1. `lexsis_catalog.get`: variants with live inventory per variant (which are back, which are still out), per-variant images (the `variation` job, so the gallery swaps on selection), `media[]` mapped per `references/assets/image-jobs-by-page-type.md` (identity, detail, in-use), price now versus the price before the stock-out ("same price" only when true), selling plans (subscribe-save for replenishables), the variant named in the send's deep link.
+2. `lexsis_catalog.reviews_status`; `lexsis_catalog.reviews` with `product_id` (n, average, newest date, `has_media`). With zero reviews the page is not this type: route to `launch-waitlist-preorder`. `review_collections` with `collection_status: "active"`; bands per `references/proof/reviews-sourcing.md`.
+3. Proof ledger: the prior sell-out fact or waitlist size from a merchant export, dated, rounded down (`sales-count`, `customer-count`); an estimated restock date for still-out variants only with a stated basis.
+4. `lexsis_brand.context`, `lexsis_brand.brand_kit`, `lexsis_brand.navigation` (minimal nav).
+5. `lexsis_asset_library.search` with `theme_id`, `mode: "tags"` for `product-shot` (variant cut-outs), `social-proof` (rights-cleared UGC of this product); no lifestyle expansion. Sequence and checks: `references/assets/asset-sourcing-sequence.md`.
+6. `lexsis_cart.get`: cart v2, threshold. `lexsis_design.islands`, then `lexsis_design.island_schema` for each island named below. No generation is planned on this type: the hero is a `packshot` and every job is identity-bound.
 
 ### Section by section
 
-No asset is used sight unseen: open every candidate with `lexsis_assets.view`
-and run the section 1b fit review in `references/workflows/section-asset-workflow.md`
-before use (subject does the job, crops to the slot without losing the product,
-quiet area for the copy, lighting and styling match neighbouring slots, palette,
-no baked-in text or watermark); view a section's or gallery's candidates
-together so the set reads as one shoot, and view a generated asset the same way
-after it returns.
-
-**`announcement`**
-- Purpose: a verified free-shipping threshold or early-access window; never a countdown.
-- Media: none.
-- Island: AnnouncementBar or the SiteHeader strip, one message; resolve from `lexsis_design.island_schema`; preset `announcementbar/static-dark`. Omit without a ledger row.
-- Copy: under 60 characters; "Waitlist access until Friday 6pm IST" states the window's end.
-- Decide with: `lexsis_cart.get`; a `loyalty` ledger row for the window (`references/offers/offer-types.md`).
-
-**`header`**
-- Purpose: minimal chrome.
-- Media: brand logo or wordmark. View every candidate with `lexsis_assets.view` and run the section fit review (section 1b of `references/workflows/section-asset-workflow.md`) before use.
-- Island: SiteHeader minimal with the CTA anchoring to the buy box; resolve from `lexsis_design.island_schema`; preset `siteheader/minimal-light`.
-- Copy: store names.
-- Decide with: `lexsis_brand.navigation`.
-
-**`product-hero`**
-- Purpose: "Back in stock" stated plainly, the packshot of the linked variant, review summary, price.
-- Media: yes, identity of the selected variant (`packshot`; alternate `product-in-hand`) and variation per variant from the variant-to-media mapping; detail when the catalog has it; catalog media, library `product-shot`, merchant upload, supplier for the exact SKU. Never a lifestyle hero, never stock, never generated (GN1). A variant with no image: tell the merchant (variation, square, one per variant); offer upload; the product-level identity shows meanwhile and the slot stays `planned`. View the candidates together with `lexsis_assets.view` and run the section fit review so the set reads as one shoot, not a pile of found images. View the image to confirm it is the restocked variant, not a sibling colour or size.
-- Island: ProductGallery; decide layout from the image count (one or two: stacked, no thumbnails; three or more: main image with a thumbnail rail and swipe on mobile), variant sync on whenever per-variant images exist, contain fit for packshots on white, no autoplay (N10); ProductHero in a split layout for a premium product with three or more images. Resolve from `lexsis_design.island_schema`; preset `productgallery/rail-bottom-light` or `producthero/split-rail-light`. The statement, title and review summary are HTML beside it.
-- Copy: statement 8 words ("The Field Jacket is back in stock."); sub-line "Same price. 412 reviews." only when both are true; vocabulary per `references/anti-patterns/copy-anti-patterns.md`.
-- Decide with: `media[]` count and variant images; review band; the price check.
-
-**`buy-box`**
-- Purpose: variant buttons with live availability inline, quantity, add to cart, shipping and returns line; the alert form in the add position for a still-out variant.
-- Media: swatch images per colour variant from catalog; no other imagery (the block is a form). Missing swatches: tell the merchant per variant; offer upload; not generated. View the candidates together with `lexsis_assets.view` and run the section fit review so the set reads as one shoot, not a pile of found images.
-- Island: BuyBox with live availability per variant and the deep-linked variant pre-selected; VariantSwatches for a colour axis that carries images (BuyBox variants carry no image) and for a size grid with sold-out sizes labelled inline, never hidden; the BuyBox notify state in the CTA position for a still-out selected variant; EmailCapture replacing the BuyBox in the same position when the whole product is still out; SubscriptionToggle with one-time default only for replenishables with selling plans; never a discount, never QuantityBreaks. Resolve from `lexsis_design.island_schema`; preset `buybox/default-light`.
-- Copy: "Size M: 12 left", "Size XL: notify me" inline; two microcopy lines (shipping, returns, dispatch cutoff).
-- Decide with: per-variant inventory and images; the deep-link variant; cart v2.
-
-**`stock-indicator`**
-- Purpose: "12 left in size M" beside the picker, live only.
-- Media: none.
-- Island: InventoryIndicator in its inline text form bound to the selected variant, conservative threshold, disappearing on replenish; never on made-to-order stock; a documented cap uses the bar form; resolve from `lexsis_design.island_schema`; preset `inventoryindicator/text-quiet` or `inventoryindicator/bar-accent`.
-- Copy: island-rendered; no "only N left" in page copy (`urgency-scarcity.md` UR3, UR12).
-- Decide with: `offer.stockVerified`; a `limited-edition` ledger row for a cap.
-
-**`reviews`**
-- Purpose: the proof that accumulated during the stock-out; this is why the type exists.
-- Media: review photos and videos from the records (`has_media`); avatars real or CSS initials. View every candidate with `lexsis_assets.view` and run the section fit review before use.
-- Island: by band per `references/proof/reviews-sourcing.md`: B1 static verbatim dated cards, no average; B2 ReviewCarousel showing all cards, autoplay off (N10), bound to the product id or an active collection; B3 or more ReviewList with distribution filters, media and recent sort, one review of 3 stars or lower reachable. Never an endpoint prop. Resolve from `lexsis_design.island_schema`; preset `reviewcarousel/grid-flat` when it fits.
-- Copy: island-rendered; one line disclosing the sort.
-- Decide with: band from step 2.
-
-**`stats`**
-- Purpose: a verified prior sell-out fact or waitlist size.
-- Media: none; one line of text under the hero or beside the reviews h2.
-- Island: none (StatCards is deprecated; static HTML figures only from the proof ledger, no counters, N10).
-- Copy: 12 words, rounded down, "over N", dated ("Sold out in 9 hours in July").
-- Decide with: the export in the proof ledger (`sales-count`, `customer-count`).
-
-**`waitlist-form`**
-- Purpose: variant-specific alert for any variant still out.
-- Media: the variant's identity image beside the form; no new asset.
-- Island: EmailCapture in compact form, one per out variant, labelled "Notify me when [variant] is back"; SMS consent, if offered, is a separate un-ticked HTML checkbox (the island has no consent field); resolve from `lexsis_design.island_schema`.
-- Copy: 20 words of microcopy: "One email when it is back. No marketing unless you tick the box."; an estimated date only with a basis.
-- Decide with: variants with zero inventory; restock date basis from step 3.
-
-**`trust-bar`** or **`shipping-returns`**
-- Purpose: returns window, dispatch cutoff, shipping threshold.
-- Media: none; text facts with the page's single icon set or none.
-- Island: DeliveryEstimate for single-zone domestic dispatch ("Order by 2pm IST for same-day dispatch"), else none; resolve from `lexsis_design.island_schema`; preset `deliveryestimate/inline-quiet`.
-- Copy: 40 words.
-- Decide with: `policy-fact` rows; shipping zones.
-
-**`cross-sell`**
-- Purpose: "Meanwhile, the compatible replacement" for visitors whose variant is still out; two items at most.
-- Media: yes, one identity image per item from its own `lexsis_catalog.get`; an item without an image: tell the merchant, offer upload, leave it out until then. View the candidates together with `lexsis_assets.view` and run the section fit review so the set reads as one shoot, not a pile of found images.
-- Island: ProductCarousel in compact row form, quick add off, animation off (N10), shown only when a variant is still out; resolve from `lexsis_design.island_schema`; preset `productcarousel/rows-compact`.
-- Copy: the relationship name as the h2; one line per item (18 words).
-- Decide with: a real relationship in the catalog; out variants present.
-
-**`closing-cta`** and **`sticky-cta`**
-- Purpose: add to cart (or the alert form) repeated with the variant state; a bar with variant and price.
-- Media: product thumbnail from catalog position 1 for the bar. View every candidate with `lexsis_assets.view` and run the section fit review before use.
-- Island: the closing CTA is an anchor to the buy box (one BuyBox per page) or a second EmailCapture for the out variant. StickyBar in product mode only when the selected variant is in stock and the page runs past about three mobile screens; the schema has no notify state, so a still-out product gets no bar; resolve from `lexsis_design.island_schema`; preset `stickybar/product-light`.
-- Copy: the label carries variant and price.
-- Decide with: variant availability; page length.
-
-**`footer`**
-- Purpose: chrome.
-- Media: brand logo. View every candidate with `lexsis_assets.view` and run the section fit review before use.
-- Island: Footer; preset `footer/simple-light`.
-- Copy: the store's.
-- Decide with: `lexsis_brand.navigation`.
+| Section | Purpose | Media job and source | Interactive decision | Copy constraints | Decision evidence |
+|---|---|---|---|---|---|
+| `announcement` | a verified free-shipping threshold or early-access window; never a countdown. | none. | AnnouncementBar or the SiteHeader strip, one message. Omit without a ledger row. | under 60 characters; "Waitlist access until Friday 6pm IST" states the window's end. | `lexsis_cart.get`; a `loyalty` ledger row for the window (`references/offers/offer-types.md`). |
+| `header` | minimal chrome. | brand logo or wordmark. | SiteHeader minimal with the CTA anchoring to the buy box. | store names. | `lexsis_brand.navigation`. |
+| `product-hero` | "Back in stock" stated plainly, the packshot of the linked variant, review summary, price. | yes, identity of the selected variant (`packshot`; alternate `product-in-hand`) and variation per variant from the variant-to-media mapping; detail when the catalog has it; catalog media, library `product-shot`, merchant upload, supplier for the exact SKU. Never a lifestyle hero, never stock, never generated (GN1). A variant with no image: (variation, square, one per variant); the product-level identity shows meanwhile and the slot stays `planned`. View the image to confirm it is the restocked variant, not a sibling colour or size. | ProductGallery; decide layout from the image count (one or two: stacked, no thumbnails; three or more: main image with a thumbnail rail and swipe on mobile), variant sync on whenever per-variant images exist, contain fit for packshots on white, no autoplay (N10); ProductHero in a split layout for a premium product with three or more images. The statement, title and review summary are HTML beside it. | statement 8 words ("The Field Jacket is back in stock."); sub-line "Same price. 412 reviews." only when both are true; vocabulary per `references/anti-patterns/copy-anti-patterns.md`. | `media[]` count and variant images; review band; the price check. |
+| `buy-box` | variant buttons with live availability inline, quantity, add to cart, shipping and returns line; the alert form in the add position for a still-out variant. | swatch images per colour variant from catalog; no other imagery (the block is a form). Missing swatches: per variant; not generated. | BuyBox with live availability per variant and the deep-linked variant pre-selected; VariantSwatches for a colour axis that carries images (resolve variant imagery from the live purchase contract) and for a size grid with sold-out sizes labelled inline, never hidden; the BuyBox notify state in the CTA position for a still-out selected variant; EmailCapture replacing the BuyBox in the same position when the whole product is still out; SubscriptionToggle with one-time default only for replenishables with selling plans; never a discount, never QuantityBreaks. | "Size M: 12 left", "Size XL: notify me" inline; two microcopy lines (shipping, returns, dispatch cutoff). | per-variant inventory and images; the deep-link variant; cart v2. |
+| `stock-indicator` | "12 left in size M" beside the picker, live only. | none. | InventoryIndicator in its inline text form bound to the selected variant, conservative threshold, disappearing on replenish; never on made-to-order stock; a documented cap uses the bar form. | island-rendered; no "only N left" in page copy (`urgency-scarcity.md` UR3, UR12). | `offer.stockVerified`; a `limited-edition` ledger row for a cap. |
+| `reviews` | the proof that accumulated during the stock-out; this is why the type exists. | review photos and videos from the records (`has_media`); avatars real or CSS initials. | by band per `references/proof/reviews-sourcing.md`: B1 static verbatim dated cards, no average; B2 ReviewCarousel showing all cards, autoplay off (N10), bound to the product id or an active collection; B3 or more ReviewList with distribution filters, media and recent sort, one review of 3 stars or lower reachable. Never an endpoint prop. | island-rendered; one line disclosing the sort. | band from step 2. |
+| `stats` | a verified prior sell-out fact or waitlist size. | none; one line of text under the hero or beside the reviews h2. | none (StatCards is deprecated; static HTML figures only from the proof ledger, no counters, N10). | 12 words, rounded down, "over N", dated ("Sold out in 9 hours in July"). | the export in the proof ledger (`sales-count`, `customer-count`). |
+| `waitlist-form` | variant-specific alert for any variant still out. | the variant's identity image beside the form; no new asset. | EmailCapture in compact form, one per out variant, labelled "Notify me when [variant] is back"; SMS consent, if offered, is a separate un-ticked HTML checkbox (the island has no consent field) | 20 words of microcopy: "One email when it is back. No marketing unless you tick the box."; an estimated date only with a basis. | variants with zero inventory; restock date basis from step 3. |
+| `trust-bar` or `shipping-returns` | returns window, dispatch cutoff, shipping threshold. | none; text facts with the page's single icon set or none. | DeliveryEstimate for single-zone domestic dispatch ("Order by 2pm IST for same-day dispatch"), else none. | 40 words. | `policy-fact` rows; shipping zones. |
+| `cross-sell` | "Meanwhile, the compatible replacement" for visitors whose variant is still out; two items at most. | yes, one identity image per item from its own `lexsis_catalog.get`; omit an item without an image until its media is supplied. | ProductCarousel in compact row form, quick add off, animation off (N10), shown only when a variant is still out. | the relationship name as the h2; one line per item (18 words). | a real relationship in the catalog; out variants present. |
+| `closing-cta` and `sticky-cta` | add to cart (or the alert form) repeated with the variant state; a bar with variant and price. | product thumbnail from catalog position 1 for the bar. | the closing CTA is an anchor to the buy box (one BuyBox per page) or a second EmailCapture for the out variant. StickyBar in product mode only when the selected variant is in stock and the page runs past about three mobile screens; the schema has no notify state, so a still-out product gets no bar. | the label carries variant and price. | variant availability; page length. |
+| `footer` | chrome. | brand logo. | Footer. | the store's. | `lexsis_brand.navigation`. |
 
 ### Asset budget
 
@@ -228,7 +123,7 @@ after it returns.
 | asset library | `product-shot` cut-outs, `social-proof` UGC with a `P` row | in-use without rights | ask the merchant to upload or to supply the rights record; no UGC without one |
 | generation | nothing on this type (every job is identity-bound and the hero is a `packshot`) | product, variants, people, stock counts, text | never |
 
-Minimal assets (one packshot): a stacked gallery, the buy box with live availability, reviews by band, shipping and returns, the alert form for out variants, closing CTA; missing variant images are listed in the plan and draft summary, and cross-sell and stats wait for a real relationship or an export. Generated assets on a restock page: zero. Every asset, generated ones included, is opened with `lexsis_assets.view` and passes the fit review in `references/workflows/section-asset-workflow.md` section 1b before it ships; a paid render earns no exemption.
+Minimal assets (one packshot): a stacked gallery, the buy box with live availability, reviews by band, shipping and returns, the alert form for out variants, closing CTA; missing variant images are listed in the plan and draft summary, and cross-sell and stats wait for a real relationship or an export. Generated assets on a restock page: zero.
 
 ## Above the fold (390px)
 
@@ -375,7 +270,7 @@ discount, "N people viewing", a cross-sell, an email popup over the buy box.
 ```
 
 `waitlist-form` and `stock-indicator` are conditional on a still-out variant
-and a live inventory binding respectively; `plan_lint.py` T10 requires
+and a live inventory binding respectively; the urgency evidence requirement requires
 `offer.stockVerified` for the indicator. `variation` becomes a required job
 when variants exist. `cta.copy_pattern` is `add-to-cart`; the alert form's
 label follows the `join-waitlist` shape for the out variant.

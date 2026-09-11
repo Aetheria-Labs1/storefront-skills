@@ -1,19 +1,12 @@
-# SubscriptionToggle — Island Directory
+# SubscriptionToggle
 
-One-time vs. subscription purchase toggle with savings display.
+For `SubscriptionToggle`, fetch `lexsis_design.islands` and
+`lexsis_design.island_schema` during the decision that needs this behavior.
+Use the current authoring example, variants, props, parts, hydration and
+headless support; the bundled JSON is a compatibility reference, not a
+second source of defaults.
 
-## Quick Reference
-
-- **Component**: SubscriptionToggle
-- **Category**: commerce
-- **Props**: 5 (plans, benefits, selectedPlan, savingsPercent, frequency)
-- **Required props**: `plans` (array), `benefits` (array)
-- **Schema**: `vibe://schema/island/SubscriptionToggle`
-- **Contract**: follows `_contract.md` rules
-
-## Composition
-
-- Pair with: BuyBox (embedded above CTA), QuantityBreaks (below for volume + frequency combos)
-- Place between variant selection and Add to Cart button
-- Savings badge should use --lx-accent-color background
-- Never duplicate price display — toggle updates BuyBox price
+`references/workflows/island-selection-workflow.md` owns selection and
+linked state. `references/authoring/source-authoring.md` owns source syntax;
+`references/authoring/css-and-styling.md` owns styling. Placement and evidence
+come from the selected page-type contract and its domain policies.

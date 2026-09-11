@@ -374,21 +374,6 @@
     ],
     "headless": {
       "supported": false
-    },
-    "example": "<lx-island name=\"MediaCarousel\">\n  <script type=\"application/json\">\n{\n  \"media\": []\n}\n  </script>\n</lx-island>",
-    "examples": [
-      {
-        "label": "Single image",
-        "source": "<lx-island name=\"MediaCarousel\">\n  <script type=\"application/json\">{\"media\":[{\"type\":\"image\",\"src\":\"https://via.placeholder.com/600\",\"alt\":\"Product front\"}],\"aspect\":\"1:1\"}</script>\n</lx-island>"
-      },
-      {
-        "label": "Mixed image and HLS video",
-        "source": "<lx-island name=\"MediaCarousel\">\n  <script type=\"application/json\">{\"media\":[{\"type\":\"image\",\"src\":\"https://via.placeholder.com/600\",\"alt\":\"Product front\"},{\"type\":\"video\",\"poster\":\"https://via.placeholder.com/600\",\"sources\":[{\"url\":\"https://example.com/product.m3u8\"}],\"alt\":\"Product demonstration\"}],\"showArrows\":true,\"showDots\":true,\"swipeable\":true}</script>\n</lx-island>"
-      },
-      {
-        "label": "Swap to the next image on hover",
-        "source": "<lx-island name=\"MediaCarousel\">\n  <script type=\"application/json\">{\"media\":[{\"type\":\"image\",\"src\":\"https://via.placeholder.com/600?text=Front\"},{\"type\":\"image\",\"src\":\"https://via.placeholder.com/600?text=Back\"}],\"hoverAdvance\":true,\"hoverAdvanceMode\":\"next\",\"arrows\":\"never\",\"dots\":\"never\"}</script>\n</lx-island>"
-      }
-    ]
+    }
   }
 }

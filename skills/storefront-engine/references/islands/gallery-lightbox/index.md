@@ -1,34 +1,12 @@
-# GalleryLightbox — Island Directory
+# GalleryLightbox
 
-Event-driven fullscreen lightbox with scroll-snap viewer and thumbnail sidebar. One instance per page serves all galleries.
+For `GalleryLightbox`, fetch `lexsis_design.islands` and
+`lexsis_design.island_schema` during the decision that needs this behavior.
+Use the current authoring example, variants, props, parts, hydration and
+headless support; the bundled JSON is a compatibility reference, not a
+second source of defaults.
 
-## Quick Reference
-
-- **Variants**: none (single behavior, styled via CSS vars)
-- **Required props**: none (event-driven)
-- **Schema**: `vibe://schema/island/GalleryLightbox`
-- **Contract**: follows `_contract.md` rules
-
-## Event Bus Pattern
-
-Unlike most islands that receive data via props, GalleryLightbox uses DOM events:
-
-```js
-// Open from any script or island
-document.dispatchEvent(new CustomEvent('lx:lightbox:open', {
-  detail: {
-    images: [{src: '/img1-large.jpg', alt: 'Alt'}, ...],
-    startIndex: 2
-  }
-}));
-
-// Listen for close
-document.addEventListener('lx:lightbox:close', () => { /* ... */ });
-```
-
-## Composition
-
-- Mount once at page level (bottom of section HTML)
-- Any gallery grid fires `lx:lightbox:open` via inline JS or from another island
-- Pairs with: lookbook grids, UGC sections, product detail pages, blog image grids
-- Never mount multiple instances — one handles all triggers
+`references/workflows/island-selection-workflow.md` owns selection and
+linked state. `references/authoring/source-authoring.md` owns source syntax;
+`references/authoring/css-and-styling.md` owns styling. Placement and evidence
+come from the selected page-type contract and its domain policies.

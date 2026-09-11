@@ -3,7 +3,7 @@
 How to collect the shopper's own language before writing a line of copy,
 and how to use it without inventing anything. `/plan-page` runs the
 procedure while it fills the Proof ledger (the same review calls feed
-both); the output is a worksheet in the page workspace that `/design-page`
+both); the output is a worksheet in the page's task record that `/design-page`
 reads in Compose step 8. Quoted text on the page comes only from
 `references/proof/proof-ledger.md` rows; this file governs the unquoted
 copy that borrows the shopper's words.
@@ -32,7 +32,7 @@ Severity BLOCK, FAIL, WARN. Tag LAW, RESEARCH, OPERATOR, HEURISTIC.
 ## 2. Procedure
 
 VC1 (FAIL, OPERATOR). Write the decision questions first. Take the top three to five from the plan's Consumer decision model (`references/consumer-behavior-cro.md`) and add the two that every page must answer: "how fast do I get it" and "what if it does not work for me".
-Check: `page-plan.md` Consumer decision model block lists the questions; the worksheet header repeats them.
+Check: `page plan` Consumer decision model block lists the questions; the worksheet header repeats them.
 
 VC2 (FAIL, OPERATOR). Run `lexsis_catalog.reviews_search` once per decision question with the question or the claim as `query`. Keep the top 5 to 8 verbatim results per question. Do not paraphrase at this step.
 Check: worksheet section A has one block per question with the review ids.
@@ -47,7 +47,7 @@ VC5 (FAIL, OPERATOR). Read `voice_md` and `banned_phrases` before writing. Copy 
 Check: worksheet section D filled.
 
 VC6 (BLOCK, LAW). With zero usable reviews, follow the zero-review playbook in `references/proof/reviews-sourcing.md`. External text informs wording only; it enters the page as a quote only as an `external-verified-quote` ledger row with URL, merchant approval and platform permission. Marketplace text whose terms forbid reuse is never copied to the page.
-Check: any external line in the worksheet is tagged `external` and never appears verbatim in `$T` unless the ledger row exists.
+Check: any external line in the worksheet is tagged `external` and never appears verbatim in `rendered text` unless the ledger row exists.
 
 ## 3. What to extract
 
@@ -79,10 +79,9 @@ VC10 (FAIL, OPERATOR). Bullets and benefit copy carry the `number` and `benefit-
 Check: each `<li>` in benefit sections maps to a worksheet row or a catalog spec in the plan.
 
 VC11 (BLOCK, LAW). Never fabricate. No invented quotes, names, cities, ratings, counts, timeframes or "customers say" summaries that no review supports. A composite quote (two reviews spliced) is fabrication. FTC 16 CFR 465; proof-ledger rule 4.
-Check: every quoted string in `$T` equals a ledger row text after `[...]` removal; `grep -ciE 'customers (say|tell us|love)|people say' $T` lines each cite a ledger count.
 
 VC12 (BLOCK, LAW). Quoted text renders only through the proof ledger with attribution as stored and the date. The worksheet is a writing aid, not a rendering source.
-Check: `design_lint.py` N11 numeral trace; every `[data-part=quote]` has a ledger row id.
+Check: the source/hosted review N11 numeral trace; every `[data-part=quote]` has a ledger row id.
 
 VC13 (WARN, OPERATOR). When a customer word and a marketing word compete, the customer word wins: "exhausting" over "time-consuming", "still smells fine after a run" over "high-performance". Record each replacement in the worksheet.
 Check: worksheet section G lists replacements; `references/anti-patterns/copy-anti-patterns.md` CP1 hits are 0 after replacement.
@@ -90,8 +89,7 @@ Check: worksheet section G lists replacements; `references/anti-patterns/copy-an
 VC14 (WARN, OPERATOR). Keep the review's own specifics when quoting (variant, timeframe, use, limitation). Prefer quotes that mention the claim they sit beside and, where possible, a limitation; all-praise sets read as fake (proof-ledger rule 4).
 Check: at least one rendered quote contains a limitation word (`but|only|wish|although|except`) when 20 or more reviews exist.
 
-VC15 (FAIL, OPERATOR). Save the worksheet as `voc-worksheet.md` in the page workspace and reference it from `page-plan.md` under "Copy sources". Sub-agents writing sections read it; they do not call the review tools again.
-Check: `test -f $W/voc-worksheet.md`; `grep -c 'voc-worksheet.md' $W/page-plan.md` at least 1.
+VC15 (FAIL, OPERATOR). Retain the VoC worksheet in the page's task record and reference it from `page plan` under "Copy sources". Sub-agents writing sections read it; they do not call the review tools again.
 
 ## 6. Worksheet template
 
@@ -133,20 +131,10 @@ Register: ... We say / we don't say: ... Banned: ...
 ## 7. Banned-phrase reconciliation
 
 VC16 (BLOCK, OPERATOR). Precedence when sources disagree: `voice_md` register and merchant-stated rules, then `brand_kit.banned_phrases`, then the blacklist in `references/anti-patterns/copy-anti-patterns.md` CP1. A merchant ban is absolute in brand copy. A customer phrase that contains a banned or blacklisted word may still be rendered verbatim inside a ledger quote (reviews are not edited), but the brand's own copy does not adopt it.
-Check: `banned_phrases` hits in `$T` outside `<blockquote>` and review islands are 0; blacklist hits are 0 or allowlisted in the plan.
+Check: `banned_phrases` hits in `rendered text` outside `<blockquote>` and review islands are 0; blacklist hits are 0 or allowlisted in the plan.
 
-VC17 (WARN, OPERATOR). Allowlisting a blacklist word requires a literal reason (a product named "Curated", a tier named "Premium") recorded in `page-plan.md` under "Copy allowlist" with the word and the reason. Customer usage alone ("reviewers say seamless") is not a reason.
+VC17 (WARN, OPERATOR). Allowlisting a blacklist word requires a literal reason (a product named "Curated", a tier named "Premium") recorded in `page plan` under "Copy allowlist" with the word and the reason. Customer usage alone ("reviewers say seamless") is not a reason.
 Check: every allowlisted word has a reason line.
 
 VC18 (WARN, OPERATOR). Locale and spelling follow the store market (`en-IN`, `en-GB`, `en-US`); customer quotes keep their own spelling; brand copy uses one locale (CP35).
 Check: CP35.
-
-## 8. Lint alignment
-
-```text
-T13 NEW (plan_lint): when manifest.reviews.available > 0, the workspace contains voc-worksheet.md with sections A and E, and page-plan.md contains "Headline VoC source" and "Copy sources" lines.
-T14 NEW (plan_lint): every FAQ question in the plan's section list maps to a worksheet row id in section F (at least 3 of 5 to 7).
-C30 NEW (design_lint): quoted strings in $T (text between matching double quotes of 8+ words) each equal a proof-ledger quote row after [...] removal; otherwise FAIL (VC11).
-C31 NEW (design_lint): r"customers (say|tell us|love)|people say|everyone (says|loves)" in $T requires a ledger customer-count or review-summary row in the same section.
-C32 NEW (design_lint): merge brand_kit.banned_phrases as literal case-insensitive BLOCK matches outside <blockquote> and review islands (shared with CP32).
-```

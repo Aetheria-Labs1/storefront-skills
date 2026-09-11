@@ -16,13 +16,13 @@ sibling files.
 
 | # | Kind | Supports claim | Source | Evidence | Verified | Section | Status |
 |---|---|---|---|---|---|---|---|
-| P1 | review-summary | overall quality | lexsis_catalog.reviews product gid://…/123 | 4.6 avg, 212 reviews, min rating 1 | API 2026-09-10 | review-summary | verified |
-| P2 | review-quote | "no more 3pm crash" | collection 7f2e… item 9a1c… | verbatim text, name initial + city as stored, 2026-04-02 | API | benefits | verified |
-| P3 | press-logo-linked | credibility | Vogue India | https://www.vogue.in/… (article names the brand) | fetched 2026-09-10 | press-marquee | verified |
-| P4 | certification | "FSSAI licensed" | merchant | licence no. 1001…; issuer FSSAI | merchant doc | trust-bar | verified |
-| P5 | ugc-video | in-use proof | creator @…, rights email 2026-08-21 | asset id … | merchant consent | ugc-grid | verified |
+| P1 | review-summary | overall quality | lexsis_catalog.reviews product gid://.../123 | 4.6 avg, 212 reviews, min rating 1 | API 2026-09-10 | review-summary | verified |
+| P2 | review-quote | "no more 3pm crash" | collection 7f2e... item 9a1c... | verbatim text, name initial + city as stored, 2026-04-02 | API | benefits | verified |
+| P3 | press-logo-linked | credibility | Vogue India | https://www.vogue.in/... (article names the brand) | fetched 2026-09-10 | press-marquee | verified |
+| P4 | certification | "FSSAI licensed" | merchant | licence no. 1001...; issuer FSSAI | merchant doc | trust-bar | verified |
+| P5 | ugc-video | in-use proof | creator @..., rights email 2026-08-21 | asset id ... | merchant consent | ugc-grid | verified |
 | P6 | customer-count | "50,000+ customers" | merchant | Shopify orders export, 51,204 unique customers to 2026-08-31 | merchant doc | stats | pending |
-| P7 | before-after | "visible in 4 weeks" | merchant | none supplied | none | — | dropped |
+| P7 | before-after | "visible in 4 weeks" | merchant | none supplied | none |  -  | dropped |
 ```
 
 Columns:
@@ -44,8 +44,8 @@ Columns:
 
 | Kind | Minimum evidence before `verified` | Never |
 |---|---|---|
-| review-summary | `lexsis_catalog.reviews` total and average for the exact product or collection; count ≥ 5 to show an average, ≥ 1 to show a count | rounding 4.3 to 5.0; "5.0" with under 20 reviews; stars without a count |
-| review-quote / review-list / review-with-media | row exists in `lexsis_catalog.reviews` or `review_collection_items`; text verbatim; attribution exactly as stored; date present | edited wording beyond `[…]` trimming; invented names, cities, photos; five identical five-star quotes |
+| review-summary | `lexsis_catalog.reviews` total and average for the exact product or collection; count >= 5 to show an average, >= 1 to show a count | rounding 4.3 to 5.0; "5.0" with under 20 reviews; stars without a count |
+| review-quote / review-list / review-with-media | row exists in `lexsis_catalog.reviews` or `review_collection_items`; text verbatim; attribution exactly as stored; date present | edited wording beyond `[...]` trimming; invented names, cities, photos; five identical five-star quotes |
 | external-verified-quote | public URL, platform terms allow reuse, merchant written approval, verbatim text, attribution the platform allows; manifest `reviews.source: external-verified` | marketplace text that the platform's terms forbid copying; quotes from DMs without consent |
 | ugc-photo / ugc-video / creator-video | asset id in the library, rights record (email, contract, platform rights request), creator handle, paid disclosure flag when paid | stock people as customers; generated people; content without rights |
 | before-after | merchant-supplied, same subject, same framing and lighting, unretouched, timeframe stated, consent, category permitted (`references/proof/before-after-and-claims.md`) | generated, composite, or "illustrative" results; medical outcomes without substantiation |
@@ -57,7 +57,7 @@ Columns:
 | guarantee / policy-fact | store policy page URL or merchant confirmation; exact terms | "free returns" when returns cost; "lifetime" without terms |
 | community-screenshot | platform, date, consent from the poster (or public brand-owned content) | screenshots of paid or fake accounts |
 | stock-count | live `lexsis_catalog.get` inventory read at render time via island binding | fixed numbers in copy |
-| social-proof-popup, live-viewer-count, press-logo-unlinked | never verified; never rendered | — |
+| social-proof-popup, live-viewer-count, press-logo-unlinked | never verified; never rendered |  -  |
 
 ## Display rules
 
@@ -76,7 +76,7 @@ Columns:
    A filtered carousel (`minRating`) is labelled as a selection, links to the
    full unfiltered list, and sits beside the unfiltered average and count;
    `averageRating` and `totalReviews` are never computed from a filtered set.
-4. **Quotes.** Verbatim. Trim with `[…]` only. Keep the reviewer's own
+4. **Quotes.** Verbatim. Trim with `[...]` only. Keep the reviewer's own
    specifics (product variant, timeframe, use). Attribution exactly as
    stored plus the date. Prefer reviews that mention the claim and, where
    possible, a limitation.
@@ -95,7 +95,7 @@ Columns:
    interval, "Individual results vary" where the category requires it,
    never in the hero, never generated.
 10. **Numbers in copy.** Every numeral inside a proof, trust, stats or press
-    section appears in the ledger. `design_lint.py` lists them; the review
+    section appears in the ledger. the source/hosted review lists them; the review
     checks each.
 
 ## Fallback order when the ledger is thin
@@ -110,12 +110,3 @@ Columns:
    founder contact, review request) that says the product is new.
 7. Nothing. A page with no proof section is honest; a page with invented
    proof is a liability.
-
-## Lint hooks
-
-- `plan_lint.py` T9: a reviews section requires `manifest.reviews.available
-  > 0` from an allowed source.
-- `design_lint.py`: emoji stars (N1), fabricated pills (N9), numerals in
-  proof sections (N11, manual), unlinked press logos (`<img>` inside a
-  `press-marquee` section that is not wrapped in `<a href`), forbidden kinds
-  (`SocialProofPopup`, "people are viewing", "bought in the last").

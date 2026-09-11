@@ -13,7 +13,9 @@ each skill's description.
 The normal reviewed workflow is Setup → Plan → Design → Generate → Publish.
 Build and Build with Template provide fast unpublished-draft routes. Asset Prep
 is an optional standalone utility. The twelve public commands remain
-independently invokable; explicit skips are recorded in the page manifest.
+independently invokable; explicit skips are recorded in the task handoff.
+Pages are authored directly through MCP. Do not reintroduce local page
+workspaces, source/CSS artifacts, preview builds or local QA gates.
 
 ## Rules for agents working IN this repo
 
@@ -30,8 +32,9 @@ independently invokable; explicit skips are recorded in the page manifest.
   `references/page-types/` (one contract per page type with a JSON checklist),
   `proof/`, `offers/`, `assets/`, `anti-patterns/`, `copy/` and
   `mcp-playbooks/` are loaded by `plan-page` and `design-page` as workflows (each type file's
-  `## Workflow` plus the universal `workflows/` sub-procedures); `plan_lint.py`
-  reports deviations and `design_lint.py` checks house, proof and offer rules. Island schemas live in
+  `## Workflow` plus the universal `workflows/` sub-procedures). Validation
+  uses MCP compiler output and hosted review. Repository-only fixture checks
+  live under `tests/support/` and are not shipped page-authoring steps. Island schemas live in
   `references/islands/<name>/schema.json`. Do not invent island names or props.
 - Public skills installed individually must remain self-contained.
   `scripts/build-distributions.py` materializes the shared references declared

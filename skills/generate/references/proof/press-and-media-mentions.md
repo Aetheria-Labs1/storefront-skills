@@ -89,7 +89,7 @@ result in the ledger row. No record, no logo.
 
 | Rule | Detail |
 |---|---|
-| Verbatim | exact words; `[…]` trim only; never stitch two paragraphs |
+| Verbatim | exact words; `[...]` trim only; never stitch two paragraphs |
 | Attribution | outlet, author where bylined, month and year, link |
 | Scope | the quote is about this brand or product, not the category |
 | Permission | CAP 3.48 allows accurate published quotes without express permission; still record the URL and date |
@@ -101,16 +101,12 @@ result in the ledger row. No record, no logo.
 | P3 | press-logo-linked | credibility | Vogue India | https://www.vogue.in/<path> ; headline "<headline>"; author; 2026-03-14; class editorial | fetched 2026-09-10, brand named in body | press-marquee | verified |
 | P8 | press-quote-linked | "melts in seconds" | Mint Lounge | https://lifestyle.livemint.com/<path> ; quote verbatim; author; 2025-11-02 | fetched 2026-09-10 | benefits | verified |
 | P9 | award | quality | Allure Best of Beauty 2025 | https://www.allure.com/<winners page> ; category; year | fetched 2026-09-10 | awards | verified |
-| P10 | press-logo-linked | credibility | Yahoo Finance | PRNewswire syndication of the brand's own release | wire | — | dropped (wire release) |
+| P10 | press-logo-linked | credibility | Yahoo Finance | PRNewswire syndication of the brand's own release | wire |  -  | dropped (wire release) |
 ```
 
 ## Rules
 
 PM1. Never render a press logo or quote whose ledger row lacks a fetched URL that names the brand or product. LAW CAP 3.7 and 3.1 (ASA v. MPJ Invest 2023: "as seen in" with no evidence upheld); FTC Endorsement Guides (a publication name is an endorsement).
-Check:
-```bash
-perl -0ne 'while(/<!-- section: (press[a-z-]*|awards) -->(.*?)(?=<!-- section: |\z)/gs){my $b=$2; my $imgs=()=$b=~/<img/g; my $links=()=$b=~/<a [^>]*href="https?:/g; print "imgs=$imgs links=$links\n"}' $W/lexsis-source.html   # links >= imgs in every press section
-```
 
 PM2. Only editorial coverage earns a logo without a paid caption; paid, sponsored and host-read placements carry "As advertised in" or "Sponsored feature" in the same visual field. LAW ASA v. Ergoflex 2012 ("as seen in" implies an editorial decision); NAD LegalZoom (paid or affiliate "As Seen In" needs on-page disclosure).
 Check: for each row of class paid, the section text contains "advertised" or "Sponsored".
@@ -125,19 +121,11 @@ PM5. Coverage must be within 24 months; any "as seen" or "featured" caption with
 Check: ledger date fields; `date >= plan date minus 730 days`, or the caption contains the year.
 
 PM6. Three to six logos in one row at one cap height, monochrome, each an `<a>` to its article with the publication as accessible name; fewer than three verified outlets renders quotes, not logos. HEURISTIC; consistent with `proof-ledger.md` display rule 6.
-Check:
-```bash
-perl -0ne 'while(/<!-- section: press-marquee[a-z-]* -->(.*?)(?=<!-- section: |\z)/gs){my $b=$1; my $n=()=$b=~/<a [^>]*href/g; print "logos=$n\n"; print "missing-name\n" if $b=~/<img(?![^>]*(alt="[^"]+"|aria-label="[^"]+"))/}' $W/lexsis-source.html   # 3 <= logos <= 6, no missing-name
-```
 
 PM7. Never place press in the hero headline block; on advertorials never before the "Advertisement" disclosure. RESEARCH [M] Trustpilot: media mentions weigh most during initial research, so they belong after the premise; HEURISTIC placement table above.
 Check: the `hero` section contains no `press` markup; on `advertorial` the disclosure section precedes any press row in DOM order.
 
 PM8. Never write "Recommended by", "Endorsed by", "Loved by <outlet>" unless the fetched article uses that verb about this product. LAW CAP 3.7; CCPA 2022 (no unjustified reference to an institution).
-Check:
-```bash
-grep -ciE '(recommended|endorsed|loved|approved) by (vogue|elle|forbes|mint|the hindu|times|wired|gq|allure|cosmopolitan|nykaa|amazon)' $W/lexsis-source.html   # 0 unless the ledger quote contains the verb
-```
 
 PM9. Quote press verbatim with outlet, author, date and link; never stitch sentences from different paragraphs. LAW CAP 3.48.
 Check: each `press-quote-linked` body appears contiguously in the fetched article text.
@@ -146,13 +134,11 @@ PM10. Podcasts count only with an episode URL where the host names the brand edi
 Check: podcast rows carry an episode URL, not a show homepage.
 
 PM11. Awards need the awarding body's own page, the category and the year; "award-winning" appears only beside those three. LAW CAP 3.7 substantiation; FTC reasonable basis.
-Check: `grep -ci 'award-winning' $W/lexsis-source.html` is 0, or each hit's section contains a year and a link to the body.
 
 PM12. Logos are trademarks: single-colour scaling only, never redrawn or retyped; remove a logo on any outlet request and record the removal. HEURISTIC [L] PR-agency guidance on logo use.
 Check: press SVGs are the outlet's own files, filled with one `currentColor`; no `<text>` element that spells an outlet name inside a logo `<svg>`.
 
-PM13. Every press row appears in `page-plan.md` under "Claims to confirm" so the merchant can object before design. OPERATOR.
-Check: `grep -c 'press-' page-plan.md` under the ledger equals the count under "Claims to confirm".
+PM13. Every press row appears in `page plan` under "Claims to confirm" so the merchant can object before design. OPERATOR.
 
 ## Jurisdiction notes
 

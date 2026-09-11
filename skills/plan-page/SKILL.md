@@ -54,34 +54,16 @@ lead-capture types, `lexsis_capture.funnel_templates` and
 `lexsis_capture.funnel_template`. Resolve an unfamiliar schema with exact
 router/action discovery.
 
-## Bind the Workspace and Open the Campaign Folder
+## Bind the Workspace and Campaign
 
-Read `work/storefront/setup/setup.json`. Select one saved workspace, store and
-theme triple: the one the user names, otherwise the saved defaults. Read that
-store's brand design and that theme's CSS. If the selection is not saved, stop
-with `Run /setup for this store and theme first.` State the workspace, store
-and theme in one line so a wrong default is visible immediately, and never mix
-files from two themes, stores or workspaces on one page.
+Reuse the confirmed workspace, store and theme from saved setup or current
+MCP context. Resolve an ambiguous selection before proceeding and state the
+chosen binding in one line. Never mix stores or themes on one page.
 
-Then infer the campaign folder from the request with the table in
-`references/page-files.md` (occasion and year, named sale, product launch,
-evergreen funnel, channel test, collaboration, or `adhoc-<yyyy-mm>` when the
-request is not campaign-shaped). Reuse the folder when this page continues an
-existing campaign, including a variant or an edit; open a new one when the
-occasion, offer or product changes. Say which folder is in use.
-
-```text
-work/campaigns/<campaign-slug>/
-├── campaign.json     binding and campaign facts
-├── campaign.md       one-page brief
-├── assets/           media shared across this campaign's pages
-└── pages/<page-handle>/
-```
-
-Write `campaign.json` with the binding and the confirmed campaign facts, and
-`campaign.md` with the brief, before the page workspace. A campaign folder
-holds one workspace, store and theme binding; a second store means a second
-folder. Every page repeats the binding in its own manifest.
+Group this page with its campaign purpose, confirmed dates, offer and
+audience. Reuse the existing campaign evidence for variants and edits.
+Keep the plan and compact decision record in the task handoff according to
+`references/page-files.md`; do not create campaign folders or page files.
 
 ## Infer the Planning Mode
 
@@ -105,7 +87,7 @@ Choose the next route from intent:
 - `fast-build` when the user supplies a template direction and asks for the
   fastest first draft.
 
-Record the route in `page-plan.md`. Do not force every user to choose among all
+Record the route in `page plan`. Do not force every user to choose among all
 three. Paid visual-concept generation is confirmed in `/design-page`;
 `fast-build` hands off to `/build` or `/build-with-template`.
 
@@ -122,7 +104,7 @@ Choose exactly one `pageType`. When two fit, the index names the tie-break;
 when the brief is silent, choose the type that assumes less of the visitor and
 say so. Then load only `references/page-types/<type>.md`.
 
-Write this block at the top of `page-plan.md` and mirror it in the manifest
+Write this block at the top of `page plan` and mirror it in the page record
 (`page.pageType`, `page.funnelStage`, `page.awareness`, `page.trafficSource`,
 `offer`, `campaign`):
 
@@ -165,16 +147,15 @@ Then follow the type file's `## Workflow` in order:
    what the catalog and library supply, which jobs are missing, and per gap
    whether to reuse, generate (with the purpose), or ask the merchant to
    upload or approve generation. Every missing asset is listed for the
-   merchant; in fast-draft, proceed with the closest existing asset or a
+   merchant; in fast-draft, proceed with the shared fallback or a
    `planned` slot and still list it. Assets carry the page; plain colour
    does not.
 
 The `## Checklist` JSON is the default this workflow lands on. When the
 context argues for something else (a PDP with two images, a store with no
 reviews, a brand whose voice bans a section), deviate and record it under
-"Deviations from the type default". Run
-`python3 <plan-page-skill>/scripts/plan_lint.py <page-workspace>` before
-presenting the plan and treat its WARN rows as that deviation list.
+"Deviations from the type default". Review the checklist before presenting
+the plan; explain every deviation without treating it as an automatic failure.
 
 ## Ask Only What Is Missing
 
@@ -235,7 +216,7 @@ Search sections for useful structural references when no page kit fits.
 Present at most three candidates, one line each, and ask the user to confirm
 one or decline all.
 
-Record only the selected kit or section IDs in the manifest (`template.mode`
+Record only the selected kit or section IDs in the page record (`template.mode`
 is `page-kit`, `sections`, or `custom`); put the short selection rationale in
 the plan. Custom composition names the evaluated ids and why none fit.
 
@@ -266,14 +247,14 @@ their output; otherwise run the same three blocks sequentially in this order.
 3. Palette, type, motion and icon decisions from the saved brand design and
    theme tokens, with the overrides list.
 
-Each lane returns only its block. The parent merges them into `page-plan.md`,
+Each lane returns only its block. The parent merges them into `page plan`,
 runs the generic-default check, resolves conflicts by the house rules, and asks
 only unresolved questions required by the inferred mode. Lanes never write
 files or spend credits.
 
 ## Write a One-Page Plan
 
-Keep `page-plan.md` concise enough to scan in one view. Include:
+Keep `page plan` concise enough to scan in one view. Include:
 
 - objective, audience, traffic source, product, and primary CTA
 - selected template direction
@@ -290,14 +271,14 @@ Keep `page-plan.md` concise enough to scan in one view. Include:
   `references/copy/message-match.md` for ad-driven traffic
 - offers and claims that require confirmation
 
-### Design direction (required block in page-plan.md)
+### Design direction (required block in page plan)
 
 Write this block before the section list. Read the saved brand design, the
 theme tokens and `references/design-rules.md` first. Fill
 every field; "none" is an answer, "TBD" is not. Then run the generic-default
 check at the end and revise anything it catches.
 
-Template to copy into `page-plan.md`:
+Template to copy into `page plan`:
 
 ````markdown
 ## Design direction
@@ -341,7 +322,7 @@ Template to copy into `page-plan.md`:
 
 **Generic-default check.** Write two lines: "A generic <page type> for <vertical> would have: ..." then "This plan differs by: ..." with at least three concrete, visible differences (layout, type, moment, media treatment). If you cannot name three, the plan is the default; change it.
 
-**Overrides of brand design.md.** List each design.md or brand-kit line you are ignoring, with the house rule id (N1 to N14, A1 to A12). Example: "design.md 'Always include emoji icons in ticker bar' → N1. 'Trust strip in --lx-secondary-color' → N2."
+**Overrides of brand design.md.** List each design.md or brand-kit line you are ignoring, with the house rule id (N1 to N14, A1 to A12). Example: "design.md 'Always include emoji icons in ticker bar' U+2192 N1. 'Trust strip in --lx-secondary-color' U+2192 N2."
 ````
 
 ### Imagery and background plan
@@ -354,7 +335,7 @@ editorial image grids. Never from tinted section bands.
 Write one line per imagery section:
 
 ```text
-<section> → <slot ids> → <treatment: full-bleed | inset | grid | background image with legibility overlay>
+<section> U+2192 <slot ids> U+2192 <treatment: full-bleed | inset | grid | background image with legibility overlay>
 ```
 
 Every imagery section maps to at least one slot. The single full-bleed
@@ -384,8 +365,8 @@ List every slot the wireframe names, for any page type:
 ```markdown
 | Slot | Section | Role/purpose | Aspect | Source decision | Id / URL | Status |
 |---|---|---|---|---|---|---|
-| A1 | gallery | product_media | 4:5 | shopify media | gid://…/ProductImage/… | verified |
-| A2 | story | context | 3:2 | library | asset 7f2e… | verified |
+| A1 | gallery | product_media | 4:5 | shopify media | gid://.../ProductImage/... | verified |
+| A2 | story | context | 3:2 | library | asset 7f2e... | verified |
 | A3 | closing-cta | hero_bg | 3:2 | generated (after credit confirmation) | | planned |
 | A4 | benefits | in-use | 3:2 | pending: merchant to upload, or approve a `product_composite` scene | | planned |
 ```
@@ -409,8 +390,8 @@ skill searches only for what the user did not pick.
    the group is clear, `theme_id` from `setup.json` (required), `limit: 48`).
    The asset picker multi-selects across pages; wait for the
    `Design asset selection:` message and map its `assets[]` to slot ids in
-   `selection_order` (A1, A2, …). Confirm the mapping in one line or take a
-   one-line remap. Without a picker: Storefront → Design library → Assets;
+   `selection_order` (A1, A2, ...). Confirm the mapping in one line or take a
+   one-line remap. Without a picker: Storefront U+2192 Design library U+2192 Assets;
    accept filenames or URLs and look them up with `mode: "filename"`. Files
    not yet in the library go through `lexsis_asset_upload.upload` with the
    selected `workspace_id` and `theme_id`; wait for the user's uploaded-asset
@@ -441,7 +422,7 @@ skill searches only for what the user did not pick.
    reads as one shoot. Record the provider and asset id for generated slots
    and view those too.
 4. Write the final table into the plan and one `assets[]` entry per slot into
-   the manifest. A slot the user postpones stays `planned`; `/design-page`
+   the page record. A slot the user postpones stays `planned`; `/design-page`
    confirms only those.
 
 ### Proof ledger
@@ -473,7 +454,7 @@ number in the ledger comes from the API or a linked source and is repeated
 under "Claims to confirm". The plan never activates a collection; to propose
 a shortlist, run `lexsis_catalog.reviews_search` and, only when the user asks,
 `lexsis_drafts.review_collection_create` (draft). If the host returns
-`UNKNOWN_ACTION`, ask the user to pick a collection in Storefront → Reviews →
+`UNKNOWN_ACTION`, ask the user to pick a collection in Storefront U+2192 Reviews U+2192
 Collections and paste its id.
 
 Press logos, "as seen in" marquees, badges, certifications, UGC, before/after
@@ -493,7 +474,7 @@ code, stacking, and who confirmed each item. Use
 requires and `references/offers/price-presentation.md` and
 `references/offers/urgency-scarcity.md` for what may be shown. A countdown or
 stock indicator is planned only when the ledger has a confirmed end date or
-live inventory read. Mirror the summary in the manifest `offer` block.
+live inventory read. Mirror the summary in the page record `offer` block.
 
 Verify facts that control the page's urgency or trust before treating them as
 copy. This includes occasion dates, delivery cutoffs, prices, availability,
@@ -511,12 +492,9 @@ Do not include:
 - template search transcripts
 - QA, compilation, synchronization, or publishing state
 
-Create the page directory under `work/campaigns/<campaign-slug>/pages/`, its
-`assets/`, and a compact schema-v3 `page-manifest.json` using
-`references/page-files.md`, including `campaignSlug`, `campaignPath`, the
-workspace, store and theme ids, one `assets[]` entry per slot, and the
-`reviews` block. Add the page handle to `campaign.json` `pages[]`. Do not create source,
-preview, compile, or QA files.
+Record the confirmed binding, ordered sections, asset decisions, reviews,
+offer evidence and unresolved questions in the task handoff. No per-page
+manifest, source, theme, compile or QA files are created.
 
 ## Approval
 
@@ -526,7 +504,7 @@ Present:
 Page:
 Campaign: <campaign-slug> (<campaign type>)
 Binding: <workspace> / <store> / <theme>
-Page type: <type> · <funnel stage> · <awareness> · <traffic>
+Page type: <type> ; <funnel stage> ; <awareness> ; <traffic>
 Deviations from the type default: <none | list>
 Mandatory sections omitted:
 Goal:
@@ -554,8 +532,8 @@ review the plan first or the route requires paid generation.
 
 ## Return
 
-Return the campaign path, the page working directory, plan path, manifest path,
-the workspace, store and theme in effect, the asset slot summary, the
+Return the plan and campaign summary, workspace/store/theme binding, asset
+slot summary, the
 missing-asset list, the inferred next route, and `PLAN_APPROVED`. Name the
 route with the command it maps to:
 

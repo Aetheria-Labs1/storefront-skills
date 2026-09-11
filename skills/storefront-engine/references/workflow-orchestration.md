@@ -6,10 +6,10 @@ Use one owning command at a time.
 
 ```text
 /setup
-  → /plan-page
-  → /design-page
-  → /generate
-  → /publish
+  U+2192 /plan-page
+  U+2192 /design-page
+  U+2192 /generate
+  U+2192 /publish
 ```
 
 - Setup is normally run once and refreshed only for changed stores/themes.
@@ -21,7 +21,7 @@ Use one owning command at a time.
 - Publish is a separate explicit release.
 
 Commands do not silently invoke one another. When a user intentionally starts
-later, create the minimum missing artifact and record the skipped command.
+later, recover the minimum missing decision evidence and record the skipped command.
 
 Infer `fast-draft`, `production-ready`, or `publish` from the user's complete
 request and current conversation. Reversible ambiguity defaults to
@@ -58,7 +58,7 @@ inference never authorizes publishing, paid generation, or deletion.
   version data live.
 - Search existing assets before paid generation.
 - Resolve island schemas before authoring.
-- Keep production changes local-first and stop on version drift.
+- Keep production changes in source-based MCP operations and stop on version drift.
 - Create drafts with `publish:false`.
 - Keep concept images out of production source and asset slots.
 - Limit fast-build compilation to one initial attempt and one targeted repair.

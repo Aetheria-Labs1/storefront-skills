@@ -6,16 +6,11 @@
   "deprecated": true,
   "replacement": "CSS scroll-snap or a specialized commerce/media island",
   "deprecation_reason": "Generic Swiper behavior is not Shopify-scoped and creates a broad CDN-backed contract that is difficult to customize safely.",
-  "usage_hint": "Generic Swiper.js-powered carousel for hero sliders, product cards, testimonials, or any HTML-based slide content. Loads Swiper from CDN on hydration.",
-  "when_to_use": "Use when you need a full-featured carousel with autoplay, navigation, pagination, progress bar, and multiple transition effects. Slides accept raw HTML so any content can be placed inside.",
-  "when_not_to_use": "For simple image-only cycling (use MediaCarousel). For product card horizontal scrolling (use ProductCarousel or data-behavior=\"horizontal-scroll\"). For review-specific carousels (use ReviewCarousel).",
+  "usage_hint": "Compatibility contract for existing pages. Do not author this retired island in new source.",
+  "when_to_use": "Inspect an existing page only; use the replacement in workflows/island-selection-workflow.md for new source.",
+  "when_not_to_use": "Do not use for new page authoring.",
   "defaultHydrate": "visible",
-  "combine_with": [
-    "HeroMedia",
-    "ProductCarousel",
-    "ReviewCarousel",
-    "CountdownTimer"
-  ],
+  "combine_with": [],
   "anti_patterns": [
     "Using with a single slide (no carousel needed)",
     "Setting autoplayDelay below 2000ms (disorienting for users)",
@@ -134,8 +129,6 @@
     ],
     "headless": {
       "supported": false
-    },
-    "example": "<lx-island name=\"Carousel\">\n  <script type=\"application/json\">\n{\n  \"slides\": [\n    {\n      \"html\": \"example-html\"\n    }\n  ]\n}\n  </script>\n</lx-island>",
-    "examples": []
+    }
   }
 }

@@ -1,5 +1,3 @@
-# Moved
+# Asset pipeline
 
-This document is now `asset-prep.md` (same directory), matching the `/asset-prep`
-skill name. Read that file — this stub exists only so `vibe://skills/asset-pipeline`
-keeps resolving during the transition.
+Follow `references/workflows/section-asset-workflow.md` for page assets, or `references/asset-prep.md` for a standalone asset handoff. Source eligibility belongs to `references/assets/asset-sourcing-sequence.md` and generation permissions to `references/assets/generation-policy.md`.

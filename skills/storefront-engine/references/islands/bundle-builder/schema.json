@@ -15,7 +15,7 @@
   "when_not_to_use": "Not for single-product add-to-cart (use BuyBox or QuickAdd). Not for general product grids (use ProductCarousel). Not for cross-sells without bundle context (use ProductCarousel).",
   "defaultHydrate": "immediate",
   "combine_with": [
-    "CartDrawer (REQUIRED for cart feedback)",
+    "Cart V2 via head.use_cart_v2",
     "BuyBox (common on PDP pages)"
   ],
   "anti_patterns": [
@@ -158,25 +158,6 @@
     ],
     "headless": {
       "supported": false
-    },
-    "example": "<lx-island name=\"BundleBuilder\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
-    "examples": [
-      {
-        "label": "Stacked bundle with percentage discount",
-        "source": "<lx-island name=\"BundleBuilder\">\n  <script type=\"application/json\">{\"mainProduct\":{\"id\":\"p1\",\"title\":\"Wireless Headphones\",\"price\":\"$99.00\",\"image\":\"https://via.placeholder.com/64\"},\"recommendations\":[{\"id\":\"p2\",\"title\":\"Carrying Case\",\"price\":\"$19.00\",\"image\":\"https://via.placeholder.com/64\"},{\"id\":\"p3\",\"title\":\"Audio Cable\",\"price\":\"$9.00\",\"image\":\"https://via.placeholder.com/64\"}],\"bundleDiscount\":{\"type\":\"percentage\",\"value\":10},\"title\":\"Complete Your Setup\",\"layout\":\"stacked\"}</script>\n</lx-island>"
-      },
-      {
-        "label": "Horizontal bundle with fixed discount",
-        "source": "<lx-island name=\"BundleBuilder\">\n  <script type=\"application/json\">{\"mainProduct\":{\"id\":\"p1\",\"title\":\"Camera\",\"price\":\"$499.00\",\"image\":\"https://via.placeholder.com/64\"},\"recommendations\":[{\"id\":\"p2\",\"title\":\"Lens\",\"price\":\"$199.00\",\"image\":\"https://via.placeholder.com/64\"},{\"id\":\"p3\",\"title\":\"Tripod\",\"price\":\"$49.00\",\"image\":\"https://via.placeholder.com/64\"}],\"bundleDiscount\":{\"type\":\"fixed\",\"value\":50},\"layout\":\"horizontal\"}</script>\n</lx-island>"
-      },
-      {
-        "label": "Bundle without checkboxes (all items pre-selected)",
-        "source": "<lx-island name=\"BundleBuilder\">\n  <script type=\"application/json\">{\"mainProduct\":{\"id\":\"p1\",\"title\":\"Laptop\",\"price\":\"$999.00\",\"image\":\"https://via.placeholder.com/64\"},\"recommendations\":[{\"id\":\"p2\",\"title\":\"Mouse\",\"price\":\"$29.00\",\"image\":\"https://via.placeholder.com/64\"}],\"showCheckboxes\":false,\"title\":\"Bundle & Save\"}</script>\n</lx-island>"
-      },
-      {
-        "label": "INR peer gift set",
-        "source": "<lx-island name=\"BundleBuilder\">\n  <script type=\"application/json\">{\"products\":[{\"id\":\"gid://shopify/ProductVariant/1\",\"title\":\"6 Mukhi Bracelet\",\"price\":{\"amount\":\"1899\",\"currency_code\":\"INR\"},\"image\":\"https://example.com/bracelet.jpg\"},{\"id\":\"gid://shopify/ProductVariant/2\",\"title\":\"Citrine Mala\",\"price\":{\"amount\":\"1399\",\"currency_code\":\"INR\"},\"image\":\"https://example.com/mala.jpg\"}],\"bundleDiscount\":{\"type\":\"fixed\",\"value\":200},\"title\":\"Build the gift set\",\"layout\":\"horizontal\"}</script>\n</lx-island>"
-      }
-    ]
+    }
   }
 }

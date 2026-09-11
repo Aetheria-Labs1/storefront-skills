@@ -12,14 +12,14 @@
   "when_not_to_use": "If you only need navigation without announcement, use Navbar alone. If announcement should scroll away while nav stays sticky, use separate AnnouncementBar + Navbar.",
   "defaultHydrate": "immediate",
   "combine_with": [
-    "CartDrawer",
+    "Cart V2 via head.use_cart_v2",
     "Footer",
-    "BackToTop"
+    "native top anchor"
   ],
   "anti_patterns": [
-    "Using SiteHeader AND Navbar on the same page — they duplicate functionality",
-    "Multiple SiteHeader instances — there should be one site-wide header",
-    "Setting announcement messages that are too long (causes mobile overflow — keep under 60 chars)"
+    "Using SiteHeader AND Navbar on the same page \u2014 they duplicate functionality",
+    "Multiple SiteHeader instances \u2014 there should be one site-wide header",
+    "Setting announcement messages that are too long (causes mobile overflow \u2014 keep under 60 chars)"
   ],
   "props": {
     "announcement": {
@@ -125,21 +125,6 @@
     ],
     "headless": {
       "supported": false
-    },
-    "example": "<lx-island name=\"SiteHeader\">\n  <script type=\"application/json\">\n{}\n  </script>\n</lx-island>",
-    "examples": [
-      {
-        "label": "Hydration mode with rotating announcements",
-        "source": "<lx-island name=\"SiteHeader\">\n  <script type=\"application/json\">{\"sticky\":true,\"cartMode\":\"drawer\",\"messages\":[\"Free shipping over $50\",\"New arrivals daily\",\"20% off first order\"],\"rotateInterval\":5000,\"dismissible\":true}</script>\n  <header data-lx-header=\"root\"><div data-lx-header=\"announcement\"><span data-lx-header=\"announcement-text\"></span><button data-lx-header=\"announcement-dismiss\">×</button></div><nav data-lx-nav=\"root\">...</nav></header>\n</lx-island>"
-      },
-      {
-        "label": "Legacy mode with text wordmark",
-        "source": "<lx-island name=\"SiteHeader\">\n  <script type=\"application/json\">{\"announcement\":{\"messages\":[\"Sale ends tonight!\"],\"backgroundColor\":\"#5055aa\",\"dismissible\":false},\"navbar\":{\"logo\":{\"text\":\"Northstar\"},\"links\":[{\"label\":\"Shop\",\"url\":\"/shop\"}],\"transparent\":true},\"sticky\":true}</script>\n</lx-island>"
-      },
-      {
-        "label": "Legacy mode with linked announcement",
-        "source": "<lx-island name=\"SiteHeader\">\n  <script type=\"application/json\">{\"announcement\":{\"messages\":[\"Click here for 20% off\"],\"link\":\"/sale\",\"backgroundColor\":\"#000\",\"textColor\":\"#fff\"},\"navbar\":{\"logo\":{\"src\":\"/logo.svg\"},\"links\":[{\"label\":\"Products\",\"url\":\"/products\"}]}}</script>\n</lx-island>"
-      }
-    ]
+    }
   }
 }

@@ -153,21 +153,6 @@
     ],
     "headless": {
       "supported": false
-    },
-    "example": "<lx-island name=\"FunnelRuntime\">\n  <script type=\"application/json\">\n{\n  \"funnelKey\": \"example-funnelKey\"\n}\n  </script>\n</lx-island>",
-    "examples": [
-      {
-        "label": "Five-second product finder popup",
-        "source": "<lx-island name=\"FunnelRuntime\">\n  <script type=\"application/json\">{\"funnelKey\":\"product-finder\",\"shortId\":\"abc12345\",\"placement\":\"modal\",\"trigger\":\"delay\",\"triggerValue\":5000,\"showOnce\":true}</script>\n</lx-island>"
-      },
-      {
-        "label": "Inline quiz",
-        "source": "<lx-island name=\"FunnelRuntime\">\n  <script type=\"application/json\">{\"funnelKey\":\"skin-finder\",\"shortId\":\"abc12345\",\"placement\":\"inline\",\"trigger\":\"immediate\"}</script>\n</lx-island>"
-      },
-      {
-        "label": "Mystery gift reveal",
-        "source": "<lx-island name=\"FunnelRuntime\">\n  <script type=\"application/json\">{\"funnelKey\":\"mystery-gift\",\"shortId\":\"abc12345\",\"placement\":\"modal\",\"trigger\":\"exit_intent\",\"triggerValue\":4000,\"showOnce\":true}</script>\n</lx-island>"
-      }
-    ]
+    }
   }
 }

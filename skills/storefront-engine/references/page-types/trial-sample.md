@@ -93,139 +93,35 @@ trial.
 
 ## Workflow
 
-Assets first: the shopper needs to see how small the sample is and exactly
-what arrives before any promise is written. A section that would end up as a
-colour band, an emoji row, icon tiles or a wall of text is rebuilt around
-imagery or, on the merchant's call, merged or skipped. Per-slot sourcing:
-`references/workflows/section-asset-workflow.md`; island choice:
-`references/workflows/island-selection-workflow.md`. Missing media is never
-dropped silently: every Media line ends by telling the merchant what is
-missing (job, aspect, count), offering upload via `lexsis_asset_upload.upload`
-or MCP generation when the purpose is feasible under
-`references/assets/generation-policy.md`, and skipping or merging the section
-only if the merchant chooses. In fast-draft the agent proceeds with the closest
-existing asset or leaves the slot `planned`, and lists every missing asset in
-the plan and the draft summary.
+Apply `references/workflows/_how-to-read.md` to these type-specific
+decisions. It links the shared asset/fallback, fit, live-island and
+copy procedures; this table supplies their inputs, not another policy.
 
 ### Context reads
 
-1. `lexsis_catalog.get` for the trial SKU: `media[]` mapped per
-   `references/assets/image-jobs-by-page-type.md` (identity, scale, that is
-   the sample in hand or beside the full size, included-items, in-use,
-   packaging, label); price; variants (shade or size chosen by the finder);
-   selling plans when the trial converts into a plan. Then `lexsis_catalog.get`
-   for the full-size SKU: price and identity for the scale comparison and the
-   credit line.
-2. Offer ledger `trial-sample` row (`references/offers/offer-types.md`
-   trial-sample, OF5; `references/offers/price-presentation.md` PP27): trial
-   price, shipping fee and its reason, full-size price, credit toward full
-   size, and for a converting trial the conversion date, recurring price and
-   cancel path, each confirmed by the merchant. `lexsis_cart.get`: the fee the
-   cart will actually charge, cart v2.
-3. `lexsis_catalog.reviews_status`; `lexsis_catalog.reviews_search` with
-   `query` "sample", "trial", "kept", "full size", "tried" for trier quotes
-   (`pending` until confirmed); `lexsis_catalog.reviews` for the band;
-   `review_collections` (`references/proof/reviews-sourcing.md`). Result claims
-   in quotes need typicality wording in the same block.
-4. `lexsis_brand.context`, `lexsis_brand.brand_kit`, `lexsis_brand.navigation`
-   (minimal nav).
-5. `lexsis_asset_library.search` with `theme_id`, `mode: "tags"` for
-   `product-shot`, `flat-lay`, `lifestyle`, `social-proof`; then semantic
-   "<product> sample in hand", "next to full size". Sequence and checks:
-   `references/assets/asset-sourcing-sequence.md`.
-6. `lexsis_capture.funnel_templates` then `lexsis_capture.funnel_template`
-   when a fit, shade or size finder decides which sample ships; the finder is
-   one section, not the page. `lexsis_design.islands`, then
-   `lexsis_design.island_schema` for each island named below.
-7. No generation is planned on this type: identity, scale and included-items
-   are identity-bound and the hero is `product-in-hand`.
+1. `lexsis_catalog.get` for the trial SKU: `media[]` mapped per `references/assets/image-jobs-by-page-type.md` (identity, scale, that is the sample in hand or beside the full size, included-items, in-use, packaging, label); price; variants (shade or size chosen by the finder); selling plans when the trial converts into a plan. Then `lexsis_catalog.get` for the full-size SKU: price and identity for the scale comparison and the credit line.
+2. Offer ledger `trial-sample` row (`references/offers/offer-types.md` trial-sample, OF5; `references/offers/price-presentation.md` PP27): trial price, shipping fee and its reason, full-size price, credit toward full size, and for a converting trial the conversion date, recurring price and cancel path, each confirmed by the merchant. `lexsis_cart.get`: the fee the cart will actually charge, cart v2.
+3. `lexsis_catalog.reviews_status`; `lexsis_catalog.reviews_search` with `query` "sample", "trial", "kept", "full size", "tried" for trier quotes (`pending` until confirmed); `lexsis_catalog.reviews` for the band; `review_collections` (`references/proof/reviews-sourcing.md`). Result claims in quotes need typicality wording in the same block.
+4. `lexsis_brand.context`, `lexsis_brand.brand_kit`, `lexsis_brand.navigation` (minimal nav).
+5. `lexsis_asset_library.search` with `theme_id`, `mode: "tags"` for `product-shot`, `flat-lay`, `lifestyle`, `social-proof`; then semantic "<product> sample in hand", "next to full size". Sequence and checks: `references/assets/asset-sourcing-sequence.md`.
+6. `lexsis_capture.funnel_templates` then `lexsis_capture.funnel_template` when a fit, shade or size finder decides which sample ships; the finder is one section, not the page. `lexsis_design.islands`, then `lexsis_design.island_schema` for each island named below.
+7. No generation is planned on this type: identity, scale and included-items are identity-bound and the hero is `product-in-hand`.
 
 ### Section by section
 
-No asset is used sight unseen: open every candidate with `lexsis_assets.view`
-and run the section 1b fit review in `references/workflows/section-asset-workflow.md`
-before use (subject does the job, crops to the slot without losing the product,
-quiet area for the copy, lighting and styling match neighbouring slots, palette,
-no baked-in text or watermark); view a section's or gallery's candidates
-together so the set reads as one shoot, and view a generated asset the same way
-after it returns.
-
-**`header`**
-- Purpose: minimal chrome.
-- Media: brand logo or wordmark. View every candidate with `lexsis_assets.view` and run the section fit review (section 1b of `references/workflows/section-asset-workflow.md`) before use.
-- Island: SiteHeader minimal with the CTA anchoring to the trial block; resolve from `lexsis_design.island_schema`; preset `siteheader/minimal-light`.
-- Copy: store names.
-- Decide with: `lexsis_brand.navigation`.
-
-**`hero`**
-- Purpose: the trial in one line with its cost, the CTA naming the trial, the "what happens after" sentence, the sample shown in hand at scale.
-- Media: yes, scale and identity (`product-in-hand`; alternate `packshot`): catalog media, library `product-shot` or semantic "in hand", merchant upload of the sample beside the full size. Never generated (GP14 forbids generated scale), never a lifestyle hero, never the full-size product as the hero image. Missing scale shot: tell the merchant (scale, portrait, one phone photo of the sample beside the full size is enough at 1600 px); offer upload; the packshot ships meanwhile and the slot stays `planned`. View every candidate with `lexsis_assets.view` and run the section fit review before use.
-- Island: BuyBox for the trial SKU, compact for one variant, default when a shade or size is chosen; a converting trial keeps the selling plan out of the default state, with the conversion terms as HTML beside the button and a separate un-ticked consent checkbox in the same block; never a pre-selected SubscriptionToggle. Resolve from `lexsis_design.island_schema`; preset `buybox/compact-dark` or `buybox/default-light`.
-- Copy: trial line 14 words with its cost in the same phrase ("Free sample, $3.95 shipping", PP27); after-trial sentence 18 words directly under the CTA; vocabulary per `references/anti-patterns/copy-anti-patterns.md`.
-- Decide with: scale image found in steps 1 and 5; ledger row from step 2.
-
-**`pricing`**
-- Purpose: trial price, fee and reason, full-size price, credit, and conversion terms, within one scroll of the hero.
-- Media: optional scale image reused beside the table; the table is an object and may stand alone.
-- Island: none; an HTML table; any struck price carries `data-source`.
-- Copy: five labelled figures; "on day 15 your card is charged $45 for the full size; cancel any time before in your account" when a conversion exists.
-- Decide with: ledger row; `lexsis_cart.get` fee.
-
-**`how-it-works`**
-- Purpose: choose, we ship, try, keep or return with the prepaid label (or "nothing happens"); the after-trial step is always last.
-- Media: yes, sequence and packaging: real frames of the box, the sample, the prepaid label from catalog media or merchant upload; library `flat-lay`; an inline SVG flow authored in HTML when frames are missing. Never generated frames. Missing: tell the merchant (packaging and label photos, count); offer upload; the SVG flow ships meanwhile. View the candidates together with `lexsis_assets.view` and run the section fit review so the set reads as one shoot, not a pile of found images. View the frames in order so they read as one flow.
-- Island: none; optional click-to-play how-it-works video per `references/assets/video-rules.md`.
-- Copy: three or four steps of 22 words; timeline stated ("arrives in 3 to 5 days", "14 days to try").
-- Decide with: packaging and label imagery from steps 1 and 5.
-
-**`product-spotlight`**
-- Purpose: what is in the kit: every item, sample size shown to scale against the full size, one line on what each is for.
-- Media: yes, included-items flat lay and identity per item from catalog media, library `flat-lay`, or merchant upload; the scale image here if not used in the hero. Never a generated sample render. Missing: tell the merchant per item (identity, square) and for the flat lay (landscape); offer upload; in fast-draft the rows ship text-only and are listed under Unresolved assets. View the candidates together with `lexsis_assets.view` and run the section fit review so the set reads as one shoot, not a pile of found images.
-- Island: none (HTML rows), or ProductCarousel in compact row form for kits of three to five items, quick add off, animation off; resolve from `lexsis_design.island_schema`; preset `productcarousel/rows-compact`.
-- Copy: item line 16 words; sizes stated in ml, g or count.
-- Decide with: kit item count; flat lay found.
-
-**`product-finder`** or **`size-guide`**
-- Purpose: a short quiz or sizing tool that changes which sample ships.
-- Media: yes for a finder: answer options carry real swatch or variation images from catalog variant media (shade on skin for colour cosmetics); text options for use-case questions; never stock people as "you". A size guide is an HTML table, an image only when the merchant's chart cannot be transcribed. Missing swatches: tell the merchant; text options meanwhile. View the candidates together with `lexsis_assets.view` and run the section fit review so the set reads as one shoot, not a pile of found images.
-- Island: FunnelRuntime inline, built from a `lexsis_capture.funnel_template` through `lexsis_drafts.funnel_create`, validated with `lexsis_capture.validate_funnel` and checked with `lexsis_capture.preview_funnel`, its result pre-selecting the BuyBox variant; SizeGuide only when the merchant supplies measurements. Resolve from `lexsis_design.island_schema`.
-- Copy: questions 12 words; options 4 words; "why we ask" 16 words.
-- Decide with: fit, shade or size risk named in the brief; a template available.
-
-**`testimonial-spotlight`** or **`reviews`**
-- Purpose: trier quotes naming what they kept or bought, verbatim and dated.
-- Media: trier photos only from records with rights (`social-proof` with a `P` row, or `has_media` reviews); avatars real or CSS initials. View every candidate with `lexsis_assets.view` and run the section fit review before use.
-- Island: by band per `references/proof/reviews-sourcing.md`: B1 static verbatim dated cards; B2 ReviewCarousel one card at a time, autoplay off (N10), bound to the trial id or an active collection; B3 or more ReviewList with filters. Confirmed `reviews_search` candidates only. Resolve from `lexsis_design.island_schema`; preset `reviewcarousel/single-quiet`.
-- Copy: quote 60 words; a typicality line in the same block for any result claim; "over 40,000 trials shipped" only from an export.
-- Decide with: band and confirmed candidates from step 3.
-
-**`guarantee`** or **`shipping-returns`**
-- Purpose: return window, prepaid label, no-charge or refund rules, hygiene policy; short form near the hero, full here.
-- Media: the prepaid label or return packaging photo from how-it-works reused; no new asset.
-- Island: DeliveryEstimate for single-zone domestic shipping, else none; resolve from `lexsis_design.island_schema`; preset `deliveryestimate/inline-quiet`.
-- Copy: 60 words; "prepaid return label", "expected to arrive in 3 to 5 days".
-- Decide with: `policy-fact` rows.
-
-**`faq`**
-- Purpose: the first question is the post-trial terms ("Will I be charged?"), then the fee reason, shipping both ways, hygiene, timing, how to cancel.
-- Media: none.
-- Island: none; native `<details>` (the FAQ island is deprecated).
-- Copy: answers 60 words; the first sentence is the answer.
-- Decide with: ledger terms.
-
-**`closing-cta`** and **`sticky-cta`**
-- Purpose: the trial CTA repeated with cost and the after-trial sentence; a bar with the trial price.
-- Media: the hero in-hand image reused small; product thumbnail for the bar.
-- Island: the closing CTA anchors to the trial block (one BuyBox per page); StickyBar in product mode with the trial label, animation off, only when the page runs past about three mobile screens; resolve from `lexsis_design.island_schema`; preset `stickybar/product-dark`.
-- Copy: the label identical to the hero CTA; the after-trial sentence repeated.
-- Decide with: page length.
-
-**`legal`** and **`footer`**
-- Purpose: full terms link; chrome.
-- Media: brand logo. View every candidate with `lexsis_assets.view` and run the section fit review before use.
-- Island: Footer with the terms as a column link; preset `footer/simple-light`.
-- Copy: "Trial terms".
-- Decide with: terms URL.
+| Section | Purpose | Media job and source | Interactive decision | Copy constraints | Decision evidence |
+|---|---|---|---|---|---|
+| `header` | minimal chrome. | brand logo or wordmark. | SiteHeader minimal with the CTA anchoring to the trial block. | store names. | `lexsis_brand.navigation`. |
+| `hero` | the trial in one line with its cost, the CTA naming the trial, the "what happens after" sentence, the sample shown in hand at scale. | yes, scale and identity (`product-in-hand`; alternate `packshot`): catalog media, library `product-shot` or semantic "in hand", merchant upload of the sample beside the full size. Never generated (GP14 forbids generated scale), never a lifestyle hero, never the full-size product as the hero image. Missing scale shot: (scale, portrait, one phone photo of the sample beside the full size is enough at 1600 px); the packshot ships meanwhile and the slot stays `planned`. | BuyBox for the trial SKU, compact for one variant, default when a shade or size is chosen; a converting trial keeps the selling plan out of the default state, with the conversion terms as HTML beside the button and a separate un-ticked consent checkbox in the same block; never a pre-selected SubscriptionToggle. | trial line 14 words with its cost in the same phrase ("Free sample, $3.95 shipping", PP27); after-trial sentence 18 words directly under the CTA; vocabulary per `references/anti-patterns/copy-anti-patterns.md`. | scale image found in steps 1 and 5; ledger row from step 2. |
+| `pricing` | trial price, fee and reason, full-size price, credit, and conversion terms, within one scroll of the hero. | optional scale image reused beside the table; the table is an object and may stand alone. | none; an HTML table; any struck price carries `data-source`. | five labelled figures; "on day 15 your card is charged $45 for the full size; cancel any time before in your account" when a conversion exists. | ledger row; `lexsis_cart.get` fee. |
+| `how-it-works` | choose, we ship, try, keep or return with the prepaid label (or "nothing happens"); the after-trial step is always last. | yes, sequence and packaging: real frames of the box, the sample, the prepaid label from catalog media or merchant upload; library `flat-lay`; an inline SVG flow authored in HTML when frames are missing. Never generated frames. Missing media: (packaging and label photos, count); the SVG flow ships meanwhile. View the frames in order so they read as one flow. | none; optional click-to-play how-it-works video per `references/assets/video-rules.md`. | three or four steps of 22 words; timeline stated ("arrives in 3 to 5 days", "14 days to try"). | packaging and label imagery from steps 1 and 5. |
+| `product-spotlight` | what is in the kit: every item, sample size shown to scale against the full size, one line on what each is for. | yes, included-items flat lay and identity per item from catalog media, library `flat-lay`, or merchant upload; the scale image here if not used in the hero. Never a generated sample render. Missing: per item (identity, square) and for the flat lay (landscape); in fast-draft the rows ship text-only and are listed under Unresolved assets. | none (HTML rows), or ProductCarousel in compact row form for kits of three to five items, quick add off, animation off. | item line 16 words; sizes stated in ml, g or count. | kit item count; flat lay found. |
+| `product-finder` or `size-guide` | a short quiz or sizing tool that changes which sample ships. | yes for a finder: answer options carry real swatch or variation images from catalog variant media (shade on skin for colour cosmetics); text options for use-case questions; never stock people as "you". A size guide is an HTML table, an image only when the merchant's chart cannot be transcribed. Without swatches, use text options while the slots remain planned. | FunnelRuntime inline, built from a `lexsis_capture.funnel_template` through `lexsis_drafts.funnel_create`, validated with `lexsis_capture.validate_funnel` and checked with `lexsis_capture.preview_funnel`, its result pre-selecting the BuyBox variant; SizeGuide only when the merchant supplies measurements. | questions 12 words; options 4 words; "why we ask" 16 words. | fit, shade or size risk named in the brief; a template available. |
+| `testimonial-spotlight` or `reviews` | trier quotes naming what they kept or bought, verbatim and dated. | trier photos only from records with rights (`social-proof` with a `P` row, or `has_media` reviews); avatars real or CSS initials. | by band per `references/proof/reviews-sourcing.md`: B1 static verbatim dated cards; B2 ReviewCarousel one card at a time, autoplay off (N10), bound to the trial id or an active collection; B3 or more ReviewList with filters. Confirmed `reviews_search` candidates only. | quote 60 words; a typicality line in the same block for any result claim; "over 40,000 trials shipped" only from an export. | band and confirmed candidates from step 3. |
+| `guarantee` or `shipping-returns` | return window, prepaid label, no-charge or refund rules, hygiene policy; short form near the hero, full here. | the prepaid label or return packaging photo from how-it-works reused; no new asset. | DeliveryEstimate for single-zone domestic shipping, else none. | 60 words; "prepaid return label", "expected to arrive in 3 to 5 days". | `policy-fact` rows. |
+| `faq` | the first question is the post-trial terms ("Will I be charged?"), then the fee reason, shipping both ways, hygiene, timing, how to cancel. | none. | none; native `<details>`. | answers 60 words; the first sentence is the answer. | ledger terms. |
+| `closing-cta` and `sticky-cta` | the trial CTA repeated with cost and the after-trial sentence; a bar with the trial price. | the hero in-hand image reused small; product thumbnail for the bar. | the closing CTA anchors to the trial block (one BuyBox per page); StickyBar in product mode with the trial label, animation off, only when the page runs past about three mobile screens. | the label identical to the hero CTA; the after-trial sentence repeated. | page length. |
+| `legal` and `footer` | full terms link; chrome. | brand logo. | Footer with the terms as a column link. | "Trial terms". | terms URL. |
 
 ### Asset budget
 
@@ -235,7 +131,7 @@ after it returns.
 | asset library | `product-shot`, `flat-lay` kits, one `lifestyle` in-use, `social-proof` trier UGC with rights | scale and packaging | ask the merchant to upload |
 | generation | nothing on this type (scale, identity and included-items are identity-bound; the hero is `product-in-hand`) | the sample, the kit, people, results, text | never |
 
-Minimal assets (one packshot of the sample): packshot hero with the BuyBox and after-trial sentence, pricing table, SVG how-it-works, kit items as text rows flagged for images, trier quotes or static cards by band, policy facts, native FAQ; every missing shot is listed in the plan and draft summary, and the finder waits for a template. Generated assets on a trial page: zero. Every asset, generated ones included, is opened with `lexsis_assets.view` and passes the fit review in `references/workflows/section-asset-workflow.md` section 1b before it ships; a paid render earns no exemption.
+Minimal assets (one packshot of the sample): packshot hero with the BuyBox and after-trial sentence, pricing table, SVG how-it-works, kit items as text rows flagged for images, trier quotes or static cards by band, policy facts, native FAQ; every missing shot is listed in the plan and draft summary, and the finder waits for a template. Generated assets on a trial page: zero.
 
 ## Above the fold (390px)
 

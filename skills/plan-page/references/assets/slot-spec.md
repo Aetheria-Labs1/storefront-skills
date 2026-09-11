@@ -150,27 +150,23 @@ begin with "image of", "photo of" or "picture of".
 
 ## 6. Rules
 
-`$W` is the page workspace.
+Checks use persisted MCP source and the hosted draft.
 
 SS1. Render the hero as a real `<img>` in the initial HTML with `fetchpriority="high"` and without `loading="lazy"`; at most two `fetchpriority="high"` images per page. RESEARCH.
 Rationale: resource-load delay is the largest LCP cost https://web.dev/blog/common-misconceptions-lcp ; https://web.dev/articles/fetch-priority .
-Check: `perl -0ne 'print scalar(() = /fetchpriority="high"/g), "\n"' $W/lexsis-source.html` prints 1 or 2; `perl -0ne 'print scalar(() = /section: hero.*?<img[^>]*loading="lazy"/gs), "\n"'` prints 0.
 
 SS2. Give every `<img>` and `<source>` explicit `width` and `height` or a CSS `aspect-ratio`. RESEARCH.
 Rationale: prevents layout shift https://web.dev/learn/images/prescriptive .
-Check: `perl -ne 'print if /<img(?![^>]*width=)/' $W/lexsis-source.html | wc -l` prints 0.
 
 SS3. Lazy-load everything below the first viewport with `loading="lazy" decoding="async"`. RESEARCH.
 Rationale: below-fold images compete with the LCP image for bandwidth https://web.dev/articles/optimize-lcp .
-Check: `grep -c '<img' $W/lexsis-source.html` minus `grep -c 'loading="lazy"'` equals the number of `fetchpriority="high"` images plus first-row product cards, and no more.
 
 SS4. Serve AVIF or WebP with a fallback, through `<picture type>` or a CDN that negotiates format. RESEARCH.
 Rationale: 25 to 50% smaller than JPEG https://web.dev/articles/choose-the-right-image-format .
-Check: `grep -cE 'type="image/(avif|webp)"|format=(avif|webp)' $W/lexsis-source.html` is at least 1, or every image host is `cdn.shopify.com`.
 
 SS5. Stay inside the weight budget per slot. HEURISTIC anchored to RESEARCH.
 Rationale: median largest mobile image 135 KB; 8% of pages ship over 1 MB https://almanac.httparchive.org/en/2024/media .
-Check: `curl -sI "<url>" | grep -i content-length` per slot rendition is at or under the budget; record the hero value in `qa-report.md`.
+Check: the hosted response's Content-Length or measured transfer size per slot rendition is at or under the budget; record the hero value in `QA record`.
 
 SS6. Give the mobile hero its own portrait crop with the product enlarged; never a scaled-down landscape. RESEARCH.
 Rationale: scaled heroes shrink the product and push the CTA down https://www.nngroup.com/articles/big-pictures-small-screens/ ; art direction is what `<picture media>` exists for https://developer.mozilla.org/en-US/docs/Web/HTML/Guides/Responsive_images .
@@ -178,19 +174,17 @@ Check: the hero `<picture>` has a `<source media="(max-width: 767px)">` whose `h
 
 SS7. Write alt text under 125 characters from the slot template; decorative slots get `alt=""`; never "image of". LAW.
 Rationale: W3C alt decision tree https://www.w3.org/WAI/tutorials/images/decision-tree/ .
-Check: `perl -ne 'print if /alt="[^"]{126,}"/' $W/lexsis-source.html | wc -l` prints 0; `grep -ciE 'alt="(image|photo|picture) of' $W/lexsis-source.html` prints 0; every `<img>` inside a `hero_bg`, `section_bg`, `texture_fill` or `decorative_element` slot has `alt=""`.
 
 SS8. Keep text off the image pixels; overlay HTML text with the one permitted legibility overlay and meet 4.5:1 (3:1 for large text) against the worst-case region at 390 and 1280. LAW, RESEARCH.
 Rationale: WCAG 1.4.3 and 1.4.5; https://www.nngroup.com/articles/text-over-images/ ; N7 and A7 in `references/design-rules.md`.
-Check: the N7 grep in `design-rules.md` returns only the plan-named overlay; hosted screenshots at 390 and 1280 show the headline on the quiet zone (yes/no in `qa-report.md`).
+Check: the N7 hosted check in `design-rules.md` returns only the plan-named overlay; hosted screenshots at 390 and 1280 show the headline on the quiet zone (yes/no in `QA record`).
 
 SS9. Use one static hero; never a carousel; never `fetchpriority="high"` on anything but the hero and the first gallery image. RESEARCH.
 Rationale: carousel engagement about 1% and mostly slide 1 https://erikrunyon.com/2013/01/carousel-interaction-stats/ ; extra slides compete for LCP bandwidth https://web.dev/articles/fetch-priority .
-Check: IJ8 grep in `image-jobs-by-page-type.md`; SS1 count.
+Check: the IJ8 acceptance rule in `image-jobs-by-page-type.md`; SS1 count.
 
 SS10. Keep one aspect ratio per grid (product cards, UGC tiles, feature images). RESEARCH.
 Rationale: mixed ratios break scanning and comparison https://www.nngroup.com/articles/product-photos-listing-pages/ .
-Check: within one grid section, `grep -oE 'width="[0-9]+" height="[0-9]+"'` yields a single width:height ratio.
 
 SS11. Set a focal point (`object-position` or the host's focal parameter) on every cover-cropped image. OPERATOR.
 Rationale: responsive crops otherwise cut the product https://help.shopify.com/en/manual/online-store/images/theme-images .
@@ -198,7 +192,6 @@ Check: every `<img>` with `object-cover` or `object-fit: cover` also carries `ob
 
 SS12. Ship one `og:image` at 1200 x 630 showing the real product. OPERATOR.
 Rationale: link previews are the only place text-in-image is acceptable, and crawlers read the meta tag, not the body.
-Check: `grep -c 'property="og:image"' $W/lexsis-source.html` is 1; the file's dimensions via `sips -g pixelWidth -g pixelHeight` are 1200 x 630.
 
 SS13. Use real reviewer photos with consent or CSS initials for avatars; never stock or generated faces. LAW.
 Rationale: 16 CFR 465 fake-testimonial rule https://www.ftc.gov/business-guidance/resources/consumer-reviews-testimonials-rule-questions-answers ; `references/proof/proof-ledger.md`.

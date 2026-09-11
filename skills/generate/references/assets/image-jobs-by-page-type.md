@@ -306,28 +306,25 @@ Procedure:
 
 ## 8. Rules
 
-Format: imperative; tag; rationale; a check. `$W` is the page workspace.
-Checks use BSD grep and perl on macOS.
+Format: imperative; tag; rationale; a check. Checks use persisted MCP source and the hosted draft.
+Inspect the persisted source and the hosted output.
 
 IJ1. Give every image on the page a named job from section 1; remove imagery that has none. RESEARCH.
 Rationale: users look at 42% of images for under 0.2 seconds, ignore stock 85% of the time, and look at content-related images twice as often as unrelated ones http://ptgmedia.pearsoncmg.com/images/9780321498366/excerpts/eyetrackwebu_06to226.pdf .
-Check: every `<img>` with non-empty alt in `$W/lexsis-source.html` maps to a slot id in `page-plan.md` whose row names a job; unmapped count is 0.
+Check: every `<img>` with non-empty alt in `persisted source` maps to a slot id in `page plan` whose row names a job; unmapped count is 0.
 
 IJ2. Create a `planned` slot for every `R` job in the type's row that the existing media does not cover, before asking any asset question. OPERATOR.
 Rationale: `references/consumer-behavior-cro.md` forbids asking "do you want custom images" before the gap is named.
-Check: for the type's `R` jobs, `grep -c '<job>' page-plan.md` under "## Asset slots" is at least 1 each, or the job appears under "Mandatory sections omitted".
 
 IJ3. Never fill an identity-bound job from stock or generation. LAW.
 Rationale: feed and marketplace rules require the real product https://support.google.com/merchants/answer/7052112 ; fake customers and testimonials are banned under 16 CFR 465 https://www.ftc.gov/business-guidance/resources/consumer-reviews-testimonials-rule-questions-answers .
-Check: `python3 -c "import json;m=json.load(open('$W/page-manifest.json'));print(sum(1 for a in m['assets'] if a.get('generated') and a['role'] in ('product_media','proof','logo')))"` prints 0; no slot row pairs `stock` with `product_media` or `proof`.
 
 IJ4. Show the same SKU, variant and angle family in the hero as in the ad creative that sends the traffic. RESEARCH, OPERATOR.
 Rationale: 98% of paid ads have poor message match https://unbounce.com/conversion-glossary/definition/message-match/ ; same photo, not the same type of product https://cxl.com/blog/give-your-advertising-roi-a-serious-boost-by-maintaining-scent/ .
-Check: yes/no in `page-plan.md` message-match line after comparing the `lexsis_campaigns.creatives` frame and the hero slot with `lexsis_assets.view`.
+Check: yes/no in `page plan` message-match line after comparing the `lexsis_campaigns.creatives` frame and the hero slot with `lexsis_assets.view`.
 
 IJ5. Provide one `scale` image wherever the matrix marks it `R`; a hand, body, room or known object. RESEARCH.
 Rationale: 42% of users try to judge size from images https://baymard.com/blog/current-state-ecommerce-product-page-ux .
-Check: a slot with job `scale` exists and its alt matches `perl -ne 'print if /held|in hand|next to|for scale|on a .* table|in a .* room/i'`.
 
 IJ6. Give worn or applied products an on-body image (`size-reference` or `in-use` with a model). RESEARCH.
 Rationale: cut-outs alone hide fit, length and who the product is for https://baymard.com/blog/human-model .
@@ -335,15 +332,14 @@ Check: for beauty, fashion and jewellery pages, at least one slot alt names a bo
 
 IJ7. Meet the vertical gallery minimum and show every thumbnail or an explicit "+N" control. RESEARCH.
 Rationale: hidden thumbnails are missed by 50 to 80% of users https://baymard.com/blog/truncating-product-gallery-thumbnails .
-Check: gallery slot count is at least the section 4 minimum; in the hosted draft at 390 the thumbnail strip shows all items or a "+N" control (yes/no in `qa-report.md`).
+Check: gallery slot count is at least the section 4 minimum; in the hosted draft at 390 the thumbnail strip shows all items or a "+N" control (yes/no in `QA record`).
 
 IJ8. Use one static hero; never a hero carousel. RESEARCH.
 Rationale: about 1% of visitors click a carousel and 84% of those clicks go to slide 1 https://erikrunyon.com/2013/01/carousel-interaction-stats/ ; auto-forwarding is a known usability failure https://www.nngroup.com/articles/auto-forwarding/ .
-Check: `perl -0ne 'print scalar(() = /section: hero.*?(carousel|slider|data-slide|Swiper)/gis), "\n"' $W/lexsis-source.html` prints 0.
 
 IJ9. Keep one background, lighting, orientation and crop scale for every image of the same job on the page. RESEARCH.
 Rationale: consistent product photography makes lists scannable and comparable https://www.nngroup.com/articles/product-photos-listing-pages/ .
-Check: open all `identity` slots together with `lexsis_assets.view`; record yes/no "consistent set" in `qa-report.md`.
+Check: open all `identity` slots together with `lexsis_assets.view`; record yes/no "consistent set" in `QA record`.
 
 IJ10. Keep the hero image, headline and first CTA inside the first 390px screen; hero media takes no more than 60% of the viewport height on mobile. HEURISTIC anchored to RESEARCH.
 Rationale: big pictures on small screens push the task below the fold https://www.nngroup.com/articles/big-pictures-small-screens/ .
@@ -351,7 +347,7 @@ Check: at 390 the hero CTA (types with `cta.first_after_section: 0`) appears abo
 
 IJ11. Point a hero face toward the headline, product or CTA, not the camera, except in beauty and eyewear where the face is the canvas. RESEARCH.
 Rationale: product-directed gaze increased attention to product, logo and copy https://doi.org/10.1002/acp.1763 ; https://www.objectiveexperience.com/eye-tracking-ux-research/ .
-Check: view the hero; yes/no in `qa-report.md`.
+Check: view the hero; yes/no in `QA record`.
 
 IJ12. Use a typographic hero only where section 5 lists it or the plan's message-match line records a typographic ad. RESEARCH.
 Rationale: shoppers rely on product imagery for the decision (Baymard, NN/g above).
@@ -359,11 +355,9 @@ Check: the type file's `imagery.hero` equals the primary or alternate value in s
 
 IJ13. Never place before/after imagery in the hero on any type. LAW, OPERATOR.
 Rationale: before/after is an objective claim needing signed, dated substantiation https://www.asa.org.uk/advice-online/before-and-after-photos.html ; `references/proof/proof-ledger.md` display rule 9.
-Check: `grep -c '"hero": "before-after"' references/page-types/*.md` prints 0; the hero section contains no element with `before-after` in its id or class.
 
 IJ14. Record the job coverage result in the plan's Consumer decision model block ("Gallery jobs: covered; missing; slots created"). OPERATOR.
 Rationale: `/design-page` implements the block without reopening it.
-Check: `grep -c '^\*\*Gallery jobs\.\*\*' $W/page-plan.md` prints 1 and the line lists no "TBD".
 
 ## Sources
 

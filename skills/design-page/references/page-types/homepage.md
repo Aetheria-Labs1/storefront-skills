@@ -56,7 +56,7 @@ Sections between chrome: 7 to 10. Word budget 200 to 500.
    best sellers category for every retailer
    (https://www.nngroup.com/articles/ecommerce-homepages-listing-pages/).
 7. `story` (recommended). A brand story teaser in two to four sentences
-   with a link to `brand-story-founder`; the manifesto-first hero of The
+   with a link to `brand-story-founder`; the page recordo-first hero of The
    Whole Truth is the alternative when the brand is the differentiator
    (teardown 29).
 8. `review-summary` (mandatory when the store has 5 or more reviews). Store
@@ -78,260 +78,48 @@ Sections between chrome: 7 to 10. Word budget 200 to 500.
 
 ## Workflow
 
+Apply `references/workflows/_how-to-read.md` to these type-specific
+decisions. It links the shared asset/fallback, fit, live-island and
+copy procedures; this table supplies their inputs, not another policy.
+
 ### Context reads
-1. `lexsis_brand.navigation` first: header links (categories, not one
-   "Shop"), footer columns, the collection hierarchy for the category
-   tiles. `lexsis_brand.brand_kit` for tokens, logo, voice and banned
-   phrases; `lexsis_brand.context` for the `theme_id`.
-2. `lexsis_catalog.list` for best sellers (orders-ranked where the tool
-   exposes it, else the merchant's list): four to eight products with price
-   and media count; `lexsis_catalog.get` per product for the identity image
-   and any lifestyle image; one representative product with an image per
-   category tile. Record gaps for the merchant message.
-3. `lexsis_catalog.reviews_status`, then `lexsis_catalog.reviews` for the
-   store or best-seller average and count; band B2 or higher shows an
-   average; B0 omits the section and records the omission
-   (`references/proof/reviews-sourcing.md`).
-4. Press: fetch every claimed outlet URL and write ledger rows per
-   `references/proof/press-and-media-mentions.md`; count `verified`
-   editorial rows within 24 months. UGC: library assets with a rights row
-   (`references/proof/ugc-rights-and-display.md`).
-5. `lexsis_asset_library.search` with `theme_id`, `mode: "tags"`, one call
-   each for `hero`, `lifestyle`, `banner`, `product-shot`, `logo`,
-   `social-proof`; record counts; then semantic "<brand> product in use at
-   home"; view candidates with `lexsis_assets.view`
-   (`references/assets/asset-sourcing-sequence.md`).
-6. Policy page URL for trust-bar facts; the offer ledger for one campaign
-   block and the `first-order` incentive
-   (`references/offers/campaign-calendar.md` for the campaign's hero and
-   urgency rules); `lexsis_capture.form_schemas` for the email capture.
-7. `lexsis_design.islands` for the active catalog; `lexsis_workspace.credits`
-   before planning a `hero_bg` (`references/assets/generation-policy.md`).
+
+1. `lexsis_brand.navigation` first: header links (categories, not one "Shop"), footer columns, the collection hierarchy for the category tiles. `lexsis_brand.brand_kit` for tokens, logo, voice and banned phrases; `lexsis_brand.context` for the `theme_id`.
+2. `lexsis_catalog.list` for best sellers (orders-ranked where the tool exposes it, else the merchant's list): four to eight products with price and media count; `lexsis_catalog.get` per product for the identity image and any lifestyle image; one representative product with an image per category tile. Record gaps for the merchant message.
+3. `lexsis_catalog.reviews_status`, then `lexsis_catalog.reviews` for the store or best-seller average and count; band B2 or higher shows an average; B0 omits the section and records the omission (`references/proof/reviews-sourcing.md`).
+4. Press: fetch every claimed outlet URL and write ledger rows per `references/proof/press-and-media-mentions.md`; count `verified` editorial rows within 24 months. UGC: library assets with a rights row (`references/proof/ugc-rights-and-display.md`).
+5. `lexsis_asset_library.search` with `theme_id`, `mode: "tags"`, one call each for `hero`, `lifestyle`, `banner`, `product-shot`, `logo`, `social-proof`; record counts; then semantic "<brand> product in use at home"; view candidates with `lexsis_assets.view` (`references/assets/asset-sourcing-sequence.md`).
+6. Policy page URL for trust-bar facts; the offer ledger for one campaign block and the `first-order` incentive (`references/offers/campaign-calendar.md` for the campaign's hero and urgency rules); `lexsis_capture.form_schemas` for the email capture.
+7. `lexsis_design.islands` for the active catalog; `lexsis_workspace.credits` before planning a `hero_bg` (`references/assets/generation-policy.md`).
 
 ### Section by section
-Media per section follows `references/workflows/section-asset-workflow.md`:
-when nothing covers a slot, tell the merchant what is missing (job, aspect,
-count), offer upload via `lexsis_asset_upload.upload` or generation where the
-purpose is ALLOW or ASK in `references/assets/generation-policy.md`, and skip
-or merge the section only when the merchant chooses; a fast draft uses the
-closest existing asset or leaves the slot `planned` and lists every gap in the
-plan and the draft summary. No asset is used sight unseen: every candidate is
-opened with `lexsis_assets.view` and judged against the section per section 1b
-of that file (subject, crop to the slot aspect, a quiet area for the copy, the
-lighting and styling of the neighbouring slots, the plan's palette, no
-baked-in text, watermark or overlay); candidates for one grid, set or lookbook
-are viewed together so the set reads as one shoot, and a generated asset is
-viewed the same way after it returns. Islands follow
-`references/workflows/island-selection-workflow.md`: the lines below name the
-island and the inputs; variants and props are resolved live from
-`lexsis_design.island_schema`, with autoplay, hover-advance and entry motion
-off unless the plan names that motion moment (N10). Composition depth is in
-`references/generate-homepage.md`; copy ceilings follow
-`references/copy/copy-frameworks.md` and
-`references/anti-patterns/copy-anti-patterns.md`.
 
-**`announcement`** (conditional: verified fact or one live campaign)
-- Purpose: one line, a shipping or returns fact or the campaign end date as
-  text.
-- Media: no (chrome).
-- Island: the SiteHeader announcement strip, one message, no dismissal;
-  never CountdownTimer; resolve from `lexsis_design.island_schema`.
-- Copy: under 60 characters.
-- Decide with: a `policy-fact` or offer-ledger row.
-
-**`header`**
-- Purpose: categories and a visible search field.
-- Media: logo from the brand kit; a light logo file for the transparent
-  variant.
-- Island: SiteHeader with categories from `lexsis_brand.navigation`; the
-  transparent treatment only when the hero is the plan's full-bleed bold
-  moment; never SiteHeader and Navbar together; resolve from
-  `lexsis_design.island_schema`; preset `siteheader/sticky-light` or
-  `siteheader/transparent-dark`.
-- Copy: category labels 3 words or fewer.
-- Decide with: the navigation result and the bold-moment line in the plan.
-
-**`hero`**
-- Purpose: what the store sells, for whom, one differentiator, one primary
-  CTA, a guarantee line.
-- Media: yes; job `in-use` (bespoke lifestyle, product legible in one second,
-  face toward copy or product), treatment `editorial-lifestyle`
-  (`references/assets/image-jobs-by-page-type.md`, section 5). Search library
-  `hero`, then `lifestyle`, then catalog lifestyle media of a best seller,
-  then merchant upload; stock never (people). Generation: `hero_bg` (ALLOW)
-  behind a real cut-out, which makes the hero the `product-in-context`
-  alternate; `product_lifestyle` is ASK and needs the merchant's yes for this
-  slot. Missing: tell the merchant (in-use lifestyle, 16:9 plus 4:5, one
-  image) and offer upload, `hero_bg` or the ASK composite; if skipped, the
-  best catalog identity image serves as a packshot hero with "hero pending
-  merchant media" in the plan. No-go: a carousel; stock people; a video with
-  sound; text in the image. View every candidate with `lexsis_assets.view` and
-  run the section fit review; view it beside the category and best-seller
-  images so the page reads as one shoot.
-- Island: none by default (static split `<picture>` with copy beside the
-  photograph, `references/assets/slot-spec.md`); HeroMedia only as the
-  full-bleed bold moment, image mode, autoplay off; never carousel mode;
-  resolve from `lexsis_design.island_schema`.
-- Copy: H1 10 words or fewer (what and for whom); subhead 20 words; one CTA
-  to the main path; guarantee line from the ledger.
-- Decide with: `lexsis_assets.view` at both crops; the plan's bold moment;
-  the policy row for the guarantee line.
-
-**`trust-bar`** (recommended) or **`press-marquee`**
-- Purpose: three verified facts, or three to six linked editorial logos.
-- Media: facts stand as text with hairlines (icons only from the page's single
-  inline SVG set); press logos are the outlets' own monochrome SVGs from
-  library `logo`, each inside a link to the article
-  (`references/proof/press-and-media-mentions.md`). Generation: never (GN5).
-  Missing logos: ask the merchant for the outlet files or article URLs; fewer
-  than three verified rows renders quotes instead. View every candidate with
-  `lexsis_assets.view` and run the section fit review before use.
-- Island: none; a static HTML row of linked logos (the Marquee island is
-  deprecated, and N10 forbids a ticker outside the plan's motion moment).
-- Copy: facts 8 words each; caption "In the press".
-- Decide with: `policy-fact` rows; count of verified press rows.
-
-**`product-grid`** categories
-- Purpose: "Shop by" tiles showing catalogue breadth.
-- Media: yes; one `context` image per tile from library `lifestyle` or the
-  collection's representative product identity image from catalog media; one
-  aspect across tiles; four to six tiles. Generation: `card_bg` (ALLOW) only
-  behind a real product cut-out. Missing: tell the merchant (one image per
-  collection, one aspect, count) and offer upload or a cut-out on `card_bg`;
-  if skipped, that collection is a text link in the header, never an icon tile
-  or coloured square. View every candidate with `lexsis_assets.view` and run
-  the section fit review; view the grid images together so lighting,
-  backgrounds and crops agree.
-- Island: none (static tiles linking to collections).
-- Copy: names creative but clear, 3 words or fewer.
-- Decide with: the collection hierarchy and image availability per
-  collection.
-
-**`product-grid`** best sellers
-- Purpose: four to eight products from orders data with price, rating and
-  count, quick add on single-variant items.
-- Media: yes; job `identity` per product from catalog media. Generation: none.
-  Missing: name the products without an image and offer upload; if skipped,
-  they leave the rail. View every candidate with `lexsis_assets.view` and run
-  the section fit review; view the grid images together so lighting,
-  backgrounds and crops agree.
-- Island: FeaturedCollectionStage, or ProductCarousel when the brief wants
-  boxed cards and there are four or more products; decide from best-seller
-  count, image availability, variant axes and whether the hero already took
-  the bold moment; quick add only with `head.use_cart_v2`; motion off;
-  resolve from `lexsis_design.island_schema`; preset
-  `productcarousel/cards-quiet` in the carousel case.
-- Copy: section heading 6 words or fewer; prices from the catalog; rating
-  and count only at 5 or more reviews per product.
-- Decide with: best-seller count, image availability, review band per
-  product, the bold-moment line.
-
-**`story`** (recommended)
-- Purpose: a two to four sentence teaser linking to `brand-story-founder`.
-- Media: yes; job `founder-or-team` or `context` (workshop, kitchen, place),
-  real and named, from library `lifestyle` or merchant upload; never stock or
-  generated (GN3). Missing: tell the merchant (a real photo of the founder,
-  team or place, 4:5 or 3:2, one image) and offer upload only ("needs a real
-  photo"); if skipped, the teaser becomes a signed two-sentence line under the
-  review module and the story link stays in navigation. View every candidate
-  with `lexsis_assets.view` and run the section fit review before use.
-- Island: none.
-- Copy: two to four sentences with a date, a place or a name; one link.
-- Decide with: a viewed photo with approval recorded in the ledger.
-
-**`review-summary`** (mandatory at 5 or more reviews)
-- Purpose: real average with count, two or three dated quotes, link to all
-  reviews.
-- Media: quotes are the artefact; reviewer photos only real with consent,
-  else CSS initials (`references/proof/proof-ledger.md`, display rule 3).
-- Island: ReviewCarousel bound to an active collection; decide grid versus
-  strip from quote length and count; average and count as HTML from
-  `lexsis_catalog.reviews` for the same scope; autoplay off; resolve from
-  `lexsis_design.island_schema`; preset `reviewcarousel/grid-flat` or
-  `reviewcarousel/strip-compact`.
-- Copy: verbatim, dated; heading names the scope ("Rated 4.6 by 212
-  customers").
-- Decide with: `reviews_status` band; B0 omits and records under
-  "Mandatory sections omitted".
-
-**`press-marquee`** (conditional: verified linked coverage)
-- Purpose: three to six monochrome logos linking to their articles.
-- Media: outlet SVGs from library `logo`, each linked; never generated.
-  Missing: ask the merchant for outlet files or URLs; fewer than three renders
-  quotes. View every candidate with `lexsis_assets.view` and run the section
-  fit review before use.
-- Island: none; static linked row (the Marquee island is deprecated).
-- Copy: caption "In the press"; year on any item older than 12 months.
-- Decide with: count of `verified` editorial press rows.
-
-**`ugc-grid`** (conditional: rights-cleared media)
-- Purpose: six to twelve customer tiles with handles.
-- Media: yes; job `ugc` from library `social-proof` with a ledger `P` row per
-  tile, one aspect, original grading; never staff or stock as customers.
-  Missing: tell the merchant which rights requests are open
-  (`references/proof/ugc-rights-and-display.md`); the section waits, never
-  renders pending UGC. View every candidate with `lexsis_assets.view` and run
-  the section fit review; view the tile images together so lighting,
-  backgrounds and crops agree.
-- Island: none for the grid; GalleryLightbox mounted once for expansion;
-  resolve from `lexsis_design.island_schema`.
-- Copy: handle and first name per tile; labelled as customer content.
-- Decide with: count of `verified` UGC rows (six or more).
-
-**`quiz`** (conditional: choice complexity and a routing quiz)
-- Purpose: finder entry with one CTA.
-- Media: yes; one `context` image beside the entry from library `lifestyle`.
-  Missing: offer upload; if skipped, the entry is the hero's secondary CTA.
-  View every candidate with `lexsis_assets.view` and run the section fit
-  review before use.
-- Island: FunnelRuntime with a published funnel from
-  `lexsis_capture.funnel_templates`; resolve from
-  `lexsis_design.island_schema`.
-- Copy: one line and one CTA.
-- Decide with: an existing funnel template.
-
-**`offer`** (conditional: one live campaign with a verified end)
-- Purpose: the campaign as one static block linking to its own page.
-- Media: yes; the campaign's real imagery (catalog identity of the featured
-  product or library `banner`). Missing: offer upload; if skipped, the
-  campaign is the announcement line alone. View every candidate with
-  `lexsis_assets.view` and run the section fit review before use.
-- Island: none; never CountdownTimer on the homepage.
-- Copy: one sentence with the end date as text; one CTA.
-- Decide with: the offer-ledger row and its `endsAt`.
-
-**`email-capture`** (recommended)
-- Purpose: one field; the incentive only when a `first-order` row exists.
-- Media: a best-seller image beside the form; the form alone is the object
-  when none is spare (N8).
-- Island: EmailCapture, one per page, or the Footer newsletter layout
-  (never both); resolve from `lexsis_design.island_schema`; preset
-  `footer/newsletter-split-light` in the footer case.
-- Copy: one line and one field.
-- Decide with: `lexsis_capture.form_schemas` and the offer ledger.
-
-**`footer`**
-- Purpose: policies, returns link, contact, social, payment marks,
-  newsletter.
-- Media: logo; payment marks as issuer artwork only.
-- Island: Footer with columns from `lexsis_brand.navigation`; resolve from
-  `lexsis_design.island_schema`; preset `footer/columns-dark`.
-- Decide with: the navigation result.
+| Section | Purpose | Media job and source | Interactive decision | Copy constraints | Decision evidence |
+|---|---|---|---|---|---|
+| `announcement` (conditional: verified fact or one live campaign) | one line, a shipping or returns fact or the campaign end date as text. | no (chrome). | the SiteHeader announcement strip, one message, no dismissal; never CountdownTimer | under 60 characters. | a `policy-fact` or offer-ledger row. |
+| `header` | categories and a visible search field. | logo from the brand kit; a light logo file for the transparent variant. | SiteHeader with categories from `lexsis_brand.navigation`; the transparent treatment only when the hero is the plan's full-bleed bold moment; never SiteHeader and Navbar together. | category labels 3 words or fewer. | the navigation result and the bold-moment line in the plan. |
+| `hero` | what the store sells, for whom, one differentiator, one primary CTA, a guarantee line. | yes; job `in-use` (bespoke lifestyle, product legible in one second, face toward copy or product), treatment `editorial-lifestyle` (`references/assets/image-jobs-by-page-type.md`, section 5). Search library `hero`, then `lifestyle`, then catalog lifestyle media of a best seller, then merchant upload; stock never (people). Generation: `hero_bg` behind a real cut-out, which makes the hero the `product-in-context` alternate; `product_lifestyle` is ASK and needs the merchant's yes for this slot. Missing media: (in-use lifestyle, 16:9 plus 4:5, one image) , `hero_bg` or the ASK composite; if skipped, the best catalog identity image serves as a packshot hero with "hero pending merchant media" in the plan. | none by default (static split `<picture>` with copy beside the photograph, `references/assets/slot-spec.md`); HeroMedia only as the full-bleed bold moment, image mode, autoplay off; never carousel mode | H1 10 words or fewer (what and for whom); subhead 20 words; one CTA to the main path; guarantee line from the ledger. | `lexsis_assets.view` at both crops; the plan's bold moment; the policy row for the guarantee line. |
+| `trust-bar` (recommended) or `press-marquee` | three verified facts, or three to six linked editorial logos. | facts stand as text with hairlines (icons only from the page's single inline SVG set); press logos are the outlets' own monochrome SVGs from library `logo`, each inside a link to the article (`references/proof/press-and-media-mentions.md`). Generation: never (GN5). Missing logos: ask the merchant for the outlet files or article URLs; fewer than three verified rows renders quotes instead. | none; a static HTML row of linked logos (the Marquee island is deprecated, and N10 forbids a ticker outside the plan's motion moment). | facts 8 words each; caption "In the press". | `policy-fact` rows; count of verified press rows. |
+| `product-grid` categories | "Shop by" tiles showing catalogue breadth. | yes; one `context` image per tile from library `lifestyle` or the collection's representative product identity image from catalog media; one aspect across tiles; four to six tiles. Generation: `card_bg` only behind a real product cut-out. Missing media: (one image per collection, one aspect, count) ; alternative: a cut-out on `card_bg`; if skipped, that collection is a text link in the header, never an icon tile or coloured square. view the grid images together so lighting, backgrounds and crops agree. | none (static tiles linking to collections). | names creative but clear, 3 words or fewer. | the collection hierarchy and image availability per collection. |
+| `product-grid` best sellers | four to eight products from orders data with price, rating and count, quick add on single-variant items. | yes; job `identity` per product from catalog media. Generation: none. Missing: name the products without an image and; if skipped, they leave the rail. view the grid images together so lighting, backgrounds and crops agree. | FeaturedCollectionStage, or ProductCarousel when the brief wants boxed cards and there are four or more products; decide from best-seller count, image availability, variant axes and whether the hero already took the bold moment; quick add only with `head.use_cart_v2`; motion off. | section heading 6 words or fewer; prices from the catalog; rating and count only at 5 or more reviews per product. | best-seller count, image availability, review band per product, the bold-moment line. |
+| `story` (recommended) | a two to four sentence teaser linking to `brand-story-founder`. | yes; job `founder-or-team` or `context` (workshop, kitchen, place), real and named, from library `lifestyle` or merchant upload; never stock or generated (GN3). Missing media: (a real photo of the founder, team or place, 4:5 or 3:2, one image) ("needs a real photo"); if skipped, the teaser becomes a signed two-sentence line under the review module and the story link stays in navigation. | none. | two to four sentences with a date, a place or a name; one link. | a viewed photo with approval recorded in the ledger. |
+| `review-summary` (mandatory at 5 or more reviews) | real average with count, two or three dated quotes, link to all reviews. | quotes are the artefact; reviewer photos only real with consent, else CSS initials (`references/proof/proof-ledger.md`, display rule 3). | ReviewCarousel bound to an active collection; decide grid versus strip from quote length and count; average and count as HTML from `lexsis_catalog.reviews` for the same scope; autoplay off. | verbatim, dated; heading names the scope ("Rated 4.6 by 212 customers"). | `reviews_status` band; B0 omits and records under "Mandatory sections omitted". |
+| `press-marquee` (conditional: verified linked coverage) | three to six monochrome logos linking to their articles. | outlet SVGs from library `logo`, each linked; never generated. Missing: ask the merchant for outlet files or URLs; fewer than three renders quotes. | none; static linked row (the Marquee island is deprecated). | caption "In the press"; year on any item older than 12 months. | count of `verified` editorial press rows. |
+| `ugc-grid` (conditional: rights-cleared media) | six to twelve customer tiles with handles. | yes; job `ugc` from library `social-proof` with a ledger `P` row per tile, one aspect, original grading; never staff or stock as customers. Gap: open rights requests (`references/proof/ugc-rights-and-display.md`); the section waits, never renders pending UGC. view the tile images together so lighting, backgrounds and crops agree. | none for the grid; GalleryLightbox mounted once for expansion | handle and first name per tile; labelled as customer content. | count of `verified` UGC rows (six or more). |
+| `quiz` (conditional: choice complexity and a routing quiz) | finder entry with one CTA. | yes; one `context` image beside the entry from library `lifestyle`. Missing:; if skipped, the entry is the hero's secondary CTA. | FunnelRuntime with a published funnel from `lexsis_capture.funnel_templates` | one line and one CTA. | an existing funnel template. |
+| `offer` (conditional: one live campaign with a verified end) | the campaign as one static block linking to its own page. | yes; the campaign's real imagery (catalog identity of the featured product or library `banner`). Missing:; if skipped, the campaign is the announcement line alone. | none; never CountdownTimer on the homepage. | one sentence with the end date as text; one CTA. | the offer-ledger row and its `endsAt`. |
+| `email-capture` (recommended) | one field; the incentive only when a `first-order` row exists. | a best-seller image beside the form; the form alone is the object when none is spare (N8). | EmailCapture, one per page, or the Footer newsletter layout (never both). | one line and one field. | `lexsis_capture.form_schemas` and the offer ledger. |
+| `footer` | policies, returns link, contact, social, payment marks, newsletter. | logo; payment marks as issuer artwork only. | Footer with columns from `lexsis_brand.navigation`. | Use the shared procedure. | the navigation result. |
 
 ### Asset budget
+
 | Source | Usually supplies | Usually missing | Per gap |
 |---|---|---|---|
 | catalog media | `identity` per best seller, one image per category tile | the bespoke `in-use` hero, `context` tiles that show a scene | reuse the best product lifestyle shot as the hero; generate `hero_bg` (ALLOW) behind a cut-out, `product_lifestyle` (ASK) with the merchant's yes, `card_bg` (ALLOW) behind a cut-out for a tile; ask the merchant to upload lifestyle and tile images; a packshot hero or text links only on the merchant's call |
 | asset library | `hero` and `lifestyle` candidates, `logo` SVGs for press, `social-proof` UGC with rights | founder or team photo, press logos with fetched URLs | ask the merchant to upload with written approval and article URLs; press quotes instead of logos; the story teaser shrinks to a signed line only on the merchant's call |
 | generation | backdrops, textures, composites only | product, people, results, logos, text | never; these are "needs a real photo" in the merchant message |
 
-With minimal assets the page is a header with categories and search, a split
-hero built from the best product photo, four category tiles from product
-images, a best-seller stage of real cards, three policy facts, an email field
-and a footer; at most one generated asset (`hero_bg`), never more than four
-per page, and every missing asset listed in the plan and the draft summary
-with upload, generate or skip. Every asset, found or generated, was viewed and
-passed the section fit review before use.
+With minimal assets the page is a header with categories and search, a split hero built from the best product photo, four category tiles from product images, a best-seller stage of real cards, three policy facts, an email field and a footer; at most one generated asset (`hero_bg`), never more than four per page, and every missing asset listed in the plan and the draft summary with upload, generate or skip.
 
 ## Above the fold (390px)
 

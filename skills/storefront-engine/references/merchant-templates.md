@@ -78,5 +78,5 @@ Do not:
 - regenerate an entire page when a reusable section can be applied;
 - assume a template is Header/Footer-specific.
 
-Use Templates → My templates for the user-owned library. Use the Design Library
+Use Templates U+2192 My templates for the user-owned library. Use the Design Library
 for brand tokens and navigation/footer link data, not as a second page renderer.

@@ -267,21 +267,6 @@
     ],
     "headless": {
       "supported": false
-    },
-    "example": "<lx-island name=\"HeroMedia\">\n  <script type=\"application/json\">\n{\n  \"type\": \"image\"\n}\n  </script>\n</lx-island>",
-    "examples": [
-      {
-        "label": "Static hero image with parallax and dark overlay",
-        "source": "<lx-island name=\"HeroMedia\">\n  <script type=\"application/json\">{\"type\":\"image\",\"src\":\"https://via.placeholder.com/1920x1080\",\"alt\":\"Hero background\",\"effect\":\"parallax\",\"overlay\":60,\"overlayColor\":\"#000000\",\"minHeight\":\"100vh\"}</script>\n</lx-island>"
-      },
-      {
-        "label": "Carousel with fade transition and autoplay",
-        "source": "<lx-island name=\"HeroMedia\">\n  <script type=\"application/json\">{\"type\":\"carousel\",\"slides\":[{\"src\":\"https://via.placeholder.com/1920x1080\",\"alt\":\"Slide 1\"},{\"src\":\"https://via.placeholder.com/1920x1080\",\"alt\":\"Slide 2\"},{\"src\":\"https://via.placeholder.com/1920x1080\",\"alt\":\"Slide 3\"}],\"autoplay\":true,\"interval\":5000,\"transition\":\"fade\",\"overlay\":40}</script>\n</lx-island>"
-      },
-      {
-        "label": "Looping background video with poster",
-        "source": "<lx-island name=\"HeroMedia\">\n  <script type=\"application/json\">{\"type\":\"video\",\"videoSrc\":\"https://example.com/hero.mp4\",\"poster\":\"https://via.placeholder.com/1920x1080\",\"loop\":true,\"muted\":true,\"overlay\":30,\"minHeight\":\"100vh\"}</script>\n</lx-island>"
-      }
-    ]
+    }
   }
 }

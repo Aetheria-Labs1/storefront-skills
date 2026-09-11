@@ -1,21 +1,18 @@
 # Storefront Page Editing
 
-Edit existing pages through canonical local source and section-level remote
+Edit existing pages through canonical editable source and section-level remote
 operations. Read `source-artifact-workflow.md` first.
 
 ## Edit Flow
 
-1. Open the local working directory. If an older page has no local files,
-   create them from the current remote page once and record the synchronized
-   baseline before editing.
-2. `lexsis_pages` action `edit_context`
-3. Compare its version with `manifest.remote.lastKnownVersion`; stop on drift.
-4. Edit `lexsis-source.html`.
-5. Run the local source gate and compile the complete source.
-6. Compare current section hashes with the synchronized baseline.
-7. Patch only changed sections with `expected_version`,
-   `expected_source_sha256`, and an idempotency key.
-8. Update manifest version/hashes after success, then run `diff` and `integrity`.
+1. Read `lexsis_pages.edit_context` and `lexsis_pages.source`.
+2. Compare the current version with the last recorded version; reconcile drift.
+3. Edit the returned source value and compile the complete changed inputs.
+4. Compare section changes with the persisted baseline.
+5. Patch only changed sections with `expected_version`,
+   `expected_source_sha256` and an idempotency key where supported.
+6. Update recorded version/hashes after success, then run `diff`, `integrity`
+   and the affected checks on the hosted draft.
 
 For existing pages, `page_id` is authoritative. Do not require the user to
 reselect a workspace or pass `store_id`; an optional store ID is only an
@@ -80,12 +77,12 @@ lexsis_drafts({ action: "page_move_section", args: { page_id, section_id, positi
 
 ## Best Practices
 
-- Never make the remote page the only copy of an intentional change
+- Retain the intended change and returned version in the task handoff
 - Always call `lexsis_pages` action `edit_context` before a write
 - Stop on unexpected version drift
-- Re-read source and reconcile locally when an edit returns `version_conflict`
+- Re-read source and reconcile against the current version when an edit returns `version_conflict`
 - Reference section IDs from the page data (don't guess)
-- Compile the complete local source before section patching
+- Compile the complete editable source before section patching
 - After editing, run `diff` and `integrity`
 - Batch related multi-section changes with `page_patch` so they create one
   version.
@@ -95,13 +92,12 @@ lexsis_drafts({ action: "page_move_section", args: { page_id, section_id, positi
   and setting `productIds` removes `products`; never send both.
 - Reusing an idempotency key with the same request returns the original result.
   Reusing it with different content is an error.
-- Update local hashes and manifests only after a successful remote write.
+- Update input hashes and manifests only after a successful remote write.
 - Preserve existing CSS variables and island configurations
 - Don't break mobile responsiveness when editing desktop layout
 
-Minor edits do not repeat planning, but they still require a local source
-workspace and a matching saved store/theme setup. Adoption creates page files;
-it does not rerun `setup`.
+Minor edits do not repeat planning or create page files. Resolve the saved
+binding or current MCP context; keep the existing page id authoritative.
 
 For published pages, `current_version` can advance while the live renderer
 remains pinned to `published_version_id`. Publish only after QA.
@@ -110,4 +106,4 @@ remains pinned to `published_version_id`. Publish only after QA.
 
 Read `merchant-templates.md`. `template_apply` follows the same edit
 preconditions and materializes source into the page. After success, fetch edit
-context, update the local source and hashes, then run `diff` and `integrity`.
+context, read back the persisted source and hashes, then run `diff` and `integrity`.

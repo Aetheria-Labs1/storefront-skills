@@ -21,7 +21,7 @@ Use the existing Lexsis image tools:
 
 1. Read current image capabilities through `lexsis_assets` action
    `capabilities`.
-2. Build the prompt from `page-plan.md`, the saved theme and brand direction,
+2. Build the prompt from `page plan`, the saved theme and brand direction,
    the wireframe, and real product or brand reference images.
 3. Call `lexsis_drafts` action `asset_generate` with a portrait output suitable
    for a mobile concept.
@@ -45,7 +45,7 @@ output and the same visual system rather than inventing a second direction.
 ## Turn Approval into Production Assets
 
 The concept image is design evidence, never page media and never source.
-Record it in `design-concept.md`, not in the manifest's production `assets[]`
+Record it in `design-concept.md`, not in the page record's production `assets[]`
 slots.
 
 After the concept is approved:

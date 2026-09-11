@@ -75,259 +75,45 @@ section as footnotes and the end-of-page disclaimer into `legal`.
 
 ## Workflow
 
+Apply `references/workflows/_how-to-read.md` to these type-specific
+decisions. It links the shared asset/fallback, fit, live-island and
+copy procedures; this table supplies their inputs, not another policy.
+
 ### Context reads
-1. `lexsis_catalog.get` for the product this page substantiates: which jobs
-   the media already covers (`identity` at position one,
-   `ingredient-or-material` flat lay, `label-or-facts-panel` at 1600 px or
-   more, `sequence` routine shots, real video), mapped with the type's row in
-   `references/assets/image-jobs-by-page-type.md`; variant axes and whether
-   the page targets one SKU; price and compare-at (compare-at needs a ledger
-   row); selling plans (gates `subscribe-save` in the buy box). Inventory is
-   read but never shown as a stock statement.
-2. `lexsis_catalog.reviews_status` for the count band; `lexsis_catalog.reviews`
-   only at 5 or more, for a `review-summary` with average and count.
-3. `lexsis_brand.context` and `lexsis_brand.brand_kit` for `theme_id`,
-   palette hexes (any generation call), voice and banned phrases;
-   `lexsis_brand.navigation` for the full header and footer and the buy-point
-   URL.
-4. `lexsis_asset_library.search` with `theme_id`, `mode: "tags"`: `flat-lay`,
-   `product-shot`, `hero`, `logo` (issuer marks only), then semantic
-   "<ingredient> macro", "facts panel", "lab", "farm"; view candidates with
-   `lexsis_assets.view`. Inventory the result by job.
-5. Merchant-confirmed facts as proof ledger rows before any section is
-   chosen: each study (document or URL, design, n, duration, population,
-   endpoint, whether it tested this product at this dose); each certification
-   (issuer, number, scope, date); the expert (name, credential, registration
-   number, written approval, connection); lab standard and certificate of
-   analysis; formulation change dates; the regulated-claim wording for the
-   market. Substantiation and wording rules:
-   `references/proof/before-after-and-claims.md`,
-   `references/proof/trust-badges-certifications.md`. A claim with no row is
-   not written.
-6. `lexsis_design.islands` for the active catalog, then
-   `lexsis_design.island_schema` for each island named below; deprecated
-   entries take their replacement per
-   `references/workflows/island-selection-workflow.md`.
+
+1. `lexsis_catalog.get` for the product this page substantiates: which jobs the media already covers (`identity` at position one, `ingredient-or-material` flat lay, `label-or-facts-panel` at 1600 px or more, `sequence` routine shots, real video), mapped with the type's row in `references/assets/image-jobs-by-page-type.md`; variant axes and whether the page targets one SKU; price and compare-at (compare-at needs a ledger row); selling plans (gates `subscribe-save` in the buy box). Inventory is read but never shown as a stock statement.
+2. `lexsis_catalog.reviews_status` for the count band; `lexsis_catalog.reviews` only at 5 or more, for a `review-summary` with average and count.
+3. `lexsis_brand.context` and `lexsis_brand.brand_kit` for `theme_id`, palette hexes (any generation call), voice and banned phrases; `lexsis_brand.navigation` for the full header and footer and the buy-point URL.
+4. `lexsis_asset_library.search` with `theme_id`, `mode: "tags"`: `flat-lay`, `product-shot`, `hero`, `logo` (issuer marks only), then semantic "<ingredient> macro", "facts panel", "lab", "farm"; view candidates with `lexsis_assets.view`. Inventory the result by job.
+5. Merchant-confirmed facts as proof ledger rows before any section is chosen: each study (document or URL, design, n, duration, population, endpoint, whether it tested this product at this dose); each certification (issuer, number, scope, date); the expert (name, credential, registration number, written approval, connection); lab standard and certificate of analysis; formulation change dates; the regulated-claim wording for the market. Substantiation and wording rules: `references/proof/before-after-and-claims.md`, `references/proof/trust-badges-certifications.md`. A claim with no row is not written.
+6. `lexsis_design.islands` for the active catalog, then `lexsis_design.island_schema` for each island named below; deprecated entries take their replacement per `references/workflows/island-selection-workflow.md`.
 
 ### Section by section
-Media lines follow `references/workflows/section-asset-workflow.md`, the
-search order in `references/assets/asset-sourcing-sequence.md`, aspects and
-weights in `references/assets/slot-spec.md` and video rules in
-`references/assets/video-rules.md`. When every step finds nothing, the
-fallback is the same everywhere: tell the merchant what is missing (job,
-aspect, count), offer upload via `lexsis_asset_upload.upload` or generation
-when the purpose is feasible under `references/assets/generation-policy.md`,
-and skip or merge the section only if the merchant chooses. In fast-draft,
-proceed with the closest existing asset or leave the slot `planned`, and list
-every missing asset in the plan and the draft summary. Island lines name the
-island and the decision inputs; variants and props are resolved live from
-`lexsis_design.island_schema`. Copy ceilings follow this file's Copy section
-and `references/anti-patterns/copy-anti-patterns.md`. No asset is
-used sight unseen: every candidate is opened with `lexsis_assets.view` and
-judged against its section with the fit review in section 1b of
-`references/workflows/section-asset-workflow.md` (the subject does the job,
-it crops to the slot aspect without losing the subject, a quiet area holds
-the copy, lighting and palette match the neighbouring slots, no baked-in
-text, watermark or promo overlay); a generated backdrop or texture is viewed
-the same way when it returns.
 
-**`hero`**
-- Purpose: name the product, state the outcome in the shopper's words with
-  footnote markers, show the ingredient or material, give one trust line.
-- Media: yes. Job `ingredient-or-material` as an `editorial-lifestyle` hero;
-  `identity` packshot is the alternate. Catalog media, then library tags
-  `flat-lay` and `hero`, then semantic "<ingredient> macro", then merchant
-  upload; view with `lexsis_assets.view` and confirm the macro shows the
-  named ingredient, the portrait crop keeps it and a quiet area holds the
-  headline. Gap: ask the merchant (job, aspect, count); upload, or `hero_bg` as
-  a backdrop behind HTML text when the hero is the plan's bold moment; the
-  ingredient itself is never generated (GN11); the typographic hero only if
-  the merchant chooses it. No-go: a person, a before/after pair, clinical
-  props, stock raw material presented as the merchant's sourcing.
-- Island: `none` for the hero (one static `<picture>`, portrait crop for
-  mobile). Header `SiteHeader` (announcement plus nav) or `Navbar` (nav
-  only) from `lexsis_brand.navigation`; preset `siteheader/sticky-light` or
-  `navbar/sticky-light` when it fits.
-- Copy: outcome plus mechanism noun, footnoted; headline 12 words, body 40
-  words; the trust line is one sentence that links down the page.
-- Decide with: the job inventory from reads 1 and 4; the ledger row behind
-  the trust line.
-
-**`mechanism`**
-- Purpose: three to five plain-language steps, each naming the ingredient or
-  component doing the work, beside one diagram.
-- Media: yes. Job `diagram`: merchant diagram via `lexsis_asset_import.import`
-  (view with `lexsis_assets.view`: labels legible at 390px, no baked-in
-  numbers), then library semantic "mechanism diagram",
-  then an authored inline SVG with labels and numbers as SVG `<text>` or
-  HTML. Raster generation is never used for a diagram (GN6); the SVG is the
-  offer when nothing exists. No-go: icon tiles in place of the diagram, stock
-  lab imagery, a step list on a colour band.
-- Island: `none` for the diagram. `VideoPlayer` only when a real captioned
-  explainer under 60 seconds exists in catalog media or the library. The
-  first CTA of the page sits after this section.
-- Copy: 30 words per step; step title is a verb plus the ingredient.
-- Decide with: whether a merchant diagram exists; otherwise the ledger's
-  mechanism steps drive the SVG.
-
-**`ingredients`** or **`materials`**
-- Purpose: one card per hero ingredient or material with what it is, dose or
-  spec as shipped, why it is there, and a citation marker; the facts panel
-  sits beside the cards for regulated consumables.
-- Media: yes. Jobs `ingredient-or-material` per card and
-  `label-or-facts-panel` when the product carries a label. Catalog media,
-  then library tags `flat-lay` and `product-shot`, then semantic
-  "<ingredient> close-up", then merchant upload, then supplier photo with a
-  written licence, then licensed stock raw material as a plain macro never
-  captioned as the merchant's sourcing. View each macro with
-  `lexsis_assets.view` and confirm it shows the ingredient named beside it;
-  view the label photo at 390px and confirm the panel text is legible. Gap:
-  ask the merchant (which
-  ingredients lack a macro, square, count); upload only, since the ingredient
-  is never generated (GN11); `texture_fill` may back the card object (N8) but
-  never stands in for the ingredient. Facts panel as HTML text first with the
-  real label photo zoomable beside it. No-go: an emoji or icon per
-  ingredient, cards falling back to colour tiles, fillers before actives.
-- Island: `IngredientExplorer` when three or more ingredients carry a
-  description and a dose (inputs: ingredient count, image coverage, dose
-  data); one or two ingredients or a material spec table are plain HTML;
-  grouping by concern or actives vs full list uses CSS-only tabs with radio
-  inputs or grouped `<details>`. Resolve layout and props from
-  `lexsis_design.island_schema`.
-- Copy: 60 words per card in FAB order with the citation marker on the
-  benefit; doses exactly as printed on the label.
-- Decide with: ingredient count and per-ingredient image coverage from read
-  4; doses from the label in read 1.
-
-**`science`**
-- Purpose: the studies table with design, n, duration, population,
-  endpoint, result and a "tested this product at this dose?" column.
-- Media: no by default; the table is the object. A `result-or-context`
-  image only from a `verified` ledger row, never a before/after pair on this
-  type (`references/proof/before-after-and-claims.md`); study figures only
-  with the publisher's licence. No-go: charts with baked-in text, stock lab
-  photos, generated clinical imagery (GN4, GN6).
-- Island: `none` (HTML `<table>`, one row per study, the disclaimer in the
-  same viewport as the first regulated claim).
-- Copy: 40 words per row plus the numbers copied exactly; design named;
-  "was associated with" not "proven".
-- Decide with: the `test-data` ledger rows. With no product or ingredient
-  study the section says so in one sentence and links the literature; it
-  never implies a trial.
-
-**`certifications`** (conditional)
-- Purpose: real marks with issuer wording.
-- Media: yes, issuer artwork only: library tag `logo`, then
-  `lexsis_asset_import.import` of the issuer's file, then a monochrome SVG
-  redraw the issuer permits; view each mark with `lexsis_assets.view` against
-  its ledger row and confirm it is the real issuer's artwork. Gap: ask the
-  merchant for the issuer file;
-  never generated (GN5, TB10). No-go: a mark without issuer text and number,
-  the ISO logo, "FDA registered facility", a badge row repeated per section.
-- Island: `none` (one row, three to five marks, one height, issuer text
-  beside each, per `references/proof/trust-badges-certifications.md`).
-- Copy: the issuer's permitted phrase plus the licence number.
-- Decide with: `certification` ledger rows holding issuer, number, scope and
-  current date; a row missing any of the four does not render.
-
-**`expert-endorsement`** (recommended)
-- Purpose: one verbatim quote from a named, credentialed person.
-- Media: yes or none. A real photo of the named expert with consent
-  (merchant upload or library, viewed with `lexsis_assets.view` to confirm
-  it is the named person), or the quote runs as text with the credential
-  line and no photo. Gap: ask the merchant for the photo; never stock, never
-  generated (GN3), never a logo in place of the person
-  (`references/proof/before-after-and-claims.md`, endorsements table).
-- Island: `none` (a `<blockquote>` with name, credential, registration
-  number, date and connection label).
-- Copy: verbatim; nothing paraphrased.
-- Decide with: an `expert-quote` ledger row with written approval; without a
-  row the merchant is told what is needed and the section waits.
-
-**`sourcing`** (recommended)
-- Purpose: where and how it is made, the lab standard, the certificate of
-  analysis, formulation change history.
-- Media: yes. Job `founder-or-team`, or a facility, farm or lab photo
-  (`context`, `sequence`): library tag `lifestyle`, then semantic "facility",
-  "lab", "farm", then merchant upload; view with `lexsis_assets.view` and
-  confirm a real facility or process with lighting that matches the
-  neighbouring slots. Gap: ask the merchant for facility or
-  process photos; stock is never captioned as their facility and generation
-  is never used; merging the facts into `science` as text is the merchant's
-  call. No-go: a stock laboratory, a generated factory, a world map as the
-  only visual.
-- Island: `none`.
-- Copy: 80 words; the COA is a link; the change history is a dated list.
-- Decide with: facility photo coverage from read 4 and the merchant's answer.
-
-**`usage`** or **`routine`** (recommended)
-- Purpose: how to take or apply, when results are typically noticed, what
-  changes nothing.
-- Media: yes. Job `sequence` (three to five real step photos) or one
-  captioned how-to video: catalog media, then library tag `lifestyle` and
-  semantic "how to use <product>", then merchant upload; view each step
-  with `lexsis_assets.view` and confirm the action is legible at 390px. Gap:
-  ask the merchant for step photos (count, square or 4:5); never generated; folding
-  the steps into one `faq` answer is the merchant's call. No icon tiles.
-- Island: `VideoPlayer` when a real how-to video exists; otherwise `none`.
-- Copy: one sentence per step; the "typically noticed" line cites its study
-  row.
-- Decide with: `sequence` coverage from read 4 and the merchant's answer.
-
-**`faq`**
-- Purpose: objection-phrased questions answered in the first sentence.
-- Media: no.
-- Island: `none`; native `<details>` and `<summary>`, all collapsed.
-- Copy: five to eight questions, 60 words per answer; "Is this the same dose
-  as in the study?" is mandatory when a study is cited.
-- Decide with: the claims in `science` and the merchant's stated objections.
-
-**`buy-box`** or **`closing-cta`**
-- Purpose: the conversion point, or the one link to it.
-- Media: yes. Job `identity` from catalog media position one, viewed with
-  `lexsis_assets.view` against the variant sold (whole product, clean
-  background matching the gallery). Gap: ask the merchant for the packshot; never generated
-  (GN1). No-go: a lifestyle image in place of the packshot.
-- Island: `BuyBox` when this page sells a single SKU (inputs: variant count,
-  selling plans from read 1, whether the page has its own icon set); preset
-  `buybox/default-light` or `buybox/compact-dark` when it fits; needs Cart
-  V2 via `head.use_cart_v2`, never a cart drawer island on the page. A
-  subscription toggle only when selling plans exist, one-time selected
-  (`references/offers/aov-levers.md`). Otherwise `none`: one link button to
-  the PDP or plan selector.
-- Copy: next-step verb, or "Add to cart" with the buy box; price stated
-  once, per-day framing only when arithmetically true.
-- Decide with: the brief (is this page the conversion point), variant count
-  and selling plans from read 1.
-
-**`disclaimer`** (conditional)
-- Purpose: the regulated wording beside the first regulated claim and again
-  at the end.
-- Media: no. Island: `none`.
-- Copy: the regulator's text verbatim at 12 px or larger.
-- Decide with: market and claim type from read 5.
-
-**`science-references`** (conditional)
-- Purpose: full citations with journal, year, volume and link.
-- Media: no. Island: `none`.
-- Copy: one reference per line; folds into `science` as footnotes when the
-  section count would pass ten.
-- Decide with: the `test-data` ledger rows.
+| Section | Purpose | Media job and source | Interactive decision | Copy constraints | Decision evidence |
+|---|---|---|---|---|---|
+| `hero` | name the product, state the outcome in the shopper's words with footnote markers, show the ingredient or material, give one trust line. | yes. Job `ingredient-or-material` as an `editorial-lifestyle` hero; `identity` packshot is the alternate. Catalog media, then library tags `flat-lay` and `hero`, then semantic "<ingredient> macro", then merchant upload; view with `lexsis_assets.view` and confirm the macro shows the named ingredient, the portrait crop keeps it and a quiet area holds the headline. Gap: ask the merchant (job, aspect, count); upload, or `hero_bg` as a backdrop behind HTML text when the hero is the plan's bold moment; the ingredient itself is never generated (GN11); the typographic hero only if the merchant chooses it. No-go: a person, a before/after pair, clinical props, stock raw material presented as the merchant's sourcing. | `none` for the hero (one static `<picture>`, portrait crop for mobile). Header `SiteHeader` (announcement plus nav) or `Navbar` (nav only) from `lexsis_brand.navigation`. | outcome plus mechanism noun, footnoted; headline 12 words, body 40 words; the trust line is one sentence that links down the page. | the job inventory from reads 1 and 4; the ledger row behind the trust line. |
+| `mechanism` | three to five plain-language steps, each naming the ingredient or component doing the work, beside one diagram. | yes. Job `diagram`: merchant diagram via `lexsis_asset_import.import` (view with `lexsis_assets.view`: labels legible at 390px, no baked-in numbers), then library semantic "mechanism diagram", then an authored inline SVG with labels and numbers as SVG `<text>` or HTML. Raster generation is never used for a diagram (GN6); the SVG is the offer when nothing exists. No-go: icon tiles in place of the diagram, stock lab imagery, a step list on a colour band. | `none` for the diagram. `VideoPlayer` only when a real captioned explainer under 60 seconds exists in catalog media or the library. The first CTA of the page sits after this section. | 30 words per step; step title is a verb plus the ingredient. | whether a merchant diagram exists; otherwise the ledger's mechanism steps drive the SVG. |
+| `ingredients` or `materials` | one card per hero ingredient or material with what it is, dose or spec as shipped, why it is there, and a citation marker; the facts panel sits beside the cards for regulated consumables. | yes. Jobs `ingredient-or-material` per card and `label-or-facts-panel` when the product carries a label. Catalog media, then library tags `flat-lay` and `product-shot`, then semantic "<ingredient> close-up", then merchant upload, then supplier photo with a written licence, then licensed stock raw material as a plain macro never captioned as the merchant's sourcing. View each macro with `lexsis_assets.view` and confirm it shows the ingredient named beside it; view the label photo at 390px and confirm the panel text is legible. Gap: ask the merchant (which ingredients lack a macro, square, count); upload only, since the ingredient is never generated (GN11); `texture_fill` may back the card object (N8) but never stands in for the ingredient. Facts panel as HTML text first with the real label photo zoomable beside it. No-go: an emoji or icon per ingredient, cards falling back to colour tiles, fillers before actives. | `IngredientExplorer` when three or more ingredients carry a description and a dose (inputs: ingredient count, image coverage, dose data); one or two ingredients or a material spec table are plain HTML; grouping by concern or actives vs full list uses CSS-only tabs with radio inputs or grouped `<details>`. Resolve layout and props from `lexsis_design.island_schema`. | 60 words per card in FAB order with the citation marker on the benefit; doses exactly as printed on the label. | ingredient count and per-ingredient image coverage from read 4; doses from the label in read 1. |
+| `science` | the studies table with design, n, duration, population, endpoint, result and a "tested this product at this dose?" column. | no by default; the table is the object. A `result-or-context` image only from a `verified` ledger row, never a before/after pair on this type (`references/proof/before-after-and-claims.md`); study figures only with the publisher's licence. No-go: charts with baked-in text, stock lab photos, generated clinical imagery (GN4, GN6). | `none` (HTML `<table>`, one row per study, the disclaimer in the same viewport as the first regulated claim). | 40 words per row plus the numbers copied exactly; design named; "was associated with" not "proven". | the `test-data` ledger rows. With no product or ingredient study the section says so in one sentence and links the literature; it never implies a trial. |
+| `certifications` (conditional) | real marks with issuer wording. | yes, issuer artwork only: library tag `logo`, then `lexsis_asset_import.import` of the issuer's file, then a monochrome SVG redraw the issuer permits; view each mark with `lexsis_assets.view` against its ledger row and confirm it is the real issuer's artwork. Gap: ask the merchant for the issuer file; never generated (GN5, TB10). No-go: a mark without issuer text and number, the ISO logo, "FDA registered facility", a badge row repeated per section. | `none` (one row, three to five marks, one height, issuer text beside each, per `references/proof/trust-badges-certifications.md`). | the issuer's permitted phrase plus the licence number. | `certification` ledger rows holding issuer, number, scope and current date; a row missing any of the four does not render. |
+| `expert-endorsement` (recommended) | one verbatim quote from a named, credentialed person. | yes or none. A real photo of the named expert with consent (merchant upload or library, viewed with `lexsis_assets.view` to confirm it is the named person), or the quote runs as text with the credential line and no photo. Gap: ask the merchant for the photo; never stock, never generated (GN3), never a logo in place of the person (`references/proof/before-after-and-claims.md`, endorsements table). | `none` (a `<blockquote>` with name, credential, registration number, date and connection label). | verbatim; nothing paraphrased. | an `expert-quote` ledger row with written approval; without a row the merchant is told what is needed and the section waits. |
+| `sourcing` (recommended) | where and how it is made, the lab standard, the certificate of analysis, formulation change history. | yes. Job `founder-or-team`, or a facility, farm or lab photo (`context`, `sequence`): library tag `lifestyle`, then semantic "facility", "lab", "farm", then merchant upload; view with `lexsis_assets.view` and confirm a real facility or process with lighting that matches the neighbouring slots. Gap: ask the merchant for facility or process photos; stock is never captioned as their facility and generation is never used; merging the facts into `science` as text is the merchant's call. No-go: a stock laboratory, a generated factory, a world map as the only visual. | `none`. | 80 words; the COA is a link; the change history is a dated list. | facility photo coverage from read 4 and the merchant's answer. |
+| `usage` or `routine` (recommended) | how to take or apply, when results are typically noticed, what changes nothing. | yes. Job `sequence` (three to five real step photos) or one captioned how-to video: catalog media, then library tag `lifestyle` and semantic "how to use <product>", then merchant upload; view each step with `lexsis_assets.view` and confirm the action is legible at 390px. Gap: ask the merchant for step photos (count, square or 4:5); never generated; folding the steps into one `faq` answer is the merchant's call. No icon tiles. | `VideoPlayer` when a real how-to video exists; otherwise `none`. | one sentence per step; the "typically noticed" line cites its study row. | `sequence` coverage from read 4 and the merchant's answer. |
+| `faq` | objection-phrased questions answered in the first sentence. | no. | `none`; native `<details>` and `<summary>`, all collapsed. | five to eight questions, 60 words per answer; "Is this the same dose as in the study?" is mandatory when a study is cited. | the claims in `science` and the merchant's stated objections. |
+| `buy-box` or `closing-cta` | the conversion point, or the one link to it. | yes. Job `identity` from catalog media position one, viewed with `lexsis_assets.view` against the variant sold (whole product, clean background matching the gallery). Gap: ask the merchant for the packshot; never generated (GN1). No-go: a lifestyle image in place of the packshot. | `BuyBox` when this page sells a single SKU (inputs: variant count, selling plans from read 1, whether the page has its own icon set). | next-step verb, or "Add to cart" with the buy box; price stated once, per-day framing only when arithmetically true. | the brief (is this page the conversion point), variant count and selling plans from read 1. |
+| `disclaimer` (conditional) | the regulated wording beside the first regulated claim and again at the end. | no. Island: `none`. | Use the shared procedure. | the regulator's text verbatim at 12 px or larger. | market and claim type from read 5. |
+| `science-references` (conditional) | full citations with journal, year, volume and link. | no. Island: `none`. | Use the shared procedure. | one reference per line; folds into `science` as footnotes when the section count would pass ten. | the `test-data` ledger rows. |
 
 ### Asset budget
+
 | Source | Usually supplies | Usually missing | Per gap |
 |---|---|---|---|
 | catalog media | `identity` packshot, `label-or-facts-panel` photo, sometimes one `ingredient-or-material` flat lay or a routine shot | per-ingredient macros, `diagram`, facility photos, expert photo | reuse the flat lay across cards where honest; ask the merchant to upload macros (supplier photo with licence is acceptable); author the diagram as inline SVG; skip a section only on the merchant's call |
 | asset library | prior ingredient macros (`flat-lay`), issuer marks (`logo`), an editorial hero | video, sequence steps | ask the merchant to upload; no generated video; merge steps into `faq` only if they choose |
 | generation | backdrops, textures, composites only (`hero_bg` behind the bold-moment hero, `texture_fill` inside a card object) | product, ingredients, people, results, labels, diagrams, badges, text | never |
 
-With minimal assets the page is a typographic hero (merchant's choice), an
-SVG mechanism diagram, the facts panel as HTML text with the label photo
-beside it, text ingredient cards with their gaps listed for the merchant, the
-studies table, native `<details>` FAQs and a packshot at the buy box.
-Generated assets on this type are usually zero and never more than one
-backdrop or texture; the house cap is four per page. Every asset placed, generated ones included, was
-opened with `lexsis_assets.view` and passed the fit review before use.
+With minimal assets the page is a typographic hero (merchant's choice), an SVG mechanism diagram, the facts panel as HTML text with the label photo beside it, text ingredient cards with their gaps listed for the merchant, the studies table, native `<details>` FAQs and a packshot at the buy box. Generated assets on this type are usually zero and never more than one backdrop or texture; the house cap is four per page. Every asset placed, generated ones included, was opened with `lexsis_assets.view` and passed the fit review before use.
 
 ## Above the fold (390px)
 

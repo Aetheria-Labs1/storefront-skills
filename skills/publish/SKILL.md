@@ -22,17 +22,18 @@ authorize or substitute for a successful live publish.
 
 ## Gate
 
-1. Read the page manifest and QA report.
+1. Read the page's operation record and hosted QA evidence under
+   `references/source-artifact-workflow.md`.
 2. Confirm the saved store/theme binding still exists.
-3. Confirm the current local bundle and section hashes match the synchronized
-   values in the manifest.
+3. Confirm reviewed source, bundle and section hashes match the persisted
+   draft and recorded baseline.
 4. Read `lexsis_pages` action `edit_context`.
 5. Confirm the remote version equals `remote.lastKnownVersion`.
-6. Confirm responsive, local-versus-hosted visual regression, commerce, copy,
+6. Confirm responsive, approved-versus-current hosted visual review, commerce, copy,
    claims, assets, and integrity checks passed against that same version and
-   local bundle.
-7. Run the workspace validator with `--phase publish`, the live remote version,
-   and source and bundle hashes fetched from that draft.
+   reviewed bundle.
+7. Re-read integrity and source/bundle evidence through MCP. Missing or stale
+   evidence blocks release; no local file or validator substitutes for it.
 8. Confirm the store has the required entitlement.
 9. Ask for explicit approval naming the page and version.
 

@@ -1,18 +1,12 @@
-# CountdownTimer — Island Directory
+# CountdownTimer
 
-Urgency-driving countdown for flash sales, launches, and limited offers.
+For `CountdownTimer`, fetch `lexsis_design.islands` and
+`lexsis_design.island_schema` during the decision that needs this behavior.
+Use the current authoring example, variants, props, parts, hydration and
+headless support; the bundled JSON is a compatibility reference, not a
+second source of defaults.
 
-## Quick Reference
-
-- **Variants**: flip, simple, circular
-- **Schema**: `vibe://schema/island/CountdownTimer`
-- **Contract**: follows `_contract.md` rules
-
-## Composition
-
-- Place near primary CTA or within hero section for maximum urgency
-- Pair with: BuyBox (above or beside), EmailCapture (deadline-gated offer)
-- Flip-clock variant needs dark bg for contrast (use section wrapper)
-- Simple-inline embeds directly in other sections (no own wrapper)
-- Never use more than 1 countdown per page (dilutes urgency)
-- END_DATE must be ISO 8601 format; island handles timezone display
+`references/workflows/island-selection-workflow.md` owns selection and
+linked state. `references/authoring/source-authoring.md` owns source syntax;
+`references/authoring/css-and-styling.md` owns styling. Placement and evidence
+come from the selected page-type contract and its domain policies.

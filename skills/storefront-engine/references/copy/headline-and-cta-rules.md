@@ -9,7 +9,7 @@ phrases in `references/copy/voice-of-customer-mining.md`. House rules A12
 (sentence case, CTA names the action, no placeholder copy) and N6 (no
 accent word in a headline) apply throughout.
 
-Severity BLOCK, FAIL, WARN. Tag LAW, RESEARCH, OPERATOR, HEURISTIC. `$T` is
+Severity BLOCK, FAIL, WARN. Tag LAW, RESEARCH, OPERATOR, HEURISTIC. `rendered text` is
 extracted text; `<headings>` is the text of `h1` to `h3`.
 
 ## 1. Headline
@@ -24,16 +24,13 @@ HC1 (FAIL, RESEARCH). The headline's job is to select the reader and pull them t
 | product-aware | product plus the strongest verified claim or the offer | [product]: [claim with a ledger number] | claims not in the ledger |
 | most-aware | product plus offer plus terms | [product], [price], [shipping], [returns] | education, story |
 
-Check: plan `Awareness` row; the h1 contains a product name only when awareness is product-aware or most-aware (`grep -ci "<brand or product name>"` on the h1 text is 0 otherwise).
-
 HC2 (WARN, OPERATOR). Score the h1 on the 4U scale (useful, urgent, unique, ultra-specific), 1 to 4 each. Ship at 12 or more; rewrite under 8. Usefulness is mandatory; manufactured urgency scores 0. https://www.awai.com/2001/06/a-review-of-the-4-us/
-Check: the score and its four numbers appear in `page-plan.md` under the headline pattern line.
+Check: the score and its four numbers appear in `page plan` under the headline pattern line.
 
 HC3 (FAIL, RESEARCH). The h1 contains at least one specific: a number, a material, a timeframe, a named mechanism, or a verbatim shopper phrase from the worksheet. Odd exact numbers read as measured; round numbers read as invented. Copyhackers: a headline lifted from a review beat the marketing headline by over 400 percent in clicks. https://copyhackers.com/2014/10/amazon-review-mining/
 Check: h1 matches `\d|[a-z]+ (wool|cotton|steel|oil|acid|mg|ml|days?|weeks?|hours?|minutes?)` or the plan's "Headline VoC source" line names the worksheet row.
 
 HC4 (FAIL, RESEARCH). Length: h1 at most 10 words and two lines at 32 px on 375 px; subhead at most 20 words.
-Check: `perl -ne 'print if /<h1/ && (split(/\s+/, s/<[^>]+>//gr)) > 10' $W/lexsis-source.html` prints nothing; browser at 375: h1 `getClientRects().length <= 2`.
 
 HC5 (FAIL, RESEARCH). Sentence case for h1, h2, h3, subheads, buttons, labels. Product names keep brand casing. USAGov adopted sentence case sitewide in 2023 with no loss of trust and fewer wrapped lines. https://www.usa.gov/blog/2023/09/making-the-case-for-sentence-case
 Check: CP16 regex on `<headings>` after the product-name allowlist.
@@ -61,7 +58,6 @@ Check: CP20 overlap under 50 percent; the subhead contains a number, a mechanism
 ## 3. Bullets
 
 HC12 (FAIL, RESEARCH). Bullets are fascinations: specific attribute, then what it does for the shopper. Front-load the first two words (NN/g F-pattern). No adjective-only bullets. Each bullet carries a number, a material, a time or a test. At most 6 bullets per list, at most one list per section, no three consecutive bullets within 10 percent of the same length. Blind (teasing) bullets only in `advertorial`. https://www.nngroup.com/articles/f-shaped-pattern-reading-web-content/ ; https://samueljwoods.com/7-formulas-for-fascination-bullets/
-Check: every `<li>` outside nav and footer matches `\d|wool|cotton|steel|mg|ml|days?|weeks?|hours?|tested|certified|washes|cycles` or is flagged; `grep -c '<ul' <section>` at most 1.
 
 ## 4. CTA copy
 
@@ -78,7 +74,6 @@ HC16 (FAIL, RESEARCH). On ad-driven pages the CTA verb equals the ad's CTA verb 
 Check: manifest `campaign.adCta` first word equals the primary CTA's first word.
 
 HC17 (FAIL, OPERATOR). Every repeat of the primary CTA on the page is identical in copy and colour. Repeat about every two screens on long pages, and in the sticky bar when the checklist allows it. The sticky-bar label may append the price ("Add to cart, ₹1,299").
-Check: `grep -oE '>\s*[^<]{2,40}\s*</(button|a)>' <primary CTAs>` yields one distinct label (plus the price-suffixed sticky variant).
 
 HC18 (FAIL, OPERATOR). Per page type, the checklist's `cta.copy_pattern` fixes the family of labels:
 
@@ -101,12 +96,10 @@ HC19 (FAIL, RESEARCH). Directly under every primary CTA, one or two short lines 
 Check: the element after each primary CTA matches `shipping|delivery|return|guarantee|inclusive|tax|code` and DP1 words are absent.
 
 HC20 (FAIL, LAW). Shipping copy states the threshold and the region ("Free shipping in India on orders over ₹999"); delivery is a date range or day count, never "fast". Free means free (OF5).
-Check: `grep -ciE 'free (shipping|delivery)(?! (in|on|over|above|for))' $T` is 0; `grep -ciE '\bfast (shipping|delivery)\b' $T` is 0.
 
 ## 6. FAQ
 
 HC21 (FAIL, RESEARCH). 5 to 7 questions. Each is a real objection from the worksheet, phrased as the shopper would type it ("Will it feel heavy or cakey?", "Do I have to subscribe?", "Are these before and after photos real?"), never as marketing ("Why is our serum different?"). Baymard: FAQs that miss the real question leave shoppers stranded; 70 percent of sites fail to offer both FAQ and Q&A. Teardowns: objection-phrased FAQs on Jones Road, Seed, Hello Face, Endy. https://baymard.com/blog/product-page-faq-and-qa
-Check: `faq` items between 5 and 7; no question contains the brand name as subject with "our|we" (`grep -ciE '^(why|what makes) (is )?our'`).
 
 HC22 (FAIL, OPERATOR). Order: shipping cost and time first, returns or refunds second, then cancellation (subscriptions), ingredients or materials or sizing, who it is not for, then the long tail.
 Check: the first two FAQ questions match `ship|deliver` and `return|refund`.
@@ -115,18 +108,15 @@ HC23 (FAIL, OPERATOR). The first sentence of every answer is the answer (yes, no
 Check: CF10 first-sentence test; word count per answer at most 60.
 
 HC24 (WARN, OPERATOR). The page as a whole answers Nik Sharma's six questions somewhere above the FAQ: what is it, why does this brand exist, why will it improve my life, why is it the best option for me, how fast do I get it, why should I trust you. https://www.nik.co/you-launched-your-brand-now-wtf-do-you-do
-Check: one line per question in `qa-report.md` naming the section that answers it.
+Check: one line per question in `QA record` naming the section that answers it.
 
 ## 7. Price copy
 
 HC25 (BLOCK, LAW). Price copy follows `references/offers/price-presentation.md`: the full price with currency symbol first; compare-at struck through only with a ledger basis (PP1); "MRP ₹X (inclusive of all taxes)" for Indian packaged goods (PP5, PP21); unit price small and beside the price (PP8).
-Check: PP checks; `grep -cE 'incl(usive)? of all taxes|plus tax|GST' <buy-box text>` at least 1 for IN or EU markets.
 
 HC26 (FAIL, RESEARCH). Per-day or per-serving framing only for consumables, subscriptions and memberships, and only when the arithmetic is a ledger row (PP9). "₹43 a day" is allowed if true; "affordable luxury" is not.
-Check: `grep -cE '/day|per day|a day|/serving|per meal' $T` is 0 unless the product is consumable or `offer.type` is `subscribe-save` or `bnpl`; each hit maps to the offer-ledger per-day row.
 
 HC27 (FAIL, LAW). "Free" states what is paid in the same line (shipping, trial conversion price and date). No asterisk on free (CP28).
-Check: `grep -ciE '\bfree\b' $T` lines each contain a condition or are the shipping line with a threshold.
 
 ## 8. Guarantee copy
 
@@ -141,10 +131,8 @@ Check: for each claim row in the ledger marked "needs disclaimer", the disclaime
 ## 10. Reading level and rhythm
 
 HC30 (WARN, RESEARCH). Target Flesch-Kincaid grade 6 to 8 and reading ease 60 to 80 for body copy. Caveat: readability formulas are noisy on short marketing copy with product names and numbers; use the trend, not the decimal, and do not rewrite good specifics to hit a score. US plain-language guidance recommends grade 6 to 8 for public web content; aggregated landing-page benchmarks (secondary, unaudited) put top converters near grade 7 and 14 words per sentence. https://roast.page/stats/landing-page-copy-statistics ; https://neilpatel.com/blog/write-copy-like-apple/
-Check: `python3 -c "import textstat;t=open('$T').read();print(textstat.flesch_kincaid_grade(t),textstat.flesch_reading_ease(t))"` inside range or explained in `qa-report.md`.
 
 HC31 (FAIL, RESEARCH). Sentences average at most 15 words, none over 25. Paragraphs at most 3 lines at 375 (about 45 words). One idea per paragraph. Apple's iPhone 5 pages averaged 10.9 to 14 words per sentence.
-Check: CA7 paragraph script; `perl -0ne '@s=split(/[.!?]+\s/,$_); $n=grep{ (split)>25 }@s; print "$n long sentences\n"' $T` is 0.
 
 HC32 (WARN, OPERATOR). Fragments for rhythm are allowed once per page ("Smaller. Lighter. Same battery."); more is CP13. Delete the first sentence of every draft paragraph before shipping; it is usually throat-clearing (Shleyner). https://www.verygoodcopy.com/verygoodcopy-blogs-10/how-to-write-concisely
 Check: CP13 count at most 1.
@@ -153,22 +141,3 @@ Check: CP13 count at most 1.
 
 HC33 (BLOCK, LAW). Quotes are verbatim ledger rows, trimmed only with "[...]", attributed exactly as stored with the date and source; at least one non-five-star quote when 20 or more reviews exist; results claims carry the generally-expected statement (CP4). Procedure in `references/proof/reviews-sourcing.md`; display rules in `references/proof/proof-ledger.md`.
 Check: lint N11 and P4; every `[data-part=quote]` text equals a ledger row text after `[...]` removal.
-
-## 12. Lint alignment
-
-Static checks `design_lint.py` can adopt beyond A12, C1 to C4 and the copy-anti-patterns additions:
-
-```python
-# HC4 NEW: h1 word count <= 10, subhead (first <p> after h1) <= 20 words
-# HC13/HC14 NEW: every <button> and <a class*=btn> label passes cp27 and is not in STOCK_CTA_EXT
-# HC17 NEW: distinct primary CTA labels (minus a trailing price) == 1
-# HC19 NEW: the sibling element after each .btn-primary matches r"shipping|delivery|return|guarantee|inclusive|tax|code"
-# HC20 NEW
-r"\bfast (shipping|delivery)\b"                        # expect 0
-r"free (shipping|delivery)(?! (in|on|over|above|for|within))"   # expect 0
-# HC21/HC22 NEW: 5 <= faq items <= 7; first two questions match ship|deliver and return|refund
-# HC26 NEW
-r"/day|per day|a day|/serving|per meal"                # expect 0 unless consumable or offer.type in {subscribe-save, bnpl}
-# HC28 NEW: guarantee section text matches r"\d+[- ](day|night|year)|lifetime" and contains href
-# HC31 NEW: any sentence over 25 words -> FAIL
-```

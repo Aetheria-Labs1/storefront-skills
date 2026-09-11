@@ -61,170 +61,41 @@ A discount-for-email page is sections 1, 2, 5 and 6. A giveaway adds 3 and 4.
 
 ## Workflow
 
+Apply `references/workflows/_how-to-read.md` to these type-specific
+decisions. It links the shared asset/fallback, fit, live-island and
+copy procedures; this table supplies their inputs, not another policy.
+
 ### Context reads
-1. `lexsis_catalog.get` for the prize, or the product the code applies to:
-   media position one as the `identity` packshot (viewed), a `packaging` or
-   included-items shot when the prize is a physical gift, the retail price
-   (only to state the prize value in the ledger), the exact variant that will
-   ship. Jobs per `references/assets/image-jobs-by-page-type.md`.
-2. `lexsis_capture.form_schemas` for the email, phone or giveaway schema:
-   field ids, the consent field, required flags, the confirmation text.
-   Confirm at most three fields (one on cold paid traffic). SMS needs the
-   registered consent template (India DLT) or the TCPA disclosure in the
-   schema; without it SMS is not captured on this page.
-3. `lexsis_brand.context` and `lexsis_brand.brand_kit` for `theme_id`, the
-   logo asset (rendered non-clickable), palette hexes for any backdrop, voice
-   and banned phrases. Skip `lexsis_brand.navigation`: nav is `none`.
-4. `lexsis_asset_library.search` with `theme_id`, `mode: "tags"`:
-   `product-shot`, then `hero`, then `flat-lay`; then semantic "<prize>
-   packshot"; view with `lexsis_assets.view`. One image, two at most.
-5. Proof source, one of: `lexsis_catalog.reviews_status` (a `review-summary`
-   needs 5 or more reviews), a subscriber count export (rounded down, dated),
-   or past winners with written consent. Each is a proof ledger row; the
-   message-frequency fact (`policy-fact`) is always a row.
-6. Merchant-confirmed offer ledger rows: the incentive and its exact value,
-   how and when it is delivered (code by message, never on the page), entry
-   open and close datetime with timezone, draw date, winner notification
-   method and deadline, eligibility, official rules URL, sponsor, free entry
-   method where required, privacy URL, opt-out path, message frequency as a
-   number; counsel confirmation per market for a sweepstakes. Consent and
-   form rules: `references/anti-patterns/dark-patterns.md` (DP5, DP6, DP7,
-   DP14, DP15).
-7. `lexsis_design.islands`, then `lexsis_design.island_schema` for
-   `EmailCapture`, `FunnelRuntime` and, only with a verified end datetime,
-   `CountdownTimer`. `Modal` is read only for pages that link here; it never
-   mounts on this page.
+
+1. `lexsis_catalog.get` for the prize, or the product the code applies to: media position one as the `identity` packshot (viewed), a `packaging` or included-items shot when the prize is a physical gift, the retail price (only to state the prize value in the ledger), the exact variant that will ship. Jobs per `references/assets/image-jobs-by-page-type.md`.
+2. `lexsis_capture.form_schemas` for the email, phone or giveaway schema: field ids, the consent field, required flags, the confirmation text. Confirm at most three fields (one on cold paid traffic). SMS needs the registered consent template (India DLT) or the TCPA disclosure in the schema; without it SMS is not captured on this page.
+3. `lexsis_brand.context` and `lexsis_brand.brand_kit` for `theme_id`, the logo asset (rendered non-clickable), palette hexes for any backdrop, voice and banned phrases. Skip `lexsis_brand.navigation`: nav is `none`.
+4. `lexsis_asset_library.search` with `theme_id`, `mode: "tags"`: `product-shot`, then `hero`, then `flat-lay`; then semantic "<prize> packshot"; view with `lexsis_assets.view`. One image, two at most.
+5. Proof source, one of: `lexsis_catalog.reviews_status` (a `review-summary` needs 5 or more reviews), a subscriber count export (rounded down, dated), or past winners with written consent. Each is a proof ledger row; the message-frequency fact (`policy-fact`) is always a row.
+6. Merchant-confirmed offer ledger rows: the incentive and its exact value, how and when it is delivered (code by message, never on the page), entry open and close datetime with timezone, draw date, winner notification method and deadline, eligibility, official rules URL, sponsor, free entry method where required, privacy URL, opt-out path, message frequency as a number; counsel confirmation per market for a sweepstakes. Consent and form rules: `references/anti-patterns/dark-patterns.md` (DP5, DP6, DP7, DP14, DP15).
+7. `lexsis_design.islands`, then `lexsis_design.island_schema` for `EmailCapture`, `FunnelRuntime` and, only with a verified end datetime, `CountdownTimer`. `Modal` is read only for pages that link here; it never mounts on this page.
 
 ### Section by section
-Media lines follow `references/workflows/section-asset-workflow.md` and
-`references/assets/asset-sourcing-sequence.md`; aspects from
-`references/assets/slot-spec.md`. When every step finds nothing: tell the
-merchant what is missing (job, aspect, count), offer upload via
-`lexsis_asset_upload.upload` or generation when the purpose is feasible
-under `references/assets/generation-policy.md`, and skip or merge the section
-only if the merchant chooses; in fast-draft, proceed with the closest
-existing asset or leave the slot `planned` and list it in the plan and draft
-summary. Island lines name the island and the decision inputs; variants and
-props are resolved live from `lexsis_design.island_schema`
-(`references/workflows/island-selection-workflow.md`). Copy ceilings follow
-this file's Copy section and `references/anti-patterns/copy-anti-patterns.md`. No asset is
-used sight unseen: every candidate is opened with `lexsis_assets.view` and
-judged against its section with the fit review in section 1b of
-`references/workflows/section-asset-workflow.md` (the subject does the job,
-it crops to the slot aspect without losing the subject, a quiet area holds
-the copy, lighting and palette match the neighbouring slots, no baked-in
-text, watermark or promo overlay); a generated backdrop or texture is viewed
-the same way when it returns.
 
-**`hero`**
-- Purpose: name the incentive and its exact value, say what the messages
-  contain and how often, show the prize or product.
-- Media: yes. Job `identity` as a `packshot` hero; `product-in-context` is
-  the alternate for a lifestyle prize using a photo the merchant or partner
-  owns with a licence on record. Catalog media position one, then library tag
-  `product-shot`, then `hero`, then merchant or partner upload; view with
-  `lexsis_assets.view` and confirm the prize as it ships, a portrait crop
-  that keeps it and a quiet area for the headline and form. Gap: ask the
-  merchant (prize packshot, portrait crop, one image); upload, or `hero_bg`
-  as a plain backdrop behind a real cut-out; the prize is never generated
-  (GN1, GN2). A lead magnet with no physical prize is typographic, or shows
-  the real cover file of the guide if the merchant supplies it. No-go: stock
-  people celebrating, confetti or gift-box art, a drawn gift card, text baked
-  into the image, a hero with no image when a physical prize exists.
-- Island: `none`. Logo as a plain `<img>` or text wordmark without a link;
-  one static `<picture>` whose portrait crop leaves the whole form visible
-  above the fold at 390 (media at most 60% of the viewport height).
-- Copy: headline 10 words with the value; one sentence, 20 words, with the
-  frequency as a number.
-- Decide with: prize type from the brief; the image inventory from reads 1
-  and 4.
-
-**`giveaway-entry`**, **`email-capture`** or **`sms-capture`**
-- Purpose: the one form and the one CTA of the page.
-- Media: no. The form is the object; it sits directly under the hero image
-  with its consent text and button visible without scrolling.
-- Island: `EmailCapture` for a single email field; `FunnelRuntime` inline for
-  two or three fields (name plus email, or a phone step) with steps built from
-  the read-2 schema via `lexsis_drafts.funnel_create` and checked with
-  `lexsis_capture.validate_funnel`. Inputs: field count, channel, market.
-  Resolve props from `lexsis_design.island_schema`; no discount line on the
-  page (the code travels by message); the unticked consent checkbox with full
-  disclosure is authored in HTML beneath the island, never `required`,
-  separate boxes for email and SMS (DP5); any celebratory motion off (N10).
-  No `Modal` on this page; on pages that link here, `Modal` as exit intent
-  only, once per session, with `EmailCapture` as its only child, resolved
-  from the schema.
-- Copy: button names the delivery; consent text in full for the market;
-  confirmation state names the channel and the wait.
-- Decide with: the schema in read 2; the consent template for the market
-  from read 6.
-
-**`offer-prize`** (conditional)
-- Purpose: what the prize is, its retail value, winners, what is included,
-  substitution policy.
-- Media: yes when the prize is physical. Jobs `packaging` or
-  `included-items` (flat lay of everything the winner receives). Catalog
-  media, then library tag `product-shot` or `flat-lay`, then merchant or
-  partner upload with licence; view with `lexsis_assets.view` and confirm
-  every item shown is something the winner receives. Gap: ask the merchant
-  (flat lay of the
-  contents, square, one image); never generated, nothing shown that does not
-  ship (GN13); running the section as a text list under the form is the
-  merchant's call. No-go: a gift-box render, a value badge inside the image, a
-  duplicate of the hero image.
-- Island: `none`.
-- Copy: 60 words: value, number of winners, contents, substitution line.
-- Decide with: the prize ledger row and the merchant's answer on the image.
-
-**`how-it-works`** (conditional)
-- Purpose: three steps with the entry window, draw date, notification and
-  eligibility.
-- Media: no. Dated facts, rendered as a numbered list or a two-column table
-  beside the prize image, not as icon tiles (N3, N12).
-- Island: `none`.
-- Copy: one sentence per step with the datetime and timezone written out.
-- Decide with: the offer ledger rows for open, close and draw.
-
-**`trust-bar`** or **`review-summary`** (recommended)
-- Purpose: one verified proof line.
-- Media: no.
-- Island: `none`; a `review-summary` is a text line with average and count
-  from `lexsis_catalog.reviews`.
-- Copy: one line: the frequency and opt-out fact, or "over N subscribers,
-  as of <month>", or the average and count.
-- Decide with: the proof ledger; when only the policy fact is verified, the
-  policy fact is the whole module.
-
-**`legal-terms`**
-- Purpose: rules, sponsor, eligibility, free entry method, privacy, opt-out,
-  directly under the form.
-- Media: no. Island: `none`.
-- Copy: links and one-line facts; a single plain text link to the store is
-  allowed here for visitors who would rather buy.
-- Decide with: counsel-confirmed rules per market from read 6.
-
-**`countdown`** (conditional)
-- Purpose: count to the verified entry close.
-- Media: no.
-- Island: `CountdownTimer` bound to the ledger's ISO end datetime with
-  timezone, hidden after it (DP1); resolve style from
-  `lexsis_design.island_schema`. No per-session or resetting timer.
-- Copy: the close date written in text beside the timer.
-- Decide with: an offer ledger `endsAt` row marked verified; no row, no
-  section.
+| Section | Purpose | Media job and source | Interactive decision | Copy constraints | Decision evidence |
+|---|---|---|---|---|---|
+| `hero` | name the incentive and its exact value, say what the messages contain and how often, show the prize or product. | yes. Job `identity` as a `packshot` hero; `product-in-context` is the alternate for a lifestyle prize using a photo the merchant or partner owns with a licence on record. Catalog media position one, then library tag `product-shot`, then `hero`, then merchant or partner upload; view with `lexsis_assets.view` and confirm the prize as it ships, a portrait crop that keeps it and a quiet area for the headline and form. Gap: ask the merchant (prize packshot, portrait crop, one image); upload, or `hero_bg` as a plain backdrop behind a real cut-out; the prize is never generated (GN1, GN2). A lead magnet with no physical prize is typographic, or shows the real cover file of the guide if the merchant supplies it. No-go: stock people celebrating, confetti or gift-box art, a drawn gift card, text baked into the image, a hero with no image when a physical prize exists. | `none`. Logo as a plain `<img>` or text wordmark without a link; one static `<picture>` whose portrait crop leaves the whole form visible above the fold at 390 (media at most 60% of the viewport height). | headline 10 words with the value; one sentence, 20 words, with the frequency as a number. | prize type from the brief; the image inventory from reads 1 and 4. |
+| `giveaway-entry`, `email-capture` or `sms-capture` | the one form and the one CTA of the page. | no. The form is the object; it sits directly under the hero image with its consent text and button visible without scrolling. | `EmailCapture` for a single email field; `FunnelRuntime` inline for two or three fields (name plus email, or a phone step) with steps built from the read-2 schema via `lexsis_drafts.funnel_create` and checked with `lexsis_capture.validate_funnel`. Inputs: field count, channel, market. Resolve props from `lexsis_design.island_schema`; no discount line on the page (the code travels by message); the unticked consent checkbox with full disclosure is authored in HTML beneath the island, never `required`, separate boxes for email and SMS (DP5); any celebratory motion off (N10). No `Modal` on this page; on pages that link here, `Modal` as exit intent only, once per session, with `EmailCapture` as its only child, resolved from the schema. | button names the delivery; consent text in full for the market; confirmation state names the channel and the wait. | the schema in read 2; the consent template for the market from read 6. |
+| `offer-prize` (conditional) | what the prize is, its retail value, winners, what is included, substitution policy. | yes when the prize is physical. Jobs `packaging` or `included-items` (flat lay of everything the winner receives). Catalog media, then library tag `product-shot` or `flat-lay`, then merchant or partner upload with licence; view with `lexsis_assets.view` and confirm every item shown is something the winner receives. Gap: ask the merchant (flat lay of the contents, square, one image); never generated, nothing shown that does not ship (GN13); running the section as a text list under the form is the merchant's call. No-go: a gift-box render, a value badge inside the image, a duplicate of the hero image. | `none`. | 60 words: value, number of winners, contents, substitution line. | the prize ledger row and the merchant's answer on the image. |
+| `how-it-works` (conditional) | three steps with the entry window, draw date, notification and eligibility. | no. Dated facts, rendered as a numbered list or a two-column table beside the prize image, not as icon tiles (N3, N12). | `none`. | one sentence per step with the datetime and timezone written out. | the offer ledger rows for open, close and draw. |
+| `trust-bar` or `review-summary` (recommended) | one verified proof line. | no. | `none`; a `review-summary` is a text line with average and count from `lexsis_catalog.reviews`. | one line: the frequency and opt-out fact, or "over N subscribers, as of <month>", or the average and count. | the proof ledger; when only the policy fact is verified, the policy fact is the whole module. |
+| `legal-terms` | rules, sponsor, eligibility, free entry method, privacy, opt-out, directly under the form. | no. Island: `none`. | Use the shared procedure. | links and one-line facts; a single plain text link to the store is allowed here for visitors who would rather buy. | counsel-confirmed rules per market from read 6. |
+| `countdown` (conditional) | count to the verified entry close. | no. | `CountdownTimer` bound to the ledger's ISO end datetime with timezone, hidden after it (DP1); resolve style from `lexsis_design.island_schema`. No per-session or resetting timer. | the close date written in text beside the timer. | an offer ledger `endsAt` row marked verified; no row, no section. |
 
 ### Asset budget
+
 | Source | Usually supplies | Usually missing | Per gap |
 |---|---|---|---|
 | catalog media | the prize or product `identity` packshot | `packaging` or included-items flat lay for a gift; any image for a non-catalog prize (trip, gift card, guide) | reuse the hero packshot in the prize section only if it is a different crop; ask the merchant or partner to upload a licensed photo; gift card or guide: the real file or a typographic hero on the merchant's call; never a drawn prize |
 | asset library | a prior packshot or hero of the same product | a lifestyle prize photo | ask the merchant to upload; `hero_bg` backdrop generation behind a real cut-out is the only generated option; drop the second image only if they choose |
 | generation | backdrops only (`hero_bg` behind a real cut-out) | product, prize, people, gift art, badges, text | never |
 
-With minimal assets the page is a packshot hero from catalog media, the form
-with its consent text, the frequency fact and the terms block; a lead magnet
-with no physical prize is typographic. Generated assets on this type are zero
-or one backdrop; the house cap is four per page. Every asset placed, generated ones included, was
-opened with `lexsis_assets.view` and passed the fit review before use.
+With minimal assets the page is a packshot hero from catalog media, the form with its consent text, the frequency fact and the terms block; a lead magnet with no physical prize is typographic. Generated assets on this type are zero or one backdrop; the house cap is four per page. Every asset placed, generated ones included, was opened with `lexsis_assets.view` and passed the fit review before use.
 
 ## Above the fold (390px)
 
@@ -324,7 +195,7 @@ https://wisepops.com/blog/popup-stats):
   dismissal and 30 days after conversion, never on the page where the
   visitor just converted; on mobile use scroll-up or back intent, and cap
   the sheet at 60% of viewport height.
-- Close control at least 44 px, top right or a visible "No thanks" of equal
+- Close control at least 48 px under A11, top right or a visible "No thanks" of equal
   weight; Esc and backdrop close; no confirmshaming decline copy.
 - No full-page interstitial on mobile entry from search or ads.
 

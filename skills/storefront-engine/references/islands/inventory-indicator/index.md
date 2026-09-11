@@ -1,18 +1,12 @@
-# InventoryIndicator — Island Directory
+# InventoryIndicator
 
-Shows stock level urgency (low stock warnings, progress bars).
+For `InventoryIndicator`, fetch `lexsis_design.islands` and
+`lexsis_design.island_schema` during the decision that needs this behavior.
+Use the current authoring example, variants, props, parts, hydration and
+headless support; the bundled JSON is a compatibility reference, not a
+second source of defaults.
 
-## Quick Reference
-
-- **Variants**: badge, bar, text
-- **Required prop**: `productId`
-- **Schema**: `vibe://schema/island/InventoryIndicator`
-- **Contract**: follows `_contract.md` rules
-
-## Composition
-
-- Place near BuyBox (above CTA or below price)
-- Badge: inline next to price
-- Bar: below variant selector, above CTA
-- Text: subtle, below CTA
-- Only show when stock < threshold (island handles logic)
+`references/workflows/island-selection-workflow.md` owns selection and
+linked state. `references/authoring/source-authoring.md` owns source syntax;
+`references/authoring/css-and-styling.md` owns styling. Placement and evidence
+come from the selected page-type contract and its domain policies.

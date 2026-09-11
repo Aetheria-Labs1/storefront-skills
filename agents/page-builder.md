@@ -19,7 +19,7 @@ color: green
 Use the public commands as distinct stages:
 
 ```text
-/setup → /plan-page → /design-page → /generate
+/setup U+2192 /plan-page U+2192 /design-page U+2192 /generate
 ```
 
 `/publish` remains a separate explicit action.
@@ -63,9 +63,9 @@ Fill the Proof ledger with the tiered review procedure
 (`references/proof/reviews-sourcing.md`: connected reviews, collections,
 intent search, the zero-review playbook, then legitimate substitutes) and the
 Offer ledger when any discount, bundle, urgency or delivery promise exists.
-Run `scripts/plan_lint.py` on the workspace before presenting the plan.
+Review the type checklist before presenting the plan.
 
-Create or consume a concise one-page `page-plan.md`. Ask only for missing
+Create or consume a concise one-page `page plan`. Ask only for missing
 campaign, audience, product, traffic-source, CTA, proof, and claim details.
 Use the packaged consumer-behavior reference to classify visitor mode, write
 the top three shopper decision questions, and select at most three relevant
@@ -81,13 +81,13 @@ palette/type/motion decisions in parallel and merge.
 
 ## Design
 
-Re-read the plan's page-type file and run `plan_lint.py`; its WARN rows are the
+Re-read the plan's page-type file and compare its checklist with the
 plan's deviation list, and an unexplained deviation is a question, not a stop. Render proof only
 from the Proof ledger (linked press logos, real counts, verbatim quotes) and
 offers only from the Offer ledger. Generate imagery only for ALLOW purposes in
 `references/assets/generation-policy.md`. Copy follows the plan's framework
-and `references/anti-patterns/copy-anti-patterns.md`; `design_lint.py` checks
-the mechanical rules.
+and `references/anti-patterns/copy-anti-patterns.md`; review the persisted
+source and hosted page against those requirements.
 
 Read the design skill's packaged `references/design-rules.md`; house rules
 override generated brand guidance and preview blueprints. Apply the plan's
@@ -95,8 +95,8 @@ Design direction and any `Preset:` ids from its packaged
 `references/island-presets.md`. Confirm only the asset
 slots the plan left `planned`; verified slots are final. Prefer Lexsis
 generation; offer other available image tools before using them. Create the
-hosted draft first. For production-ready approval, run design lint and hosted
-screenshots at 390 and 1280 and record the result in `qa-report.md`.
+hosted draft first. For production-ready approval, inspect hosted
+screenshots at 390 and 1280 and record the result in `QA record`.
 
 If the user asked for a visual concept, follow the design skill's
 `design-concepts.md`: generate mobile first, show it for approval, adapt it to
@@ -105,14 +105,14 @@ concept image itself as page media.
 
 Load the selected theme, adapt template source, choose and resolve islands,
 use LX tokens and compile-time Tailwind utilities, and write
-`lexsis-source.html` plus `page-theme.css`. Compile once and create one
+`MCP source` plus `theme_css`. Compile once and create one
 unpublished hosted draft. Do not create a local renderer or use placeholder
 assets.
 
 ## Generate
 
 Reuse the draft created by design when its page ID is present. Otherwise
-compile the current workspace files once and create with `publish:false`.
+compile the current source values once and create with `publish:false`.
 Surface `DRAFT_CREATED` immediately, then run deeper synchronization and
 hosted QA when the inferred intent calls for production readiness.
 
@@ -130,9 +130,9 @@ reconciliation.
 
 ## Editing
 
-Change local source first. Stop on version drift, compile the complete page,
-patch only changed sections with `expected_version`, and update local version
+Change editable source first. Stop on version drift, compile the complete page,
+patch only changed sections with `expected_version`, and update recorded version
 and hashes only after success.
 
-Never make a remote-only intentional change and never publish without the
+Never patch compiled output in place of editable source and never publish without the
 user's separate approval for the identified page version.

@@ -4,7 +4,7 @@ Catalogue of deceptive interface practices a generated page must never
 contain. Each entry gives the regulator's definition, an ecommerce example,
 the page-builder rule, a severity and a check. `/plan-page` applies these when
 it writes the Offer ledger; `/design-page` applies them in Compose step 6;
-`design_lint.py` runs the O1 to O4 checks. Offer-specific detail lives in
+the source/hosted review runs the O1 to O4 checks. Offer-specific detail lives in
 `references/offers/offer-ledger.md`, `references/offers/price-presentation.md`
 and `references/offers/urgency-scarcity.md`; proof detail in
 `references/proof/proof-ledger.md`. This file is the canonical list; the two
@@ -15,9 +15,7 @@ publish), WARN (fix unless the plan records a reason). Tag: LAW (a regulator
 names it), RESEARCH (usability evidence), OPERATOR (practitioner consensus),
 HEURISTIC (this project's judgement).
 
-Checks use `$W` for the page workspace (`work/campaigns/<campaign-slug>/pages/<handle>`) and
-`$T` for the extracted text: `perl -pe 's/<[^>]+>/ /g' $W/lexsis-source.html > $T`.
-Browser checks run in the hosted draft at 390 and 1280.
+Inspect the persisted source and hosted purchase flow.
 
 ## 1. Regulatory frame
 
@@ -43,67 +41,53 @@ Prevalence (CMA evidence review): 75 percent of the top 200 US ecommerce sites c
 - Definition. CCPA Annexure 1, item 1: "falsely stating or implying the sense of urgency or scarcity so as to mislead a user into making an immediate purchase". FTC bucket I: countdown timers on offers that are not time-limited. UCPD Annex I item 7. CMA: countdown clocks that reset.
 - Example. A "Sale ends in 14:59" timer that restarts on every page load; "limited time" sales where the same deal continues after the deadline (Emma Sleep undertakings, 22 May 2026: https://www.gov.uk/cma-cases/emma-group-consumer-protection-case ).
 - Rule. A countdown binds to the Offer ledger's confirmed `endsAt` (ISO datetime with timezone), disappears after it, and the deal actually ends. No per-session, per-visitor or resetting timers. No "ends soon" in static copy.
-- Check. `grep -c '<lx-island name="Countdown' $W/lexsis-source.html` is 0, or `grep -ciE 'end date.*20[0-9]{2}-[0-9]{2}-[0-9]{2}' $W/page-plan.md` is at least 1 (lint O2). `grep -ciE '\b(ends? (soon|tonight|today|in)|last chance|limited time|hurry)\b' $T` is 0 (lint O1).
 
 ### DP2. Fake scarcity (stock)  BLOCK  LAW
 - Definition. CCPA item 1(ii): "stating that quantities of a particular product or service are more limited than they actually are". FTC: "almost sold out" with ample supply. UK banned practice: pretending a product is available only for a very limited time.
 - Example. "Only 3 left!" hardcoded in copy on a made-to-order item; "Low stock" badge on every variant.
 - Rule. Stock statements come only from a live inventory binding (`lexsis_catalog.get` at render) and read the real count. "Limited edition" states the run size from the ledger. No stock words in static copy.
-- Check. `grep -ciE '\b(only [0-9]+ left|low stock|almost gone|selling fast|limited stock|while (stocks|supplies) last)\b' $T` is 0 (lint O1). Any `stock-indicator` section requires `offer.stockVerified` in the manifest (plan_lint T10).
 
 ### DP3. Fake popularity (viewer and purchase counts)  BLOCK  LAW
 - Definition. CCPA item 1(i): "showing false popularity of a product or service". FTC bucket I: false "others are viewing" and "recently purchased" notices. deceptive.design: fake social proof.
 - Example. "23 people are viewing this" from a random-number script; "Priya from Mumbai just bought" popups with no order behind them.
 - Rule. No viewer counts, activity feeds or "recently bought" toasts of any kind, even if fed by analytics; the proof vocabulary lists `social-proof-popup` and `live-viewer-count` as never rendered. Aggregate counts ("over 51,000 customers") only as verified proof-ledger rows.
-- Check. `grep -ciE 'SocialProofPopup|people are viewing|viewing this|bought in the last|just (bought|purchased|ordered)' $W/lexsis-source.html` is 0 (lint P1).
 
 ### DP4. Basket sneaking  BLOCK  LAW
 - Definition. CCPA item 2: "inclusion of additional items such as products, services, payments to charity or donation at the time of checkout from a platform, without the consent of the user, such that the total amount payable by the user is more than the amount payable for the product(s) and/or service(s) chosen by the user". Free samples and disclosed necessary fees are exempt.
 - Example. Sports Direct added a GBP 1 magazine to every basket (https://deceptive.design/types/sneaking ); shipping protection auto-added in the cart drawer.
 - Rule. Nothing enters the cart that the shopper did not tap. Cart-drawer add-ons are opt-in buttons, not pre-added lines. A bundle is one product the shopper chose, not silently combined items.
-- Check. Cart island props contain no `autoAdd`, `preselected` or default add-on ids: `grep -ciE 'auto-?add|pre-?select(ed)?=.?true' $W/lexsis-source.html` is 0. Browser: add the hero product; the cart total equals the displayed price plus stated shipping and tax only.
 
 ### DP5. Preselection (pre-ticked paid add-ons and consent)  BLOCK  LAW
 - Definition. deceptive.design "preselection"; CJEU Planet49: pre-ticked boxes are not consent; GDPR Recital 32; EU Consumer Rights Directive Art. 22: no default options that require payment; CCPA basket sneaking covers paid defaults.
 - Example. Gift wrap, insurance, donation, warranty, or "Subscribe and save" ticked by default; marketing checkbox pre-checked under the email field.
 - Rule. No `checked` on any checkbox or radio whose label carries a price, a cadence, or a consent verb. Purchase type defaults to one-time. Marketing and SMS consent boxes start unchecked and are never `required`.
 - Check.
-```bash
-grep -cE '<input[^>]*type="(checkbox|radio)"[^>]*\bchecked\b' $W/lexsis-source.html   # 0 unless data-lx-default marks a free, non-consent default (lint O3)
-grep -ciE '<input[^>]*(consent|marketing|sms|newsletter)[^>]*\brequired\b' $W/lexsis-source.html   # 0
-```
 
 ### DP6. Confirmshaming  BLOCK  LAW
 - Definition. CCPA item 3: "using a phrase, video, audio or any other means to create a sense of fear or shame or ridicule or guilt in the mind of the user so as to nudge the user to act in a certain way". Amazon's "No, I don't want Free Shipping" decline button is now banned by court order (https://www.ftc.gov/news-events/news/press-releases/2025/09/ftc-secures-historic-25-billion-settlement-against-amazon ).
 - Example. "No thanks, I like paying full price"; "I don't care about my skin".
 - Rule. Decline and close labels are neutral: "No thanks", "Close", "Not now", "Continue without". No first-person self-deprecation, no consequence framing, no sarcasm.
-- Check. `grep -ciE "no,? (thanks,? )?i (don'?t|do not|hate|prefer|like paying|want to pay)|i'?ll (pay full price|stay|pass on)|(full price|miss out|rather|don'?t care|waste)" $T` is 0 (lint O4 plus additions in section 4).
 
 ### DP7. Forced action  BLOCK  LAW
 - Definition. CCPA item 4: "forcing a user into taking an action that would require the user to buy any additional good(s) or subscribe or sign up for an unrelated service or share personal information, in order to buy or subscribe to the product or service originally intended by the user". Baymard: 18 to 19 percent of US shoppers abandoned a checkout because the site wanted an account. https://baymard.com/lists/cart-abandonment-rate
 - Example. Email gate before the price is shown; "Create an account to continue"; forced app download.
 - Rule. Guest checkout is the primary path. No gate on price, shipping, reviews or the CTA. Email and phone are asked once, optional unless needed for delivery, and marketing consent is separate.
-- Check. Every primary CTA href resolves to the cart or checkout, never to a capture step: `grep -oE 'href="[^"]*"' $W/lexsis-source.html` for elements inside `buy-box` or `sticky-cta` sections contains no `#signup`, `/account`, `/register`. No `<lx-island name="Popup"` or dialog carries `dismissible="false"`.
 
 ### DP8. Subscription trap, hard to cancel, roach motel  BLOCK  LAW
 - Definition. CCPA item 5: making cancellation "impossible or a complex and lengthy process", hiding the cancel option, forcing payment details for a free trial, or giving "ambiguous instructions for cancellation". ROSCA: simple cancellation mechanism. DSA Art. 25(3)(c): termination may not be harder than subscribing. FTC v. Amazon, Vonage (USD 100M, 2022: https://www.ftc.gov/news-events/news/press-releases/2022/11/ftc-action-against-vonage-results-100-million-customers-trapped-illegal-dark-patterns-junk-fees-when-trying-cancel-service ) and Adobe (2024: https://www.ftc.gov/news-events/news/press-releases/2024/06/ftc-takes-action-against-adobe-executives-hiding-fees-preventing-consumers-easily-cancelling ).
 - Example. "Cancel anytime" in the hero, "call us Monday to Friday" in the terms.
 - Rule. The cancellation path is one sentence beside the subscribe control ("Pause or cancel from your account, no call needed") and it is true for this store's subscription app. Free trials state the conversion date and price in the CTA block.
-- Check. For every `subscription-toggle` or `plan-selector` section: `grep -ciE 'cancel' <section text>` is at least 1 and the offer ledger row "subscription terms" is `verified`.
 
 ### DP9. Hidden recurring terms (SaaS billing, hidden subscription)  BLOCK  LAW
 - Definition. CCPA item 12 "SaaS billing": generating and collecting recurring payments "by exploiting positive acquisition loops in recurring subscriptions ... as surreptitiously as possible", including silent trial conversion. ROSCA s.4: all material terms clearly and conspicuously before obtaining billing information. deceptive.design "hidden subscription".
 - Example. "$19" in the buy box, "/month" in 10 px grey; first-charge date only in the confirmation email.
 - Rule. Recurring amount, cadence, first-charge date, renewal price after any intro period and the cancel path sit in the same visual block as the price, at body size and contrast. A subscribe option never wins by default (DP5).
 - Check.
-```bash
-perl -0ne 'while(/<!-- section: (subscription-toggle|plan-selector|pricing)[^>]*-->(.*?)(?=<!-- section:|\z)/sg){ $s=$2; print "$1: ", ($s=~/(every|per|\/)\s*(month|week|[0-9]+ days)/i && $s=~/cancel/i ? "ok" : "MISSING cadence or cancel"), "\n" }' $W/lexsis-source.html
-```
 
 ### DP10. Interface interference, visual interference, false hierarchy  BLOCK  LAW
 - Definition. CCPA item 6: "a design element that manipulates the user interface in ways that (a) highlights certain specific information; and (b) obscures other relevant information relative to the other information". DSA Art. 25(3)(a): giving more prominence to certain choices. FTC bucket II: un-bolded fees "sandwiched between bold paragraphs".
 - Example. Bright "Yes, upgrade" button with a grey 12 px "no" text link; a close icon at 2:1 contrast; compare-at price larger than the price paid.
-- Rule. In any binary choice (consent, upsell, subscription vs one-time), both options are the same element type, within 1.5x of each other's area, both at 4.5:1. Close controls are at least 24 x 24 CSS px at 3:1 and close on first tap. The price paid is never smaller than the compare-at.
+- Rule. In any binary choice (consent, upsell, subscription vs one-time), both options are the same element type, within 1.5x of each other's area, both at 4.5:1. Close controls meet A11's 48 x 48 CSS px floor, have 3:1 contrast and close on first tap. The price paid is never smaller than the compare-at.
 - Check (browser).
 ```js
 (() => { const d = document.querySelector('[role=dialog]'); if (!d) return 'no dialog';
@@ -145,28 +129,23 @@ perl -0ne 'while(/<!-- section: (subscription-toggle|plan-selector|pricing)[^>]*
 - Definition. CCPA item 11: "deliberate use of confusing or vague language like confusing wording, double negatives, or other similar tricks, in order to misguide or misdirect a user". CMA: complex language starred as almost always harmful.
 - Example. "Uncheck to not receive no updates"; a toggle labelled "Opt out" whose on state means subscribed.
 - Rule. Choice labels are affirmative, single-clause, no negation: "Email me offers" / "No thanks". Toggle labels describe the on state. No double negatives anywhere in choice UI.
-- Check. `grep -ciE '\b(opt.?out|un(check|tick|subscribe)|do not|don'"'"'t) .*(receive|get|miss)\b|not .* (unless|except|without)' $T` restricted to label and button text is 0.
 
 ### DP16. Rogue malware and fake system UI  BLOCK  LAW
 - Definition. CCPA item 13: scareware and ransomware tactics.
 - Rule. No fake virus warnings, fake OS dialogs, fake download buttons, fake "connection lost" banners.
-- Check. `grep -ciE 'virus|infected|your (device|phone|computer) (is|has)|system alert' $T` is 0.
 
 ### DP17. Fake reviews and undisclosed incentives  BLOCK  LAW
 - Definition. FTC 16 CFR 465 bans fake, AI-generated or bought reviews, insider reviews without disclosure, and suppression of negative reviews (Fashion Nova, USD 4.2M, 2022: https://www.ftc.gov/news-events/news/press-releases/2022/01/fashion-nova-will-pay-42-million-part-settlement-ftc-allegations-it-blocked-negative-reviews-website ). UK DMCC banned practice on fake reviews. Endorsement Guides: incentivised reviews disclosed; results claims need typicality.
 - Rule. Every quote, star, count and photo of a customer is a `verified` row in the proof ledger (`references/proof/proof-ledger.md`); sourcing in `references/proof/reviews-sourcing.md`. No invented names, avatars or cities. Never only five-star sets. "Results not typical" alone is not a disclosure.
-- Check. lint P1 to P4 and N11; `grep -ciE 'results (may )?(not typical|vary)' $T` hits require a "generally expected results" statement in the same section.
 
 ### DP18. Misdirection  BLOCK  LAW
 - Definition. deceptive.design: design that steers attention to the seller's preferred option and away from the shopper's. CMA "sensory manipulation" and "decoys". Overlaps DP10 but concerns steering rather than hiding.
 - Example. A highlighted "MOST POPULAR" middle tier that exists only to make the top tier look cheap; a colour-only difference between "one-time" and "subscribe" that favours subscribe.
 - Rule. Plan tiers are presented with the same visual weight; a recommended tier is labelled with a reason from the ledger ("Most ordered in the last 90 days" with the count), never a ribbon (design-rules N9). One-time and subscribe options are visually equal with one-time first.
-- Check. `grep -cE 'BEST VALUE|MOST POPULAR|RECOMMENDED' $W/lexsis-source.html` is 0 (lint N9). Purchase-type radio order: one-time appears before subscribe in DOM.
 
 ### DP19. Obstruction and sludge  FAIL  LAW
 - Definition. deceptive.design "obstruction"; CMA "sludge": excessive friction on the action the shopper wants (returns, cancellation, contact).
 - Rule. Returns, refund, cancellation and contact information reach in at most two taps from any CTA: a one-line statement under the CTA linked to the full policy.
-- Check. `grep -ciE 'return|refund|guarantee' <buy-box or closing-cta section text>` is at least 1 and contains an `<a href` to the policy URL recorded in the offer ledger.
 
 ### DP20. Comparison prevention  WARN  LAW
 - Definition. deceptive.design: making it hard to compare prices or features; CMA "partitioned pricing".
@@ -182,7 +161,6 @@ perl -0ne 'while(/<!-- section: (subscription-toggle|plan-selector|pricing)[^>]*
 - Definition. FTC bucket I (induce false beliefs); CCPA interface interference. Progress indicators and "analysing your answers..." delays that do not reflect real work.
 - Example. "Applying your discount... 87 percent" spinner; "Step 2 of 3" on a one-step form; quiz "Building your routine" delay with a fixed timer.
 - Rule. Progress UI reflects real remaining steps from the funnel definition. No decorative delays or fake percentages.
-- Check. `grep -cE 'data-part="progress"' $W/lexsis-source.html` equals the count of those with `data-steps-total`. `grep -ciE 'analy[sz]ing|calculating|applying your' $T` is 0 unless a real async call exists.
 
 ## 3. Enforcement cases to cite when a merchant pushes back
 
@@ -198,32 +176,3 @@ perl -0ne 'while(/<!-- section: (subscription-toggle|plan-selector|pricing)[^>]*
 | CJEU Planet49, 2019 | Pre-ticked consent | Pre-ticked boxes invalid | https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX%3A62017CJ0673 |
 | India CCPA advisory, 5 Jun 2025 | All 13 patterns | Mandatory self-audit within 3 months; notices to platforms | https://consumeraffairs.nic.in/latestnews/ccpa-advisory-terms-consumer-protection-act-2019-self-audit-e-commerce-platforms |
 | Sports Direct, 2015 | Basket sneaking (GBP 1 magazine) | Public backlash, practice withdrawn | https://deceptive.design/types/sneaking |
-
-## 4. Lint alignment
-
-`design_lint.py` already carries O1 (stock and hurry phrases), O2 (countdown without plan end date), O3 (pre-checked inputs), O4 (confirmshaming) and P1 (social-proof popups and live counts). Adopt these additions:
-
-```python
-# O1 extension (DP1, DP2): add to STOCK_PHRASES
-r"|\bends? (soon|tonight|today|in)\b|\blimited time\b|\bwhile (stocks|supplies) last\b|\blow stock\b"
-# O4 extension (DP6): decline copy with consequence framing
-CONFIRMSHAME_EXT = r"i'?ll (pay full price|stay|pass on)|\b(full price|miss out|rather|don'?t care|waste)\b"   # apply to text inside [data-action=decline], button, a
-# O5 NEW (DP5, DP7): required consent inputs
-r'<input[^>]*(consent|marketing|sms|newsletter)[^>]*\brequired\b'          # expect 0
-# O6 NEW (DP9): subscription sections must state cadence and cancel path
-# for each <!-- section: (subscription-toggle|plan-selector|pricing) --> body: require /(every|per|\/)\s*(month|week|\d+ days)/i and /cancel/i
-# O7 NEW (DP12): buy-box / pricing / offer section must mention shipping and tax
-# for each <!-- section: (buy-box|pricing|offer) --> body: require /shipping|delivery/i and /tax|gst|inclusive/i
-# O8 NEW (DP13): advertorial / listicle label
-# if manifest page.pageType in {advertorial, listicle}: require /advertis(ement|ing)|sponsored|paid partnership/i in the first 600 px (browser) or before the third section delimiter (static)
-# O9 NEW (DP15): negated choice labels
-r"\b(opt.?out|un(check|tick|subscribe)|do not|don'?t) .*(receive|get|miss)\b"   # within <label>, <button> text; expect 0
-# O10 NEW (DP16, DP22): fake system UI and faux processing
-r"\b(virus|infected|system alert|analy[sz]ing your|applying your discount)\b"    # expect 0
-# O11 NEW (DP18): tier ribbons already in N9; add
-r"\bRECOMMENDED\b"
-# O12 NEW (DP21): strike-through without source
-r"<(s|del)\b(?![^>]*data-source=)"   # expect 0
-```
-
-Browser-only checks (record in `qa-report.md`): DP10 parity script, DP13 label position, DP14 single-overlay assertion, DP4 cart-total equality.

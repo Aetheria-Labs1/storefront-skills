@@ -17,7 +17,7 @@ first), **!** requires explicit approval (`lexsis_live_ops`).
 | 2 | `lexsis_workspace.stores` | R | choosing the store |
 | 3 | `lexsis_brand.context` | R | any design decision |
 | 4 | `lexsis_brand.brand_kit` | R | palette, fonts, voice, banned phrases |
-| 5 | `lexsis_brand.list_themes` then `.get_theme` | R | `page-theme.css` |
+| 5 | `lexsis_brand.list_themes` then `.get_theme` | R | `theme_css` |
 | 6 | `lexsis_brand.navigation` | R | header/footer links (full-nav types only) |
 | 7 | `lexsis_design.guide` | R | `brand-design.md` |
 
@@ -52,9 +52,9 @@ Order matters: identify the type before searching anything.
 | 19b | `lexsis_capture.form_schemas`, then `.submissions` for an existing form | R | field shapes; whether a live form already collects what the page needs (PII is redacted) | lead-capture, giveaway, wholesale, waitlist |
 | 20 | `lexsis_drafts.review_collection_create` | W | draft shortlist for the merchant to activate | only when asked |
 
-Output: `page-plan.md` with Page type, Design direction, Consumer decision
+Output: `page plan` with Page type, Design direction, Consumer decision
 model, Proof ledger, Offer ledger, Imagery plan, Asset slots; compact
-`page-manifest.json`. Run `plan_lint.py` before approval.
+`page record`. Review the type checklist before approval.
 
 ## Stage 2: Design
 
@@ -62,7 +62,7 @@ model, Proof ledger, Offer ledger, Imagery plan, Asset slots; compact
 |---|---|---|---|---|
 | 1 | read plan + manifest + page-type file | local | follow its `## Workflow`; note deviations | ask only when a deviation is unexplained |
 | 2 | `lexsis_brand.context`, `.get_theme` | R | live tokens | compare with saved; `THEME_CONTEXT_CONFLICT` on value clash |
-| 3 | `lexsis_template_library.get_kit` then `lexsis_design.get_section` (1 to 3 ids per call, kit order) | R | authoring source | only ids in the manifest |
+| 3 | `lexsis_template_library.get_kit` then `lexsis_design.get_section` (1 to 3 ids per call, kit order) | R | authoring source | only ids in the page record |
 | 4 | `lexsis_template_library.list_mine` then `.get_mine` | R | merchant's saved sections | when the user names one |
 | 5 | `lexsis_design.islands` | R | compact catalog | select only interactive needs |
 | 6 | `lexsis_design.island_schema` | R | exact props | per island actually used, or per compile error |
@@ -75,8 +75,8 @@ model, Proof ledger, Offer ledger, Imagery plan, Asset slots; compact
 | 13 | host browser at 390 and 1280 | local | hosted design review | production-ready only |
 | 14 | `lexsis_drafts.page_update_section` / `.page_patch` (`expected_version`) | W | fix review findings | never a second draft |
 
-Output: `lexsis-source.html`, `page-theme.css`, `compile-artifact.json`,
-`DRAFT_CREATED`, later `DESIGN_APPROVED`.
+Output: persisted page id/version, hosted preview and compile evidence;
+`DRAFT_CREATED`, later `DESIGN_APPROVED`. No local page files are created.
 
 ## Stage 3: Generate (sync + QA)
 
@@ -101,7 +101,7 @@ Output: `DRAFT_READY`.
 |---|---|---|---|
 | 1 | `lexsis_live_ops.publish` | W ! | named page and version only |
 | 2 | `lexsis_analytics.page`, `.timeseries`, `.attribution` | R | first-week read |
-| 3 | `lexsis_drafts.page_variation` then `.experiment_create` | W | challengers (`/ab-test`) |
+| 3 | `lexsis_drafts.page_duplicate` then `.experiment_create` | W | challengers (`/ab-test`) |
 | 4 | `lexsis_analytics.experiment` then `lexsis_live_ops.scale_winner` | R / W ! | evaluate, then scale |
 | 5 | `lexsis_live_ops.rollback` / `.unpublish` | W ! | undo |
 

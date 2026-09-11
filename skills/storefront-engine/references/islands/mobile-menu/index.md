@@ -1,18 +1,12 @@
-# MobileMenu — Island Directory
+# MobileMenu
 
-Off-canvas or overlay navigation for mobile viewports. Triggered by hamburger icon in Navbar.
+For `MobileMenu`, fetch `lexsis_design.islands` and
+`lexsis_design.island_schema` during the decision that needs this behavior.
+Use the current authoring example, variants, props, parts, hydration and
+headless support; the bundled JSON is a compatibility reference, not a
+second source of defaults.
 
-## Quick Reference
-
-- **Variants**: none (single default)
-- **Props**: links (array), socials (array), logo (object) — 3 total
-- **Schema**: `vibe://schema/island/MobileMenu`
-- **Contract**: follows `_contract.md` rules
-
-## Composition
-
-- Placed in a hidden section (only visible when triggered by hamburger icon in Navbar)
-- Pair with: Navbar (always — hamburger button triggers this)
-- Never visible on desktop (hidden behind interaction trigger)
-- Touch targets must be min 48px height for accessibility
-- Close button or tap-outside must dismiss
+`references/workflows/island-selection-workflow.md` owns selection and
+linked state. `references/authoring/source-authoring.md` owns source syntax;
+`references/authoring/css-and-styling.md` owns styling. Placement and evidence
+come from the selected page-type contract and its domain policies.

@@ -1,19 +1,12 @@
-# ProductCarousel — Island Directory
+# ProductCarousel
 
-Horizontal product showcase. Scrollable row of product cards with navigation.
+For `ProductCarousel`, fetch `lexsis_design.islands` and
+`lexsis_design.island_schema` during the decision that needs this behavior.
+Use the current authoring example, variants, props, parts, hydration and
+headless support; the bundled JSON is a compatibility reference, not a
+second source of defaults.
 
-## Quick Reference
-
-- **Component**: ProductCarousel
-- **Category**: commerce
-- **Props**: 11 (products, visibleCount, autoScroll, gap, showArrows, showDots, cardVariant, aspectRatio, speed, loop, pauseOnHover)
-- **Required prop**: `products` (array of product objects)
-- **Schema**: `vibe://schema/island/ProductCarousel`
-- **Contract**: follows `_contract.md` rules
-
-## Composition
-
-- Pair with: SectionHeading, QuickAdd (inside cards), TrustBadgeBar
-- Place mid-page or below hero for "Shop our bestsellers" sections
-- Never place inside a grid column — needs full container width
-- Cards inside can embed QuickAdd overlays on hover
+`references/workflows/island-selection-workflow.md` owns selection and
+linked state. `references/authoring/source-authoring.md` owns source syntax;
+`references/authoring/css-and-styling.md` owns styling. Placement and evidence
+come from the selected page-type contract and its domain policies.

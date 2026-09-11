@@ -59,6 +59,11 @@ def check(path: Path) -> list[str]:
     for h in REQUIRED_HEADINGS:
         if h not in text:
             errors.append(f"missing heading {h!r}")
+    if "references/workflows/_how-to-read.md" not in text:
+        errors.append("workflow must reference the shared procedures")
+    workflow_header = "| Section | Purpose | Media job and source | Interactive decision | Copy constraints | Decision evidence |"
+    if workflow_header not in text:
+        errors.append("missing type-specific workflow decision table")
     m = re.search(r"## Checklist\s*```json\s*(\{.*?\})\s*```", text, re.S)
     if not m:
         return errors + ["no ## Checklist ```json block"]

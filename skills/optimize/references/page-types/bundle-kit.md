@@ -99,166 +99,39 @@ on `offer-page`) or a `subscription-toggle` that is pre-selected.
 
 ## Workflow
 
-Assets first: the set is proved by showing it. Every section gets real
-component imagery before copy; a section that would end up as a colour band,
-an emoji row, icon tiles or a wall of text is rebuilt around imagery or, on
-the merchant's call, merged or skipped. Per-slot sourcing:
-`references/workflows/section-asset-workflow.md`; island choice:
-`references/workflows/island-selection-workflow.md`. Missing media is never
-dropped silently: every Media line ends by telling the merchant what is
-missing (job, aspect, count), offering upload via `lexsis_asset_upload.upload`
-or MCP generation when the purpose is feasible under
-`references/assets/generation-policy.md`, and skipping or merging the section
-only if the merchant chooses. In fast-draft the agent proceeds with the closest
-existing asset or leaves the slot `planned`, and lists every missing asset in
-the plan and the draft summary.
+Apply `references/workflows/_how-to-read.md` to these type-specific
+decisions. It links the shared asset/fallback, fit, live-island and
+copy procedures; this table supplies their inputs, not another policy.
 
 ### Context reads
 
-1. `lexsis_catalog.get` for the bundle SKU (when the set is its own Shopify
-   product): `media[]` (the set flat lay is the `included-items` job; view
-   each item), price, compare-at, selling plans, inventory. Then
-   `lexsis_catalog.get` for every component: first media item as that
-   component's identity, current price (the "separately" figure must be a
-   price it actually sells at), variants and per-variant images, inventory per
-   variant. Job map per `references/assets/image-jobs-by-page-type.md`.
-2. `lexsis_catalog.reviews_status`; `lexsis_catalog.reviews` with the bundle
-   `product_id` for set-level reviews, then per component id, each scope kept
-   separate (never averaged, `references/proof/reviews-sourcing.md` RS7);
-   `review_collections` with `collection_status: "active"`.
-3. `lexsis_brand.context`, `lexsis_brand.brand_kit` (theme_id, tokens, voice,
-   icon set), `lexsis_brand.navigation` (minimal nav, or full when the page is
-   a permanent store page).
-4. `lexsis_asset_library.search` with `theme_id`, `mode: "tags"` for
-   `flat-lay`, `product-shot`, `lifestyle`, `social-proof`; then semantic
-   "<kit name> laid out", "<component> step". Sequence and checks:
-   `references/assets/asset-sourcing-sequence.md`.
-5. Offer ledger: bundle price, sum of components, saving as `O` rows
-   (`references/offers/offer-types.md` bundle, bundle-decoy, tiered-volume,
-   OF2, OF4); `lexsis_cart.get` to confirm the discount applies in the cart and
-   the cart edit flow matches the page.
-6. Type variant from the brief: fixed kit, build-your-own, good, better, best
-   ladder, or routine kit; it decides the purchase island. `lexsis_design.islands`
-   for the live catalog, then `lexsis_design.island_schema` for each island
-   named below before any prop is written.
-7. `lexsis_workspace.credits` only when a `product_composite` for a routine
-   context image is planned; the hero is a `grid` of real components and needs
-   no generation.
+1. `lexsis_catalog.get` for the bundle SKU (when the set is its own Shopify product): `media[]` (the set flat lay is the `included-items` job; view each item), price, compare-at, selling plans, inventory. Then `lexsis_catalog.get` for every component: first media item as that component's identity, current price (the "separately" figure must be a price it actually sells at), variants and per-variant images, inventory per variant. Job map per `references/assets/image-jobs-by-page-type.md`.
+2. `lexsis_catalog.reviews_status`; `lexsis_catalog.reviews` with the bundle `product_id` for set-level reviews, then per component id, each scope kept separate (never averaged, `references/proof/reviews-sourcing.md` RS7); `review_collections` with `collection_status: "active"`.
+3. `lexsis_brand.context`, `lexsis_brand.brand_kit` (theme_id, tokens, voice, icon set), `lexsis_brand.navigation` (minimal nav, or full when the page is a permanent store page).
+4. `lexsis_asset_library.search` with `theme_id`, `mode: "tags"` for `flat-lay`, `product-shot`, `lifestyle`, `social-proof`; then semantic "<kit name> laid out", "<component> step". Sequence and checks: `references/assets/asset-sourcing-sequence.md`.
+5. Offer ledger: bundle price, sum of components, saving as `O` rows (`references/offers/offer-types.md` bundle, bundle-decoy, tiered-volume, OF2, OF4); `lexsis_cart.get` to confirm the discount applies in the cart and the cart edit flow matches the page.
+6. Type variant from the brief: fixed kit, build-your-own, good, better, best ladder, or routine kit; it decides the purchase island. `lexsis_design.islands` for the live catalog, then `lexsis_design.island_schema` for each island named below before any prop is written.
+7. `lexsis_workspace.credits` only when a `product_composite` for a routine context image is planned; the hero is a `grid` of real components and needs no generation.
 
 ### Section by section
 
-No asset is used sight unseen: open every candidate with `lexsis_assets.view`
-and run the section 1b fit review in `references/workflows/section-asset-workflow.md`
-before use (subject does the job, crops to the slot without losing the product,
-quiet area for the copy, lighting and styling match neighbouring slots, palette,
-no baked-in text or watermark); view a section's or gallery's candidates
-together so the set reads as one shoot, and view a generated asset the same way
-after it returns.
-
-**`announcement`**
-- Purpose: one verified fact: bundle discount, free-shipping threshold or guarantee.
-- Media: none; text.
-- Island: SiteHeader announcement strip or AnnouncementBar, one message, not sticky; resolve from `lexsis_design.island_schema`; preset `announcementbar/static-dark`. Omit without a ledger row.
-- Copy: under 60 characters; vocabulary per `references/anti-patterns/copy-anti-patterns.md`.
-- Decide with: offer ledger `O` rows; `lexsis_cart.get` threshold.
-
-**`header`**
-- Purpose: minimal chrome, logo plus one utility link; full nav only for a permanent store page (record the override).
-- Media: brand logo or text wordmark; missing logo: tell the merchant, wordmark meanwhile. View every candidate with `lexsis_assets.view` and run the section fit review (section 1b of `references/workflows/section-asset-workflow.md`) before use.
-- Island: SiteHeader minimal (one link, CTA anchoring to the builder) or Navbar with full links for the override; resolve from `lexsis_design.island_schema`; preset `siteheader/minimal-light` or `navbar/sticky-light`.
-- Copy: store names.
-- Decide with: `lexsis_brand.navigation`; page permanence.
-
-**`hero`**
-- Purpose: name the outcome of the set and show every component at once with the set price beside the sum.
-- Media: yes, included-items and identity: bundle SKU media (set flat lay) first, library `flat-lay`, merchant upload of the kit laid out; if none, compose the `grid` hero in HTML from each component's real catalog cut-out (layout, not a generated image). Never a lifestyle hero that hides the components; never a generated flat lay or a multi-product composite (GP13). Missing flat lay: tell the merchant (included-items, landscape and portrait, one shot); offer upload; generation is not feasible; the cut-out grid ships meanwhile and the slot stays `planned`. View every candidate with `lexsis_assets.view` and run the section fit review before use.
-- Island: none for the HTML grid; ProductHero in a split layout when the bundle SKU carries three or more real images (flat lay first, then components), no autoplay (N10); resolve from `lexsis_design.island_schema`; preset `producthero/split-rail-light`.
-- Copy: outcome headline 8 words; subhead 20 words; price line "₹3,297 separately, ₹2,499 as a set, save ₹798 (24%)"; review summary only with 5 or more set-level reviews.
-- Decide with: bundle SKU `media[]`; component cut-out availability; set-level band.
-
-**`savings-math`**
-- Purpose: the arithmetic within one scroll of the first price and again in the running total.
-- Media: none; a three-line price table is an object and sits alone.
-- Island: none; the struck sum carries `data-source="O<n>"`; currency first over the Rule-of-100 line (`references/offers/price-presentation.md` PP10).
-- Copy: three figures and one saving line; never "unlock savings".
-- Decide with: offer ledger rows.
-
-**`bundle-builder`** or **`product-hero`**
-- Purpose: the purchase control: build the set, or accept the fixed set and remove items.
-- Media: yes, one identity image per component from each component's catalog media. A component without an image: tell the merchant (identity, square, one per component); offer upload; not generated; the component is not offered until the image exists. View the candidates together with `lexsis_assets.view` and run the section fit review so the set reads as one shoot, not a pile of found images.
-- Island: build-your-own: BundleBuilder, in-stock components only, at most six slots, rules as HTML microcopy, a sold-out component replaced by EmailCapture in compact form labelled "Notify me". Fixed kit whose components are separate SKUs: BundleBuilder with every component pre-selected (the checkbox is the remove control). Fixed kit sold as one SKU: BuyBox in compact form, one per page. SubscriptionToggle only with one-time as the default. Decision inputs: type variant, component inventory, cart v2. Resolve from `lexsis_design.island_schema`; preset `buybox/compact-dark` when it fits.
-- Copy: rule microcopy 12 words per step; CTA "Add the set", "Get the kit".
-- Decide with: step 6 variant; component inventory; `lexsis_cart.get`.
-
-**`product-spotlight`** (`-components`)
-- Purpose: what is inside: one row per component with its role and why it belongs.
-- Media: yes, identity per component (catalog first media), detail where it exists; the row's image is the row. View the component cut-outs together so background, scale and lighting match across the set. Missing: tell the merchant per component; offer upload; in fast-draft the row ships text-only and is listed under Unresolved assets. View the candidates together with `lexsis_assets.view` and run the section fit review so the set reads as one shoot, not a pile of found images.
-- Island: none (HTML rows with per-item price and a labelled review summary), or ProductCarousel in compact row form for three to five components when per-item reviews are not shown, animation off; resolve from `lexsis_design.island_schema`; preset `productcarousel/rows-compact`. Per-item review summary from `reviews` for that component id, labelled, at 5 or more reviews.
-- Copy: role ("Step 1, cleanse"), one line on why it belongs (18 words), per-item price.
-- Decide with: component count; per-component bands.
-
-**`pricing`** with **`comparison`**
-- Purpose: good, better, best ladder with a visible attribute table and a "best for" line per tier.
-- Media: one identity image per tier when tiers differ physically; a table without images is allowed (a table is an object, N8). View the candidates together with `lexsis_assets.view` and run the section fit review so the set reads as one shoot, not a pile of found images.
-- Island: PlanSelector in card form for the three tiers, the "best for" line as the tier note, no badge (N9), every tier purchasable at the shown price; the attribute table as HTML below; resolve from `lexsis_design.island_schema`.
-- Copy: "best for" 12 words; per-item value on each tier.
-- Decide with: three tiers confirmed in the offer ledger.
-
-**`quantity-breaks`**
-- Purpose: a volume ladder on components, at most four tiers, single unit as the reference.
-- Media: pack imagery per tier from catalog media when the card form is used; none for the pill form. Missing pack image: tell the merchant; pill form meanwhile. View the candidates together with `lexsis_assets.view` and run the section fit review so the set reads as one shoot, not a pile of found images.
-- Island: QuantityBreaks, card form with pack images or pill form without, single unit selected by default, no "MOST POPULAR" (N9); resolve from `lexsis_design.island_schema`.
-- Copy: per-unit price per tier; "Buy 2, save 10%" pattern (`offer-types.md` tiered-volume).
-- Decide with: a real volume ladder in the ledger.
-
-**`routine`** or **`usage`**
-- Purpose: order of use, cadence, what to expect and when.
-- Media: yes, sequence: real frames of the components in order of use from catalog, library `lifestyle`, merchant upload; a single routine context image may be a `product_composite` of one real component cut-out on a plain surface (ALLOW). Missing frames: tell the merchant (sequence, count); offer upload or the single composite; merge into the component rows only on the merchant's call. Video per `references/assets/video-rules.md`. View the candidates together with `lexsis_assets.view` and run the section fit review so the set reads as one shoot, not a pile of found images.
-- Island: none.
-- Copy: step 25 words; time-to-result only when substantiated.
-- Decide with: frames found; proof ledger substantiation.
-
-**`reviews`**
-- Purpose: set-level reviews, or component reviews labelled by product.
-- Media: review photos from the records only. View every candidate with `lexsis_assets.view` and run the section fit review before use.
-- Island: by band per `references/proof/reviews-sourcing.md`: B1 static verbatim cards; B2 ReviewCarousel showing all cards, autoplay off (N10), bound to the bundle id or an active collection; B3 or more ReviewList with filters. Component reviews: one module per component bound to that id with the product name as the h2; never one module spanning several products. Resolve from `lexsis_design.island_schema`.
-- Copy: island-rendered; the h2 names the product.
-- Decide with: bands per scope from step 2.
-
-**`guarantee`**
-- Purpose: exact terms, "used or unused" where true.
-- Media: none; one line beside the CTA and a short block here.
-- Island: none.
-- Copy: one sentence of terms; the exact claim path.
-- Decide with: `policy-fact` ledger row.
-
-**`faq`**
-- Purpose: builder rules, discount at checkout, swaps, returns on partial kits.
-- Media: none; page background.
-- Island: none; native `<details>` (the FAQ island is deprecated).
-- Copy: four to six questions; answers 60 words.
-- Decide with: builder rules and policies.
-
-**`sticky-cta`**
-- Purpose: running total plus saving plus "Add the set" on mobile.
-- Media: set thumbnail from catalog, or a text-only bar. View every candidate with `lexsis_assets.view` and run the section fit review before use.
-- Island: StickyBar in product mode for a fixed kit sold as one SKU, appearing after the buy section; for build-your-own, BundleBuilder's own total and button are the sticky element, because StickyBar cannot bind a builder total; record the deviation. Resolve from `lexsis_design.island_schema`; preset `stickybar/product-light`.
-- Copy: "Select at least N" until the rule is met (HTML microcopy in the builder).
-- Decide with: purchase island chosen above.
-
-**`closing-cta`**
-- Purpose: restate set price, saving and guarantee.
-- Media: the set flat lay or component grid reused small; no new asset.
-- Island: none; an anchor to the builder (one BuyBox and one BundleBuilder per page).
-- Copy: price line verbatim from savings-math; guarantee one line.
-- Decide with: mirrors savings-math and guarantee.
-
-**`footer`**
-- Purpose: chrome.
-- Media: brand logo. View every candidate with `lexsis_assets.view` and run the section fit review before use.
-- Island: Footer; preset `footer/simple-light` (campaign page) or `footer/columns-dark` (store page).
-- Copy: the store's.
-- Decide with: page permanence.
+| Section | Purpose | Media job and source | Interactive decision | Copy constraints | Decision evidence |
+|---|---|---|---|---|---|
+| `announcement` | one verified fact: bundle discount, free-shipping threshold or guarantee. | none; text. | SiteHeader announcement strip or AnnouncementBar, one message, not sticky. Omit without a ledger row. | under 60 characters; vocabulary per `references/anti-patterns/copy-anti-patterns.md`. | offer ledger `O` rows; `lexsis_cart.get` threshold. |
+| `header` | minimal chrome, logo plus one utility link; full nav only for a permanent store page (record the override). | brand logo or text wordmark; without a logo, use the wordmark. | SiteHeader minimal (one link, CTA anchoring to the builder) or Navbar with full links for the override. | store names. | `lexsis_brand.navigation`; page permanence. |
+| `hero` | name the outcome of the set and show every component at once with the set price beside the sum. | yes, included-items and identity: bundle SKU media (set flat lay) first, library `flat-lay`, merchant upload of the kit laid out; if none, compose the `grid` hero in HTML from each component's real catalog cut-out (layout, not a generated image). Never a lifestyle hero that hides the components; never a generated flat lay or a multi-product composite (GP13). Missing flat lay: (included-items, landscape and portrait, one shot); generation is not feasible; the cut-out grid ships meanwhile and the slot stays `planned`. | none for the HTML grid; ProductHero in a split layout when the bundle SKU carries three or more real images (flat lay first, then components), no autoplay (N10). | outcome headline 8 words; subhead 20 words; price line "₹3,297 separately, ₹2,499 as a set, save ₹798 (24%)"; review summary only with 5 or more set-level reviews. | bundle SKU `media[]`; component cut-out availability; set-level band. |
+| `savings-math` | the arithmetic within one scroll of the first price and again in the running total. | none; a three-line price table is an object and sits alone. | none; the struck sum carries `data-source="O<n>"`; currency first over the Rule-of-100 line (`references/offers/price-presentation.md` PP10). | three figures and one saving line; never "unlock savings". | offer ledger rows. |
+| `bundle-builder` or `product-hero` | the purchase control: build the set, or accept the fixed set and remove items. | yes, one identity image per component from each component's catalog media. A component without an image: (identity, square, one per component); not generated; the component is not offered until the image exists. | build-your-own: BundleBuilder, in-stock components only, at most six slots, rules as HTML microcopy, a sold-out component replaced by EmailCapture in compact form labelled "Notify me". Fixed kit whose components are separate SKUs: BundleBuilder with every component pre-selected (the checkbox is the remove control). Fixed kit sold as one SKU: BuyBox in compact form, one per page. SubscriptionToggle only with one-time as the default. Decision inputs: type variant, component inventory, cart v2. | rule microcopy 12 words per step; CTA "Add the set", "Get the kit". | step 6 variant; component inventory; `lexsis_cart.get`. |
+| `product-spotlight` (`-components`) | what is inside: one row per component with its role and why it belongs. | yes, identity per component (catalog first media), detail where it exists; the row's image is the row. View the component cut-outs together so background, scale and lighting match across the set. Missing: per component; in fast-draft the row ships text-only and is listed under Unresolved assets. | none (HTML rows with per-item price and a labelled review summary), or ProductCarousel in compact row form for three to five components when per-item reviews are not shown, animation off. Per-item review summary from `reviews` for that component id, labelled, at 5 or more reviews. | role ("Step 1, cleanse"), one line on why it belongs (18 words), per-item price. | component count; per-component bands. |
+| `pricing` with `comparison` | good, better, best ladder with a visible attribute table and a "best for" line per tier. | one identity image per tier when tiers differ physically; a table without images is allowed (a table is an object, N8). | PlanSelector in card form for the three tiers, the "best for" line as the tier note, no badge (N9), every tier purchasable at the shown price; the attribute table as HTML below | "best for" 12 words; per-item value on each tier. | three tiers confirmed in the offer ledger. |
+| `quantity-breaks` | a volume ladder on components, at most four tiers, single unit as the reference. | pack imagery per tier from catalog media when the card form is used; none for the pill form. Missing pack image: use the schema-supported text option. | QuantityBreaks, card form with pack images or pill form without, single unit selected by default, no "MOST POPULAR" (N9) | per-unit price per tier; "Buy 2, save 10%" pattern (`offer-types.md` tiered-volume). | a real volume ladder in the ledger. |
+| `routine` or `usage` | order of use, cadence, what to expect and when. | yes, sequence: real frames of the components in order of use from catalog, library `lifestyle`, merchant upload; a single routine context image may be a `product_composite` of one real component cut-out on a plain surface. Missing frames: (sequence, count); alternative: the single composite; merge into the component rows as the agreed alternative. Video per `references/assets/video-rules.md`. | none. | step 25 words; time-to-result only when substantiated. | frames found; proof ledger substantiation. |
+| `reviews` | set-level reviews, or component reviews labelled by product. | review photos from the records only. | by band per `references/proof/reviews-sourcing.md`: B1 static verbatim cards; B2 ReviewCarousel showing all cards, autoplay off (N10), bound to the bundle id or an active collection; B3 or more ReviewList with filters. Component reviews: one module per component bound to that id with the product name as the h2; never one module spanning several products. | island-rendered; the h2 names the product. | bands per scope from step 2. |
+| `guarantee` | exact terms, "used or unused" where true. | none; one line beside the CTA and a short block here. | none. | one sentence of terms; the exact claim path. | `policy-fact` ledger row. |
+| `faq` | builder rules, discount at checkout, swaps, returns on partial kits. | none; page background. | none; native `<details>`. | four to six questions; answers 60 words. | builder rules and policies. |
+| `sticky-cta` | running total plus saving plus "Add the set" on mobile. | set thumbnail from catalog, or a text-only bar. | StickyBar in product mode for a fixed kit sold as one SKU, appearing after the buy section; for build-your-own, BundleBuilder's own total and button are the sticky element, because StickyBar cannot bind a builder total; record the deviation. | "Select at least N" until the rule is met (HTML microcopy in the builder). | purchase island chosen above. |
+| `closing-cta` | restate set price, saving and guarantee. | the set flat lay or component grid reused small; no new asset. | none; an anchor to the builder (one BuyBox and one BundleBuilder per page). | price line verbatim from savings-math; guarantee one line. | mirrors savings-math and guarantee. |
+| `footer` | chrome. | brand logo. | Footer. | the store's. | page permanence. |
 
 ### Asset budget
 
@@ -268,7 +141,7 @@ after it returns.
 | asset library | `flat-lay` kit shots, `product-shot` cut-outs, `lifestyle` routine scenes, `social-proof` with rights | sequence in order of use, giftable packaging | ask the merchant to upload; UGC waits for a `P` row |
 | generation | backdrops, textures, a single-product composite only | the set, any multi-product scene, people, results, logos, text | never |
 
-Minimal assets (one identity image per component): an HTML grid hero of the cut-outs, savings math, the builder or buy box, component rows, reviews by band, guarantee, native FAQ; the `included-items` and sequence slots stay `planned` and are listed in the plan and draft summary, and routine waits on the merchant's call. Generated assets: zero or one composite for routine context, never the set itself, never more than the house cap of four. Every asset, generated ones included, is opened with `lexsis_assets.view` and passes the fit review in `references/workflows/section-asset-workflow.md` section 1b before it ships; a paid render earns no exemption.
+Minimal assets (one identity image per component): an HTML grid hero of the cut-outs, savings math, the builder or buy box, component rows, reviews by band, guarantee, native FAQ; the `included-items` and sequence slots stay `planned` and are listed in the plan and draft summary, and routine waits on the merchant's call. Generated assets: zero or one composite for routine context, never the set itself, never more than the house cap of four.
 
 ## Above the fold (390px)
 

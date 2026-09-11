@@ -72,205 +72,44 @@ the rest.
 
 ## Workflow
 
+Apply `references/workflows/_how-to-read.md` to these type-specific
+decisions. It links the shared asset/fallback, fit, live-island and
+copy procedures; this table supplies their inputs, not another policy.
+
 ### Context reads
-1. `lexsis_catalog.list` for the collection: product count (decides "Load
-   more" at 12 or more), price range, option axes for filters (size, colour
-   with hex, type, tags), compare-at prices with their ledger basis,
-   inventory per variant, media count per product. `lexsis_catalog.get` per
-   product: first media item as the card identity image, second media item
-   as the swipe image, variant images for swatches. Record products without
-   an identity image for the merchant message.
-2. `lexsis_brand.navigation` for header links, the breadcrumb path and
-   subcategory links; `lexsis_brand.brand_kit` for tokens, voice and banned
-   phrases; `lexsis_brand.context` for the `theme_id`.
-3. `lexsis_catalog.reviews_status`, then `lexsis_catalog.reviews` per
-   product for the card average and count; stars only at 5 or more reviews
-   per product (`references/proof/reviews-sourcing.md`, band table).
-4. Policy page URL for the trust-bar facts as `policy-fact` ledger rows
-   (`references/proof/proof-ledger.md`); the offer ledger for the one
-   mid-grid promo card (`references/offers/offer-ledger.md`).
-5. `lexsis_asset_library.search` with `theme_id`, `mode: "tags"`, one call
-   each for `banner`, `hero`, `lifestyle`, `product-shot`; then semantic
-   "<collection> in use"; view candidates with `lexsis_assets.view`
-   (`references/assets/asset-sourcing-sequence.md`).
-6. `lexsis_capture.form_schemas` for the email capture; support data for
-   FAQ questions (fit, sizing, care, compatibility).
-7. `lexsis_design.islands` for the active catalog; `lexsis_workspace.credits`
-   only if a promo `card_bg` is planned
-   (`references/assets/generation-policy.md`).
+
+1. `lexsis_catalog.list` for the collection: product count (decides "Load more" at 12 or more), price range, option axes for filters (size, colour with hex, type, tags), compare-at prices with their ledger basis, inventory per variant, media count per product. `lexsis_catalog.get` per product: first media item as the card identity image, second media item as the swipe image, variant images for swatches. Record products without an identity image for the merchant message.
+2. `lexsis_brand.navigation` for header links, the breadcrumb path and subcategory links; `lexsis_brand.brand_kit` for tokens, voice and banned phrases; `lexsis_brand.context` for the `theme_id`.
+3. `lexsis_catalog.reviews_status`, then `lexsis_catalog.reviews` per product for the card average and count; stars only at 5 or more reviews per product (`references/proof/reviews-sourcing.md`, band table).
+4. Policy page URL for the trust-bar facts as `policy-fact` ledger rows (`references/proof/proof-ledger.md`); the offer ledger for the one mid-grid promo card (`references/offers/offer-ledger.md`).
+5. `lexsis_asset_library.search` with `theme_id`, `mode: "tags"`, one call each for `banner`, `hero`, `lifestyle`, `product-shot`; then semantic "<collection> in use"; view candidates with `lexsis_assets.view` (`references/assets/asset-sourcing-sequence.md`).
+6. `lexsis_capture.form_schemas` for the email capture; support data for FAQ questions (fit, sizing, care, compatibility).
+7. `lexsis_design.islands` for the active catalog; `lexsis_workspace.credits` only if a promo `card_bg` is planned (`references/assets/generation-policy.md`).
 
 ### Section by section
-Media per section follows `references/workflows/section-asset-workflow.md`:
-when nothing covers a slot, tell the merchant what is missing (job, aspect,
-count), offer upload via `lexsis_asset_upload.upload` or generation where the
-purpose is ALLOW or ASK in `references/assets/generation-policy.md`, and skip
-or merge the section only when the merchant chooses; a fast draft uses the
-closest existing asset or leaves the slot `planned` and lists every gap in the
-plan and the draft summary. No asset is used sight unseen: every candidate is
-opened with `lexsis_assets.view` and judged against the section per section 1b
-of that file (subject, crop to the slot aspect, a quiet area for the copy, the
-lighting and styling of the neighbouring slots, the plan's palette, no
-baked-in text, watermark or overlay); candidates for one grid, set or lookbook
-are viewed together so the set reads as one shoot, and a generated asset is
-viewed the same way after it returns. Islands follow
-`references/workflows/island-selection-workflow.md`: the lines below name the
-island and the inputs; variants and props are resolved live from
-`lexsis_design.island_schema`, with autoplay, hover-advance and entry motion
-off unless the plan names that motion moment (N10). Grid and card depth is in
-`references/generate-collection.md` and `references/product-grid.md`; copy
-ceilings follow `references/anti-patterns/copy-anti-patterns.md`.
 
-**`header`**
-- Purpose: full navigation with a visible search field and a breadcrumb.
-- Media: logo from the brand kit.
-- Island: SiteHeader (one verified shipping fact in the strip) or Navbar;
-  links from `lexsis_brand.navigation`; the breadcrumb is HTML under the
-  nav; resolve from `lexsis_design.island_schema`; preset
-  `siteheader/sticky-light`.
-- Copy: nav labels; breadcrumb Home, Collections, Name.
-- Decide with: the navigation result.
-
-**`hero`**
-- Purpose: the collection title in the shopper's words, one or two
-  sentences, subcategory tiles when subcategories exist; no taller than
-  200px at 390 and 300px at 1280.
-- Media: treatment `typographic`
-  (`references/assets/image-jobs-by-page-type.md`, section 5); a photograph
-  beside or behind the title only within the height cap: library `banner`,
-  then `hero`, then a catalog lifestyle image. Subcategory tiles want one
-  `context` image each from library `lifestyle` or the subcollection's first
-  product identity image. Generation: none (a 200px band gains nothing from a
-  backdrop). Missing tile images: tell the merchant (context per subcategory,
-  one aspect, count) and offer upload; if skipped, tiles become text links,
-  never icon tiles. No-go: a hero that pushes the first card row below the
-  fold; an autorotating banner. View every candidate with `lexsis_assets.view`
-  and run the section fit review; view any banner or tile beside the first
-  card row so backgrounds agree.
-- Island: none; HeroMedia is not used (its default height is a full
-  screen against the cap).
-- Copy: H1 6 words or fewer ("Running shoes for wide feet"); one or two
-  sentences.
-- Decide with: subcategory count from navigation; hero height measured in
-  the hosted draft at 390.
-
-**`qualifier`** (conditional: solution-aware search traffic)
-- Purpose: a 120 to 200 word "how to choose" intro naming the two or three
-  attributes that matter, linking to the filters.
-- Media: outside the loop as an opening text line; one `detail` image from
-  catalog media only when it explains an attribute (a sole, a weave). View
-  every candidate with `lexsis_assets.view` and run the section fit review;
-  view the tile images together so lighting, backgrounds and crops agree.
-- Island: none.
-- Copy: grade 6 to 8, under 200 words in a 60ch measure; each attribute a
-  link to its filter.
-- Decide with: the traffic source in the brief.
-
-**`product-grid`**
-- Purpose: filterable, sortable grid with the cards as the CTA.
-- Media: yes; job `identity` per card from catalog media, one aspect (3:4 or
-  1:1) across every card, second image on hover or swipe, `swatch` chips as
-  CSS from catalog hex when colour variants exist. Generation: none ("needs a
-  real photo"). Missing: list the products without an image and offer upload;
-  if skipped, those cards leave and the deviation is recorded. No-go:
-  generated or stock products; mixed aspects (SS10); a countdown on a card.
-  View every candidate with `lexsis_assets.view` and run the section fit
-  review; view the grid images together so lighting, backgrounds and crops
-  agree.
-- Island: the card composition from `references/product-grid.md` (there is
-  no grid island) with QuickAdd per card; decide direct add or picker from
-  the variant axes; sold-out variants visible and disabled; the filter and
-  sort bar, applied-filter chips, mobile bottom sheet and "Load more" with
-  the total count are HTML controls; InventoryIndicator on a card only with
-  a live variant binding; FeaturedCollectionStage only for a "featured"
-  rail of three to eight highlights above the grid; motion off; resolve
-  from `lexsis_design.island_schema`; preset
-  `inventoryindicator/badge-outline` for the live badge.
-- Copy: card line under 12 words; badges "New", "Best seller", "Low stock"
-  only from data; filter labels in customer language.
-- Decide with: product count, option axes, image count per product, review
-  band per product, live inventory availability.
-
-**`offer`** (conditional: verified offer row; after six to eight products)
-- Purpose: one mid-grid promotional card, visually distinct, one CTA.
-- Media: yes; a bundle card wants `included-items` or the bundle's identity
-  image from catalog media; a threshold or subscribe card wants a `context`
-  image from library `lifestyle` or `banner`. Generation: `card_bg` (ALLOW)
-  only behind a real product cut-out. Missing: tell the merchant (one image,
-  card aspect) and offer upload or `card_bg` with a cut-out; if skipped, the
-  offer terms sit in the trust-bar as a fact. No-go: an accent-coloured text
-  card (N8); a percentage pill (N9); a second competing banner. View every
-  candidate with `lexsis_assets.view` and run the section fit review before
-  use.
-- Island: none; QuickAdd on the bundle SKU when the card sells one; resolve
-  from `lexsis_design.island_schema`.
-- Copy: one sentence and one CTA; 20 words.
-- Decide with: the offer-ledger row and the grid length (one card per six
-  to eight products, one offer per page).
-
-**`trust-bar`** (recommended)
-- Purpose: shipping threshold, returns window, warranty or certification as
-  facts, one row below the grid.
-- Media: policy facts stand without an image; certification marks only as
-  issuer artwork with a ledger row
-  (`references/proof/trust-badges-certifications.md`); icons only from the
-  page's single inline SVG set. No-go: icon tiles, generated badges (GN5).
-- Island: none.
-- Copy: three facts, 8 words each.
-- Decide with: `policy-fact` ledger rows from the policy URL.
-
-**`about`** (recommended)
-- Purpose: category description and search copy at the bottom, 100 to 200
-  words.
-- Media: yes where it exists: one `context` or `in-use` image from library
-  `lifestyle` or catalog media beside the copy in a split layout. Generation:
-  none. Missing: offer upload; if skipped, the text runs alone in a 60ch
-  measure under 200 words. View every candidate with `lexsis_assets.view` and
-  run the section fit review before use.
-- Island: none.
-- Copy: shopper vocabulary, grade 6 to 8, no filler ("curated",
-  "handpicked").
-- Decide with: library `lifestyle` count for this category.
-
-**`faq`** (conditional: fit, sizing, care or compatibility questions in
-support data)
-- Purpose: three to five questions.
-- Media: no.
-- Island: none; native `<details>` and `<summary>` (the FAQ island is
-  deprecated).
-- Copy: answer in the first sentence, 60 words each.
-- Decide with: support data.
-
-**`email-capture`**
-- Purpose: new arrivals or restocks for this collection, one field.
-- Media: a card image from the grid beside the form; the form alone is the
-  object when none is spare (N8).
-- Island: EmailCapture, one per page, or the Footer newsletter layout
-  (never both); incentive only with a `first-order` row; resolve from
-  `lexsis_design.island_schema`; preset `footer/newsletter-split-light` in
-  the footer case.
-- Copy: one line and one field.
-- Decide with: `lexsis_capture.form_schemas` and the offer ledger.
-
-**`footer`**
-- Purpose: policies, payment marks, contact.
-- Media: logo; payment marks only as issuer artwork.
-- Island: Footer with columns from `lexsis_brand.navigation`; resolve from
-  `lexsis_design.island_schema`; preset `footer/columns-dark`.
-- Decide with: the navigation result.
+| Section | Purpose | Media job and source | Interactive decision | Copy constraints | Decision evidence |
+|---|---|---|---|---|---|
+| `header` | full navigation with a visible search field and a breadcrumb. | logo from the brand kit. | SiteHeader (one verified shipping fact in the strip) or Navbar; links from `lexsis_brand.navigation`; the breadcrumb is HTML under the nav. | nav labels; breadcrumb Home, Collections, Name. | the navigation result. |
+| `hero` | the collection title in the shopper's words, one or two sentences, subcategory tiles when subcategories exist; no taller than 200px at 390 and 300px at 1280. | treatment `typographic` (`references/assets/image-jobs-by-page-type.md`, section 5); a photograph beside or behind the title only within the height cap: library `banner`, then `hero`, then a catalog lifestyle image. Subcategory tiles want one `context` image each from library `lifestyle` or the subcollection's first product identity image. Generation: none (a 200px band gains nothing from a backdrop). Missing tile images: (context per subcategory, one aspect, count) and; if skipped, tiles become text links, never icon tiles. No-go: a hero that pushes the first card row below the fold; an autorotating banner. view any banner or tile beside the first card row so backgrounds agree. | none; HeroMedia is not used (its default height is a full screen against the cap). | H1 6 words or fewer ("Running shoes for wide feet"); one or two sentences. | subcategory count from navigation; hero height measured in the hosted draft at 390. |
+| `qualifier` (conditional: solution-aware search traffic) | a 120 to 200 word "how to choose" intro naming the two or three attributes that matter, linking to the filters. | outside the loop as an opening text line; one `detail` image from catalog media only when it explains an attribute (a sole, a weave). view the tile images together so lighting, backgrounds and crops agree. | none. | grade 6 to 8, under 200 words in a 60ch measure; each attribute a link to its filter. | the traffic source in the brief. |
+| `product-grid` | filterable, sortable grid with the cards as the CTA. | yes; job `identity` per card from catalog media, one aspect (3:4 or 1:1) across every card, second image on hover or swipe, `swatch` chips as CSS from catalog hex when colour variants exist. Generation: none ("needs a real photo"). Missing: list the products without an image and; if skipped, those cards leave and the deviation is recorded. No-go: generated or stock products; mixed aspects (SS10); a countdown on a card. view the grid images together so lighting, backgrounds and crops agree. | the card composition from `references/product-grid.md` (there is no grid island) with QuickAdd per card; decide direct add or picker from the variant axes; sold-out variants visible and disabled; the filter and sort bar, applied-filter chips, mobile bottom sheet and "Load more" with the total count are HTML controls; InventoryIndicator on a card only with a live variant binding; FeaturedCollectionStage only for a "featured" rail of three to eight highlights above the grid; motion off. | card line under 12 words; badges "New", "Best seller", "Low stock" only from data; filter labels in customer language. | product count, option axes, image count per product, review band per product, live inventory availability. |
+| `offer` (conditional: verified offer row; after six to eight products) | one mid-grid promotional card, visually distinct, one CTA. | yes; a bundle card wants `included-items` or the bundle's identity image from catalog media; a threshold or subscribe card wants a `context` image from library `lifestyle` or `banner`. Generation: `card_bg` only behind a real product cut-out. Missing media: (one image, card aspect) ; alternative: `card_bg` with a cut-out; if skipped, the offer terms sit in the trust-bar as a fact. No-go: an accent-coloured text card (N8); a percentage pill (N9); a second competing banner. | none; QuickAdd on the bundle SKU when the card sells one | one sentence and one CTA; 20 words. | the offer-ledger row and the grid length (one card per six to eight products, one offer per page). |
+| `trust-bar` (recommended) | shipping threshold, returns window, warranty or certification as facts, one row below the grid. | policy facts stand without an image; certification marks only as issuer artwork with a ledger row (`references/proof/trust-badges-certifications.md`); icons only from the page's single inline SVG set. No-go: icon tiles, generated badges (GN5). | none. | three facts, 8 words each. | `policy-fact` ledger rows from the policy URL. |
+| `about` (recommended) | category description and search copy at the bottom, 100 to 200 words. | yes where it exists: one `context` or `in-use` image from library `lifestyle` or catalog media beside the copy in a split layout. Generation: none. Missing:; if skipped, the text runs alone in a 60ch measure under 200 words. | none. | shopper vocabulary, grade 6 to 8, no filler ("curated", "handpicked"). | library `lifestyle` count for this category. |
+| `faq` (conditional: fit, sizing, care or compatibility questions in | three to five questions. | no. | none; native `<details>` and `<summary>`. | answer in the first sentence, 60 words each. | support data. |
+| `email-capture` | new arrivals or restocks for this collection, one field. | a card image from the grid beside the form; the form alone is the object when none is spare (N8). | EmailCapture, one per page, or the Footer newsletter layout (never both); incentive only with a `first-order` row. | one line and one field. | `lexsis_capture.form_schemas` and the offer ledger. |
+| `footer` | policies, payment marks, contact. | logo; payment marks only as issuer artwork. | Footer with columns from `lexsis_brand.navigation`. | Use the shared procedure. | the navigation result. |
 
 ### Asset budget
+
 | Source | Usually supplies | Usually missing | Per gap |
 |---|---|---|---|
 | catalog media | `identity` per card, second images, swatch hex | subcategory `context` tiles, a promo-card image | reuse a product's lifestyle media as the tile; generate `card_bg` (ALLOW) behind a real cut-out or `product_composite` for `context`; ask the merchant to upload tile and promo images; text links or no promo card only on the merchant's call |
 | asset library | `banner` for the short hero, `lifestyle` for tiles and the about block | category-specific lifestyle | semantic query, then ask the merchant to upload; the hero stays typographic either way |
 | generation | backdrops, textures, composites only | product, people, results, logos, text | never; these are "needs a real photo" in the merchant message |
 
-With minimal assets the page is a header with search, a typographic title, the
-filter bar, the real catalog grid with quick add, three policy facts, an email
-field and a footer; zero generated assets is the normal outcome, four is the
-ceiling, and every missing card or tile image is listed in the plan and the
-draft summary with upload, generate or skip. Every asset, found or generated,
-was viewed and passed the section fit review before use.
+With minimal assets the page is a header with search, a typographic title, the filter bar, the real catalog grid with quick add, three policy facts, an email field and a footer; zero generated assets is the normal outcome, four is the ceiling, and every missing card or tile image is listed in the plan and the draft summary with upload, generate or skip.
 
 ## Above the fold (390px)
 

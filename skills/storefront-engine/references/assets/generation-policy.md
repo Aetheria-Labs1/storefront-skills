@@ -139,7 +139,7 @@ and the plan carry provenance as well.
 
 ## 7. Recording
 
-Plan (`page-plan.md`), one block after "## Asset slots":
+Plan (`page plan`), one block after "## Asset slots":
 
 ```markdown
 ## Generation record
@@ -150,13 +150,13 @@ Plan (`page-plan.md`), one block after "## Asset slots":
 | A7 | product_lifestyle | portrait | photography / medium | "..." | ... | ... | lexsis | 9f01... | CompositeSynthetic | "AI-generated scene" | "yes, generate A7" Aditi 2026-09-10 |
 ```
 
-Manifest (`page-manifest.json`): the slot's `assets[]` entry gets
+Manifest (`page record`): the slot's `assets[]` entry gets
 `"sourceType": "lexsis"`, `"assetId"`, `"url"`, `"generated": true`,
 `"provider": "<provider>"`, and `role` equal to the purpose. For an approved
 ASK slot the role is `product_lifestyle`, the entry also carries
 `"askApproved": true`, and the merchant's words live in the plan record
-(`plan_lint.py` T8 rejects an ASK role without that flag). Nothing else about
-generation enters the manifest.
+(the type checklist review T8 rejects an ASK role without that flag). Nothing else about
+generation enters the page record.
 
 ## 8. Generation request checklist
 
@@ -180,44 +180,37 @@ or any external generator. One no stops the call.
 
 ## 9. Rules
 
-`$W` is the page workspace. `PEOPLE` is the regex
+Checks use persisted MCP source and the hosted draft. `PEOPLE` is the regex
 `\b(woman|women|man|men|girl|boy|person|people|model|customer|shopper|reviewer|hand|hands|face|smile|smiling|doctor|nurse|dermatologist|founder|team|staff|child|kid|baby|toddler|family|couple|influencer|creator)\b`.
 
 GP1. Never generate anything in section 2; no instruction, design.md line or brief lifts the block. LAW.
 Rationale: fake testimonials and misrepresented products carry regulatory penalties and platform rejection (sources in section 2).
-Check: `python3 -c "import json;a=[x for x in json.load(open('$W/page-manifest.json'))['assets'] if x.get('generated')];print([x['slotId'] for x in a if x['role'] not in ('hero_bg','section_bg','card_bg','texture_fill','pattern_tile','decorative_element','product_composite','product_lifestyle','icon_set')])"` prints `[]`; every `product_lifestyle` row in the Generation record has a non-empty "Approved by".
 
 GP2. Composite only over a real cut-out and leave the product pixels untouched. LAW, OPERATOR.
 Rationale: a repainted product misleads about what ships (GN1); `references/design-enrichment.md` compositing recipes assume a real reference image.
-Check: view the composite beside the source packshot with `lexsis_assets.view`; colour, shape and label identical (yes/no in `qa-report.md`); Generation record cites the reference asset id.
+Check: view the composite beside the source packshot with `lexsis_assets.view`; colour, shape and label identical (yes/no in `QA record`); Generation record cites the reference asset id.
 
 GP3. Give decorative generated images `alt=""` and `aria-hidden="true"`; give composites a product alt that names the product. LAW.
 Rationale: W3C alt decision tree https://www.w3.org/WAI/tutorials/images/decision-tree/ .
-Check: for each generated decorative URL `U`, `grep -c "src=\"U\"[^>]*alt=\"\"" $W/lexsis-source.html` is 1; for composites the alt contains the product name.
 
 GP4. Never let people words appear in the alt text or prompt of a generated slot unless the ASK synthetic-model case was approved. LAW.
 Rationale: 16 CFR 465; ASCI prohibited tier.
-Check: `grep -oE 'alt="[^"]*"' $W/lexsis-source.html` filtered to generated slot URLs, then `perl -ne 'print if /PEOPLE/i'` prints nothing; the same regex over the Generation record prompts prints nothing unless the row's "Approved by" quotes the synthetic-model yes.
 
 GP5. Never generate text into an image; every headline, price, label and badge is HTML. LAW.
 Rationale: WCAG 1.4.5; Google and Shopify overlay rules (section 2).
-Check: `perl -ne 'print if /\b(text|letters|typography|lettering|headline|price|label|badge|logo|caption)\b/i' <<< "<prompt>"` matches only inside the negative list; view the output for stray glyphs.
 
 GP6. Place `hero_bg` and `section_bg` only in the plan's bold moment; keep one page background everywhere else. OPERATOR.
 Rationale: N2 and N7 in `references/design-rules.md`; a generated band per section is the template tell those rules exist to stop.
 Check: count of full-width elements with a generated background image is 0 or 1 and its section id equals the plan's "Bold moment" line (browser check from N2).
 
-GP7. Record provenance three ways: metadata on the original, `generated: true` plus `provider` in the manifest, and the Generation record in the plan. LAW.
+GP7. Record provenance three ways: metadata on the original, `generated: true` plus `provider` in the page record, and the Generation record in the plan. LAW.
 Rationale: Google requires `IPTC DigitalSourceType`; EU and ASCI labelling decisions must be auditable; hosts may strip file metadata.
-Check: `exiftool -DigitalSourceType <original>` prints a value when the tool is available; `grep -c '"generated": true' $W/page-manifest.json` equals the Generation record row count.
 
 GP8. Show a visible label wherever section 6 requires one and place it adjacent to the image. LAW.
 Rationale: EU Art. 50 first-exposure labelling; ASCI medium tier.
-Check: for every record row with a non-empty "Visible label", `grep -c '<label text>' $W/lexsis-source.html` is at least 1 within the same section.
 
 GP9. Read credits and obtain a yes for the named batch before spending; cap generated assets at four per page. OPERATOR, HEURISTIC.
 Rationale: `/design-page` authorises page creation, not generation; more than a few generated backdrops read as a template.
-Check: `grep -c '"generated": true' $W/page-manifest.json` is 4 or fewer; the session shows `lexsis_workspace.credits` before the first generate call.
 
 GP10. Use `high` quality only for `hero_bg`; `medium` for section and card backgrounds and composites; `low` for textures and decoration. OPERATOR.
 Rationale: cost table in `references/design-enrichment.md`.

@@ -119,170 +119,40 @@ PP22, PP23.
 
 ## Workflow
 
-Assets first: every section gets real imagery before copy, and a section that
-would end up as a colour band, an emoji row, icon tiles or a wall of text is
-rebuilt around imagery or, on the merchant's call, merged or skipped. Per-slot
-sourcing: `references/workflows/section-asset-workflow.md`; island choice:
-`references/workflows/island-selection-workflow.md`. Missing media is never
-dropped silently: tell the merchant what is missing (job, aspect, count), offer
-upload via `lexsis_asset_upload.upload` or MCP generation when feasible under
-`references/assets/generation-policy.md`, and skip or merge only if the
-merchant chooses; in fast-draft, proceed with the closest existing asset or
-leave the slot `planned` and list every missing asset in the plan and draft
-summary.
+Apply `references/workflows/_how-to-read.md` to these type-specific
+decisions. It links the shared asset/fallback, fit, live-island and
+copy procedures; this table supplies their inputs, not another policy.
 
 ### Context reads
 
-1. `lexsis_catalog.get` with the product id: `media[]` with alt and order
-   (count N; view each with `lexsis_assets.view` and map it to one job from
-   `references/assets/image-jobs-by-page-type.md`: identity, detail, scale,
-   in-use, variation, included-items, label-or-facts-panel); option axes and
-   whether the colour axis carries per-variant images; price, compare-at and
-   its basis; selling plans; inventory per variant; product type for the
-   vertical gallery minimum (`references/assets/imagery-by-vertical.md`).
-2. `lexsis_catalog.reviews_status`, then `lexsis_catalog.reviews` with
-   `product_id` (n, average, newest date, per-star counts, `has_media`
-   count) and `lexsis_catalog.review_collections` with
-   `collection_status: "active"`: this fixes the review band B0 to B4 per
-   `references/proof/reviews-sourcing.md`.
-3. `lexsis_brand.context` and `lexsis_brand.brand_kit` (theme_id, tokens,
-   voice, whether an SVG icon set exists); `lexsis_brand.navigation` for the
-   full nav.
-4. `lexsis_asset_library.search` with `theme_id`, `mode: "tags"` for
-   `product-shot`, `lifestyle`, `flat-lay`, `social-proof`; then one semantic
-   `query` per gallery job still missing after step 1. Order and checks:
-   `references/assets/asset-sourcing-sequence.md`; thresholds:
-   `references/assets/slot-spec.md`.
+1. `lexsis_catalog.get` with the product id: `media[]` with alt and order (count N; view each with `lexsis_assets.view` and map it to one job from `references/assets/image-jobs-by-page-type.md`: identity, detail, scale, in-use, variation, included-items, label-or-facts-panel); option axes and whether the colour axis carries per-variant images; price, compare-at and its basis; selling plans; inventory per variant; product type for the vertical gallery minimum (`references/assets/imagery-by-vertical.md`).
+2. `lexsis_catalog.reviews_status`, then `lexsis_catalog.reviews` with `product_id` (n, average, newest date, per-star counts, `has_media` count) and `lexsis_catalog.review_collections` with `collection_status: "active"`: this fixes the review band B0 to B4 per `references/proof/reviews-sourcing.md`.
+3. `lexsis_brand.context` and `lexsis_brand.brand_kit` (theme_id, tokens, voice, whether an SVG icon set exists); `lexsis_brand.navigation` for the full nav.
+4. `lexsis_asset_library.search` with `theme_id`, `mode: "tags"` for `product-shot`, `lifestyle`, `flat-lay`, `social-proof`; then one semantic `query` per gallery job still missing after step 1. Order and checks: `references/assets/asset-sourcing-sequence.md`; thresholds: `references/assets/slot-spec.md`.
 5. `lexsis_cart.get`: free-shipping threshold, discount behaviour, cart v2.
-6. `lexsis_design.islands` for the live island catalog, then
-   `lexsis_design.island_schema` for each island named below before any prop
-   is written; deprecated entries are never used.
-7. Market list from the brief (IN adds the rail sections; shipping zones
-   decide whether a delivery estimate is truthful). `lexsis_workspace.credits`
-   only when a generation is on the table; the hero here is a `packshot`, so
-   generation is an ASK below the fold and usually skipped.
+6. `lexsis_design.islands` for the live island catalog, then `lexsis_design.island_schema` for each island named below before any prop is written; deprecated entries are never used.
+7. Market list from the brief (IN adds the rail sections; shipping zones decide whether a delivery estimate is truthful). `lexsis_workspace.credits` only when a generation is on the table; the hero here is a `packshot`, so generation is an ASK below the fold and usually skipped.
 
 ### Section by section
 
-No asset is used sight unseen: open every candidate with `lexsis_assets.view`
-and run the section 1b fit review in `references/workflows/section-asset-workflow.md`
-before use (subject does the job, crops to the slot without losing the product,
-quiet area for the copy, lighting and styling match neighbouring slots, palette,
-no baked-in text or watermark); view a section's or gallery's candidates
-together so the set reads as one shoot, and view a generated asset the same way
-after it returns.
-
-**`announcement`**
-- Purpose: one verified fact (free-shipping threshold or an offer ledger row).
-- Media: none; text only, no countdown.
-- Island: SiteHeader announcement strip when the header is SiteHeader, else AnnouncementBar; one message, not sticky, not dismissible; resolve props from `lexsis_design.island_schema`; preset `siteheader/sticky-light` or `announcementbar/static-dark`. Omit without a ledger row.
-- Copy: one sentence under 60 characters; vocabulary per `references/anti-patterns/copy-anti-patterns.md`.
-- Decide with: `lexsis_cart.get` threshold or an offer ledger `O` row.
-
-**`header`**
-- Purpose: full store navigation.
-- Media: brand logo from the brand kit; text wordmark when none. Missing logo: tell the merchant; wordmark meanwhile; never generated. View every candidate with `lexsis_assets.view` and run the section fit review (section 1b of `references/workflows/section-asset-workflow.md`) before use.
-- Island: SiteHeader (with announcement) or Navbar (without); sticky, cart drawer, links from `lexsis_brand.navigation`; hydration mode allowed; resolve from `lexsis_design.island_schema`; preset `siteheader/sticky-light` or `navbar/sticky-light`.
-- Copy: nav labels as the store names them.
-- Decide with: `lexsis_brand.navigation`; announcement present or not.
-
-**`gallery`**
-- Purpose: decision support; every position answers a shopper question.
-- Media: yes, identity-bound: identity, in-use, detail, scale, variation, included-items in that order, catalog media first, then library `product-shot` and `lifestyle`, then merchant upload, then supplier for the exact SKU; never stock, never a generated image in any gallery position (GP11). Video only as a real clip with a real poster (`references/assets/video-rules.md`). Below the vertical minimum or missing an R job: tell the merchant the job, aspect and count; offer upload; generation is not feasible for gallery jobs; the gallery ships with what exists and the slot stays `planned`. View the candidates together with `lexsis_assets.view` and run the section fit review so the set reads as one shoot, not a pile of found images.
-- Island: ProductGallery, or ImageZoom around a single image; decide layout, thumbnail rail, mobile behaviour and lightbox from the image count (1 to 2: stacked, no thumbnails; 3 to 5: main image with a thumbnail rail, swipe on mobile; 6 to 9: grid or collage with the first image large; 10 or more: masonry or two columns with every thumbnail visible or an explicit "+N"); variant sync on when the colour axis carries per-variant images and a VariantSwatches emitter is on the page; contain fit for packshots on white (aspect is CSS, not a prop); no autoplay or motion unless the plan's motion moment (N10); the first item is the feed image for Shopping traffic. Resolve variant and props from `lexsis_design.island_schema`; presets `productgallery/rail-bottom-light`, `productgallery/rail-left-editorial`, `productgallery/stacked-quiet` when they fit.
-- Copy: alt per the slot template, under 125 characters; no baked-in text.
-- Decide with: `media[]` count and job map from step 1; variant image mapping; the vertical minimum.
-
-**`buy-box`**
-- Purpose: choose a variant and add to cart within 1.5 mobile viewports (`design-rules.md` A8).
-- Media: swatch images per colour variant from the variant-to-media mapping; CSS chips from the catalog hex only beside a real swatch; a size chart as an HTML table, image only when the merchant's chart cannot be transcribed. The block is a form, exempt from the imagery rule. Missing swatches: tell the merchant per variant; offer upload; not generated. View the candidates together with `lexsis_assets.view` and run the section fit review so the set reads as one shoot, not a pile of found images.
-- Island: BuyBox, with VariantSwatches for a colour axis that carries images (BuyBox variants carry no image), BuyBox's own buttons or a VariantSwatches size grid for sizes (sold-out sizes labelled inline), OptionResolver when three or more axes need coordinating; SizeGuide only with merchant measurements; SubscriptionToggle (one-time default) when selling plans exist; QuantityBreaks below the CTA, never between price and add to cart, at most four tiers; DeliveryEstimate for single-zone domestic shipping, while the India pincode line is static HTML (the island has no pincode input); PaymentOptions only above the provider floor (`references/offers/price-presentation.md` PP24); InventoryIndicator only with a live inventory binding. Decision inputs: option axes and per-variant images, selling plans, inventory binding, market list, cart v2. Resolve every variant and prop from `lexsis_design.island_schema`; presets `buybox/default-light`, `deliveryestimate/inline-quiet`, `inventoryindicator/text-quiet` when they fit. VariantSelector belongs to cards and quick view, not the PDP.
-- Copy: untruncated title; one fit sentence per option (under 12 words); description 60 words; two microcopy lines under the CTA; India rail per `price-presentation.md` PP5, PP21 to PP23; offers per `references/offers/offer-types.md`.
-- Decide with: step 1 axes and images; selling plans; inventory binding; market list; `lexsis_cart.get`.
-
-**`trust-bar`**
-- Purpose: returns window, warranty, shipping threshold, guarantee, as facts under the CTA.
-- Media: none; text facts with the page's single SVG icon set or no icons; certification marks only as issuer artwork with a ledger row, never generated (GN5).
-- Island: none.
-- Copy: four facts of six words or fewer.
-- Decide with: `policy-fact` rows in the proof ledger.
-
-**`benefits`**
-- Purpose: three to six outcome statements, each with a number, material, time or test.
-- Media: yes, one image per benefit (in-use, detail or context) from catalog media not used in the gallery, then library `lifestyle`, then merchant upload; `context` alone may be generated as `product_composite` over the real cut-out (ALLOW). Fewer images than benefits: tell the merchant which jobs are missing, offer upload or the composite; meanwhile one real in-use image beside the facts; merge into facts or cut benefits only on the merchant's call. No-go: icon tiles, emoji rows, a colour band per benefit, a generated in-use scene (GP14). View the candidates together with `lexsis_assets.view` and run the section fit review so the set reads as one shoot, not a pile of found images.
-- Island: none.
-- Copy: six items of 20 words; `fab`; the shopper's words from review mining; `references/anti-patterns/copy-anti-patterns.md`.
-- Decide with: images left after the gallery map; `reviews_search` for vocabulary.
-
-**`ingredients`**, **`specs`** or **`materials`**
-- Purpose: full label, composition or spec table with provenance.
-- Media: yes for regulated consumables and materials: the label as HTML text with a legible real label photo (1600 px or more) as the zoomable supplement; an ingredient or material flat lay from catalog, library `flat-lay`, merchant upload, or licensed stock raw material as context only (GN11); texture macro from catalog or merchant. Missing: tell the merchant (label photo, flat lay); offer upload; generation is not feasible for food, formula or panels; the HTML table ships regardless. View every candidate with `lexsis_assets.view` and run the section fit review before use.
-- Island: IngredientExplorer when four or more actives carry percentages or per-ingredient imagery, else an HTML table; layout from the ingredient count; resolve from `lexsis_design.island_schema`. Tabs is deprecated: use grouped `<details>` or CSS tabs, and never hide this block.
-- Copy: every number in HTML matching the label; supplier named where known; 150 words outside the table.
-- Decide with: product type (regulated or not), ingredient count, label photo resolution via `lexsis_assets.view`.
-
-**`how-it-works`** or **`usage`**
-- Purpose: steps with cadence and time-to-result the merchant can substantiate.
-- Media: yes, sequence: three to five real numbered frames from catalog, library `lifestyle`, or merchant upload; a demo video as click-to-play per `references/assets/video-rules.md`. Missing frames: tell the merchant (sequence, count, aspect); offer upload; generation is not feasible for sequence; meanwhile three short steps beside one real in-use image; merge into benefits only on the merchant's call. View the candidates together with `lexsis_assets.view` and run the section fit review so the set reads as one shoot, not a pile of found images.
-- Island: none; a plain video element for the demo.
-- Copy: 25 words per step; no result claim without a ledger row.
-- Decide with: frame count from step 4; substantiation in the proof ledger.
-
-**`comparison`**
-- Purpose: sibling SKUs or a named category alternative, one "best for" line per column.
-- Media: yes, one identity image per own column from each sibling's `lexsis_catalog.get`; the alternative as an inline SVG silhouette labelled "other brands"; never a competitor photo without licence. Missing sibling image: tell the merchant; text column meanwhile. View every candidate with `lexsis_assets.view` and run the section fit review before use.
-- Island: none; an HTML table, no winner ribbon (N9).
-- Copy: "best for" 12 words per column; per-unit prices per `price-presentation.md` PP8 and PP9.
-- Decide with: the sibling list from the brief and catalog.
-
-**`ugc-grid`**
-- Purpose: rights-cleared customer photos in real use.
-- Media: yes, only library `social-proof` assets with a `P` ledger row, and `has_media` reviews; uniform tiles labelled as customer content; never stock or generated people (GN3, GN9). No rights: tell the merchant what a rights record needs and offer the import path; the section waits for it (rules in `references/proof/reviews-sourcing.md`). View the candidates together with `lexsis_assets.view` and run the section fit review so the set reads as one shoot, not a pile of found images.
-- Island: none; an HTML grid, GalleryLightbox mounted once if wanted.
-- Copy: caption with first name or handle when permitted.
-- Decide with: `has_media` count and library rights records.
-
-**`reviews`**
-- Purpose: breadth of evidence with the distribution as a filter and a critical review reachable.
-- Media: review photos and videos from the records; avatars real with consent or CSS initials. View every candidate with `lexsis_assets.view` and run the section fit review before use.
-- Island: by band per `references/proof/reviews-sourcing.md`: B1 static verbatim cards and an "n reviews" link; B2 ReviewCarousel showing all cards at once, autoplay off (N10), bound to an active collection or the product id; B3 ReviewList with distribution filters, sort and media; B4 the same plus media filter and merchant replies. Never an endpoint prop, never SocialProofPopup, never a rating filter on the full list (RS8). Resolve from `lexsis_design.island_schema`; preset `reviewcarousel/grid-flat` when it fits.
-- Copy: island-rendered; one line disclosing the default sort; average to one decimal with its count.
-- Decide with: band from step 2; active collection id.
-
-**`faq`**
-- Purpose: five to eight shopper objections answered in the first sentence.
-- Media: none; page background (N8).
-- Island: none; native `<details>` and `<summary>` (the FAQ island is deprecated).
-- Copy: questions in the shopper's words; answers 60 words.
-- Decide with: `reviews_search` for objections; policy pages.
-
-**`cross-sell`**
-- Purpose: a named relationship (Complete the routine, Compatible replacement, Refill), two or three items.
-- Media: yes, one identity image per item from its own `lexsis_catalog.get`; an item without an image: tell the merchant, offer upload, leave it out until then. View the candidates together with `lexsis_assets.view` and run the section fit review so the set reads as one shoot, not a pile of found images.
-- Island: ProductCarousel in its compact row form for two or three items, quick add only with cart v2, entry animation off (N10); the section owns the h2; never between price and add to cart; resolve from `lexsis_design.island_schema`; preset `productcarousel/rows-compact`.
-- Copy: one line per item (18 words); relationship name as the h2.
-- Decide with: a real relationship in the catalog; cart v2.
-
-**`legal`**
-- Purpose: India regulatory block.
-- Media: none; HTML text.
-- Island: none.
-- Copy: facts as stored; no two conflicting facts.
-- Decide with: market list includes IN; merchant-confirmed facts.
-
-**`sticky-cta`**
-- Purpose: re-surface add to cart with variant and price after the buy box scrolls out.
-- Media: product thumbnail from catalog position 1, or a text-only bar. View every candidate with `lexsis_assets.view` and run the section fit review before use.
-- Island: StickyBar in product mode, appearing after the buy box, animation off on quiet pages; the schema carries no variant sync, so the label shows the default variant and opens the picker; only when the page runs past about three mobile screens; resolve from `lexsis_design.island_schema`; preset `stickybar/product-light` or `stickybar/product-dark`.
-- Copy: label carries variant and price.
-- Decide with: estimated page height; cart v2.
-
-**`footer`**
-- Purpose: store footer chrome.
-- Media: brand logo; text social links when the page has no icon set. View every candidate with `lexsis_assets.view` and run the section fit review before use.
-- Island: Footer; columns from `lexsis_brand.navigation`; hydration mode allowed; preset `footer/columns-dark`, or `footer/newsletter-split-light` when email capture is a stated goal.
-- Copy: the store's.
-- Decide with: `lexsis_brand.navigation`.
+| Section | Purpose | Media job and source | Interactive decision | Copy constraints | Decision evidence |
+|---|---|---|---|---|---|
+| `announcement` | one verified fact (free-shipping threshold or an offer ledger row). | none; text only, no countdown. | SiteHeader announcement strip when the header is SiteHeader, else AnnouncementBar; one message, not sticky, not dismissible; resolve props from `lexsis_design.island_schema`. Omit without a ledger row. | one sentence under 60 characters; vocabulary per `references/anti-patterns/copy-anti-patterns.md`. | `lexsis_cart.get` threshold or an offer ledger `O` row. |
+| `header` | full store navigation. | brand logo from the brand kit; text wordmark when none. Without a logo, use the wordmark; never generated. | SiteHeader (with announcement) or Navbar (without); sticky, cart drawer, links from `lexsis_brand.navigation`; hydration mode from the live schema. | nav labels as the store names them. | `lexsis_brand.navigation`; announcement present or not. |
+| `gallery` | decision support; every position answers a shopper question. | yes, identity-bound: identity, in-use, detail, scale, variation, included-items in that order, catalog media first, then library `product-shot` and `lifestyle`, then merchant upload, then supplier for the exact SKU; never stock, never a generated image in any gallery position (GP11). Video only as a real clip with a real poster (`references/assets/video-rules.md`). Below the vertical minimum or missing an R job: the job, aspect and count; generation is not feasible for gallery jobs; the gallery ships with what exists and the slot stays `planned`. | ProductGallery, or ImageZoom around a single image; decide layout, thumbnail rail, mobile behaviour and lightbox from the image count (1 to 2: stacked, no thumbnails; 3 to 5: main image with a thumbnail rail, swipe on mobile; 6 to 9: grid or collage with the first image large; 10 or more: masonry or two columns with every thumbnail visible or an explicit "+N"); variant sync on when the colour axis carries per-variant images and a VariantSwatches emitter is on the page; contain fit for packshots on white (aspect is CSS, not a prop); no autoplay or motion unless the plan's motion moment (N10); the first item is the feed image for Shopping traffic. | alt per the slot template, under 125 characters; no baked-in text. | `media[]` count and job map from step 1; variant image mapping; the vertical minimum. |
+| `buy-box` | choose a variant and add to cart within 1.5 mobile viewports (`design-rules.md` A8). | swatch images per colour variant from the variant-to-media mapping; CSS chips from the catalog hex only beside a real swatch; a size chart as an HTML table, image only when the merchant's chart cannot be transcribed. The block is a form, exempt from the imagery rule. Missing swatches: per variant; not generated. | BuyBox, with VariantSwatches for a colour axis that carries images (resolve variant imagery from the live purchase contract), BuyBox's own buttons or a VariantSwatches size grid for sizes (sold-out sizes labelled inline), OptionResolver when three or more axes need coordinating; SizeGuide only with merchant measurements; SubscriptionToggle (one-time default) when selling plans exist; QuantityBreaks below the CTA, never between price and add to cart, at most four tiers; DeliveryEstimate for single-zone domestic shipping, while the India pincode line is static HTML (the island has no pincode input); PaymentOptions only above the provider floor (`references/offers/price-presentation.md` PP24); InventoryIndicator only with a live inventory binding. Decision inputs: option axes and per-variant images, selling plans, inventory binding, market list, cart v2. Resolve every variant and prop from `lexsis_design.island_schema`. VariantSelector belongs to cards and quick view, not the PDP. | untruncated title; one fit sentence per option (under 12 words); description 60 words; two microcopy lines under the CTA; India rail per `price-presentation.md` PP5, PP21 to PP23; offers per `references/offers/offer-types.md`. | step 1 axes and images; selling plans; inventory binding; market list; `lexsis_cart.get`. |
+| `trust-bar` | returns window, warranty, shipping threshold, guarantee, as facts under the CTA. | none; text facts with the page's single SVG icon set or no icons; certification marks only as issuer artwork with a ledger row, never generated (GN5). | none. | four facts of six words or fewer. | `policy-fact` rows in the proof ledger. |
+| `benefits` | three to six outcome statements, each with a number, material, time or test. | yes, one image per benefit (in-use, detail or context) from catalog media not used in the gallery, then library `lifestyle`, then merchant upload; `context` alone may be generated as `product_composite` over the real cut-out. Fewer images than benefits: record the missing jobs; alternative: the composite; meanwhile one real in-use image beside the facts; merge into facts or cut benefits as the agreed alternative. No-go: icon tiles, emoji rows, a colour band per benefit, a generated in-use scene (GP14). | none. | six items of 20 words; `fab`; the shopper's words from review mining; `references/anti-patterns/copy-anti-patterns.md`. | images left after the gallery map; `reviews_search` for vocabulary. |
+| `ingredients`, `specs` or `materials` | full label, composition or spec table with provenance. | yes for regulated consumables and materials: the label as HTML text with a legible real label photo (1600 px or more) as the zoomable supplement; an ingredient or material flat lay from catalog, library `flat-lay`, merchant upload, or licensed stock raw material as context only (GN11); texture macro from catalog or merchant. Missing media: (label photo, flat lay); generation is not feasible for food, formula or panels; the HTML table ships regardless. | IngredientExplorer when four or more actives carry percentages or per-ingredient imagery, else an HTML table; choose layout from the ingredient count; use grouped `<details>` or CSS tabs, and never hide this block. | every number in HTML matching the label; supplier named where known; 150 words outside the table. | product type (regulated or not), ingredient count, label photo resolution via `lexsis_assets.view`. |
+| `how-it-works` or `usage` | steps with cadence and time-to-result the merchant can substantiate. | yes, sequence: three to five real numbered frames from catalog, library `lifestyle`, or merchant upload; a demo video as click-to-play per `references/assets/video-rules.md`. Missing frames: (sequence, count, aspect); generation is not feasible for sequence; meanwhile three short steps beside one real in-use image; merge into benefits as the agreed alternative. | none; a plain video element for the demo. | 25 words per step; no result claim without a ledger row. | frame count from step 4; substantiation in the proof ledger. |
+| `comparison` | sibling SKUs or a named category alternative, one "best for" line per column. | yes, one identity image per own column from each sibling's `lexsis_catalog.get`; the alternative as an inline SVG silhouette labelled "other brands"; never a competitor photo without licence. Missing sibling image: use a text column while the slot remains planned. | none; an HTML table, no winner ribbon (N9). | "best for" 12 words per column; per-unit prices per `price-presentation.md` PP8 and PP9. | the sibling list from the brief and catalog. |
+| `ugc-grid` | rights-cleared customer photos in real use. | yes, only library `social-proof` assets with a `P` ledger row, and `has_media` reviews; uniform tiles labelled as customer content; never stock or generated people (GN3, GN9). No rights: what a rights record needs and offer the import path; the section waits for it (rules in `references/proof/reviews-sourcing.md`). | none; an HTML grid, GalleryLightbox mounted once if wanted. | caption with first name or handle when permitted. | `has_media` count and library rights records. |
+| `reviews` | breadth of evidence with the distribution as a filter and a critical review reachable. | review photos and videos from the records; avatars real with consent or CSS initials. | by band per `references/proof/reviews-sourcing.md`: B1 static verbatim cards and an "n reviews" link; B2 ReviewCarousel showing all cards at once, autoplay off (N10), bound to an active collection or the product id; B3 ReviewList with distribution filters, sort and media; B4 the same plus media filter and merchant replies. Never an endpoint prop, never SocialProofPopup, never a rating filter on the full list (RS8). | island-rendered; one line disclosing the default sort; average to one decimal with its count. | band from step 2; active collection id. |
+| `faq` | five to eight shopper objections answered in the first sentence. | none; page background (N8). | none; native `<details>` and `<summary>`. | questions in the shopper's words; answers 60 words. | `reviews_search` for objections; policy pages. |
+| `cross-sell` | a named relationship (Complete the routine, Compatible replacement, Refill), two or three items. | yes, one identity image per item from its own `lexsis_catalog.get`; omit an item without an image until its media is supplied. | ProductCarousel in its compact row form for two or three items, quick add only with cart v2, entry animation off (N10); the section owns the h2; never between price and add to cart. | one line per item (18 words); relationship name as the h2. | a real relationship in the catalog; cart v2. |
+| `legal` | India regulatory block. | none; HTML text. | none. | facts as stored; no two conflicting facts. | market list includes IN; merchant-confirmed facts. |
+| `sticky-cta` | re-surface add to cart with variant and price after the buy box scrolls out. | product thumbnail from catalog position 1, or a text-only bar. | StickyBar in product mode, appearing after the buy box, animation off on quiet pages; resolve shared purchase state through the live schema; only when the page runs past about three mobile screens. | label carries variant and price. | estimated page height; cart v2. |
+| `footer` | store footer chrome. | brand logo; text social links when the page has no icon set. | Footer; columns from `lexsis_brand.navigation`; hydration mode from the live schema. | the store's. | `lexsis_brand.navigation`. |
 
 ### Asset budget
 
@@ -292,7 +162,7 @@ after it returns.
 | asset library | `product-shot` cut-outs, `lifestyle` in-use, `flat-lay` kits, `social-proof` UGC with rights | on-body scale, sequence frames, a label photo at 1600 px | ask the merchant to upload; UGC waits for a `P` row |
 | generation | backdrops, textures, composites only (`hero_bg`, `section_bg`, `card_bg`, `texture_fill`, `pattern_tile`, `decorative_element`, `product_composite`) | product, people, results, logos, text, anything in the gallery or a proof section | never |
 
-Minimal assets (one or two catalog images): a stacked gallery or a single image with zoom, the buy box, an HTML spec table, reviews by band, a native FAQ, and `planned` slots for scale and in-use listed in the plan and draft summary; benefits fold into facts beside the one real image, and how-it-works and ugc-grid wait, each only on the merchant's call. Generated assets on a PDP: usually zero, at most one ASK backdrop below the fold, never more than the house cap of four. Every asset, generated ones included, is opened with `lexsis_assets.view` and passes the fit review in `references/workflows/section-asset-workflow.md` section 1b before it ships; a paid render earns no exemption.
+Minimal assets (one or two catalog images): a stacked gallery or a single image with zoom, the buy box, an HTML spec table, reviews by band, a native FAQ, and `planned` slots for scale and in-use listed in the plan and draft summary; benefits fold into facts beside the one real image, and how-it-works and ugc-grid wait, each as the agreed alternative. Generated assets on a PDP: usually zero, at most one ASK backdrop below the fold, never more than the house cap of four.
 
 ## Above the fold (390px)
 

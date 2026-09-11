@@ -14,8 +14,7 @@ Read:
 - the plan's `references/page-types/<type>.md` (its `## Workflow` names the
   island and asset decision per section) and
   `references/page-types/_checklist-format.md` for the vocabulary
-- `references/workflows/island-selection-workflow.md` (variant and prop
-  decision tables per island) and
+- `references/workflows/island-selection-workflow.md` (live schema resolution) and
   `references/workflows/section-asset-workflow.md`
 - `references/authoring/css-and-styling.md` and
   `references/authoring/source-authoring.md` before writing any class or
@@ -63,11 +62,9 @@ discovery.
 
 ## Inputs
 
-Use the approved `page-plan.md` and its saved workspace, store and theme
-binding, inside the campaign folder the plan opened
-(`work/campaigns/<campaign-slug>/pages/<page-handle>/`). Campaign-level media
-in `../../assets/` is available to every page of the campaign; page-only media
-stays in the page's own `assets/`. The plan
+Use the approved plan and its confirmed workspace, store and theme binding.
+Follow `references/source-artifact-workflow.md` for direct MCP authoring.
+Reuse the campaign's planning and shared/page-specific media evidence. The plan
 defines strategy, the Design direction, the Imagery and background plan, the
 asset slots and section intent; it must not define islands or implementation
 details.
@@ -85,38 +82,24 @@ offer exists, the Offer ledger) and record the skip. Never run `/setup` or
 
 ## Page-Type Workflow
 
-Before any template fetch or HTML, read `page.pageType` from the manifest and
+Before any template fetch or HTML, read `page.pageType` from the page record and
 the matching `references/page-types/<type>.md`. Its `## Workflow` already
-names, per section, the media decision and the island decision the plan made
-from the context reads; your job is to execute them. Run
-`python3 <plan-page-skill>/scripts/plan_lint.py <page-workspace>` and read
-its WARN rows together with the plan's "Deviations from the type default":
+names, per section, the media job and interactive decision inputs
+from the context reads; your job is to execute them. Compare the checklist
+with the plan's "Deviations from the type default":
 a deviation the plan explains is a decision, a deviation it does not mention
 is a question for the plan owner. A review section with no review data or
 urgency with no verified basis is the one case to stop and ask.
 
 For each section, in order:
 
-1. **Media first.** Resolve the section's slots exactly as the plan decided
-   (catalog media, library asset, imported file, or an ALLOW-purpose
-   generation). If a slot is still empty at this point, follow
-   `references/workflows/section-asset-workflow.md`: one more library search
-   with the right tag, then decide whether an allowed generation purpose
-   fits, then put one question to the merchant that names what is missing
-   (section, job, aspect, count) and offers upload through
-   `lexsis_asset_import.import` or MCP generation when feasible (the credit
-   confirmation and any ASK approval travel in that same answer). Skip or
-   merge the section only when the merchant chooses. Never ship the
-   section as a colour band, an emoji row, icon tiles or copy alone, and
-   never leave a missing asset unreported.
-2. **Island second.** Take the plan's island decision, call
-   `lexsis_design.island_schema` for that island only, and pick the variant
-   and props from what the live schema offers using the plan's decision
-   inputs (image count for gallery layout and thumbnails, variant axes for
-   swatches vs buttons, review band for carousel vs list, page length for a
-   sticky bar), as `references/workflows/island-selection-workflow.md`
-   describes. Record the chosen variant and the inputs in `islands[]`.
-3. **Copy third.** Short, in the plan's framework, no emoji, no filler.
+1. Execute the media job, acquisition, missing-slot and fit decisions through
+   `references/workflows/section-asset-workflow.md`.
+2. Resolve the planned interaction through
+   `references/workflows/island-selection-workflow.md`; planning names the
+   decision, design selects the current island and schema-valid props.
+3. Execute `references/workflows/copy-workflow.md` with the type-specific
+   copy ceiling and confirmed evidence.
 
 Carry these type defaults into composition:
 
@@ -133,7 +116,7 @@ Carry these type defaults into composition:
 
 ## Infer the Design Mode
 
-Use `references/workflow-intent.md` and the manifest evidence. A correction in
+Use `references/workflow-intent.md` and the page record evidence. A correction in
 the current request overrides the saved mode.
 
 - `fast-draft`: make reasonable reversible choices, compile a coherent page,
@@ -179,7 +162,7 @@ ordinary Design Direction, Compose, Compile, Hosted Draft, and Approval stages.
 
 ## Design Direction Gate
 
-Before writing any HTML, read the "Design direction" block in `page-plan.md`
+Before writing any HTML, read the "Design direction" block in `page plan`
 and `references/design-rules.md`. If the plan has no design
 direction, write one now (palette of four to six named hex values, type roles
 and scale, layout concept, wireframe with slot ids, icon decision, the one
@@ -191,17 +174,16 @@ guidance > brand-kit preview blueprint and presets. A lower layer may narrow a
 higher one, never widen it. Token values win over prose for values; if a token
 value fails WCAG AA against its documented pairing, return
 `THEME_CONTEXT_CONFLICT` with both values. Style guidance never raises a
-conflict; it is overridden and recorded in `page-plan.md` under "Overrides of
+conflict; it is overridden and recorded in `page plan` under "Overrides of
 brand design.md".
 
 ## Asset Gap Confirmation
 
-The plan already resolved the asset slots. Read `assets[]` from the manifest:
+The plan already resolved the asset slots. Read `assets[]` from the page record:
 
 1. Slots with `status: verified`, including everything the user picked in
    the plan, are final; use their ids and URLs as-is.
-2. List only `planned` slots. `validate_page_workspace.py --phase design`
-   reports them as `asset_slot_unresolved` warnings.
+2. List unresolved `planned` slots with their required job and remaining evidence.
 3. In `fast-draft`, resolve them from the existing library or Shopify media
    using the plan and brand direction. Ask only before paid generation or when
    the unresolved choice would materially change the campaign. In
@@ -252,11 +234,11 @@ substitute a product image or generic logo placeholder.
    intended source order when required.
 4. Read the compact island catalog and select only the likely interactive
    components. Do not fetch every full schema in advance.
-   When the plan names a preset (`Preset: <island>/<intent>-<tone>`), apply it
-   from `references/island-presets.md` verbatim: props,
-   `hydrate`, and its scoped CSS. Check its `requires` first. Unknown id:
-   return `PRESET_NOT_FOUND`. Any deviation is recorded as
-   `islands[].presetOverrides`; never edit a preset in place for one page.
+   A preset label (`Preset: <island>/<intent>-<tone>`) records visual intent,
+   not a frozen prop bundle. Follow
+   `references/workflows/island-selection-workflow.md` to resolve that intent
+   against the current schema. Record the actual props, hydration and scoped
+   styling, with any intentional departure in `islands[].presetOverrides`.
 5. Proof renders only from the plan's Proof ledger
    (`references/proof/proof-ledger.md`). Review islands use the ledger's
    `collectionId` or `productIds`, `minRating`, `pageSize` of 12 or fewer.
@@ -277,7 +259,7 @@ substitute a product image or generic logo placeholder.
    timer that resets. Nothing in `references/anti-patterns/dark-patterns.md`
    ships: no pre-selected paid add-ons, no confirmshaming dismiss copy, no
    hidden recurring terms, no fake urgency.
-7. Write a rough but complete `lexsis-source.html` with stable section
+7. Prepare a rough but complete source string with stable section
    delimiters from the canonical vocabulary, minimal island props, and the
    documented examples as a starting point.
 8. Write copy as design content using the plan's framework
@@ -287,7 +269,7 @@ substitute a product image or generic logo placeholder.
    and no word or structure from
    `references/anti-patterns/copy-anti-patterns.md`. For ad-driven traffic,
    the hero headline and visual satisfy `references/copy/message-match.md`.
-9. Write global page rules to `page-theme.css`; keep section-specific CSS
+9. Put page-wide rules in `theme_css`; keep section-specific CSS
    beside its section. `references/authoring/css-and-styling.md` decides which
    layer a rule belongs to: tokens and the radius and type scales in theme CSS,
    all layout in utilities, and section CSS only for a scoped component's
@@ -317,7 +299,7 @@ substitute a product image or generic logo placeholder.
 
 If the runtime can spawn sub-agents, each may write one section's markup and
 scoped CSS from its plan line, wireframe box, slot ids and preset. The parent
-assembles `lexsis-source.html` in plan order, owns `page-theme.css`, compiles
+assembles source in plan order, owns page-wide `theme_css`, compiles
 once, and creates the draft. Sub-agents never compile, never edit shared CSS,
 and never spend credits. Without sub-agents, write the sections sequentially.
 
@@ -331,12 +313,14 @@ compiler is the authoritative compatibility check.
    required behavior remains unclear.
 3. Fix the source while preserving the planned composition.
 4. Recompile until blocking errors are clear.
-5. Save the exact clean response and input hashes in `compile-artifact.json`.
+5. Retain the exact clean response and input hashes as compile evidence.
 
-Create with the exact clean compile ID and current source fields using
+Create with the exact clean compile ID and creation metadata using
 `lexsis_page_create.create` with `publish:false`. Record page ID, version,
-preview URL, local hashes, compile bundle hash, `status: draft_created`,
+preview URL, input hashes, compile bundle hash, `status: draft_created`,
 `design.status: pending-approval`, and `qa.status: pending`.
+Do not send source, head, CSS or scripts alongside `compile_id`; the
+mutually exclusive input modes are in `references/source-artifact-workflow.md`.
 
 If the compile ID expires, recompile the same unchanged inputs once. If the
 manifest already contains a page ID, do not spend another creation credit:
@@ -350,8 +334,8 @@ review never erases or conceals the working draft.
 Required for `production-ready` and whenever the user asks to approve the
 design. It is optional follow-up for `fast-draft`.
 
-Use the hosted preview at 390px and 1280px. Run
-`python3 <design-page-skill>/scripts/design_lint.py <page-workspace>` and then
+Use the hosted preview at 390px and 1280px. Review the persisted source
+against the house, copy, proof and offer rules, then
 check real renderer output for fonts, media, hydration, overflow, clipping,
 hierarchy, and usable responsive layout. Tablet and full commerce QA remain
 owned by `/generate`.
@@ -378,7 +362,7 @@ Look at both hosted screenshots and answer each question in one line:
      visible: stacked sticky bars over 15% of the viewport, hover-only
      controls, text under 16px, side-by-side buttons under 48px?
 
-Write results to `qa-report.md` when review is attempted. Fix local source,
+Record results with the hosted URL and tested version. Fix source,
 compile once, update the existing draft with expected-version protection, and
 rerun only failed checks. Never create a replacement draft for a visual fix.
 
@@ -393,23 +377,23 @@ Show:
 ```text
 Hosted preview: [url]
 Draft: [page id] version [version]
-Page type: [type] · deviations [none | list]
+Page type: [type] ; deviations [none | list]
 Hosted review: [not requested | pending | passed]
 Sections: [ordered list]
 Interactive components: [islands]
 Presets: [ids]
-Proof rendered: [n ledger rows] · dropped: [rows and why]
+Proof rendered: [n ledger rows] ; dropped: [rows and why]
 Offer rendered: [terms | none]
 Reused assets: [slots]
 Generated assets: [slots with purposes]
 Unresolved assets: [slots, incl. blocked by generation policy]
-Copy lint: [passed | findings]
+Copy review: [passed | findings]
 Concept: [not requested | asset ids and approval]
 ```
 
 On approval, set `design.status: approved`. Record only final IDs, compact
 island schema evidence, presets and overrides, and source, theme,
-configuration, structure, and bundle hashes in the manifest. Do not store
+configuration, structure, and bundle hashes in the page record. Do not store
 creative explanations or tool transcripts there.
 
 Any later visible source, CSS, copy, layout, island, or asset change returns
@@ -417,6 +401,6 @@ the design to `changes-pending-approval`.
 
 ## Return
 
-Return the source, theme, compile-artifact path, page ID, version, hosted
+Return the page ID, version, compile evidence, hosted
 preview URL, sections, selected islands and presets, asset summary, and
 `DRAFT_CREATED`. After explicit hosted approval, return `DESIGN_APPROVED`.

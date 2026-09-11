@@ -18,7 +18,7 @@
   "when_not_to_use": "Not for the main PDP purchase form (use BuyBox) or products requiring quantity, subscriptions, or complex personalization.",
   "defaultHydrate": "interaction",
   "combine_with": [
-    "Cart V2 or CartDrawer"
+    "Cart V2 or Cart V2 via head.use_cart_v2"
   ],
   "anti_patterns": [
     "Hardcoding a variant ID for a multi-variant product",
@@ -174,21 +174,6 @@
     ],
     "headless": {
       "supported": false
-    },
-    "example": "<lx-island name=\"QuickAdd\">\n  <script type=\"application/json\">\n{\n  \"product\": {}\n}\n  </script>\n</lx-island>",
-    "examples": [
-      {
-        "label": "Canonical multi-variant quick add",
-        "source": "<lx-island name=\"QuickAdd\">\n  <script type=\"application/json\">{\"product\":{\"id\":\"gid://shopify/Product/1\",\"handle\":\"shirt\",\"title\":\"Shirt\",\"price\":{\"amount\":\"29.00\",\"currencyCode\":\"USD\"},\"availableForSale\":true,\"media\":[{\"id\":\"gid://shopify/MediaImage/1\",\"type\":\"image\",\"url\":\"https://example.com/shirt.jpg\"}],\"options\":[{\"name\":\"Size\",\"values\":[\"S\",\"M\"]}],\"variants\":[{\"id\":\"gid://shopify/ProductVariant/1\",\"title\":\"Small\",\"availableForSale\":true,\"selectedOptions\":[{\"name\":\"Size\",\"value\":\"S\"}],\"price\":{\"amount\":\"29.00\",\"currencyCode\":\"USD\"}},{\"id\":\"gid://shopify/ProductVariant/2\",\"title\":\"Medium\",\"availableForSale\":true,\"selectedOptions\":[{\"name\":\"Size\",\"value\":\"M\"}],\"price\":{\"amount\":\"29.00\",\"currencyCode\":\"USD\"}}]},\"picker\":{\"title\":\"Choose a size\"}}</script>\n</lx-island>"
-      },
-      {
-        "label": "Legacy single-variant compatibility",
-        "source": "<lx-island name=\"QuickAdd\">\n  <script type=\"application/json\">{\"product\":{\"title\":\"Hat\",\"image\":\"https://example.com/hat.jpg\",\"variants\":[{\"id\":\"gid://shopify/ProductVariant/3\",\"title\":\"One Size\",\"price\":\"$19.00\",\"available\":true}]}}</script>\n</lx-island>"
-      },
-      {
-        "label": "Compact icon trigger",
-        "source": "<lx-island name=\"QuickAdd\">\n  <script type=\"application/json\">{\"render\":\"icon\",\"iconSize\":44,\"product\":{\"title\":\"Hat\",\"variants\":[{\"id\":\"gid://shopify/ProductVariant/3\",\"title\":\"One Size\",\"price\":\"$19.00\",\"available\":true}]}}</script>\n</lx-island>"
-      }
-    ]
+    }
   }
 }

@@ -22,21 +22,21 @@ Severity BLOCK, FAIL, WARN. Tag LAW, RESEARCH, OPERATOR, HEURISTIC.
 
 ## 1. Rules
 
-| Id | Rule | Sev | Tag | Check |
-|---|---|---|---|---|
-| CF1 | One primary framework per page, chosen from the type checklist's `copy_framework` list and recorded in the plan. | FAIL | OPERATOR | `grep -E '^\*\*Copy framework\.\*\* (pas|aida|bab|4ps|fab|story-lead|listicle|comparison|hook-story-offer|answer-first|qualifier-lead)' $W/page-plan.md`; value is in the type file's list |
-| CF2 | The framework matches the plan's awareness level (section 4). Cold traffic never gets `fab` or `answer-first` as the primary frame; most-aware never gets `story-lead` or `aida`. Schwartz, Breakthrough Advertising. https://sorinadumitru.com/breakthrough-advertising-by-eugene-schwartz/ | FAIL | RESEARCH | plan `Awareness` row against section 4 table |
-| CF3 | Stacking: the primary framework fixes section order; sections may use a secondary frame (pas hero, fab product body, bab proof, 4ps close). Record secondaries as "sections: fab (features), bab (reviews)". | WARN | OPERATOR | plan line lists each secondary with its section id |
-| CF4 | Stage names never appear in copy ("Problem:", "Proof:", "Call to action"). | FAIL | OPERATOR | CP30 regex |
-| CF5 | Ceilings: h1 at most 10 words, subhead at most 20, paragraph at most 45 words, section body inside the ceiling in section 2, whole page inside the type's `sections.max`. | FAIL | RESEARCH | HC4, CP11 scripts; word count per `<!-- section:` block |
-| CF6 | Every slot that is a number, name, quote, study, count or price resolves to a `verified` proof-ledger or offer-ledger row before render. An unresolved slot is deleted with its sentence, never estimated. | BLOCK | LAW | design-rules N11 numeral trace; no `[` `]` in `$T` |
-| CF7 | `listicle`: 5 to 7 items; item 1 answers the category's main objection; the product is named by item 2; a CTA after every 2 to 3 items and after the last; the last item is the guarantee, the offer or an identity line; every item carries one specific (number, material, time, test); at most one fear-framed item; each item 40 to 120 words. Teardowns, Part D section 1. | FAIL | RESEARCH | `grep -c '<!-- section: list-item' $W/lexsis-source.html` between 5 and 7; CTA count per checklist |
-| CF8 | `comparison`: same attribute set and units in every column; no blank competitor cell without a sourced reason; a "not for you if" line; named competitors only with a public source per cell (DP20). | FAIL | LAW | DP20 check; `grep -ciE 'not for you|skip this if|choose .* instead if' $T` at least 1 |
-| CF9 | `story-lead` and `hook-story-offer` on `advertorial`, `video-sales-page` or `listicle`: the narrator is a real named person from the proof ledger (founder-note, expert-quote, review-with-media) or the brand in first person; never an invented journalist, patient or "our editor". The page carries the Advertisement label (DP13). | BLOCK | LAW | narrator name appears in a ledger row; DP13 check |
-| CF10 | `answer-first`: the first sentence of every section, and of every FAQ answer, is the answer (a number, a yes or no, a date, a price). | FAIL | OPERATOR | first sentence of each section body matches `\d|yes|no|free|₹|\$` or is under 12 words |
-| CF11 | `qualifier-lead`: the first two sections name who the page is for and who it is not for, in the shopper's words. | FAIL | OPERATOR | `qualifier` section present; contains both `for you if|made for|if you` and `not for|skip|not right for` |
-| CF12 | `aida` is never the primary frame on `bof` or most-aware types; it educates people who already know. | WARN | RESEARCH | plan `Funnel stage` is not `bof` when framework is `aida` |
-| CF13 | Second person carries the page: "you" and "your" outnumber the brand name in body copy. | WARN | RESEARCH | CP34 script |
+| Id | Rule | Sev | Tag |
+| --- | --- | --- | --- |
+| CF1 | One primary framework per page, chosen from the type checklist's `copy_framework` list and recorded in the plan. | FAIL | OPERATOR |
+| CF2 | The framework matches the plan's awareness level (section 4). Cold traffic never gets `fab` or `answer-first` as the primary frame; most-aware never gets `story-lead` or `aida`. Schwartz, Breakthrough Advertising. https://sorinadumitru.com/breakthrough-advertising-by-eugene-schwartz/ | FAIL | RESEARCH |
+| CF3 | Stacking: the primary framework fixes section order; sections may use a secondary frame (pas hero, fab product body, bab proof, 4ps close). Record secondaries as "sections: fab (features), bab (reviews)". | WARN | OPERATOR |
+| CF4 | Stage names never appear in copy ("Problem:", "Proof:", "Call to action"). | FAIL | OPERATOR |
+| CF5 | Ceilings: h1 at most 10 words, subhead at most 20, paragraph at most 45 words, section body inside the ceiling in section 2, whole page inside the type's `sections.max`. | FAIL | RESEARCH |
+| CF6 | Every slot that is a number, name, quote, study, count or price resolves to a `verified` proof-ledger or offer-ledger row before render. An unresolved slot is deleted with its sentence, never estimated. | BLOCK | LAW |
+| CF7 | `listicle`: 5 to 7 items; item 1 answers the category's main objection; the product is named by item 2; a CTA after every 2 to 3 items and after the last; the last item is the guarantee, the offer or an identity line; every item carries one specific (number, material, time, test); at most one fear-framed item; each item 40 to 120 words. Teardowns, Part D section 1. | FAIL | RESEARCH |
+| CF8 | `comparison`: same attribute set and units in every column; no blank competitor cell without a sourced reason; a "not for you if" line; named competitors only with a public source per cell (DP20). | FAIL | LAW |
+| CF9 | `story-lead` and `hook-story-offer` on `advertorial`, `video-sales-page` or `listicle`: the narrator is a real named person from the proof ledger (founder-note, expert-quote, review-with-media) or the brand in first person; never an invented journalist, patient or "our editor". The page carries the Advertisement label (DP13). | BLOCK | LAW |
+| CF10 | `answer-first`: the first sentence of every section, and of every FAQ answer, is the answer (a number, a yes or no, a date, a price). | FAIL | OPERATOR |
+| CF11 | `qualifier-lead`: the first two sections name who the page is for and who it is not for, in the shopper's words. | FAIL | OPERATOR |
+| CF12 | `aida` is never the primary frame on `bof` or most-aware types; it educates people who already know. | WARN | RESEARCH |
+| CF13 | Second person carries the page: "you" and "your" outnumber the brand name in body copy. | WARN | RESEARCH |
 
 ## 2. The frameworks
 

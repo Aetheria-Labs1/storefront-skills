@@ -1,19 +1,12 @@
-# Bundle Builder — Island Directory
+# Bundle Builder
 
-Interactive bundle creation island for product bundles with tiered discounts.
+For `BundleBuilder`, fetch `lexsis_design.islands` and
+`lexsis_design.island_schema` during the decision that needs this behavior.
+Use the current authoring example, variants, props, parts, hydration and
+headless support; the bundled JSON is a compatibility reference, not a
+second source of defaults.
 
-## Quick Reference
-
-- **Variants**: horizontal, stacked
-- **Required prop**: `productIds` (JSON array of Shopify GIDs)
-- **Schema**: `vibe://schema/island/BundleBuilder`
-- **Contract**: follows `_contract.md`
-
-## Composition
-
-- Pair with: BuyBox (on PDP for upsell), TrustBadgeBar, ProductGallery
-- Step-based layout is a standalone section (full-width, dedicated page area)
-- Horizontal layout works as mid-page section between product details and reviews
-- Compact layout embeds inline within other sections (e.g., below BuyBox)
-- Discount tier display should be visible before user starts selecting products
-- Template vars: `{{PRODUCT_IDS}}` (JSON array), `{{DISCOUNT_TIERS}}` (JSON), `{{CTA_TEXT}}`
+`references/workflows/island-selection-workflow.md` owns selection and
+linked state. `references/authoring/source-authoring.md` owns source syntax;
+`references/authoring/css-and-styling.md` owns styling. Placement and evidence
+come from the selected page-type contract and its domain policies.

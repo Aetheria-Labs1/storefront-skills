@@ -68,232 +68,47 @@ brands up to 800.
 
 ## Workflow
 
+Apply `references/workflows/_how-to-read.md` to these type-specific
+decisions. It links the shared asset/fallback, fit, live-island and
+copy procedures; this table supplies their inputs, not another policy.
+
 ### Context reads
-1. `lexsis_brand.brand_kit` for tokens, voice notes, banned phrases and the
-   merchant-stated brand rules; `lexsis_brand.context` for the `theme_id`;
-   `lexsis_brand.navigation` for header and footer.
-2. Merchant facts into the proof ledger (`references/proof/proof-ledger.md`):
-   founder full name and title with written approval for the note and
-   photo; the origin moment with its date, place and the thing done
-   differently; the mission sentence; three to five values each with a
-   concrete practice; documented numbers (orders export, years, countries,
-   retail partners, certifications with issuer and number); any charity
-   commitment with organisation and amount
-   (`references/offers/campaign-calendar.md`, `cause` row).
-3. `lexsis_asset_library.search` with `theme_id`, `mode: "tags"`, one call
-   each for `lifestyle` (people, workshop, place), `hero`, `product-shot`,
-   `logo` (press), `social-proof` (UGC with rights); record counts; then
-   semantic "<founder name>", "<workshop or farm> at <place>", "making
-   <product>". View every candidate with `lexsis_assets.view`; a person in
-   the frame must be named and employed, or a customer with a rights row
-   (`references/proof/ugc-rights-and-display.md`).
-4. `lexsis_asset_import.import` for the merchant's founder, team and
-   process photos (original files, owner and date recorded,
-   `references/assets/asset-sourcing-sequence.md` step 3).
-5. Press: fetch each claimed article, write ledger rows, count `verified`
-   editorial rows within 24 months
-   (`references/proof/press-and-media-mentions.md`). Community count only
-   from a live read (`references/proof/numbers-and-counts.md`).
-6. `lexsis_catalog.list` for four to six best sellers with media for the
-   closing carousel; `lexsis_catalog.get` for each identity image and
-   price.
-7. `lexsis_design.islands` for the active catalog; `lexsis_workspace.credits`
-   is read for completeness; generation is not planned on this type
-   because people and places are the content and both are identity-bound
-   (`references/assets/generation-policy.md`, GN3).
+
+1. `lexsis_brand.brand_kit` for tokens, voice notes, banned phrases and the merchant-stated brand rules; `lexsis_brand.context` for the `theme_id`; `lexsis_brand.navigation` for header and footer.
+2. Merchant facts into the proof ledger (`references/proof/proof-ledger.md`): founder full name and title with written approval for the note and photo; the origin moment with its date, place and the thing done differently; the mission sentence; three to five values each with a concrete practice; documented numbers (orders export, years, countries, retail partners, certifications with issuer and number); any charity commitment with organisation and amount (`references/offers/campaign-calendar.md`, `cause` row).
+3. `lexsis_asset_library.search` with `theme_id`, `mode: "tags"`, one call each for `lifestyle` (people, workshop, place), `hero`, `product-shot`, `logo` (press), `social-proof` (UGC with rights); record counts; then semantic "<founder name>", "<workshop or farm> at <place>", "making <product>". with `lexsis_assets.view`; a person in the frame must be named and employed, or a customer with a rights row (`references/proof/ugc-rights-and-display.md`).
+4. `lexsis_asset_import.import` for the merchant's founder, team and process photos (original files, owner and date recorded, `references/assets/asset-sourcing-sequence.md` step 3).
+5. Press: fetch each claimed article, write ledger rows, count `verified` editorial rows within 24 months (`references/proof/press-and-media-mentions.md`). Community count only from a live read (`references/proof/numbers-and-counts.md`).
+6. `lexsis_catalog.list` for four to six best sellers with media for the closing carousel; `lexsis_catalog.get` for each identity image and price.
+7. `lexsis_design.islands` for the active catalog; `lexsis_workspace.credits` is read for completeness; generation is not planned on this type because people and places are the content and both are identity-bound (`references/assets/generation-policy.md`, GN3).
 
 ### Section by section
-Media per section follows `references/workflows/section-asset-workflow.md`:
-when nothing covers a slot, tell the merchant what is missing (job, aspect,
-count), offer upload via `lexsis_asset_upload.upload` (generation is never
-feasible for people or places presented as the brand's own), and skip or merge
-the section only when the merchant chooses; a fast draft uses the closest
-existing asset or leaves the slot `planned` and lists every gap in the plan
-and the draft summary. No asset is used sight unseen: every candidate is
-opened with `lexsis_assets.view` and judged against the section per section 1b
-of that file (subject, crop to the slot aspect, a quiet area for the copy, the
-lighting and styling of the neighbouring slots, the plan's palette, no
-baked-in text, watermark or overlay); candidates for one grid, set or lookbook
-are viewed together so the set reads as one shoot, and a generated asset is
-viewed the same way after it returns. Islands follow
-`references/workflows/island-selection-workflow.md`: the lines below name the
-island and the inputs; variants and props are resolved live from
-`lexsis_design.island_schema`, with autoplay and entry motion off unless the
-plan names that motion moment (N10). Editorial pacing for heritage brands is
-in `references/generate-editorial.md`; copy ceilings follow
-`references/copy/copy-frameworks.md` and
-`references/anti-patterns/copy-anti-patterns.md`.
 
-**`header`**
-- Purpose: full navigation; readers move on to shop or to the finder.
-- Media: logo from the brand kit.
-- Island: SiteHeader or Navbar with links from `lexsis_brand.navigation`;
-  resolve from `lexsis_design.island_schema`; preset
-  `siteheader/sticky-light` or `navbar/sticky-light`.
-- Copy: nav labels only.
-- Decide with: the navigation result.
-
-**`hero`**
-- Purpose: a belief-first or problem-first headline over a real photograph
-  of the founder, team, workshop or place; no product, no CTA.
-- Media: yes; job `founder-or-team` or `context`, treatment
-  `editorial-lifestyle` (`references/assets/image-jobs-by-page-type.md`,
-  section 5). Search library `lifestyle`, then `hero`, then merchant upload.
-  Generation: none (GN3, AS4; a backdrop without people is not this hero).
-  Missing: tell the merchant (a real photo of named people or the real place,
-  16:9 plus 4:5, one image) and offer upload only; if the merchant has none,
-  the hero is `typographic` (the listed alternate) and the plan records it.
-  View every candidate with `lexsis_assets.view` and run the section fit
-  review; view it with the story and founder photos so the people and place
-  read as one shoot.
-- Island: HeroMedia in image mode only when the hero is the plan's
-  full-bleed bold moment, autoplay off; otherwise a static split
-  `<picture>`; resolve from `lexsis_design.island_schema`.
-- Copy: H1 10 words or fewer in the customer's words; one sentence that
-  opens the story.
-- Decide with: a viewed photo of named people or the real place, approval
-  recorded.
-
-**`story`**
-- Purpose: the origin in first person, 120 to 200 words, with names, dates
-  and the thing done differently.
-- Media: yes; one `context` (the place) or `sequence` (the making) photo
-  beside the text in a split layout so the section is never a wall of text.
-  Search library `lifestyle`, then merchant upload; never stock or generated.
-  Missing: tell the merchant (one place or process photo, 3:2 or 4:5) and
-  offer upload; if skipped, the story shortens to 120 words in a 60ch measure
-  directly under the hero photograph. View every candidate with
-  `lexsis_assets.view` and run the section fit review before use.
-- Island: none.
-- Copy: paragraphs under 45 words; a date, a place, a number or a name in
-  each; no "we saw a gap in the market".
-- Decide with: the origin facts the merchant confirmed and a viewed photo.
-
-**`mission`**
-- Purpose: one sentence: "We make <product> for <audience> so they can
-  <outcome>."
-- Media: no; a single sentence set large on the page background.
-- Island: none.
-- Copy: one sentence, 25 words or fewer.
-- Decide with: the merchant's approved wording.
-
-**`values`** (recommended)
-- Purpose: three to five commitments, each with a concrete practice.
-- Media: yes; each value paired with a real photograph of the practice
-  (`detail`, `texture`, `ingredient-or-material`, `sequence`: the lab report
-  on the bench, the fabric, the farm). Search library `lifestyle` and
-  `product-shot`, then merchant upload; stock raw material only as context and
-  never presented as own sourcing (GN11); never generated. Missing: tell the
-  merchant which values lack a photo (count, 1:1 or 4:5) and offer upload; if
-  skipped, those values become sentences in the story. No-go: icon tiles,
-  adjective lists, a coloured band per value. View every candidate with
-  `lexsis_assets.view` and run the section fit review; view the value images
-  together so lighting, backgrounds and crops agree.
-- Island: none.
-- Copy: value name 3 words; practice one sentence under 20 words.
-- Decide with: the count of values that have a viewed photograph.
-
-**`founder-note`**
-- Purpose: signed note with real full name, title and photo.
-- Media: yes; job `founder-or-team` portrait (4:5, in the workshop or kitchen)
-  from library or merchant upload, written approval in the ledger; never stock
-  or generated. Missing: tell the merchant (one portrait, 4:5) and offer
-  upload only; the signed text stands on its own meanwhile (allowed by the
-  asset workflow) and production-ready approval waits for the photo. View
-  every candidate with `lexsis_assets.view` and run the section fit review
-  before use.
-- Island: none.
-- Copy: first person, under 120 words, signature with name and title.
-- Decide with: the `founder-note` ledger row.
-
-**`stats`** (conditional: documented numbers exist)
-- Purpose: three to five verified numbers, rounded down, "over N".
-- Media: the numbers sit beside a real photograph of the thing counted when
-  one exists (the warehouse, the shipments); otherwise plain text on the page
-  background. Missing photo: the merchant is told; no generated chart or scene
-  (GN4). View every candidate with `lexsis_assets.view` and run the section
-  fit review before use.
-- Island: none; static HTML figures from the proof ledger (the StatCards
-  island is deprecated, and N10 forbids count-up motion).
-- Copy: number, unit and as-of month per item.
-- Decide with: a `verified` ledger row per number; no row, no stats
-  section, and the merchant is told which documents would unlock it.
-
-**`press-quotes`** or **`press-marquee`** (conditional: verified, linked,
-within 24 months)
-- Purpose: verbatim quotes with outlet, author and date, or three to six
-  linked monochrome logos.
-- Media: outlet SVGs from library `logo`, each inside a link; never retyped or
-  generated (GN5). Missing files: ask the merchant for outlet artwork or
-  article URLs; fewer than three verified rows renders quotes only. View every
-  candidate with `lexsis_assets.view` and run the section fit review before
-  use.
-- Island: none; a static linked row (the Marquee island is deprecated).
-- Copy: one to three quotes, verbatim; caption "In the press".
-- Decide with: the count of `verified` editorial press rows.
-
-**`community-count`** (conditional: documented and live)
-- Purpose: "over 82,000 on Instagram" from a live read.
-- Media: no.
-- Island: none; one HTML line.
-- Copy: one line with the platform and as-of month.
-- Decide with: the live read recorded in the ledger; otherwise omit and
-  tell the merchant why.
-
-**`ugc-grid`** (conditional: rights-cleared customer media)
-- Purpose: six tiles with handles.
-- Media: yes; job `ugc` from library `social-proof` with a ledger `P` row per
-  tile, one aspect, original grading. Missing rights: tell the merchant which
-  requests are open; pending UGC never renders. View every candidate with
-  `lexsis_assets.view` and run the section fit review; view the tile images
-  together so lighting, backgrounds and crops agree.
-- Island: none for the grid; GalleryLightbox mounted once for expansion;
-  resolve from `lexsis_design.island_schema`.
-- Copy: handle per tile; labelled as customer content.
-- Decide with: six or more `verified` UGC rows.
-
-**`product-grid`** (recommended; last before the closing CTA)
-- Purpose: four to six best sellers.
-- Media: yes; job `identity` per product from catalog media
-  (`references/product-grid.md`). Missing: name the products without an image
-  and offer upload; if skipped, they leave the carousel. View every candidate
-  with `lexsis_assets.view` and run the section fit review; view the grid
-  images together so lighting, backgrounds and crops agree.
-- Island: ProductCarousel with four or more products, the card composition
-  for three; decide from best-seller count and image availability; no quick
-  add on a story page; motion off; resolve from
-  `lexsis_design.island_schema`; preset `productcarousel/cards-quiet`.
-- Copy: heading 6 words or fewer; prices from the catalog; no badges.
-- Decide with: `lexsis_catalog.list` best-seller count and images.
-
-**`closing-cta`**
-- Purpose: one next step with a one-line reason.
-- Media: no; the carousel above carries the imagery.
-- Island: none; one button to the collection or the finder.
-- Copy: "Shop best sellers" or "Find your routine" plus one sentence;
-  pattern `shop-collection`.
-- Decide with: the navigation result for the destination.
-
-**`footer`**
-- Purpose: policies, contact, social.
-- Media: logo only.
-- Island: Footer with columns from `lexsis_brand.navigation`; resolve from
-  `lexsis_design.island_schema`; preset `footer/columns-dark`.
-- Decide with: the navigation result.
+| Section | Purpose | Media job and source | Interactive decision | Copy constraints | Decision evidence |
+|---|---|---|---|---|---|
+| `header` | full navigation; readers move on to shop or to the finder. | logo from the brand kit. | SiteHeader or Navbar with links from `lexsis_brand.navigation`. | nav labels only. | the navigation result. |
+| `hero` | a belief-first or problem-first headline over a real photograph of the founder, team, workshop or place; no product, no CTA. | yes; job `founder-or-team` or `context`, treatment `editorial-lifestyle` (`references/assets/image-jobs-by-page-type.md`, section 5). Search library `lifestyle`, then `hero`, then merchant upload. Generation: none (GN3, AS4; a backdrop without people is not this hero). | HeroMedia in image mode only when the hero is the plan's full-bleed bold moment, autoplay off; otherwise a static split `<picture>` | H1 10 words or fewer in the customer's words; one sentence that opens the story. | a viewed photo of named people or the real place, approval recorded. |
+| `story` | the origin in first person, 120 to 200 words, with names, dates and the thing done differently. | yes; one `context` (the place) or `sequence` (the making) photo beside the text in a split layout so the section is never a wall of text. Search library `lifestyle`, then merchant upload; never stock or generated. Missing media: (one place or process photo, 3:2 or 4:5) and; if skipped, the story shortens to 120 words in a 60ch measure directly under the hero photograph. | none. | paragraphs under 45 words; a date, a place, a number or a name in each; no "we saw a gap in the market". | the origin facts the merchant confirmed and a viewed photo. |
+| `mission` | one sentence: "We make <product> for <audience> so they can <outcome>." | no; a single sentence set large on the page background. | none. | one sentence, 25 words or fewer. | the merchant's approved wording. |
+| `values` (recommended) | three to five commitments, each with a concrete practice. | yes; each value paired with a real photograph of the practice (`detail`, `texture`, `ingredient-or-material`, `sequence`: the lab report on the bench, the fabric, the farm). Search library `lifestyle` and `product-shot`, then merchant upload; stock raw material only as context and never presented as own sourcing (GN11); never generated. Missing: which values lack a photo (count, 1:1 or 4:5) and; if skipped, those values become sentences in the story. No-go: icon tiles, adjective lists, a coloured band per value. view the value images together so lighting, backgrounds and crops agree. | none. | value name 3 words; practice one sentence under 20 words. | the count of values that have a viewed photograph. |
+| `founder-note` | signed note with real full name, title and photo. | yes; job `founder-or-team` portrait (4:5, in the workshop or kitchen) from library or merchant upload, written approval in the ledger; never stock or generated. Missing media: (one portrait, 4:5) ; the signed text stands on its own meanwhile (allowed by the asset workflow) and production-ready approval waits for the photo. | none. | first person, under 120 words, signature with name and title. | the `founder-note` ledger row. |
+| `stats` (conditional: documented numbers exist) | three to five verified numbers, rounded down, "over N". | the numbers sit beside a real photograph of the thing counted when one exists (the warehouse, the shipments); otherwise plain text on the page background. Missing photo: the merchant is told; no generated chart or scene (GN4). | none; static HTML figures from the proof ledger (the StatCards island is deprecated, and N10 forbids count-up motion). | number, unit and as-of month per item. | a `verified` ledger row per number; no row, no stats section, and the merchant is told which documents would unlock it. |
+| `press-quotes` or `press-marquee` (conditional: verified, linked, | verbatim quotes with outlet, author and date, or three to six linked monochrome logos. | outlet SVGs from library `logo`, each inside a link; never retyped or generated (GN5). Missing files: ask the merchant for outlet artwork or article URLs; fewer than three verified rows renders quotes only. | none; a static linked row (the Marquee island is deprecated). | one to three quotes, verbatim; caption "In the press". | the count of `verified` editorial press rows. |
+| `community-count` (conditional: documented and live) | "over 82,000 on Instagram" from a live read. | no. | none; one HTML line. | one line with the platform and as-of month. | the live read recorded in the ledger; otherwise omit and why. |
+| `ugc-grid` (conditional: rights-cleared customer media) | six tiles with handles. | yes; job `ugc` from library `social-proof` with a ledger `P` row per tile, one aspect, original grading. Missing rights: which requests are open; pending UGC never renders. view the tile images together so lighting, backgrounds and crops agree. | none for the grid; GalleryLightbox mounted once for expansion | handle per tile; labelled as customer content. | six or more `verified` UGC rows. |
+| `product-grid` (recommended; last before the closing CTA) | four to six best sellers. | yes; job `identity` per product from catalog media (`references/product-grid.md`). Missing: name the products without an image and; if skipped, they leave the carousel. view the grid images together so lighting, backgrounds and crops agree. | ProductCarousel with four or more products, the card composition for three; decide from best-seller count and image availability; no quick add on a story page; motion off. | heading 6 words or fewer; prices from the catalog; no badges. | `lexsis_catalog.list` best-seller count and images. |
+| `closing-cta` | one next step with a one-line reason. | no; the carousel above carries the imagery. | none; one button to the collection or the finder. | "Shop best sellers" or "Find your routine" plus one sentence; pattern `shop-collection`. | the navigation result for the destination. |
+| `footer` | policies, contact, social. | logo only. | Footer with columns from `lexsis_brand.navigation`. | Use the shared procedure. | the navigation result. |
 
 ### Asset budget
+
 | Source | Usually supplies | Usually missing | Per gap |
 |---|---|---|---|
 | catalog media | `identity` for the closing carousel, sometimes a making-of shot in product media | everything else this page needs: people, place, process | ask the merchant to upload founder, team, workshop and process originals ("needs a real photo"); typographic hero and story-sentence values only on the merchant's call |
 | asset library | `lifestyle` (workshop, team), `logo` SVGs for press, `social-proof` UGC with rights | a portrait with written approval, process `sequence` frames, `texture` or material macros | ask the merchant to upload with approval and date recorded; press quotes instead of logos; `stats` waits for documents |
 | generation | backdrops, textures, composites only | product, people, results, logos, text | never; this type has no backdrop job, so the generated count is zero |
 
-With minimal assets the page is a header, a typographic hero, a 120-word story
-beside one real workshop photo, the mission line, a signed founder note, a
-best-seller carousel, one closing CTA and a footer; zero generated assets, a
-page that is honest with no proof section at all, and every missing photograph
-listed in the plan and the draft summary with upload or skip. Every asset,
-found or generated, was viewed and passed the section fit review before use.
+With minimal assets the page is a header, a typographic hero, a 120-word story beside one real workshop photo, the mission line, a signed founder note, a best-seller carousel, one closing CTA and a footer; zero generated assets, a page that is honest with no proof section at all, and every missing photograph listed in the plan and the draft summary with upload or skip.
 
 ## Above the fold (390px)
 

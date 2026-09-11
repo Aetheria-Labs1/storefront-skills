@@ -112,7 +112,7 @@ $2.70 true incremental AOV against $3.30 implied (Daymark). Procedure:
 3. Primary metric: revenue per session (page and cart levers) or incremental revenue per order (post-purchase). Secondary: contribution margin per order, conversion rate, attach rate, refund rate at 30 days.
 4. Run to the sample size the `references/ab-testing.md` procedure requires; do not stop on the first positive day.
 5. Segment by device, new versus returning, and traffic source; mobile AOV runs 20 to 30% below desktop, so a threshold that works on desktop can fail on mobile.
-6. Record the result in the plan's Hypothesis and metric line and in `qa-report.md`; a lever whose holdout shows flat or negative revenue per session is removed, whatever the attach rate.
+6. Record the result in the plan's Hypothesis and metric line and in `QA record`; a lever whose holdout shows flat or negative revenue per session is removed, whatever the attach rate.
 
 ## Rules
 
@@ -126,10 +126,9 @@ AO3. One upsell surface per stage: PDP (`cross-sell`), cart (one offer slot), po
 Check: at most one of `cross-sell`, `bundle-builder`, `quantity-breaks` renders in the first viewport below the buy box; the cart profile has at most one enabled offer slot when the goal is conversion.
 
 AO4. Name the relationship for every recommendation and record its kind; never "Recommended for you" or "You may also like". HEURISTIC (`consumer-behavior-cro.md`).
-Check: `grep -ciE 'recommended for you|you may also like|customers also bought' $W/lexsis-source.html` is 0; the plan's Guided merchandising line names the relationship and kind.
 
 AO5. Nothing is pre-selected: no default multi-pack, no default subscription, no pre-checked add-on, wrap, insurance or donation. LAW (India CCPA basket sneaking; ROSCA; EU CRD Art 22).
-Check: offer-types OF6 grep; `subscription-toggle` default state is one-time; `quantity-breaks` default is one unit.
+Check: offer-types OF6 review; `subscription-toggle` default state is one-time; `quantity-breaks` default is one unit.
 
 AO6. Compatibility claims come from verified mappings, never from visual similarity; incompatible or out-of-stock items are suppressed. HEURISTIC (`consumer-behavior-cro.md`, Compatibility confidence).
 Check: the plan's Compatibility answer names the mapping source (catalog metafield, merchant document) or the cross-sell is limited to complementary, not compatible, items.
@@ -141,10 +140,9 @@ AO8. Cap the visible recommendation set at three on the PDP and one in the cart 
 Check: `cross-sell` renders at most three items; cart profile offer slot `max_items` is 1 unless the plan states AOV as the goal with a holdout.
 
 AO9. Post-purchase offers show a full-price relevant item first, one downsell on decline, and a "No thanks" of equal weight; no confirmshaming copy. OPERATOR and LAW.
-Check: `grep -ciE 'no, i (like|prefer|want to)|no thanks, i' $W/lexsis-source.html` is 0; the decline control has the same font size and contrast as the accept control.
 
 AO10. Measure every lever against a holdout before it is kept; a flat or negative revenue-per-session result removes it regardless of attach rate. OPERATOR (72technologies; Daymark).
-Check: `qa-report.md` or the `/ab-test` record shows a holdout arm and revenue per session for the lever.
+Check: `QA record` or the `/ab-test` record shows a holdout arm and revenue per session for the lever.
 
 AO11. Subscribe-and-save shows one-time and subscription prices side by side, one-time selected, renewal terms and cancellation path above the button, and a separate un-ticked consent. LAW (ROSCA; UK DMCC subscription rules; India CCPA).
 Check: `subscription-toggle` contains both prices, the cadence, and a string matching `cancel`; no `checked` attribute on the subscribe option.

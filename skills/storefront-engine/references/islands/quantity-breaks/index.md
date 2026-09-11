@@ -1,19 +1,12 @@
-# QuantityBreaks — Island Directory
+# QuantityBreaks
 
-Volume discount tiers. Shows savings for buying more units.
+For `QuantityBreaks`, fetch `lexsis_design.islands` and
+`lexsis_design.island_schema` during the decision that needs this behavior.
+Use the current authoring example, variants, props, parts, hydration and
+headless support; the bundled JSON is a compatibility reference, not a
+second source of defaults.
 
-## Quick Reference
-
-- **Component**: QuantityBreaks
-- **Category**: commerce
-- **Props**: 3 (tiers, selectedTier, highlightBest)
-- **Required prop**: `tiers` (array of {quantity, price, savings, label})
-- **Schema**: `vibe://schema/island/QuantityBreaks`
-- **Contract**: follows `_contract.md` rules
-
-## Composition
-
-- Pair with: BuyBox (below variant selection), SubscriptionToggle (combine volume + frequency)
-- Place directly above or below quantity selector in BuyBox
-- "Most popular" or "Best value" badge on recommended tier
-- Never show more than 4 tiers (cognitive overload)
+`references/workflows/island-selection-workflow.md` owns selection and
+linked state. `references/authoring/source-authoring.md` owns source syntax;
+`references/authoring/css-and-styling.md` owns styling. Placement and evidence
+come from the selected page-type contract and its domain policies.

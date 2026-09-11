@@ -12,8 +12,8 @@ require a magic phrase.
 | `production-ready` | final polish, campaign handoff, exhaustive QA, launch preparation, ready for review | keep the draft unpublished and upgrade it to `DRAFT_READY` after all gates pass |
 | `publish` | release, launch live, publish this version | use the separate publish workflow and require explicit approval for the named page/version |
 
-Signals such as “assume specifics”, “use your judgment”, “do whatever is
-needed”, or impatience with questions strengthen `fast-draft`; they are not
+Signals such as "assume specifics", "use your judgment", "do whatever is
+needed", or impatience with questions strengthen `fast-draft`; they are not
 required. A previous request for a preview or first pass also counts.
 
 ## Routing Rules

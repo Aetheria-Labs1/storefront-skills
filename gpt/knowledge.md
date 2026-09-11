@@ -1,7 +1,7 @@
-<!-- GENERATED from skills/ by scripts/build-distributions.py — DO NOT EDIT.
-     storefront-skills v7.9.0 · 12 skills · 47 active islands -->
+<!-- GENERATED from skills/ by scripts/build-distributions.py - DO NOT EDIT.
+     storefront-skills v7.9.0; 12 skills; 47 active islands -->
 
-# Lexsis Storefront Skills — Knowledge Base
+# Lexsis Storefront Skills - Knowledge Base
 
 ## Workflows
 
@@ -129,7 +129,7 @@ when Lexsis was used. This can inform `/plan-page` for a new page or
 
 # Skill: asset-prep
 
-> Independently search, generate, import, or replace storefront media. Works from an asset brief or an existing page workspace and is not a required page-generation stage.
+> Independently search, generate, import, or replace storefront media. Works from an asset brief or an existing MCP page and is not a required page-generation stage.
 
 # Prepare Assets
 
@@ -184,13 +184,15 @@ raster UI icons unless the brief explicitly requires custom artwork.
 
 When working on a page:
 
-- replace the asset in `lexsis-source.html`
-- store only the final binding in `page-manifest.json`
+- read the current page source through MCP and replace the requested asset
+- store the final binding in the page record
 - recompile once after all requested assets are updated
 - set `design.status` to `changes-pending-approval` for visible changes
 
 Do not create a second HTML source or local preview. Page source must use
-permanent Lexsis or Shopify media.
+permanent Lexsis or Shopify media. Apply the source edit with version
+protection as described in
+`references/source-artifact-workflow.md`.
 
 ## Asset Record
 
@@ -209,7 +211,7 @@ Keep the machine record compact:
 
 Shopify media uses `productId` and `mediaId`. Put crop guidance, alt-text
 intent, prompt history, and creative reasoning in the brief or plan, not the
-page manifest.
+page record.
 
 ## Return
 
@@ -414,8 +416,7 @@ Read:
 - the plan's `references/page-types/<type>.md` (its `## Workflow` names the
   island and asset decision per section) and
   `references/page-types/_checklist-format.md` for the vocabulary
-- `references/workflows/island-selection-workflow.md` (variant and prop
-  decision tables per island) and
+- `references/workflows/island-selection-workflow.md` (live schema resolution) and
   `references/workflows/section-asset-workflow.md`
 - `references/authoring/css-and-styling.md` and
   `references/authoring/source-authoring.md` before writing any class or
@@ -463,11 +464,9 @@ discovery.
 
 ## Inputs
 
-Use the approved `page-plan.md` and its saved workspace, store and theme
-binding, inside the campaign folder the plan opened
-(`work/campaigns/<campaign-slug>/pages/<page-handle>/`). Campaign-level media
-in `../../assets/` is available to every page of the campaign; page-only media
-stays in the page's own `assets/`. The plan
+Use the approved plan and its confirmed workspace, store and theme binding.
+Follow `references/source-artifact-workflow.md` for direct MCP authoring.
+Reuse the campaign's planning and shared/page-specific media evidence. The plan
 defines strategy, the Design direction, the Imagery and background plan, the
 asset slots and section intent; it must not define islands or implementation
 details.
@@ -485,38 +484,24 @@ offer exists, the Offer ledger) and record the skip. Never run `/setup` or
 
 ## Page-Type Workflow
 
-Before any template fetch or HTML, read `page.pageType` from the manifest and
+Before any template fetch or HTML, read `page.pageType` from the page record and
 the matching `references/page-types/<type>.md`. Its `## Workflow` already
-names, per section, the media decision and the island decision the plan made
-from the context reads; your job is to execute them. Run
-`python3 <plan-page-skill>/scripts/plan_lint.py <page-workspace>` and read
-its WARN rows together with the plan's "Deviations from the type default":
+names, per section, the media job and interactive decision inputs
+from the context reads; your job is to execute them. Compare the checklist
+with the plan's "Deviations from the type default":
 a deviation the plan explains is a decision, a deviation it does not mention
 is a question for the plan owner. A review section with no review data or
 urgency with no verified basis is the one case to stop and ask.
 
 For each section, in order:
 
-1. **Media first.** Resolve the section's slots exactly as the plan decided
-   (catalog media, library asset, imported file, or an ALLOW-purpose
-   generation). If a slot is still empty at this point, follow
-   `references/workflows/section-asset-workflow.md`: one more library search
-   with the right tag, then decide whether an allowed generation purpose
-   fits, then put one question to the merchant that names what is missing
-   (section, job, aspect, count) and offers upload through
-   `lexsis_asset_import.import` or MCP generation when feasible (the credit
-   confirmation and any ASK approval travel in that same answer). Skip or
-   merge the section only when the merchant chooses. Never ship the
-   section as a colour band, an emoji row, icon tiles or copy alone, and
-   never leave a missing asset unreported.
-2. **Island second.** Take the plan's island decision, call
-   `lexsis_design.island_schema` for that island only, and pick the variant
-   and props from what the live schema offers using the plan's decision
-   inputs (image count for gallery layout and thumbnails, variant axes for
-   swatches vs buttons, review band for carousel vs list, page length for a
-   sticky bar), as `references/workflows/island-selection-workflow.md`
-   describes. Record the chosen variant and the inputs in `islands[]`.
-3. **Copy third.** Short, in the plan's framework, no emoji, no filler.
+1. Execute the media job, acquisition, missing-slot and fit decisions through
+   `references/workflows/section-asset-workflow.md`.
+2. Resolve the planned interaction through
+   `references/workflows/island-selection-workflow.md`; planning names the
+   decision, design selects the current island and schema-valid props.
+3. Execute `references/workflows/copy-workflow.md` with the type-specific
+   copy ceiling and confirmed evidence.
 
 Carry these type defaults into composition:
 
@@ -533,7 +518,7 @@ Carry these type defaults into composition:
 
 ## Infer the Design Mode
 
-Use `references/workflow-intent.md` and the manifest evidence. A correction in
+Use `references/workflow-intent.md` and the page record evidence. A correction in
 the current request overrides the saved mode.
 
 - `fast-draft`: make reasonable reversible choices, compile a coherent page,
@@ -579,7 +564,7 @@ ordinary Design Direction, Compose, Compile, Hosted Draft, and Approval stages.
 
 ## Design Direction Gate
 
-Before writing any HTML, read the "Design direction" block in `page-plan.md`
+Before writing any HTML, read the "Design direction" block in `page plan`
 and `references/design-rules.md`. If the plan has no design
 direction, write one now (palette of four to six named hex values, type roles
 and scale, layout concept, wireframe with slot ids, icon decision, the one
@@ -591,17 +576,16 @@ guidance > brand-kit preview blueprint and presets. A lower layer may narrow a
 higher one, never widen it. Token values win over prose for values; if a token
 value fails WCAG AA against its documented pairing, return
 `THEME_CONTEXT_CONFLICT` with both values. Style guidance never raises a
-conflict; it is overridden and recorded in `page-plan.md` under "Overrides of
+conflict; it is overridden and recorded in `page plan` under "Overrides of
 brand design.md".
 
 ## Asset Gap Confirmation
 
-The plan already resolved the asset slots. Read `assets[]` from the manifest:
+The plan already resolved the asset slots. Read `assets[]` from the page record:
 
 1. Slots with `status: verified`, including everything the user picked in
    the plan, are final; use their ids and URLs as-is.
-2. List only `planned` slots. `validate_page_workspace.py --phase design`
-   reports them as `asset_slot_unresolved` warnings.
+2. List unresolved `planned` slots with their required job and remaining evidence.
 3. In `fast-draft`, resolve them from the existing library or Shopify media
    using the plan and brand direction. Ask only before paid generation or when
    the unresolved choice would materially change the campaign. In
@@ -652,11 +636,11 @@ substitute a product image or generic logo placeholder.
    intended source order when required.
 4. Read the compact island catalog and select only the likely interactive
    components. Do not fetch every full schema in advance.
-   When the plan names a preset (`Preset: <island>/<intent>-<tone>`), apply it
-   from `references/island-presets.md` verbatim: props,
-   `hydrate`, and its scoped CSS. Check its `requires` first. Unknown id:
-   return `PRESET_NOT_FOUND`. Any deviation is recorded as
-   `islands[].presetOverrides`; never edit a preset in place for one page.
+   A preset label (`Preset: <island>/<intent>-<tone>`) records visual intent,
+   not a frozen prop bundle. Follow
+   `references/workflows/island-selection-workflow.md` to resolve that intent
+   against the current schema. Record the actual props, hydration and scoped
+   styling, with any intentional departure in `islands[].presetOverrides`.
 5. Proof renders only from the plan's Proof ledger
    (`references/proof/proof-ledger.md`). Review islands use the ledger's
    `collectionId` or `productIds`, `minRating`, `pageSize` of 12 or fewer.
@@ -677,7 +661,7 @@ substitute a product image or generic logo placeholder.
    timer that resets. Nothing in `references/anti-patterns/dark-patterns.md`
    ships: no pre-selected paid add-ons, no confirmshaming dismiss copy, no
    hidden recurring terms, no fake urgency.
-7. Write a rough but complete `lexsis-source.html` with stable section
+7. Prepare a rough but complete source string with stable section
    delimiters from the canonical vocabulary, minimal island props, and the
    documented examples as a starting point.
 8. Write copy as design content using the plan's framework
@@ -687,7 +671,7 @@ substitute a product image or generic logo placeholder.
    and no word or structure from
    `references/anti-patterns/copy-anti-patterns.md`. For ad-driven traffic,
    the hero headline and visual satisfy `references/copy/message-match.md`.
-9. Write global page rules to `page-theme.css`; keep section-specific CSS
+9. Put page-wide rules in `theme_css`; keep section-specific CSS
    beside its section. `references/authoring/css-and-styling.md` decides which
    layer a rule belongs to: tokens and the radius and type scales in theme CSS,
    all layout in utilities, and section CSS only for a scoped component's
@@ -717,7 +701,7 @@ substitute a product image or generic logo placeholder.
 
 If the runtime can spawn sub-agents, each may write one section's markup and
 scoped CSS from its plan line, wireframe box, slot ids and preset. The parent
-assembles `lexsis-source.html` in plan order, owns `page-theme.css`, compiles
+assembles source in plan order, owns page-wide `theme_css`, compiles
 once, and creates the draft. Sub-agents never compile, never edit shared CSS,
 and never spend credits. Without sub-agents, write the sections sequentially.
 
@@ -731,12 +715,14 @@ compiler is the authoritative compatibility check.
    required behavior remains unclear.
 3. Fix the source while preserving the planned composition.
 4. Recompile until blocking errors are clear.
-5. Save the exact clean response and input hashes in `compile-artifact.json`.
+5. Retain the exact clean response and input hashes as compile evidence.
 
-Create with the exact clean compile ID and current source fields using
+Create with the exact clean compile ID and creation metadata using
 `lexsis_page_create.create` with `publish:false`. Record page ID, version,
-preview URL, local hashes, compile bundle hash, `status: draft_created`,
+preview URL, input hashes, compile bundle hash, `status: draft_created`,
 `design.status: pending-approval`, and `qa.status: pending`.
+Do not send source, head, CSS or scripts alongside `compile_id`; the
+mutually exclusive input modes are in `references/source-artifact-workflow.md`.
 
 If the compile ID expires, recompile the same unchanged inputs once. If the
 manifest already contains a page ID, do not spend another creation credit:
@@ -750,8 +736,8 @@ review never erases or conceals the working draft.
 Required for `production-ready` and whenever the user asks to approve the
 design. It is optional follow-up for `fast-draft`.
 
-Use the hosted preview at 390px and 1280px. Run
-`python3 <design-page-skill>/scripts/design_lint.py <page-workspace>` and then
+Use the hosted preview at 390px and 1280px. Review the persisted source
+against the house, copy, proof and offer rules, then
 check real renderer output for fonts, media, hydration, overflow, clipping,
 hierarchy, and usable responsive layout. Tablet and full commerce QA remain
 owned by `/generate`.
@@ -778,7 +764,7 @@ Look at both hosted screenshots and answer each question in one line:
      visible: stacked sticky bars over 15% of the viewport, hover-only
      controls, text under 16px, side-by-side buttons under 48px?
 
-Write results to `qa-report.md` when review is attempted. Fix local source,
+Record results with the hosted URL and tested version. Fix source,
 compile once, update the existing draft with expected-version protection, and
 rerun only failed checks. Never create a replacement draft for a visual fix.
 
@@ -793,23 +779,23 @@ Show:
 ```text
 Hosted preview: [url]
 Draft: [page id] version [version]
-Page type: [type] · deviations [none | list]
+Page type: [type] ; deviations [none | list]
 Hosted review: [not requested | pending | passed]
 Sections: [ordered list]
 Interactive components: [islands]
 Presets: [ids]
-Proof rendered: [n ledger rows] · dropped: [rows and why]
+Proof rendered: [n ledger rows] ; dropped: [rows and why]
 Offer rendered: [terms | none]
 Reused assets: [slots]
 Generated assets: [slots with purposes]
 Unresolved assets: [slots, incl. blocked by generation policy]
-Copy lint: [passed | findings]
+Copy review: [passed | findings]
 Concept: [not requested | asset ids and approval]
 ```
 
 On approval, set `design.status: approved`. Record only final IDs, compact
 island schema evidence, presets and overrides, and source, theme,
-configuration, structure, and bundle hashes in the manifest. Do not store
+configuration, structure, and bundle hashes in the page record. Do not store
 creative explanations or tool transcripts there.
 
 Any later visible source, CSS, copy, layout, island, or asset change returns
@@ -817,42 +803,9 @@ the design to `changes-pending-approval`.
 
 ## Return
 
-Return the source, theme, compile-artifact path, page ID, version, hosted
+Return the page ID, version, compile evidence, hosted
 preview URL, sections, selected islands and presets, asset summary, and
 `DRAFT_CREATED`. After explicit hosted approval, return `DESIGN_APPROVED`.
-
-### design-page reference: page-layout
-
-# Page Layout
-
-The design stage approves hierarchy, section proportions, image placement,
-typography, color balance, desktop composition, mobile stacking, CTA
-placement, and island presentation.
-
-Write:
-
-- `lexsis-source.html` — the canonical readable page source
-- `page-theme.css` — global theme tokens and page-wide custom CSS
-- `compile-artifact.json` — exact compile response and input hashes
-
-Use ordinary HTML for static content and active Lexsis islands for useful
-interactions. A supporting composition image may guide art direction, but it
-must never become the page.
-
-Start from the selected page kit or section templates. Use the selected
-theme's `--lx-*` tokens and Tailwind utilities rather than rebuilding the
-brand system inside each section. Record one coherent style treatment in the
-manifest.
-
-Search existing store and product assets first, show one combined asset
-summary, and ask once before generating missing or optional media. Every asset
-used in source must have a permanent Lexsis or Shopify URL.
-
-Create the unpublished hosted draft after a clean compile. Review that hosted
-draft at 390px and 1280px. `/generate` owns tablet and full commerce QA.
-
-Approval hashes the exact source, page theme, head, scripts, structure, and
-compiled bundle. `/generate` promotes this source instead of recreating it.
 
 ---
 
@@ -862,7 +815,7 @@ compiled bundle. `/generate` promotes this source instead of recreating it.
 
 # Generate the Draft
 
-Create a remote draft from canonical local source. Draft creation is
+Create a remote draft directly from editable source. Draft creation is
 reversible; publishing remains a separate explicit action.
 
 Read:
@@ -906,12 +859,12 @@ generation, publication, deletion, or destructive replacement.
 
 ## Inputs and Setup Reuse
 
-Use `lexsis-source.html`, `page-theme.css`, and the compact schema-v3 manifest
-from the page workspace inside its campaign folder. Reuse the workspace, store
-and theme binding recorded in the manifest and `campaign.json`, resolved
-through `work/storefront/setup/setup.json`. Do not call setup again when that
-binding is valid, and never switch workspace, store or theme for an existing
-page.
+Follow `references/source-artifact-workflow.md`: source and optional
+`theme_css` are direct MCP values; editable source files are not required.
+Reuse the confirmed workspace, store and theme binding in the page record
+or current MCP context. Saved setup and campaign records are useful when
+available. Do not call setup again when the binding is valid, and never switch
+workspace, store or theme for an existing page.
 
 Refresh only volatile creation data: selected products and variants, prices,
 availability, permissions, active island schemas, and an existing page's
@@ -919,7 +872,7 @@ version. Never preserve a stale hardcoded Shopify variant ID when current
 catalog data or a dynamic product binding can resolve it.
 
 If `/plan-page` or `/design-page` was intentionally skipped, create the minimum
-missing local artifact, record the skip, and continue. Use
+missing planning/evidence record, record the skip, and continue. Use
 `references/consumer-behavior-cro.md` to record a minimum visitor mode, top
 decision questions, at most two relevant patterns, gallery gaps, and primary
 metric. Do not claim design approval that did not happen.
@@ -929,7 +882,7 @@ metric. Do not claim design approval that did not happen.
 Before the first remote draft, require only:
 
 - a valid saved store/theme binding and draft-write permission
-- non-empty canonical source, theme CSS, title, and page handle
+- non-empty editable source, title and page handle; any required theme values
 - current product/variant bindings with no known invalid hardcoded variant
 - permanent assets rather than local URLs
 - custom fonts backed by full HTTPS stylesheet URLs in `head.fonts`, or an
@@ -940,44 +893,38 @@ Do not block first draft creation on critique screenshots, exhaustive hashes,
 hosted responsive QA, commerce QA, or a `DRAFT_READY` validator result.
 
 Optional design or QA guidance that cannot be read produces one warning and
-does not block the draft. Missing source-format, manifest, or compile-contract
+does not block the draft. Missing source-format, binding or compile-contract
 inputs remain blocking.
 
-## Compile from the Workspace
+## Compile Directly
 
-Prepare exact tool inputs with the bundled adapter:
-
-```bash
-python3 <generate-skill>/scripts/prepare_workspace_compile.py \
-  <page-workspace> \
-  --output <page-workspace>/compile-request.json
-```
-
-Use the adapter's `compile` object as the exact arguments to
+Pass the exact source, head, optional theme CSS and scripts to
 `lexsis_pages.compile`. Use summary mode; do not request or echo the full
-compiled bundle merely to inspect it.
+compiled bundle merely to inspect it. No workspace adapter, source file or
+local QA step is part of this workflow.
 
 If `remote.pageId`, `remote.lastKnownVersion`, and `remote.previewUrl` already
 exist, fetch the current edit context and reuse that draft. Do not call
-`lexsis_page_create.create` again. Compile only when local inputs changed, then
+`lexsis_page_create.create` again. Compile only when inputs changed, then
 patch the existing draft with expected-version protection.
 
-When no remote draft exists, compile once from the current files. Immediately
-pass the returned `compile_id` and the adapter's `create` fields to
+When no remote draft exists, compile once from the current source values.
+Immediately pass the returned `compile_id` and creation metadata to
 `lexsis_page_create.create` with `publish:false`.
 
 If a compile ID expires before creation, recompile the same verified inputs
 once. If the client cannot reuse the ID, create with the exact source, head,
-theme CSS, and scripts from the adapter. Expiry is not a reason to repeat
+optional theme CSS and scripts. Never send source fields alongside a
+`compile_id`. Expiry is not a reason to repeat
 planning, critique, asset search, or approval.
 
 ## Return or Reuse the Reversible Draft
 
 As soon as creation succeeds, or after an existing draft is confirmed current:
 
-1. Record page ID, version, preview URL, local hashes, and compile bundle hash.
+1. Record page ID, version, preview URL, input hashes and compile bundle hash.
 2. Set manifest `status` to `draft_created` and QA to `pending`.
-3. Run the validator with `--phase draft-created`.
+3. Confirm the returned binding, page id, version and preview URL.
 4. Surface the preview immediately as `DRAFT_CREATED`.
 
 Do not delete, replace, or conceal a working draft because later QA finds an
@@ -991,25 +938,25 @@ asked to stop at a first draft.
 For `production-ready`, or when upgrading an existing `DRAFT_CREATED`:
 
 1. Fetch persisted source, bundle, and version evidence.
-2. Reject remote/local hash drift and repair the draft from current local
-   source.
+2. Reject drift between the reviewed source/bundle and persisted version;
+   reconcile from current MCP source before repairing.
 3. Review the page's imagery as one campaign, not merely as individually valid
    assets.
 4. Run hosted QA at 390px, 768px, and 1280px.
 5. Verify typography, media, hydration, overflow, responsive geometry,
    expected Shopify variant, cart opening, quantity, subtotal, Quick Add,
    product-grid stability, thumbnails, and authored header/footer order.
-6. Run `python3 <plan-page-skill>/scripts/plan_lint.py <page-workspace>` and
-   `python3 <design-page-skill>/scripts/design_lint.py <page-workspace>`.
+6. Review the type checklist, proof/offer ledgers and house rules against
+   the persisted source and hosted draft under `references/qa-recipe.md`.
    Proof and offer findings (a proof element outside the Proof ledger, an
    offer element outside the Offer ledger, a dark-pattern hit) block; type
    deviations and copy findings are review notes unless the plan did not
    record them. Check the 390px first screen against the type file's
    "Above the fold" list and every numeral in proof sections against the
    ledger.
-7. Write evidence and blockers to `qa-report.md`.
-8. Set `status: qa_passed` only when all blocking checks pass, then run the
-   validator with `--phase draft` and live remote hashes.
+7. Record evidence and blockers with the tested page id and version.
+8. Set `status: qa_passed` only when all blocking checks pass for the same
+   live version and hashes. Read/write supported QA evidence through MCP.
 
 Return `DRAFT_READY` only after synchronization and every blocking QA check
 passes. Otherwise return the existing `DRAFT_CREATED` with specific blockers
@@ -1017,108 +964,27 @@ and the next repair action.
 
 ## Later Edits
 
-Fetch edit context and stop on unexpected version drift. Change local source
+Fetch edit context and stop on unexpected version drift. Change editable source
 first, compile changed inputs once, patch only changed sections with
 `expected_version`, and update synchronization state only after success.
 
 ## Return
 
-Always return the working directory, source path, page ID, version, preview
-URL, inferred intent mode, and current state: `DRAFT_CREATED` or
-`DRAFT_READY`. Include the QA report when QA was attempted.
-
-### generate reference: source-and-sync
-
-# Production Source and Synchronization
-
-`lexsis-source.html` and `page-theme.css` are the editable source of truth.
-`compile-artifact.json` is generated. The hosted draft is the only interactive
-preview.
-
-Headers, announcement bars, navigation, and footers live in
-`lexsis-source.html` like every other section. Portable bundles preserve that
-exact section order and contain no renderer-level `shell` or
-`navigation_profile`.
-
-Use `scripts/migrate_page_workspace_v3.py <working-directory>` for legacy
-manifests.
-
-## Compile Reuse
-
-Compare the current source, theme CSS, configuration, structure, and bundle
-hashes with `compile-artifact.json`.
-
-- Matching inputs: reuse the compile artifact.
-- Any changed or missing input: compile once and replace the artifact.
-- Never recompile solely because `/generate` began in a new conversation.
-
-## Creation
-
-Draft creation and production readiness are separate states.
-
-1. Inspect `remote.pageId`, version, and preview URL.
-2. If they exist, fetch edit context and reuse that draft; never create a
-   duplicate page merely because another skill or conversation began.
-3. Validate the compact manifest and canonical source with the
-   `draft-created` gate.
-4. Refresh only volatile products, variants, prices, permissions, and remote
-   version data.
-5. Compile the current workspace inputs once when no matching clean artifact
-   exists.
-6. Create with `publish: false` only when no remote draft exists; otherwise
-   patch changed sections with expected-version protection.
-7. Save page ID, version, preview URL, compile hash, and `status:
-   draft_created`.
-8. Return `DRAFT_CREATED` immediately.
-9. Fetch persisted source and remote hashes, then run hosted QA.
-10. Save synchronized state and `status: qa_passed` only when every
-   production-ready check succeeds.
-
-A failed post-creation check does not erase or invalidate the reversible
-draft. Report the draft and its blockers.
-
-## Intent Evidence
-
-Record the inferred mode compactly in `workflow`:
-
-```json
-{
-  "intentMode": "fast-draft",
-  "intentConfidence": "high",
-  "intentSignals": ["requested a preview", "delegated specifics"],
-  "userOverride": false
-}
-```
-
-Intent evidence explains routing; it never grants publish or paid-generation
-permission.
-
-## Editing
-
-1. Fetch and compare the remote version.
-2. Change local source.
-3. Compile only if inputs changed.
-4. Compare section hashes.
-5. Patch changed sections with `expected_version`.
-6. Save returned version and hashes after success.
-
-Remote content must never be the only copy of an intentional change.
-
-When reusing a merchant template, apply it to the remote page only after the
-same source has been inserted into the canonical local source. Record the new
-remote version and hashes only after the apply succeeds.
+Always return page ID, version, preview URL, inferred intent mode and current
+state: `DRAFT_CREATED` or `DRAFT_READY`. Include hosted QA evidence when attempted.
 
 ---
 
 # Skill: optimize
 
-> Diagnose and improve an existing Lexsis storefront page for a specific business outcome. Starts with a focused optimization brief before making local-first section edits.
+> Diagnose and improve an existing Lexsis storefront page for a specific business outcome. Starts with a focused optimization brief before making versioned source edits.
 
 # Optimize a Page
 
 Read:
 
 - `references/evidence-led-cro.md`
+- `references/source-artifact-workflow.md`
 - `references/consumer-behavior-cro.md`
 - `references/authoring/css-and-styling.md` before any CSS or class change
 - `references/animation-system.md` before adding or editing motion
@@ -1167,9 +1033,9 @@ behavior as stronger evidence than generic patterns.
 
 1. Locate the page and read its analytics, structure, source, and current
    remote version.
-2. Open its local page workspace. If missing, adopt the remote source into the
-   standard local files before editing.
-3. Compare the remote version with the manifest and stop on unexpected drift.
+2. Use the current MCP source as the editable baseline. Retain its version
+   with the intended change; do not create local source or QA files.
+3. Compare the remote version with the page record and stop on unexpected drift.
 4. For a structural redesign, search relevant page kits and sections and
    compare them with the current structure. Do not force template comparison
    for copy-only, offer-only, metadata, or minor visual changes.
@@ -1195,14 +1061,14 @@ Obtain approval before making material changes.
 
 ## Apply Approved Changes
 
-Modify `lexsis-source.html` first. Validate and compile the complete local
-source with `page-theme.css`, compare section hashes, and patch only changed
-sections with `expected_version`. A visible source or CSS change requires a
-new compiled preview and design approval before the remote patch. Update the
-manifest only after the remote write succeeds. Then run `diff`, `integrity`,
+Modify editable source. Validate and compile it with any page-wide
+`theme_css`, compare section hashes, and patch only changed sections with
+`expected_version`. Review visible changes on the updated unpublished hosted
+draft; never require a local preview before the patch. Update the operation
+record only after the remote write succeeds. Run `diff`, `integrity`,
 responsive checks, and affected commerce checks.
 
-Never make an intentional remote-only edit. Preserve the URL and SEO fields
+Never edit compiled output in place of source. Preserve the URL and SEO fields
 unless the user approved changing them.
 
 ## Experiment Handoff
@@ -1216,95 +1082,6 @@ as proven.
 Return the approved objective, evidence, changed sections, page version,
 verification results, template comparison when applicable, MCP evidence, and
 whether an experiment is recommended.
-
-### optimize reference: evidence-led-cro
-
-# Evidence-Led CRO
-
-Use this reference after the user selects an outcome.
-
-## Evidence Order
-
-Prefer:
-
-1. Page analytics and funnel events.
-2. Observed desktop/mobile behavior.
-3. Product, offer, and traffic-source context.
-4. Customer research or support evidence.
-5. General ecommerce patterns.
-
-Do not attach a predicted lift to a change unless the user has comparable
-first-party experiment evidence.
-
-## Outcome Checks
-
-- **Conversion:** message match, offer clarity, trust, decision friction.
-- **Add-to-cart:** product comprehension, variant selection, price visibility,
-  stock state, CTA placement, media.
-- **AOV:** bundle relevance, quantity breaks, complementary products, shipping
-  threshold clarity.
-- **Bounce:** load experience, first-screen relevance, intrusive elements,
-  traffic-message mismatch.
-- **Trust:** claim evidence, returns, shipping, reviews, creator attribution.
-- **Mobile:** reading order, tap targets, sticky elements, overflow, media
-  controls, form effort.
-- **Speed:** image weight, video loading, fonts, scripts, layout shift.
-- **SEO:** search intent, title/meta, headings, copy depth, internal links,
-  structured data.
-
-Keep strong sections unchanged. Separate certain fixes from ideas that should
-be tested.
-
-### optimize reference: industry-cro
-
-# Industry CRO Patterns
-
-Read only the matching section. These are decision prompts, not guaranteed
-uplifts.
-
-## Beauty
-
-- Show texture, finish, shade, routine position, and realistic use.
-- Keep ingredient and outcome claims tied to evidence.
-- Check shade/variant selection and mobile gallery usability.
-- Use before/after media only with permission and clear context.
-
-## Supplements and Wellness
-
-- Clarify use, serving size, ingredients, suitability, and safety language.
-- Separate supported evidence from customer anecdotes.
-- Make subscription terms, quantity, and price-per-serving understandable.
-- Avoid fabricated scarcity, clinical claims, and implied endorsements.
-
-## Fashion
-
-- Prioritize fit, sizing, material, movement, and return information.
-- Verify color/size variants and unavailable states.
-- Use video or shoppable media for styling when it helps product understanding.
-- Keep imagery consistent with the actual product and variant.
-
-## Food and Beverage
-
-- Clarify flavor, ingredients, allergens, quantity, storage, and delivery.
-- Show pack size and bundle savings without hiding unit price.
-- Use appetite-led media while keeping the delivered product recognizable.
-
-## Luxury
-
-- Protect visual restraint, provenance, craftsmanship, and service details.
-- Avoid fake urgency, dense badge walls, and discount-first framing.
-- Check high-resolution media, typography, spacing, and concierge paths.
-
-## Home
-
-- Clarify dimensions, scale, materials, installation, delivery, and returns.
-- Use contextual room imagery without hiding product details.
-- Check variant, finish, and bundle compatibility.
-
-## General
-
-- Use the product, audience, traffic source, and selected metric to decide.
-- Prefer a focused hypothesis over a full redesign without evidence.
 
 ---
 
@@ -1363,34 +1140,16 @@ lead-capture types, `lexsis_capture.funnel_templates` and
 `lexsis_capture.funnel_template`. Resolve an unfamiliar schema with exact
 router/action discovery.
 
-## Bind the Workspace and Open the Campaign Folder
+## Bind the Workspace and Campaign
 
-Read `work/storefront/setup/setup.json`. Select one saved workspace, store and
-theme triple: the one the user names, otherwise the saved defaults. Read that
-store's brand design and that theme's CSS. If the selection is not saved, stop
-with `Run /setup for this store and theme first.` State the workspace, store
-and theme in one line so a wrong default is visible immediately, and never mix
-files from two themes, stores or workspaces on one page.
+Reuse the confirmed workspace, store and theme from saved setup or current
+MCP context. Resolve an ambiguous selection before proceeding and state the
+chosen binding in one line. Never mix stores or themes on one page.
 
-Then infer the campaign folder from the request with the table in
-`references/page-files.md` (occasion and year, named sale, product launch,
-evergreen funnel, channel test, collaboration, or `adhoc-<yyyy-mm>` when the
-request is not campaign-shaped). Reuse the folder when this page continues an
-existing campaign, including a variant or an edit; open a new one when the
-occasion, offer or product changes. Say which folder is in use.
-
-```text
-work/campaigns/<campaign-slug>/
-├── campaign.json     binding and campaign facts
-├── campaign.md       one-page brief
-├── assets/           media shared across this campaign's pages
-└── pages/<page-handle>/
-```
-
-Write `campaign.json` with the binding and the confirmed campaign facts, and
-`campaign.md` with the brief, before the page workspace. A campaign folder
-holds one workspace, store and theme binding; a second store means a second
-folder. Every page repeats the binding in its own manifest.
+Group this page with its campaign purpose, confirmed dates, offer and
+audience. Reuse the existing campaign evidence for variants and edits.
+Keep the plan and compact decision record in the task handoff according to
+`references/page-files.md`; do not create campaign folders or page files.
 
 ## Infer the Planning Mode
 
@@ -1414,7 +1173,7 @@ Choose the next route from intent:
 - `fast-build` when the user supplies a template direction and asks for the
   fastest first draft.
 
-Record the route in `page-plan.md`. Do not force every user to choose among all
+Record the route in `page plan`. Do not force every user to choose among all
 three. Paid visual-concept generation is confirmed in `/design-page`;
 `fast-build` hands off to `/build` or `/build-with-template`.
 
@@ -1431,7 +1190,7 @@ Choose exactly one `pageType`. When two fit, the index names the tie-break;
 when the brief is silent, choose the type that assumes less of the visitor and
 say so. Then load only `references/page-types/<type>.md`.
 
-Write this block at the top of `page-plan.md` and mirror it in the manifest
+Write this block at the top of `page plan` and mirror it in the page record
 (`page.pageType`, `page.funnelStage`, `page.awareness`, `page.trafficSource`,
 `offer`, `campaign`):
 
@@ -1474,16 +1233,15 @@ Then follow the type file's `## Workflow` in order:
    what the catalog and library supply, which jobs are missing, and per gap
    whether to reuse, generate (with the purpose), or ask the merchant to
    upload or approve generation. Every missing asset is listed for the
-   merchant; in fast-draft, proceed with the closest existing asset or a
+   merchant; in fast-draft, proceed with the shared fallback or a
    `planned` slot and still list it. Assets carry the page; plain colour
    does not.
 
 The `## Checklist` JSON is the default this workflow lands on. When the
 context argues for something else (a PDP with two images, a store with no
 reviews, a brand whose voice bans a section), deviate and record it under
-"Deviations from the type default". Run
-`python3 <plan-page-skill>/scripts/plan_lint.py <page-workspace>` before
-presenting the plan and treat its WARN rows as that deviation list.
+"Deviations from the type default". Review the checklist before presenting
+the plan; explain every deviation without treating it as an automatic failure.
 
 ## Ask Only What Is Missing
 
@@ -1544,7 +1302,7 @@ Search sections for useful structural references when no page kit fits.
 Present at most three candidates, one line each, and ask the user to confirm
 one or decline all.
 
-Record only the selected kit or section IDs in the manifest (`template.mode`
+Record only the selected kit or section IDs in the page record (`template.mode`
 is `page-kit`, `sections`, or `custom`); put the short selection rationale in
 the plan. Custom composition names the evaluated ids and why none fit.
 
@@ -1575,14 +1333,14 @@ their output; otherwise run the same three blocks sequentially in this order.
 3. Palette, type, motion and icon decisions from the saved brand design and
    theme tokens, with the overrides list.
 
-Each lane returns only its block. The parent merges them into `page-plan.md`,
+Each lane returns only its block. The parent merges them into `page plan`,
 runs the generic-default check, resolves conflicts by the house rules, and asks
 only unresolved questions required by the inferred mode. Lanes never write
 files or spend credits.
 
 ## Write a One-Page Plan
 
-Keep `page-plan.md` concise enough to scan in one view. Include:
+Keep `page plan` concise enough to scan in one view. Include:
 
 - objective, audience, traffic source, product, and primary CTA
 - selected template direction
@@ -1599,14 +1357,14 @@ Keep `page-plan.md` concise enough to scan in one view. Include:
   `references/copy/message-match.md` for ad-driven traffic
 - offers and claims that require confirmation
 
-### Design direction (required block in page-plan.md)
+### Design direction (required block in page plan)
 
 Write this block before the section list. Read the saved brand design, the
 theme tokens and `references/design-rules.md` first. Fill
 every field; "none" is an answer, "TBD" is not. Then run the generic-default
 check at the end and revise anything it catches.
 
-Template to copy into `page-plan.md`:
+Template to copy into `page plan`:
 
 ````markdown
 ## Design direction
@@ -1650,7 +1408,7 @@ Template to copy into `page-plan.md`:
 
 **Generic-default check.** Write two lines: "A generic <page type> for <vertical> would have: ..." then "This plan differs by: ..." with at least three concrete, visible differences (layout, type, moment, media treatment). If you cannot name three, the plan is the default; change it.
 
-**Overrides of brand design.md.** List each design.md or brand-kit line you are ignoring, with the house rule id (N1 to N14, A1 to A12). Example: "design.md 'Always include emoji icons in ticker bar' → N1. 'Trust strip in --lx-secondary-color' → N2."
+**Overrides of brand design.md.** List each design.md or brand-kit line you are ignoring, with the house rule id (N1 to N14, A1 to A12). Example: "design.md 'Always include emoji icons in ticker bar' U+2192 N1. 'Trust strip in --lx-secondary-color' U+2192 N2."
 ````
 
 ### Imagery and background plan
@@ -1663,7 +1421,7 @@ editorial image grids. Never from tinted section bands.
 Write one line per imagery section:
 
 ```text
-<section> → <slot ids> → <treatment: full-bleed | inset | grid | background image with legibility overlay>
+<section> U+2192 <slot ids> U+2192 <treatment: full-bleed | inset | grid | background image with legibility overlay>
 ```
 
 Every imagery section maps to at least one slot. The single full-bleed
@@ -1693,8 +1451,8 @@ List every slot the wireframe names, for any page type:
 ```markdown
 | Slot | Section | Role/purpose | Aspect | Source decision | Id / URL | Status |
 |---|---|---|---|---|---|---|
-| A1 | gallery | product_media | 4:5 | shopify media | gid://…/ProductImage/… | verified |
-| A2 | story | context | 3:2 | library | asset 7f2e… | verified |
+| A1 | gallery | product_media | 4:5 | shopify media | gid://.../ProductImage/... | verified |
+| A2 | story | context | 3:2 | library | asset 7f2e... | verified |
 | A3 | closing-cta | hero_bg | 3:2 | generated (after credit confirmation) | | planned |
 | A4 | benefits | in-use | 3:2 | pending: merchant to upload, or approve a `product_composite` scene | | planned |
 ```
@@ -1718,8 +1476,8 @@ skill searches only for what the user did not pick.
    the group is clear, `theme_id` from `setup.json` (required), `limit: 48`).
    The asset picker multi-selects across pages; wait for the
    `Design asset selection:` message and map its `assets[]` to slot ids in
-   `selection_order` (A1, A2, …). Confirm the mapping in one line or take a
-   one-line remap. Without a picker: Storefront → Design library → Assets;
+   `selection_order` (A1, A2, ...). Confirm the mapping in one line or take a
+   one-line remap. Without a picker: Storefront U+2192 Design library U+2192 Assets;
    accept filenames or URLs and look them up with `mode: "filename"`. Files
    not yet in the library go through `lexsis_asset_upload.upload` with the
    selected `workspace_id` and `theme_id`; wait for the user's uploaded-asset
@@ -1750,7 +1508,7 @@ skill searches only for what the user did not pick.
    reads as one shoot. Record the provider and asset id for generated slots
    and view those too.
 4. Write the final table into the plan and one `assets[]` entry per slot into
-   the manifest. A slot the user postpones stays `planned`; `/design-page`
+   the page record. A slot the user postpones stays `planned`; `/design-page`
    confirms only those.
 
 ### Proof ledger
@@ -1782,7 +1540,7 @@ number in the ledger comes from the API or a linked source and is repeated
 under "Claims to confirm". The plan never activates a collection; to propose
 a shortlist, run `lexsis_catalog.reviews_search` and, only when the user asks,
 `lexsis_drafts.review_collection_create` (draft). If the host returns
-`UNKNOWN_ACTION`, ask the user to pick a collection in Storefront → Reviews →
+`UNKNOWN_ACTION`, ask the user to pick a collection in Storefront U+2192 Reviews U+2192
 Collections and paste its id.
 
 Press logos, "as seen in" marquees, badges, certifications, UGC, before/after
@@ -1802,7 +1560,7 @@ code, stacking, and who confirmed each item. Use
 requires and `references/offers/price-presentation.md` and
 `references/offers/urgency-scarcity.md` for what may be shown. A countdown or
 stock indicator is planned only when the ledger has a confirmed end date or
-live inventory read. Mirror the summary in the manifest `offer` block.
+live inventory read. Mirror the summary in the page record `offer` block.
 
 Verify facts that control the page's urgency or trust before treating them as
 copy. This includes occasion dates, delivery cutoffs, prices, availability,
@@ -1820,12 +1578,9 @@ Do not include:
 - template search transcripts
 - QA, compilation, synchronization, or publishing state
 
-Create the page directory under `work/campaigns/<campaign-slug>/pages/`, its
-`assets/`, and a compact schema-v3 `page-manifest.json` using
-`references/page-files.md`, including `campaignSlug`, `campaignPath`, the
-workspace, store and theme ids, one `assets[]` entry per slot, and the
-`reviews` block. Add the page handle to `campaign.json` `pages[]`. Do not create source,
-preview, compile, or QA files.
+Record the confirmed binding, ordered sections, asset decisions, reviews,
+offer evidence and unresolved questions in the task handoff. No per-page
+manifest, source, theme, compile or QA files are created.
 
 ## Approval
 
@@ -1835,7 +1590,7 @@ Present:
 Page:
 Campaign: <campaign-slug> (<campaign type>)
 Binding: <workspace> / <store> / <theme>
-Page type: <type> · <funnel stage> · <awareness> · <traffic>
+Page type: <type> ; <funnel stage> ; <awareness> ; <traffic>
 Deviations from the type default: <none | list>
 Mandatory sections omitted:
 Goal:
@@ -1863,8 +1618,8 @@ review the plan first or the route requires paid generation.
 
 ## Return
 
-Return the campaign path, the page working directory, plan path, manifest path,
-the workspace, store and theme in effect, the asset slot summary, the
+Return the plan and campaign summary, workspace/store/theme binding, asset
+slot summary, the
 missing-asset list, the inferred next route, and `PLAN_APPROVED`. Name the
 route with the command it maps to:
 
@@ -1905,17 +1660,18 @@ authorize or substitute for a successful live publish.
 
 ## Gate
 
-1. Read the page manifest and QA report.
+1. Read the page's operation record and hosted QA evidence under
+   `references/source-artifact-workflow.md`.
 2. Confirm the saved store/theme binding still exists.
-3. Confirm the current local bundle and section hashes match the synchronized
-   values in the manifest.
+3. Confirm reviewed source, bundle and section hashes match the persisted
+   draft and recorded baseline.
 4. Read `lexsis_pages` action `edit_context`.
 5. Confirm the remote version equals `remote.lastKnownVersion`.
-6. Confirm responsive, local-versus-hosted visual regression, commerce, copy,
+6. Confirm responsive, approved-versus-current hosted visual review, commerce, copy,
    claims, assets, and integrity checks passed against that same version and
-   local bundle.
-7. Run the workspace validator with `--phase publish`, the live remote version,
-   and source and bundle hashes fetched from that draft.
+   reviewed bundle.
+7. Re-read integrity and source/bundle evidence through MCP. Missing or stale
+   evidence blocks release; no local file or validator substitutes for it.
 8. Confirm the store has the required entitlement.
 9. Ask for explicit approval naming the page and version.
 
@@ -1976,14 +1732,14 @@ failure; the real domain call determines whether the operation is available.
 
 ```text
 work/storefront/setup/
-├── setup.json
-└── workspaces/
-    └── <workspace-id>/
-        └── stores/
-            └── <store-id>/
-                ├── brand-design.md
-                └── themes/
-                    └── <theme-id>.css
++-- setup.json
++-- workspaces/
+    +-- <workspace-id>/
+        +-- stores/
+            +-- <store-id>/
+                +-- brand-design.md
+                +-- themes/
+                    +-- <theme-id>.css
 ```
 
 `setup.json` indexes every saved workspace, store and theme, and names one
@@ -2047,7 +1803,7 @@ as `workspaceId`, `storeId` and `themeId`, and it never silently changes.
   immediately.
 - Switching mid-campaign is a new binding, not an edit: a page already bound
   to one store keeps that binding, and a page for the other store belongs to
-  its own campaign folder or its own page workspace. Never combine design
+  its own campaign/page decision record. Never combine design
   files or theme CSS from two themes, stores or workspaces on one page.
 - `/setup` can be re-run to add a workspace, store or theme, or to change a
   default, without touching what is already saved.
@@ -2077,201 +1833,17 @@ read this setup independently and never invoke `/setup` automatically.
 
 ---
 
-# Storefront Craft Guide — Start Here
+# Storefront craft
 
-> **Not real islands:** `CompareTable`. They have no schema. Verify every island name
-> against `lexsis_design` action `islands`; the replacement for each job is in
-> `references/workflows/island-selection-workflow.md`.
-
-> House rules in `storefront-engine/references/design-rules.md` override every example below.
-> Examples show structure and copy intent; their styling (gradients, hover transforms,
-> uppercase labels, pills, emoji, section fills) is illustrative and must not be copied.
-> Where an example conflicts with a house rule, the rule wins.
-
-> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
-
-Load this skill first on any storefront page generation task.
+Start with `references/workflows/_how-to-read.md`, then `references/authoring/source-authoring.md` and `references/authoring/css-and-styling.md`. House rules in `storefront-engine/references/design-rules.md` govern every design decision. `references/source-artifact-workflow.md` owns artifact synchronization; the compiler owns acceptance of source.
 
 ---
 
-## Architecture: Vibe-Code
+# Managed Motion  -  Storefront Agent Reference
 
-Pages are **source-format HTML + compiled Tailwind CSS + CSS custom properties
-+ React islands**. No component JSON. The AI generates readable HTML directly
-and Lexsis compiles it.
-
-**Authoring source:**
-```html
-<!-- section: hero -->
-<section id="hero">
-  <lx-island name="BuyBox">
-    <script type="application/json">
-      {
-        "product": {
-          "title": "Product name",
-          "variants": []
-        }
-      }
-    </script>
-  </lx-island>
-</section>
-```
-
-The compiler produces VibePage storage JSON and hydrated `data-island`
-markers. Do not write that compiled representation by hand.
-
----
-
-## Skills Map
-
-| Skill | Purpose | Load when... |
-|---|---|---|
-| `craft-guide` | This file — architecture, flow, quality bar | Always first |
-| `workflow-orchestration` | Tool sequencing, parallelization, flow selection | Always — load after craft-guide |
-| `conversion-psychology` | Universal persuasion: pricing, urgency, trust, CTA psychology | Always — load for any ecommerce page |
-| `animation-system` | Managed WAAPI, GSAP, Canvas, WebGL, Three.js, Lottie and Rive | Only when the plan names one motion moment |
-| `visual-craft` | Typography, spacing, color, micro-interactions | Polishing visual quality |
-| `design-enrichment` | AI image generation + compositing pipeline | Need custom images/textures |
-| `premium-patterns` | Proven high-converting section patterns in HTML | Building hero, trust, CTA sections |
-| `island-patterns` | Per-island wrapper HTML + combination recipes | Using commerce/engagement islands |
-| **Verticals** | | |
-| `vertical-beauty` | Beauty/skincare: ingredient storytelling, before/after, editorial | Beauty, skincare, haircare, fragrance |
-| `vertical-supplements` | Supplements: dark mode, clinical proof, comparison, urgency | Vitamins, protein, nootropics, fitness |
-| `vertical-fashion` | Fashion: editorial layouts, lookbook grids, dramatic type | Clothing, shoes, accessories, streetwear |
-| `vertical-food` | Food/bev: sensory photography, warm palettes, subscription | Food, coffee, snacks, meal kits |
-| `vertical-luxury` | Luxury: restraint, whitespace, minimal sections, quiet CTAs | Jewelry, watches, designer, AOV>$300 |
-| `vertical-home` | Home: room context, dimensions, material stories | Furniture, decor, candles, textiles |
-| **Traffic Sources** | | |
-| `traffic-source-meta` | Meta ads: message match, mobile-first, trust stacking | Facebook/Instagram ad landing pages |
-| `traffic-source-google` | Google: intent matching, info density, CompareTable, FAQ | Google Ads/SEO landing pages |
-| `traffic-source-tiktok` | TikTok: 3-sec hook, video-first, UGC aesthetic, 6-8 sections | TikTok/Reels/Shorts traffic |
-| **Workflows** | | |
-| `reference-pdp-remix` | Competitor PDP deconstruction and rebuild | Rebuilding a reference URL for your brand |
-
----
-
-## Generation Flow (Overview)
-
-```
-1. lexsis_discover({ query: "page creation" }) → authoritative action schemas
-2. [Optional] lexsis_asset_library({ action: "search", args: {...} }) → find existing brand assets
-3. [Optional] lexsis_drafts({ action: "asset_generate", args: {...} }) → get image URLs
-4. Agent authors source-format HTML with `<lx-island>` components
-5. lexsis_pages({ action: "compile", args: { source, head, theme_css, scripts } }) → compile + validation
-6. lexsis_page_create({ action: "create", args: { source, head, theme_css, scripts, slug, publish: false } }) → persist as draft, returns preview URL
-7. lexsis_live_ops({ action: "publish", args: { page_id } }) → go live (ONLY after the user explicitly approves)
-```
-
----
-
-## CSS Variables (Brand Theming)
-
-All sections use these CSS custom properties (set in `theme_css`):
-
-| Variable | Purpose |
-|---|---|
-| `--lx-accent-color` | Primary brand/CTA color |
-| `--lx-accent-color-hover` | Hover state |
-| `--lx-text-color` | Primary text |
-| `--lx-text-muted` | Secondary text |
-| `--lx-bg-color` | Page background |
-| `--lx-bg-surface` | Card background (never a section background) |
-| `--lx-border-color` | Borders and dividers |
-| `--lx-font-heading` | Heading font family |
-| `--lx-font-body` | Body font family |
-
-Use via `style="color: var(--lx-accent-color)"` or `style="font-family: var(--lx-font-heading)"`.
-
----
-
-## Quality Bar
-
-**Great page:**
-- Mobile-first (works at 375px, enhances at lg:)
-- Uses CSS vars for all brand colors/fonts (no hardcoded hex)
-- Proper heading hierarchy (h1 → h2 → h3)
-- Islands for all interactive commerce (BuyBox, Cart, Reviews)
-- Generated/library images — no broken placeholder URLs in production
-- No emoji as icons, one page background, one icon set, one bold moment
-- Trust signals near purchase points
-- Sticky add-to-cart on PDP
-
-**Mediocre page:**
-- Hardcoded colors instead of CSS vars
-- Desktop-only layout
-- Missing islands (raw HTML buttons instead of BuyBox)
-- placeholder.co images shipped to production
-- Emoji as icons, alternating section fills, mixed icon sets, scattered motion
-- Trust badges missing
-
----
-
-## Anti-Patterns (NEVER do these)
-
-1. **No `fetch()` or XHR in section JS** — blocked by hydrator security
-2. **No `eval()`, `localStorage`, `WebSocket`** — blocked
-3. **No `@import` in section CSS** — blocked
-4. **No external `url()` in CSS** — only inline colors via `--lx-*` tokens
-5. **No duplicate section IDs** — each must be unique kebab-case
-6. **No `<script src="...">` in HTML.** The section `js` field is compiler
-   output, not something you author: in source you write a top-level
-   `<script>` inside the section, and almost always you write none. Anything
-   needing a timer, an observer or global access belongs in a managed motion
-   module (`references/animation-system.md`) or an island; approved
-   integrations go in `scripts[]`.
-7. **No framework code** — no React/Vue/Angular in section HTML (islands handle interactivity)
-8. **Don't fake commerce** — always use BuyBox island for add-to-cart, never a plain button
-
----
-
-## Section ID Naming
-
-Use descriptive kebab-case: `hero`, `product-gallery`, `social-proof`, `ingredients`, `faq`, `sticky-cta`, `trust-badges`, `footer`. Never `section-1`, `section-2`.
-
----
-
-## Island Rules
-
-- Author props in the `<lx-island>` JSON script child; the compiler writes
-  `data-props`
-- Use the live island catalogue and exact selected schema; do not rely on a
-  fixed island count
-- Follow lifecycle replacement guidance for deprecated or superseded islands
-- One `BuyBox` per page (multiple breaks cart state)
-- Cart: `head.use_cart_v2: true` on every commerce page (`CartDrawer` V1 deprecated — never author a cart section)
-- `StickyBar` needs `triggerOffset` — distance in px before it appears
-- `ReviewCarousel` can use custom reviews array OR fetch from Shopify via productId
-
----
-
-## Tailwind Usage
-
-- Lexsis compiles referenced utilities into one immutable page CSS artifact;
-  there is no runtime Tailwind CDN
-- Use responsive prefixes: `sm:`, `md:`, `lg:`, `xl:`
-- Prefer utilities over custom CSS (only use section `css` for keyframes/animations)
-- Use `clamp()` for fluid typography: `text-[clamp(2rem,5vw,4rem)]`
-- Container: `max-w-7xl mx-auto px-4 sm:px-6 lg:px-8`
-
----
-
-## Image Strategy
-
-1. **Always check `lexsis_asset_library` action `search` first** — brand's uploaded assets are free and on-brand
-2. **Use `lexsis_catalog.list` for product images** — never generate fake product shots
-3. **`lexsis_drafts` action `asset_generate` for custom imagery** — hero backgrounds, lifestyle contexts, textures
-4. **`lexsis_drafts` action `asset_generate` with `reference_images` for composites** — product-on-background, texture overlays
-5. **Place URLs directly in HTML** — `<img src="${url}" />` or inline `style="background-image: url(...)"`
-6. **Load `design-enrichment` skill** for full asset generation pipeline details
-7. **For video, reference imagery, or external AI tools** → see `asset-pipeline.md` for multi-source strategy
-
----
-
-# Managed Motion — Storefront Agent Reference
-
-> The active storefront design rules override every example below.
-> Motion is not a default decoration. Use it when the page plan names one
-> meaningful moment or when motion directly answers a shopper action.
+House motion requirements are defined in `references/design-rules.md` N10.
+Choose at most the plan-named moment or a response to a shopper action;
+this reference owns the managed runtime APIs, not another motion budget.
 
 Lexsis supports open-ended custom animation without requiring a named scene or
 a custom island for every visual idea. Agents author the composition; the MCP
@@ -2282,8 +1854,8 @@ cleanup, reduced motion, and performance limits.
 
 | Need | Use |
 |---|---|
-| Hover, focus, or a small entrance | CSS transition or shared keyframe |
-| Common reveal, parallax, pin, or marquee behavior | `data-behavior="gsap-*"` preset |
+| Hover or focus feedback | CSS color or border transition |
+| The approved single motion moment | A managed module with explicit capabilities |
 | Custom timeline or interaction | Managed motion with WAAPI or GSAP |
 | Procedural drawing | Managed Canvas 2D |
 | Custom shaders | Managed WebGL |
@@ -2299,8 +1871,8 @@ field, 3D object, or scroll composition.
 Place the motion block in the same source section as its markup:
 
 ```html
-<!-- section: product-object -->
-<section class="product-object">
+<!-- section: product-hero-object -->
+<section id="product-hero-object" class="product-object">
   <canvas class="product-canvas" aria-label="Interactive product view"></canvas>
   <img
     class="product-fallback"
@@ -2311,7 +1883,7 @@ Place the motion block in the same source section as its markup:
 
 <script
   type="application/lexsis-motion"
-  data-motion-id="product-object"
+  data-motion-id="product-hero-object"
   data-capabilities="three resize"
   data-mode="interaction"
   data-importance="decorative"
@@ -2608,7 +2180,7 @@ Use the managed context equivalents.
 
 ## MCP compile workflow
 
-1. Author the source section and motion block in `lexsis-source.html`.
+1. Author the source section and motion block in `MCP source`.
 2. Call `lexsis_pages` action `compile` with complete source, head, theme CSS,
    and approved page scripts.
 3. Fix every `motion_*`, `unmanaged_*`, or capability error.
@@ -2627,12 +2199,12 @@ bundles, and versioned drafts.
 
 House rules for every generated page. They override generated brand `design.md`
 guidance and brand-kit preview blueprints. Record every override in
-`page-plan.md` under "Overrides of brand design.md".
+`page plan` under "Overrides of brand design.md".
 
 Loaded by `/plan-page` (Design direction block), `/design-page` (Design Direction
 Gate and hosted review), `/generate` (Production Gate) and `/optimize`.
-`design-page/scripts/design_lint.py <workspace>` runs the static checks and prints
-the results table.
+Review the persisted MCP source and hosted draft. No local QA script or
+page-file workflow is required.
 
 ## Precedence
 
@@ -2652,1261 +2224,218 @@ Rules for applying it:
 
 ## 2. Design rules for generated storefront pages
 
-Format per rule: imperative sentence; rationale; a check the agent can run. Checks are written for macOS (BSD grep has no `-P`; use `perl -CSD`). `$W` is the page workspace, e.g. `work/campaigns/<campaign-slug>/pages/<handle>`. Browser checks run in the hosted draft via the browser tool's evaluate call.
+Format per rule: imperative sentence, rationale and hosted/MCP acceptance
+check. Inspect the persisted source through MCP and the actual hosted DOM,
+styles and interactions; never inject diagnostic code into section source.
 
 ### 2.1 NEVER
 
-N1. Never use emoji by default, and never as icons: not in tickers, trust strips, badges, buttons, alt text, island JSON props or CSS `content`. Emoji may appear in copy only when the user explicitly insists; record it in `page-plan.md` under "Design direction › Emoji in copy" with the merchant's wording, and keep every occurrence inside running text. When the page needs icons and no inline SVG set fits, generate a monochrome SVG icon set (one stroke, one size); never substitute emoji.
+N1. Never use emoji by default, and never as icons: not in tickers, trust strips, badges, buttons, alt text, island JSON props or CSS `content`. Emoji may appear in copy only when the user explicitly insists; record it in `page plan` under "Design direction > Emoji in copy" with the merchant's wording, and keep every occurrence inside running text. When the page needs icons and no inline SVG set fits, generate a monochrome SVG icon set (one stroke, one size); never substitute emoji.
 Rationale: glyphs render differently per OS vendor, ignore `currentColor` and stroke weight, are announced by Unicode name to screen readers, and are the most recognised marker of AI-generated pages (Miller et al. 2018; uxskill).
-Check:
-```bash
-perl -CSD -ne 'while(/([\x{1F000}-\x{1FAFF}\x{2600}-\x{27BF}\x{2B00}-\x{2BFF}\x{2300}-\x{23FF}\x{1F1E6}-\x{1F1FF}\x{FE0F}\x{200D}\x{203C}\x{2049}])/g){print "$ARGV:$.: $1\n"}' $W/lexsis-source.html $W/page-theme.css | wc -l   # 0, unless page-plan.md records "Emoji in copy: allowed"; then every hit must be inside copy, none as an icon
-```
+Check (hosted/MCP): Inspect visible copy, alt text, props and CSS content for emoji. None may be icons; any copy-only exception must match the merchant's recorded wording.
 
-N2. Never change the background from section to section. The page has one background, `--lx-bg-color`, from below the navbar to above the footer. Allowed exceptions, exhaustively: the announcement bar, the navbar, the footer, and at most one full-bleed moment that `page-plan.md` names under "Design direction › Bold moment". A `<section>` or any full-width wrapper painted `--lx-bg-surface`, `--lx-surface-alt` or `--lx-secondary-color` is a band and fails, even if it is white.
+N2. Never change the background from section to section. The page has one background, `--lx-bg-color`, from below the navbar to above the footer. Allowed exceptions, exhaustively: the announcement bar, the navbar, the footer, and at most one full-bleed moment that `page plan` names under "Design direction > Bold moment". A `<section>` or any full-width wrapper painted `--lx-bg-surface`, `--lx-surface-alt` or `--lx-secondary-color` is a band and fails, even if it is white.
 Rationale: bands are a template's way of faking structure; separation belongs to spacing, type scale and hairlines (NN/g grouping; Stellae). Alternating fills are also the reason the rejected page read as five stacked templates.
-Check (browser):
-```js
-(() => { const body = getComputedStyle(document.body).backgroundColor, vw = document.documentElement.clientWidth;
-  return [...document.querySelectorAll('body *')].filter(el => { const cs = getComputedStyle(el);
-    return cs.backgroundColor !== 'rgba(0, 0, 0, 0)' && cs.backgroundColor !== body && el.getBoundingClientRect().width >= vw - 2 && el.getBoundingClientRect().height > 40; })
-    .map(el => ({ el: el.id || el.className || el.tagName, bg: getComputedStyle(el).backgroundColor })); })()
-```
-Pass when the list contains only announcement, nav, footer elements and at most one element whose id matches the plan's bold moment.
+Check (hosted/MCP): At each viewport, inspect full-width backgrounds. Only chrome and the single plan-named full-bleed exception may differ from the page background.
 
 N3. Never use emoji, images or mixed libraries as icons. Icons are one inline SVG set, one stroke weight, `stroke="currentColor"`, `fill="none"`, one size per context, `aria-hidden="true"` with a visible text label. Or no icons.
 Rationale: two stroke languages on one screen is a tell; icons that garnish headings are skipped by readers (uxskill icons).
-Check:
-```bash
-grep -o 'stroke-width="[^"]*"' $W/lexsis-source.html | sort -u | wc -l   # 0 or 1
-grep -c '<img[^>]*class="[^"]*icon' $W/lexsis-source.html                 # 0
-```
+Check (hosted/MCP): Inspect rendered icons and persisted markup: one SVG set, one stroke weight, currentColor, no image icons, hidden decorative SVGs and visible labels.
 
 N4. Never use more than two type families. A non-Latin script gets one matching family declared with `[lang]`; it does not count.
 Rationale: one display face plus one workhorse is the ceiling for coherence (frontend-design; Shopify Theme Store "Consistent typography").
-Check:
-```bash
-grep -oE "family=[A-Za-z+]+" $W/page-theme.css | sort -u | wc -l          # <= 3 including the [lang] family
-```
+Check (hosted/MCP): Inspect computed font families and loaded font stylesheets. At most two families plus the declared non-Latin family.
 
 N5. Never set eyebrow labels in ALL-CAPS unless a merchant-stated brand rule (not a generator-observed one) requires it, and then at most one per three sections.
 Rationale: the tracked-out caps eyebrow above every heading is the highest-frequency AI tell (designer-skill avoid-ai-slop; frontend-design).
-Check:
-```bash
-grep -cE 'uppercase|text-transform:\s*uppercase' $W/lexsis-source.html $W/page-theme.css   # 0, or <= ceil(sections/3) with a stated rule
-```
+Check (hosted/MCP): Inspect eyebrow labels. No uppercase without a merchant-stated rule; an authorized exception appears at most once per three sections.
 
 N6. Never accent a single word or phrase inside a headline with colour, italic, weight or underline.
 Rationale: the one-word accent is a default treatment, not a decision (frontend-design).
-Check:
-```bash
-perl -0ne 'print scalar(() = /<h[1-3][^>]*>[^<]*<(span|em|strong|i|b|mark)/g), "\n"' $W/lexsis-source.html   # 0
-```
+Check (hosted/MCP): Inspect each headline's child spans and computed styles. No word-level accent treatment.
 
 N7. Never use gradient washes, glow shadows, shimmer, pulse, float, animated backgrounds, or `hover:scale` / `hover:-translate` / `hover:scale-1xx` on cards, buttons or images. The only permitted gradient is a black-to-transparent overlay on a photograph for text legibility inside the plan-named bold moment.
 Rationale: gradient + hover-lift is the SaaS-card kit that reads as generated regardless of brand (Sailop; frontend-design).
-Check:
-```bash
-grep -nE 'gradient\(|bg-gradient|shimmer|animate-pulse|pulseRing|float-|hover:scale|hover:-translate|scale\(1\.[0-9]|box-shadow:\s*0 0 ' $W/lexsis-source.html $W/page-theme.css | wc -l   # 0, or only the plan-named overlay
-grep -nE 'box-shadow:[^;}]*(--lx-accent|color-mix\()' $W/lexsis-source.html $W/page-theme.css | wc -l   # 0; a shadow tinted with the accent is a glow whatever its offsets
-```
+Check (hosted/MCP): Inspect source and rendered effects at rest and on hover. No banned effects; only the plan-named photographic legibility overlay may use a gradient.
 
 N8. Never wrap plain text in a card. A card (`--lx-bg-surface`, border, or shadow with radius) surrounds a distinct object only: a product, a proof artefact with an image, a table, a form, a quoted review. Paragraphs, lists and FAQs sit on the page background.
 Rationale: identical rounded cards chop content into interchangeable units and signal that nothing is more important than anything else (uxskill tells; NN/g common region "use sparingly").
-Check: for each element matching `\.rs-card|bg-surface|rounded-[a-z0-9]+.*shadow`, confirm it contains `<img`, `<table`, `<form`, `<blockquote` or a price. Manual pass on the 1280 screenshot; count cards that contain only text; must be 0.
+Check (hosted/MCP): At desktop and mobile, count cards containing only paragraphs/lists/FAQs: zero. Every card surrounds a permitted distinct object.
 
 N9. Never render discount or status pills in ALL-CAPS or with percentages ("31% OFF", "BEST VALUE", "MOST POPULAR", "NEW ARRIVALS") unless the merchant runs a named sale recorded in the plan's confirmed claims. Compare-at price is struck-through text only.
 Rationale: the OFF pill and the highlighted middle tier are stock conversion-template chrome; Baymard's guidance is to show the price and compare-at clearly, not to shout.
-Check:
-```bash
-grep -nE '\b[0-9]{1,2}% ?OFF\b|BEST VALUE|MOST POPULAR|LIMITED TIME|NEW ARRIVAL' $W/lexsis-source.html | wc -l   # 0
-```
+Check (hosted/MCP): Inspect offer/status treatments. No prohibited pills; any named-sale exception is evidenced in confirmed claims and prices follow the offer ledger.
 
 N10. Never add motion that is not answering a user action, except one orchestrated moment named in the plan. No fade-up per section, no stagger, no counters, no parallax, no marquee ticker unless the announcement bar's own island provides it. Custom motion must follow `animation-system.md` and use `application/lexsis-motion`, not raw observers, timers, or global DOM access.
 Rationale: scattered entrance effects are the generic default; one moment lands, ten do not (frontend-design; Sailop).
-Check:
-```bash
-grep -cE 'application/lexsis-motion|data-behavior="gsap-|@keyframes|animation:' $W/lexsis-source.html $W/page-theme.css   # 0, or exactly the plan-named moment
-grep -cE 'data-reduced-motion=|prefers-reduced-motion' $W/lexsis-source.html $W/page-theme.css   # >= 1 if any animation exists
-grep -cE 'new (IntersectionObserver|ResizeObserver|MutationObserver)|requestAnimationFrame|setInterval' $W/lexsis-source.html   # 0
-```
+Check (hosted/MCP): Inspect motion blocks and hosted behavior with reduced motion enabled and disabled. Non-interaction motion is limited to the single plan-named moment; no raw observers, timers or global DOM recipes are authored.
 
 N11. Never show proof you cannot source: star glyphs, review counts, customer counts, "Only N left", countdowns, "as seen in" logos. Every number in a proof section traces to "Claims confirmed" in the plan.
-Rationale: fabricated proof destroys trust and is itself a tell (five gold stars + round avatar + italic quote). The engine's own `generate-pdp.md` line 64 already says never invent reviewers.
-Check: list every numeral in sections tagged proof/trust/reviews; each must appear in `page-plan.md` under confirmed claims.
+Rationale: fabricated proof destroys trust and is itself a tell (five gold stars + round avatar + italic quote). `references/proof/reviews-sourcing.md` owns reviewer and quotation evidence.
+Check (hosted/MCP): List every visible proof numeral, count, logo and testimonial. Match each to confirmed evidence and its proof-ledger row.
 
-N12. Never append `→` or `»` to link and button text, join meta strings with middle dots, or place an icon in a rounded tile above a heading (icon-tile-stack).
+N12. Never append `U+2192` or `U+00BB` to link and button text, join meta strings with middle dots, or place an icon in a rounded tile above a heading (icon-tile-stack).
 Rationale: template chrome that appears whatever the subject (frontend-design; designer-skill).
-Check:
-```bash
-grep -cE '(→|&rarr;|»)\s*</(a|button)' $W/lexsis-source.html   # 0
-grep -cE 'w-1[0-6] h-1[0-6][^"]*rounded' $W/lexsis-source.html   # 0
-```
+Check (hosted/MCP): Inspect link/button labels and heading ornaments. No U+2192 or U+00BB suffixes, middle-dot meta chains or icon-tile headings.
 
 N13. Never mix radii on the same object type or use one radius on everything. Declare a radius scale by object type and use only those tokens.
 Rationale: uniform `rounded-2xl` on cards, buttons, inputs and images is the absence of a system (Sailop "rounded-2xl on everything").
-Check:
-```bash
-grep -ohE 'border-radius:\s*[^;]+|rounded(-[a-z0-9\[\]]+)?' $W/lexsis-source.html $W/page-theme.css | sort | uniq -c | sort -rn   # <= 4 distinct values, each mapped to a type in page-theme.css comments
-```
+Check (hosted/MCP): Compare computed radii by object type to the declared radius tokens; no stray values or universal radius.
 
 N14. Never hardcode off-brand hex or Tailwind default colours. Colours come from `--lx-*` tokens or the plan's named palette.
-Rationale: `#667eea`, `#764ba2`, `#8b5cf6`, `#f9fafb`, `text-yellow-400` appear throughout the engine references and mark a page as templated (uxskill tells).
-Check:
-```bash
-grep -nEi '#667eea|#764ba2|#8b5cf6|#f9fafb|#6366f1|#7c3aed|text-(yellow|gray|slate|purple|indigo)-[0-9]' $W/lexsis-source.html $W/page-theme.css | wc -l   # 0
-```
+Rationale: default colours such as `#667eea`, `#764ba2`, `#8b5cf6`, `#f9fafb`, and `text-yellow-400` mark a page as templated rather than merchant-specific (uxskill tells).
+Check (hosted/MCP): Compare computed colors and source values to the selected theme and plan palette; no off-brand defaults.
 
 ### 2.2 ALWAYS
 
-A1. Always write the Design direction block in `page-plan.md` before any HTML: palette of 4 to 6 named hex with roles; type roles, families and one modular ratio; layout concept in one sentence plus an ASCII wireframe at 1280 and 390; alignment rule; icon decision; the one bold moment; the background rule with its single named exception or "none"; motion decision; the generic-default check with at least three concrete differences; the list of brand-design.md lines being overridden.
+A1. Always write the Design direction block in `page plan` before any HTML: palette of 4 to 6 named hex with roles; type roles, families and one modular ratio; layout concept in one sentence plus an ASCII wireframe at 1280 and 390; alignment rule; icon decision; the one bold moment; the background rule with its single named exception or "none"; motion decision; the generic-default check with at least three concrete differences; the list of brand-design.md lines being overridden.
 Rationale: the plan-review-build-critique loop is what stops the model averaging toward the centre of its training data (frontend-design).
-Check: `grep -c '^\*\*' page-plan.md` under "## Design direction" returns all 10 field labels from the template in section 3.1; none is empty or "TBD".
+Check (hosted/MCP): The plan contains all ten Design direction fields, with no empty or TBD value, before source authoring.
 
 A2. Always separate sections with a spacing scale and, where a break is needed, one 1px hairline in `--lx-border-color`. Use one 8-point scale; section padding comes from at most two pairs (e.g. 64/96 and 40/56 mobile/desktop).
 Rationale: proximity and whitespace carry grouping; a line is a subtle, universally understood divider; colour is emotional and should be spent on pacing, not plumbing (NN/g; Stellae; Tubik).
-Check: `grep -oE 'padding:\s*[0-9]+px' $W/page-theme.css | sort -u` yields values from the 8-pt scale only; `grep -c 'border-top: 1px solid var(--lx-border-color)'` is the only divider mechanism.
+Check (hosted/MCP): Measure section spacing at mobile and desktop: one 8-point scale, at most two padding pairs and only the specified hairline where needed.
 
 A3. Always build hierarchy with a single modular type scale (one ratio, 1.2 to 1.333 for commerce), no more than three sizes visible on one screen, one `<h1>`, one `<h2>` per section, headings 1.1 to 1.2 line-height, body 1.5 to 1.7.
 Rationale: three sizes give hierarchy without noise; NN/g and accessibility.build converge on this.
-Check: `grep -c '<h1' $W/lexsis-source.html` is 1; every `font-size` in `page-theme.css` is a step of the declared ratio (list them: `grep -oE 'font-size:\s*[^;]+' | sort -u`).
+Check (hosted/MCP): Inspect heading count, computed sizes and line heights against the declared ratio. One h1, one h2 per section and no more than three sizes per screen.
 
 A4. Always keep body measure between 45 and 80 characters at every viewport; give serif body 0.05 more line-height than sans. Constrain text containers with `max-width` in `ch` (60 to 70ch), not px.
 Rationale: WCAG 1.4.8 caps body at 80 characters; legibility research centres on 45 to 75 (Butterick 45 to 90).
-Check (browser, 1280):
-```js
-(() => [...document.querySelectorAll('p, li, figcaption')].map(p => ({ t: p.textContent.trim().slice(0,40), cpl: Math.round(p.getBoundingClientRect().width / (parseFloat(getComputedStyle(p).fontSize) * 0.5)) })).filter(x => x.cpl > 80))()   // []
-```
+Check (hosted/MCP): Inspect body measure at each viewport: 45 to 80 characters, 60 to 70ch containers, and the required serif line-height adjustment.
 
 A5. Always record one icon decision in the plan and, if icons exist, ship them as one inline SVG set at one size and one stroke, with the text label always visible.
-Rationale: see N3. Check: as N3, plus `grep -c 'aria-hidden="true"'` equals the SVG count.
+Rationale: see N3.
+Check (hosted/MCP): Match the rendered SVG set and visible labels to the plan's icon decision and N3.
 
-A6. Always declare a radius scale by object type in `page-theme.css` (`--r-control`, `--r-card`, `--r-media`, `--r-pill`) and use only those tokens.
-Rationale: the relationship between radii is the design. Check: `grep -c 'border-radius: var(--r-' $W/page-theme.css $W/lexsis-source.html` equals the total count of `border-radius` declarations.
+A6. Always declare a radius scale by object type in `theme_css` (`--r-control`, `--r-card`, `--r-media`, `--r-pill`) and use only those tokens.
+Rationale: the relationship between radii is the design.
+Check (hosted/MCP): Inspect effective theme CSS and rendered radii: every object uses its declared --r-control, --r-card, --r-media or --r-pill token.
 
 A7. Always meet WCAG 2.2 AA: 4.5:1 for text under 24px (18.67px bold), 3:1 for large text and for UI component boundaries, including muted text on the page background, accent on any tint, and button text on button fill.
 Rationale: W3C 1.4.3 and 1.4.11; the RudraSetu guide itself flags #D52600 on #FBE9E6 as borderline.
-Check:
-```bash
-python3 - <<'PY'
-def L(h):
-    r,g,b=[int(h.lstrip('#')[i:i+2],16)/255 for i in (0,2,4)]
-    f=lambda c: c/12.92 if c<=0.03928 else ((c+0.055)/1.055)**2.4
-    return 0.2126*f(r)+0.7152*f(g)+0.0722*f(b)
-def ratio(a,b):
-    x,y=sorted([L(a),L(b)],reverse=True); return round((x+0.05)/(y+0.05),2)
-pairs={'text/page':('#1F1D24','#F5F0E6'),'muted/page':('#6B6560','#F5F0E6'),'accent/page':('#D52600','#F5F0E6'),'accent/tint':('#D52600','#FBE9E6'),'cream/charcoal btn':('#F5F0E6','#1F1D24'),'cream/maroon bar':('#F5F0E6','#8B1A00')}
-for k,(a,b) in pairs.items(): print(k, ratio(a,b))
-PY
-```
-Every text pair >= 4.5, every large-text or component pair >= 3.
+Check (hosted/MCP): Measure actual foreground/background pairs, including muted text and buttons over imagery: at least 4.5:1 for normal text and 3:1 for large text and component boundaries.
 
 A8. Always compose the PDP buy section to Baymard and Shopify requirements: untruncated title, price and compare-at, unit price if applicable, variant options as buttons, quantity, add-to-cart, a shipping and returns line, all within the first viewport on desktop and within 1.5 viewports at 390px; product media takes 50 to 60 percent of desktop width.
 Rationale: users decide on the PDP; hidden price or delivery cost is a top abandonment cause (Baymard PDP research; Shopify Theme Store product page requirements).
-Check: at 390 screenshot, price and add-to-cart appear above y = 1266px; at 1280, both appear above y = 800px.
+Check (hosted/MCP): On the hosted PDP, verify all required buying controls within one desktop viewport and 1.5 mobile viewports at 390px, with media at 50 to 60 percent of desktop width.
 
 A9. Always spend boldness once. Name the single memorable element in the plan; every other element is quiet: page background, body weight, hairlines, sentence case.
 Rationale: one element can be remembered; the mirror test, remove one accessory (frontend-design; Chanel).
-Check: the 1280 screenshot has exactly one element that a squint test isolates; it matches the plan's bold moment.
+Check (hosted/MCP): The desktop and mobile squint test isolates the one plan-named bold element, not several competing accessories.
 
 A10. For production-ready work, always run the hosted design review at 390 and 1280 before recording design approval. Fast drafts return `DRAFT_CREATED` first and may leave this review pending.
 Rationale: the real renderer catches banding, hierarchy, hydration, and media problems without maintaining a second preview runtime.
-Check: `$W/qa-report.md` records the hosted preview URL, tested version, both viewports, and no blocking design failure before `design.status` becomes `approved`.
+Check (hosted/MCP): Record hosted preview URL, tested version and screenshots at 390 and 1280 with no blocking failure before design approval.
 
 A11. Always ship the quality floor without announcing it: `:focus-visible` styles, `prefers-reduced-motion` handling, 48px minimum tap targets, alt text on product media, `lang` attributes on non-Latin text.
-Check: `grep -c ':focus-visible' $W/page-theme.css` >= 1; `grep -c 'prefers-reduced-motion'` >= 1 when animation exists; `grep -c 'lang="'` >= 1 when Devanagari is present.
+Check (hosted/MCP): Test keyboard focus, reduced motion, all 48px tap targets, media alternatives and language attributes on the hosted draft.
 
-A12. Always write copy as design content: sentence case, active voice, the CTA says what happens ("Add to cart", not "Shop Now →"), no placeholder or invented copy, brand voice from `voice_md` or the merchant.
-Check: `grep -cE '>(Shop Now|Get Started|Learn More|Buy Now)\s*(→)?<' $W/lexsis-source.html` is 0; no "lorem".
-
+A12. Always write copy as design content: sentence case, active voice, the CTA says what happens ("Add to cart", not "Shop Now U+2192"), no placeholder or invented copy, brand voice from `voice_md` or the merchant.
+Check (hosted/MCP): Read rendered copy and controls against the plan and brand voice. No generic action labels, placeholder content or invented facts.
 
 ## Tells (fail the squint test)
 
-Cream page + high-contrast serif + terracotta accent as the only idea; identical rounded cards with one radius and one grey shadow; tracked-out ALL-CAPS eyebrow above every heading; meta strings joined with middle dots; `WORD — fragment` labels; `→` appended to links and buttons; icon in a rounded tile above every heading; discount pills and "MOST POPULAR" ribbons; gradient washes; fade-up on every section; five gold stars with a round avatar and an italic quote; a monospace face for small labels; near-black `#0B0B0B` standing in for black.
+Cream page + high-contrast serif + terracotta accent as the only idea; identical rounded cards with one radius and one grey shadow; tracked-out ALL-CAPS eyebrow above every heading; meta strings joined with middle dots; `WORD  -  fragment` labels; `U+2192` appended to links and buttons; icon in a rounded tile above every heading; discount pills and "MOST POPULAR" ribbons; gradient washes; fade-up on every section; five gold stars with a round avatar and an italic quote; a monospace face for small labels; near-black `#0B0B0B` standing in for black.
 
 Source audit: internal design-rules research (2026-09-05).
 
 ---
 
-# Island Presets
+# Island intent labels
 
-Named, pre-validated prop and CSS presets for the active Lexsis islands. A preset id is a
-design-intent token the plan may name (`Preset: buybox/compact-dark`); `/design-page`
-applies it verbatim and records any deviation as `presetOverrides` in the manifest.
-Every preset respects `storefront-engine/references/design-rules.md`: no emoji, no gradients, transparent island
-surfaces on the single page background, no icon glyphs unless the page has no other
-icon set, no motion effects. Verified against island schema 5.1.0 on 2026-09-05; when
-`island_schema` reports a different version, re-verify before use.
-
-## 2. Per-island reference
-
-### 2.1 SiteHeader
-
-Compound announcement bar + navbar. Category navigation. Hydrate default `immediate`. Variants: none. Headless: no (but supports *hydration mode*: author your own `<header>` markup with `data-lx-header="root|announcement|announcement-text|announcement-dismiss"` and `data-lx-nav="root|cart-trigger|cart-count|mobile-trigger|mobile-panel|link|logo"` as the child of `<lx-island>`; props then only carry behavior). Max 1 per page, first section; never combine with a separate Navbar.
-
-UI-controlling props (schema v5.1.0):
-
-| Prop | Type | Values / default | Effect |
-|---|---|---|---|
-| `sticky` | boolean | - | header pins to top |
-| `transparent` | boolean | - | no nav background until scroll (hero overlap) |
-| `offsetTop` | string | CSS length | top offset when sticky |
-| `cartMode` | enum | `drawer` \| `link` | cart icon opens drawer or navigates to `cartUrl` |
-| `hideCart` | boolean | - | removes cart trigger |
-| `dismissible` / `rotateInterval` | boolean / number | top-level, hydration mode only | announcement close button, rotation ms |
-| `announcement.backgroundColor`, `.textColor` | string | hex or `var(--lx-*)` | announcement bar paint (allowed exception to one-background rule) |
-| `announcement.speed` | number | ms; keep >= 4000 | rotation speed |
-| `announcement.dismissible` | boolean | - | close button |
-| `navbar.transparent` | boolean | - | same as top-level for legacy mode |
-| `navbar.style` | object | `bgColor, textColor, accentColor, logoHeight, height, borderBottom, fontFamily, fontSize, fontWeight, padding, maxWidth, dropdownBg, dropdownTextColor, mobileBg, mobileTextColor` (all string) | full nav paint and type; schema types these as `?object`, examples pass strings |
-| `navbar.hideCart` | boolean | - | - |
-
-Data props: `announcement.messages[]` (string, keep < 60 chars), `announcement.link`, `navbar.logo{src|text, alt, url}` (use `text` wordmark when no logo asset), `navbar.links[{label,url,children[]}]`, `navbar.cta{label,url}`, `navbar.cartCount` (omit; auto-synced), `cartUrl`, `messages[]` (hydration mode).
-
-CSS vars declared: `--lx-accent-color` only. `--lx-header-*`, `--lx-nav-*` from the earlier capture: unconfirmed, not in schema.
-Parts: `announcement, announcement-dismiss, announcement-text, cart-badge, cart-trigger, cta, dropdown, dropdown-item, link, links, logo, mobile-link, mobile-panel, mobile-trigger, nav, root`.
-Fallback: hydration-mode markup *is* the fallback; for legacy (props-only) mode give a plain `<header>` with logo link and 3-5 `<a>` links as the `data-lx-island-fallback` child.
-Gotchas: `navbar.style.*` values must be strings even though schema prints `?object`. Announcement paint is the only place a non-page background is allowed besides footer. Do not set `cartCount`.
-
-### 2.2 Navbar
-
-Nav only (use when no announcement, or when announcement should scroll away). Hydrate `immediate`. Variants: none. Hydration mode as above with `data-lx-nav` tags. Must be a direct page child, not inside a section wrapper, for sticky to work.
-
-UI-controlling props: `sticky`, `transparent`, `offsetTop`, `cartMode` (`drawer|link`), `hideCart`, `style{bgColor, textColor, accentColor, logoHeight, height, borderBottom, fontFamily, fontSize, fontWeight, padding, maxWidth, dropdownBg, dropdownTextColor, mobileBg, mobileTextColor}`, `cart{icon: cart|bag|basket, svg, image, label, badgeColor}`.
-Data props: `logo{src|html, alt, url}` (required), `links[{label,url,children[]}]` (required), `cta{label,url}`, `cartUrl`, `cartCount` (omit).
-CSS vars: `--lx-accent-color`. Parts: `cart-badge, cart-trigger, cta, dropdown, dropdown-item, link, links, logo, mobile-link, mobile-panel, mobile-trigger, root`.
-Fallback: plain `<nav>` with logo and links.
-Gotchas: `cart.svg` lets you supply the page's single inline SVG set icon (house rule: one stroke weight, `currentColor`); prefer it over `cart.icon` when the page already uses custom SVGs. `logo.html` accepts an inline SVG wordmark.
-
-### 2.3 AnnouncementBar
-
-Standalone rotating message strip. Hydrate `immediate`. Variants: none (earlier capture's `default|gradient|ticker|minimal` do not exist; a gradient would also break house rules). Max 1 per page; pair with Navbar, never with SiteHeader.
-
-UI-controlling props: `backgroundColor` (string), `textColor` (string), `sticky` (boolean, default false), `dismissible` (boolean, default false; only meaningful with `sticky`), `speed` (number ms, default 4000, keep >= 4000).
-Data props: `messages[]` (required, string), `link` (string, whole bar becomes a link).
-CSS vars: `--lx-accent-color`. Parts: `close-btn, icon, link, root, text`.
-Fallback: one `<p>` with the first message.
-Gotchas: the `icon` part exists but no prop controls it; hide it with `[data-part="icon"]{display:none}` when the page has no icon set. Text must be emoji-free (house rule and validator check).
-
-### 2.4 ProductGallery
-
-PDP media gallery (thumbnail rails, grids, collage, masonry; image + video; lightbox; variant sync). Category commerce. Hydrate `immediate`. Headless: no. Variants = `layout` values.
-
-UI-controlling props:
-
-| Prop | Type | Values / default | Effect |
-|---|---|---|---|
-| `layout` | enum | `horizontal` (default) \| `vertical` \| `stacked` \| `grid` \| `collageLeft` \| `collageRight` \| `twoColumn` \| `masonry` | desktop arrangement |
-| `mobileLayout` | enum | `stacked` \| `swipe` | always set explicitly for grid/collage/masonry |
-| `thumbPosition` | enum | `left` \| `right` \| `bottom` \| `top` | rail placement for horizontal/vertical |
-| `transition` | enum | `none` \| `slide` \| `fade` (default) \| `zoom` \| `kenBurns` | avoid kenBurns (motion) |
-| `objectFit` | enum | `cover` (default) \| `contain` | contain for packshots on white |
-| `maxHeight` | string | CSS length | caps main media |
-| `enableLightbox` | boolean | - | adds `open-lightbox` control |
-| `autoplay` / `interval` | boolean / number | false / 4000 | avoid on PDP |
-
-Data props: `media[]` (current; `images[]` is deprecated and kept as an alias; item `{src|url, alt, type: image|video, poster, mobileSrc, srcSet, sizes, fit, objectPosition, sources[], provider}`), `listenForVariant` (boolean; needs a VariantSwatches emitter).
-
-CSS vars (declared, long list; the useful subset): `--lx-product-gallery-bg, -border, -radius, -gap, -mobile-gap, -mobile-peek, -mobile-ratio, -columns, -tile-ratio, -featured-ratio, -stacked-ratio, -masonry-tall-ratio, -masonry-wide-ratio, -focus-width, -focus-offset, -open-bg, -open-color, -open-shadow`; `--lx-media-carousel-arrow-{bg,border,color,hover-bg,offset,radius,shadow,size}`, `--lx-media-carousel-dot-{color,active-color,active-scale,gap,offset,shadow,size}`, `--lx-media-carousel-{bg,duration,ease,fit,radius,placeholder}`; `--lx-media-lightbox-{backdrop,close-*,control-*,max-width,max-height,media-bg,padding,mobile-padding,z-index}`; `--lx-video-*` and `--lx-shoppable-*` (video tiles only); `--lx-accent-color, --lx-bg-surface, --lx-text-color`.
-Parts (useful subset): `root, viewport, track, slide, main-media, media, image, video, thumbnail-strip, thumbnail, grid, grid-item, controls, previous, next, dots, dot, open-lightbox, lightbox, lightbox-close, lightbox-content, adaptive-video-*`.
-Fallback: first image as `<img>` at the gallery aspect ratio.
-Gotchas: the compile validator accepts `media` or legacy `images`; each item needs `src` (or `url`). Presets use `media`.
-
-### 2.5 ProductHero
-
-Large hero gallery for split PDP layouts (media 50-60 percent of viewport beside BuyBox). Category commerce. Hydrate `visible` (design QA must scroll it into view). Headless: no. Variants = `layout`.
-
-UI-controlling props:
-
-| Prop | Type | Values / default |
-|---|---|---|
-| `layout` | enum | `stacked` \| `splitLeft` (default) \| `splitRight` \| `fullHeight` |
-| `thumbnails` | enum | `none` \| `rail` (default) \| `dots` |
-| `thumbnailPosition` | enum | `left` (default) \| `right` \| `bottom` (no `top`) |
-| `navigation` | enum | `none` \| `arrows` \| `floatingArrows` (default) |
-| `aspectRatio` | string | `3:4` default; `1:1`, `4:5` |
-| `maxHeight` | string | `85vh` default |
-| `transition` | enum | `none` \| `slide` \| `fade` (default) \| `zoom` \| `kenBurns` |
-| `showIndicators` | boolean | - |
-| `autoplay`, `interval`, `hoverAdvance` | boolean, number, boolean | false, 4000, false |
-| `className` | string | passes through to root |
-
-Data props: `images[]` (required; `{url, alt, type, poster, objectFit, objectPosition}`; note key is `url` here, `src` in ProductGallery), `listenForVariant`.
-CSS vars: `--lx-hero-bg, --lx-hero-radius, --lx-hero-thumb-radius, --lx-hero-thumb-size, --lx-hero-thumb-gap, --lx-hero-arrow-bg, --lx-hero-arrow-size, --lx-hero-arrow-offset, --lx-hero-transition-duration, --lx-accent-color, --lx-border-color` (schema also lists a stray `--lx-hero-` prefix entry).
-Parts: `root, media-pane, slide, thumbnail-rail, thumbnail, nav-prev, nav-next, dot`.
-Fallback: first image `<img>` with the chosen aspect ratio.
-Gotchas: default `85vh` pushes BuyBox below the fold on mobile; presets cap at `560px`-`640px`. Set `--lx-hero-bg: transparent`. Confirmed working styling pattern: `#id{--lx-accent-color:...;--lx-hero-radius:12px;--lx-hero-thumb-radius:10px}` and `#id [data-part="thumbnail"]{...}`.
-
-### 2.6 BuyBox
-
-Primary purchase UI: price, variant buttons, quantity, add-to-cart, optional trust badges, notify-me. Category commerce. Hydrate `immediate`. Headless: **yes** (hooks `add` required; `price, compare-price, variant-option[data-variant-id], qty, qty-inc, qty-dec, stock, error`; state classes `lx-selected lx-disabled lx-adding lx-added`). Max 1 per page. Requires `head.use_cart_v2: true` for cart feedback.
-
-UI-controlling props:
-
-| Prop | Type | Values / default | Effect |
-|---|---|---|---|
-| `variant` | enum | `default` \| `compact` \| `expanded` | compact drops qty and variant selector (single-variant only); expanded adds trust badges block |
-| `showPrice` | boolean | true | hide when the section renders its own price |
-| `showVariantSelector` | boolean | true | set false when VariantSwatches is used |
-| `showTrustBadges` | boolean | - | badges row; default icons are the island's own set (see gotcha) |
-| `buttonStyle` | object | `{borderRadius, padding, fontSize}` strings | CTA shape without CSS |
-| `animate` | boolean \| string | true | add-to-cart feedback motion |
-| `ctaText` | string | - | button label |
-
-Data props: `product{title, price, compareAtPrice, variants[{id,title,price,available}]}` (required; `id` is the Shopify variant GID), `listenForEvents` (boolean, pair with VariantSwatches). `productId` shown in `index.md` and old layouts is **not** in the v5.1 schema.
-CSS vars: `--lx-accent-color` only. Parts: `root, cta, variants, variant-btn, qty, qty-btn, trust-badges, notify`.
-Fallback: static price `<p>` plus a disabled-looking `<a>` to `/products/{{product.handle}}`; never a working custom button.
-Gotchas: `showTrustBadges` icons are not controllable by prop; if the page has no icon set or a different SVG set, set `showTrustBadges:false` (house rule: one icon style). Earlier capture's variants `standard|full-width|split|minimal` do not exist. Do not duplicate title/price outside the island unless `showPrice:false`.
-
-### 2.7 StickyBar
-
-Bottom-fixed CTA re-surfacing add-to-cart (product mode) or a collection link (collection mode). Category commerce. Hydrate `immediate`. Variants: none. Headless: no. Place after the BuyBox section.
-
-UI-controlling props: `showAfter` (string CSS selector, e.g. `"#buy"`, or number px; **always set**), `animate` (boolean | string, default true; `false` for quiet pages), `cta` (string, default "Add to Cart").
-Data props: `product{title, price, compareAtPrice?, image?, variantId}` (variantId required in product mode) **or** `collection{label, url, subtitle?, image?}`.
-CSS vars: `--lx-accent-color, --lx-text-color`. Parts: `root, bar, cta, product-image, product-info, product-price, product-title`.
-Fallback: none needed (bar is hidden until scroll); an empty child is fine.
-Gotchas: no bar background prop; the bar paints its own surface (accepted: it is fixed chrome, not a section). Style `[data-part="bar"]` for border-top/shadow removal. Omit `product.image` for a text-only bar.
-
-### 2.8 ProductCarousel
-
-Horizontal product-card rail ("You may also like"). Category commerce. Hydrate `immediate`. Variants: none; card look via `cardVariant`. Headless: no. Needs 4+ products; `showQuickAdd` requires cart v2.
-
-UI-controlling props:
-
-| Prop | Type | Values | Effect |
-|---|---|---|---|
-| `cardVariant` | enum | `default` \| `compact` \| `compactRows` | card density; compactRows renders a list |
-| `mediaTransition` | enum | `none` \| `slide` \| `fade` \| `zoom` \| `kenBurns` | card image swap on hover-advance |
-| `hoverAdvance` / `hoverAdvanceMode` / `hoverInterval` | boolean / `next`\|`cycle` / number | cycles card media on hover; off for quiet pages |
-| `showQuickAdd`, `showWishlist`, `showLearnMore`, `showQuickView` | boolean | - | card actions; each adds a button (icon buttons use the island's icon set) |
-| `animate` | boolean \| string | - | staggered fade-up on entry |
-| `columns` | number | - | ignored in carousel context per anti-pattern note; unconfirmed effect |
-| `title` | string | - | heading rendered by island (`heading`/`title` parts) |
-
-Data props: `products[{id, handle, title, subtitle?, price, compareAtPrice?, badge?, image? | media[]?, variants[]?}]` (required).
-CSS vars: same media-carousel/featured-media/video family as ProductGallery plus `--lx-surface-alt, --lx-text-muted, --lx-border-color, --lx-bg-surface, --lx-accent-color, --lx-text-color`. No dedicated card radius/border var; use parts.
-Parts (useful): `root, heading, title, track, viewport, slide, card-wrapper, image, badge, price, compare-price, quick-add, nav-prev, nav-next, dots, dot, row, row-image, row-title, row-price, row-subtitle, row-list, media-placeholder`.
-Fallback: 4 static cards (`<a>` + `<img>` + title + price) in a 2/4 grid.
-Gotchas: omit `title` and render the section h2 yourself to keep heading hierarchy in the wrapper (contract: h2 owned by section). `showWishlist`/`showQuickView` add icon buttons in the island's own icon style; leave off when the page uses its own SVG set.
-
-### 2.9 Footer
-
-Site footer: link columns, logo, tagline, social, newsletter, copyright. Category navigation. Hydrate `immediate`. Variants: none; layout via `style.layout`. Hydration mode: author your own `<footer data-lx-footer="root">` with optional `newsletter-form`, `newsletter-input`, `newsletter-success`, `year` tags. Max 1, last section. Footer may paint its own background (house-rule exception).
-
-UI-controlling props:
-
-| Prop | Type | Values |
-|---|---|---|
-| `style.layout` | enum | `simple` \| `centered` \| `columns` \| `editorialGrid` \| `newsletterSplit` |
-| `style.bgColor, textColor, linkColor, linkHoverColor, headingColor, accentColor, borderColor` | string | colors |
-| `style.fontFamily, fontSize, padding, maxWidth, logoHeight, logoFilter` | string | type, spacing, logo treatment (`logoFilter: "invert(1)"` for dark footers) |
-| `borderStyle` | enum | `none` \| `solid` \| `dashed` (top rule) |
-| `tileLayout` | boolean | social links as tiles (`social-tiles` part) |
-
-Data props: `columns[{heading?, links[{label,url}]}]`, `links[]` (simple layout), `logo{src, alt}`, `tagline`, `copyright`, `socialLinks[{platform, url, icon?}]`, `newsletter{heading, placeholder, buttonText}`, `successMessage`.
-CSS vars: `--lx-accent-color`. Parts: `root, columns, nav-rows, newsletter, social-tiles`.
-Fallback: hydration-mode markup, or a `<footer>` with links and copyright.
-Gotchas: social icons are the island's own glyphs; `socialLinks[].icon` accepts a string (URL or inline SVG; unconfirmed which). If the page has no icon set, prefer text social links via `columns` and omit `socialLinks`. Old `layouts/compact.json` uses `style.variant`/`style.inline`/`newsletter.enabled`, none of which exist in v5.1.
-
-### 2.10 ReviewCarousel
-
-Rotating or grid review showcase with stars, verified flag, avatars, optional media. Category social_proof. Hydrate `visible`. Headless: no. Two data modes: static `reviews[]` (wins if non-empty) or fetch (`collectionId` or `productIds` + filters; the page supplies the endpoint at runtime, never write `reviewsEndpoint`). Mid-page or after product details, never first. Needs 3+ real reviews; never fabricate.
-
-UI-controlling props:
-
-| Prop | Type | Values / default | Effect |
-|---|---|---|---|
-| `variant` | enum | `default` \| `compact` \| `minimal` \| `grid` (default `default`) | default = one card carousel; compact = short strip; minimal = quote-only (short bodies only); grid = all at once |
-| `autoplay` | boolean | true | set false for grid and for quiet pages |
-| `interval` | number | 5000, keep >= 4000 | - |
-| `pageSize` | number | 10, max 20 | fetch mode count |
-
-Data props: `reviews[{id?, author, rating, title?, body, date?, verified?, avatar?, helpful_count?, media[]?}]` (static, only real reviews from `lexsis_catalog.reviews`), or fetch mode `collectionId` (an active collection from the plan's Proof sources line) or `productIds[]`, plus `reviewSnapshotId`, `minRating`, `sort` (`recent|highest|most_helpful`). Omit `reviewsEndpoint`.
-CSS vars: `--lx-accent-color` (avatar bg, active dot), `--lx-text-color` (author). Parts: `root, card, avatar, author, body, title, date, verified, media-preview, nav-prev, nav-next, dots, dot, load-more`.
-Fallback: 3 static blockquotes with author lines.
-Gotchas: stars and the verified check are island glyphs (not controllable); acceptable as the page's single icon set only if the rest of the page uses no other icons, otherwise hide `[data-part="verified"]` and rely on the "Verified" text. `index.md` mentions `card-grid` on `--lx-surface-alt` backgrounds; house rules forbid that, so cards sit on the page background with a hairline border. `card` default may carry a shadow; flatten via `[data-part="card"]{box-shadow:none;border:1px solid var(--lx-border-color)}`.
-
-### 2.11 InventoryIndicator
-
-Low-stock urgency: "Only X left" pill, progress bar, or inline text. Category commerce. Hydrate `immediate`. Headless: no. Auto-hides above `lowStockThreshold`; can listen for `variant:changed`.
-
-UI-controlling props: `variant` (`badge` default | `bar` | `text`), `showExactCount` (boolean, default true), `lowStockThreshold` (number, default 5; controls when it appears), `urgentThreshold` (number, default 3; colour escalation).
-Data props: `variantId`, `quantity` (number; static preview value), `listenForEvents` (boolean, default false).
-CSS vars: `--lx-inventory-urgent-color`, `--lx-inventory-low-color`, `--lx-inventory-ok-color` (state colours; fall back to the island defaults). Parts: `root, dot, message, bar-track, bar-fill`.
-Fallback: none; the island hides itself when stock is high, so an empty child is correct.
-Gotchas: set the three state vars in the section `<style>` when the brand palette has no red. Do not use for pre-order products.
-
-### 2.12 DeliveryEstimate
-
-"Order within Xh, arrives by <date>" line with optional free-shipping threshold. Category commerce. Hydrate `immediate`. Headless: no. Countdown updates each minute; returns nothing after cutoff.
-
-UI-controlling props: `variant` (`inline` default | `card` | `banner`), `showCountdown` (boolean, default true).
-Data props: `estimatedDays` (number, default 4), `cutoffHour` (number 0-23, default 14; store timezone, unconfirmed), `freeShippingThreshold` (number, minor units per example `5000`; unconfirmed currency handling).
-CSS vars: `--lx-accent-color, --lx-text-color`. Parts: `root, icon, text, date`.
-Fallback: one `<p>` "Ships in {{shipping.days}} business days".
-Gotchas: `card` and `banner` variants paint their own surface, which violates the one-background rule; presets use `inline` only, or `card` with `[data-part="root"]{background:transparent;border:1px solid var(--lx-border-color)}`. The `icon` part is an island glyph; hide it when the page has no icon set. Keep it out of pages with international or variable shipping.
-
-#### Shared notes for section 2
-
-- **Fallback child.** A direct `data-lx-island-fallback` child inside
-  `<lx-island>` may provide readable server-rendered content until the hosted
-  island hydrates. Keep it simple, class-free or Tailwind-only (every class
-  must compile), and free of interactive controls that could be mistaken for
-  the island.
-- **`animate` type.** Schema shows `boolean|boolean|string|string|string` for BuyBox, StickyBar, ProductCarousel; accepted string values are undocumented. Presets use booleans only.
-- **Manifest evidence per island** (from `validate_page_workspace.py`): `{sectionId, name, schemaVersion, lifecycleStatus:"active", mode:"native"|"headless"}`, in source order.
-
-## 3. Presets
-
-Conventions: id is `<island-lowercase>/<intent>-<tone>`. Each preset is `props` (goes verbatim into the `<script type="application/json">`) plus optional `css` (goes into the section `<style>`, scoped by the island wrapper id `{{id}}`). Placeholders `{{...}}` are replaced by `/design-page` from catalog, brand and plan data. Colour strings use `var(--lx-*)` tokens; island `style.*` props are applied as inline styles so `var()` resolves (confirmed for hex, expected for `var()`; verify on first compile). Tones: `light` = page background, dark text; `dark` = inverted strip (`--lx-text-color` bg); `quiet` = no motion, no chrome; `editorial` = square corners, hairlines, letterspaced caps.
-
-### 3.1 SiteHeader
-
-**siteheader/sticky-light** - default PDP/landing header: inverted announcement strip, white nav with hairline. Use when the plan has an announcement message.
-```json
-{"props":{"sticky":true,"cartMode":"drawer","announcement":{"messages":["{{announcement.message_1}}","{{announcement.message_2}}"],"speed":5000,"dismissible":false,"backgroundColor":"var(--lx-text-color)","textColor":"var(--lx-bg-color)"},"navbar":{"logo":{"src":"{{brand.logo_url}}","alt":"{{brand.name}}","url":"/"},"links":"{{nav.links}}","style":{"bgColor":"var(--lx-bg-color)","textColor":"var(--lx-text-color)","accentColor":"var(--lx-accent-color)","height":"64px","logoHeight":"28px","maxWidth":"1280px","fontFamily":"var(--lx-font-body)","fontSize":"14px","fontWeight":"500","borderBottom":"1px solid var(--lx-border-color)","dropdownBg":"var(--lx-bg-color)","dropdownTextColor":"var(--lx-text-color)","mobileBg":"var(--lx-bg-color)","mobileTextColor":"var(--lx-text-color)"}}}}
-```
-
-**siteheader/transparent-dark** - nav floats over the plan's single full-bleed hero, text light, no announcement. Use only when the section directly below is that full-bleed moment.
-```json
-{"props":{"sticky":true,"transparent":true,"cartMode":"drawer","navbar":{"logo":{"src":"{{brand.logo_url_light}}","alt":"{{brand.name}}","url":"/"},"links":"{{nav.links}}","transparent":true,"style":{"textColor":"#ffffff","accentColor":"#ffffff","height":"72px","logoHeight":"28px","maxWidth":"1280px","fontSize":"14px","fontWeight":"500","borderBottom":"none","mobileBg":"var(--lx-text-color)","mobileTextColor":"var(--lx-bg-color)"}}}}
-```
-
-**siteheader/minimal-light** - non-sticky, no announcement, one CTA. Use for campaign landing pages with a single conversion goal.
-```json
-{"props":{"sticky":false,"cartMode":"link","cartUrl":"/cart","navbar":{"logo":{"text":"{{brand.name}}","url":"/"},"links":[{"label":"Shop","url":"{{nav.shop_url}}"}],"cta":{"label":"{{cta.text}}","url":"#buy"},"style":{"bgColor":"var(--lx-bg-color)","textColor":"var(--lx-text-color)","accentColor":"var(--lx-accent-color)","height":"72px","fontSize":"14px","fontWeight":"400","borderBottom":"none","maxWidth":"1280px"}}}}
-```
-```css
-#{{id}} [data-part="cta"]{border-radius:var(--lx-radius,8px);padding:10px 18px}
-```
-
-### 3.2 Navbar
-
-**navbar/sticky-light** - same look as siteheader/sticky-light without the strip. Use when no announcement, or when pairing with `announcementbar/*` that should scroll away.
-```json
-{"props":{"sticky":true,"cartMode":"drawer","logo":{"src":"{{brand.logo_url}}","alt":"{{brand.name}}","url":"/"},"links":"{{nav.links}}","cart":{"icon":"bag"},"style":{"bgColor":"var(--lx-bg-color)","textColor":"var(--lx-text-color)","accentColor":"var(--lx-accent-color)","height":"64px","logoHeight":"28px","maxWidth":"1280px","fontSize":"14px","fontWeight":"500","borderBottom":"1px solid var(--lx-border-color)","dropdownBg":"var(--lx-bg-color)","dropdownTextColor":"var(--lx-text-color)","mobileBg":"var(--lx-bg-color)","mobileTextColor":"var(--lx-text-color)"}}}
-```
-
-**navbar/transparent-dark** - light text over the hero, CTA pill. Use only above the plan's full-bleed moment.
-```json
-{"props":{"sticky":true,"transparent":true,"cartMode":"drawer","logo":{"src":"{{brand.logo_url_light}}","alt":"{{brand.name}}","url":"/"},"links":"{{nav.links}}","cta":{"label":"{{cta.text}}","url":"#buy"},"cart":{"icon":"bag","badgeColor":"#ffffff"},"style":{"textColor":"#ffffff","accentColor":"#ffffff","height":"72px","logoHeight":"28px","borderBottom":"none","mobileBg":"var(--lx-text-color)","mobileTextColor":"var(--lx-bg-color)"}}}
-```
-```css
-#{{id}} [data-part="cta"]{background:#ffffff;color:var(--lx-text-color);border-radius:9999px;padding:10px 18px}
-```
-
-### 3.3 AnnouncementBar
-
-**announcementbar/static-dark** - one message, inverted strip, no controls. Use for shipping or guarantee line.
-```json
-{"props":{"messages":["{{announcement.message_1}}"],"backgroundColor":"var(--lx-text-color)","textColor":"var(--lx-bg-color)","dismissible":false,"sticky":false}}
-```
-```css
-#{{id}} [data-part="icon"]{display:none}
-#{{id}} [data-part="text"]{font-size:13px;letter-spacing:.02em}
-```
-
-**announcementbar/rotating-accent** - 2-3 rotating promo lines on the accent colour. Use during a campaign window; pair with `navbar/sticky-light`.
-```json
-{"props":{"messages":["{{announcement.message_1}}","{{announcement.message_2}}","{{announcement.message_3}}"],"speed":5000,"backgroundColor":"var(--lx-accent-color)","textColor":"#ffffff","link":"{{announcement.url}}","dismissible":false,"sticky":false}}
-```
-```css
-#{{id}} [data-part="icon"]{display:none}
-```
-
-
-### 3.4 ProductGallery
-
-Shared flat-chrome CSS used by all three (flatten arrows, dots, no island surface):
-```css
-#{{id}}{--lx-product-gallery-bg:transparent;--lx-media-carousel-bg:transparent;--lx-media-carousel-arrow-bg:var(--lx-bg-color);--lx-media-carousel-arrow-border:1px solid var(--lx-border-color);--lx-media-carousel-arrow-color:var(--lx-text-color);--lx-media-carousel-arrow-hover-bg:var(--lx-bg-color);--lx-media-carousel-arrow-shadow:none;--lx-media-carousel-arrow-radius:9999px;--lx-media-carousel-arrow-size:40px;--lx-media-carousel-dot-color:var(--lx-border-color);--lx-media-carousel-dot-active-color:var(--lx-text-color);--lx-media-carousel-dot-active-scale:1;--lx-media-carousel-dot-shadow:none;--lx-product-gallery-focus-width:2px;--lx-media-lightbox-backdrop:rgba(0,0,0,.92);--lx-media-lightbox-close-bg:transparent;--lx-media-lightbox-close-border:1px solid rgba(255,255,255,.4);--lx-media-lightbox-close-color:#ffffff}
-```
-
-**productgallery/rail-bottom-light** - main image with thumbnail strip below, rounded, lightbox. Default PDP gallery.
-```json
-{"props":{"media":"{{product.media}}","layout":"horizontal","thumbPosition":"bottom","mobileLayout":"swipe","transition":"fade","objectFit":"cover","enableLightbox":true,"autoplay":false,"listenForVariant":false}}
-```
-```css
-#{{id}}{--lx-product-gallery-radius:var(--lx-radius,12px);--lx-product-gallery-gap:12px;--lx-product-gallery-mobile-ratio:1/1}
-#{{id}} [data-part="thumbnail"]{border:1px solid var(--lx-border-color);border-radius:var(--lx-radius,8px)}
-```
-
-**productgallery/rail-left-editorial** - vertical rail on the left, square corners, `contain` for packshots, no transition. Use for fashion or premium goods with studio imagery.
-```json
-{"props":{"media":"{{product.media}}","layout":"vertical","thumbPosition":"left","mobileLayout":"swipe","transition":"none","objectFit":"contain","enableLightbox":true,"autoplay":false}}
-```
-```css
-#{{id}}{--lx-product-gallery-radius:0;--lx-media-carousel-radius:0;--lx-media-carousel-arrow-radius:0;--lx-product-gallery-gap:16px;--lx-product-gallery-border:1px solid var(--lx-border-color)}
-#{{id}} [data-part="thumbnail"]{border-radius:0;border:1px solid transparent}
-```
-
-**productgallery/stacked-quiet** - all images stacked full-width on desktop, swipe rail on mobile, no lightbox, no motion. Use for long-scroll editorial PDPs where the BuyBox is sticky beside the media.
-```json
-{"props":{"media":"{{product.media}}","layout":"stacked","mobileLayout":"swipe","transition":"none","objectFit":"cover","enableLightbox":false,"autoplay":false}}
-```
-```css
-#{{id}}{--lx-product-gallery-radius:var(--lx-radius,8px);--lx-product-gallery-gap:8px;--lx-product-gallery-stacked-ratio:4/5;--lx-product-gallery-mobile-peek:24px}
-```
-
-### 3.5 ProductHero
-
-**producthero/split-rail-light** - hero beside BuyBox, thumbnails under the image, arrows inside frame, capped height. Default premium PDP.
-```json
-{"props":{"images":"{{product.hero_images}}","layout":"splitLeft","thumbnails":"rail","thumbnailPosition":"bottom","navigation":"arrows","aspectRatio":"4:5","maxHeight":"640px","transition":"fade","autoplay":false,"hoverAdvance":false}}
-```
-```css
-#{{id}}{--lx-hero-bg:transparent;--lx-hero-radius:var(--lx-radius,12px);--lx-hero-thumb-radius:var(--lx-radius,8px);--lx-hero-thumb-size:64px;--lx-hero-thumb-gap:8px;--lx-hero-arrow-bg:var(--lx-bg-color);--lx-hero-arrow-size:40px;--lx-hero-arrow-offset:12px;--lx-hero-transition-duration:300ms}
-#{{id}} [data-part="thumbnail"]{border:1px solid var(--lx-border-color)}
-```
-
-**producthero/stacked-dots-quiet** - square image, dots only, no arrows, mobile-first. Use when the product has 2-4 images and the page is copy-led.
-```json
-{"props":{"images":"{{product.hero_images}}","layout":"stacked","thumbnails":"dots","navigation":"none","showIndicators":true,"aspectRatio":"1:1","maxHeight":"560px","transition":"fade","autoplay":false,"hoverAdvance":false}}
-```
-```css
-#{{id}}{--lx-hero-bg:transparent;--lx-hero-radius:var(--lx-radius,12px);--lx-hero-transition-duration:250ms}
-#{{id}} [data-part="dot"]{background:var(--lx-border-color)}
-```
-
-**producthero/fullheight-sharp-dark** - full-height, square corners, floating arrows on dark chips, no thumbnails. Use only as the plan's one full-bleed moment (pairs with `siteheader/transparent-dark`).
-```json
-{"props":{"images":"{{product.hero_images}}","layout":"fullHeight","thumbnails":"none","navigation":"floatingArrows","aspectRatio":"3:4","maxHeight":"85vh","transition":"slide","autoplay":false,"hoverAdvance":false}}
-```
-```css
-#{{id}}{--lx-hero-bg:var(--lx-text-color);--lx-hero-radius:0;--lx-hero-arrow-bg:rgba(0,0,0,.6);--lx-hero-arrow-size:44px;--lx-hero-arrow-offset:16px;--lx-hero-transition-duration:400ms}
-```
-
-### 3.6 BuyBox
-
-Data block shared by all BuyBox presets: `"product":{"title":"{{product.title}}","price":"{{product.price}}","compareAtPrice":"{{product.compare_at_price}}","variants":"{{product.variants}}"}` where `{{product.variants}}` expands to `[{"id":"gid://shopify/ProductVariant/...","title":"...","price":"...","available":true}]`.
-
-**buybox/default-light** - variant buttons, quantity, accent CTA with the page radius, no trust badges (page owns its icons). Default PDP.
-```json
-{"props":{"product":"{{product}}","variant":"default","ctaText":"{{cta.text}}","showPrice":true,"showVariantSelector":true,"showTrustBadges":false,"animate":true,"buttonStyle":{"borderRadius":"var(--lx-radius,8px)","padding":"16px 24px","fontSize":"15px"}}}
-```
-```css
-#{{id}} [data-part="variant-btn"]{border:1px solid var(--lx-border-color);border-radius:var(--lx-radius,8px);background:transparent;color:var(--lx-text-color)}
-#{{id}} [data-part="qty"],#{{id}} [data-part="qty-btn"]{border-color:var(--lx-border-color);border-radius:var(--lx-radius,8px)}
-```
-
-**buybox/compact-dark** - single-variant product, no quantity, black square CTA with letterspaced label. Use in bundles, upsell rows, or sticky sidebars.
-```json
-{"props":{"product":"{{product}}","variant":"compact","ctaText":"{{cta.text}}","showPrice":true,"showTrustBadges":false,"animate":false,"buttonStyle":{"borderRadius":"0","padding":"18px 28px","fontSize":"13px"}}}
-```
-```css
-#{{id}} [data-part="cta"]{background:var(--lx-text-color);color:var(--lx-bg-color);text-transform:uppercase;letter-spacing:.08em;font-weight:600}
-```
-
-**buybox/expanded-editorial** - expanded layout, pill CTA and pill variant buttons; trust badges on only when the page has no other icon set. Use for premium PDPs with a long BuyBox column.
-```json
-{"props":{"product":"{{product}}","variant":"expanded","ctaText":"{{cta.text}}","showPrice":true,"showVariantSelector":true,"showTrustBadges":"{{page.icon_set == 'none'}}","animate":true,"buttonStyle":{"borderRadius":"9999px","padding":"18px 32px","fontSize":"15px"}}}
-```
-```css
-#{{id}} [data-part="variant-btn"]{border-radius:9999px;border:1px solid var(--lx-border-color);background:transparent;padding:8px 16px;font-size:13px}
-#{{id}} [data-part="trust-badges"]{opacity:.8;font-size:13px}
-```
-
-### 3.7 StickyBar
-
-**stickybar/product-light** - page-coloured bar, hairline top, accent CTA, appears after the BuyBox section. Default PDP.
-```json
-{"props":{"product":{"title":"{{product.title}}","price":"{{product.price}}","compareAtPrice":"{{product.compare_at_price}}","image":"{{product.image_thumb}}","variantId":"{{product.default_variant_id}}"},"cta":"{{cta.text}}","showAfter":"#{{sections.buybox.id}}","animate":true}}
-```
-```css
-#{{id}} [data-part="bar"]{background:var(--lx-bg-color);color:var(--lx-text-color);border-top:1px solid var(--lx-border-color);box-shadow:none}
-#{{id}} [data-part="cta"]{border-radius:var(--lx-radius,8px)}
-#{{id}} [data-part="product-image"]{border-radius:var(--lx-radius,6px)}
-```
-
-**stickybar/product-dark** - inverted bar, no image, no animation. Use on quiet or editorial pages.
-```json
-{"props":{"product":{"title":"{{product.title}}","price":"{{product.price}}","variantId":"{{product.default_variant_id}}"},"cta":"{{cta.text}}","showAfter":"#{{sections.buybox.id}}","animate":false}}
-```
-```css
-#{{id}} [data-part="bar"]{background:var(--lx-text-color);color:var(--lx-bg-color);box-shadow:none}
-#{{id}} [data-part="cta"]{background:var(--lx-bg-color);color:var(--lx-text-color);border-radius:0}
-#{{id}} [data-part="product-price"]{color:var(--lx-bg-color);opacity:.8}
-```
-
-**stickybar/collection-light** - collection/campaign destination instead of add-to-cart. Use on listicle, gift-guide and collection landers.
-```json
-{"props":{"collection":{"label":"{{collection.cta_label}}","url":"{{collection.url}}","subtitle":"{{collection.subtitle}}"},"showAfter":"#{{sections.first_content.id}}","animate":true}}
-```
-```css
-#{{id}} [data-part="bar"]{background:var(--lx-bg-color);border-top:1px solid var(--lx-border-color);box-shadow:none}
-```
-
-### 3.8 ProductCarousel
-
-Shared flat-chrome CSS (same arrow/dot variables as the gallery):
-```css
-#{{id}}{--lx-media-carousel-arrow-bg:var(--lx-bg-color);--lx-media-carousel-arrow-border:1px solid var(--lx-border-color);--lx-media-carousel-arrow-color:var(--lx-text-color);--lx-media-carousel-arrow-shadow:none;--lx-media-carousel-arrow-radius:9999px;--lx-media-carousel-dot-color:var(--lx-border-color);--lx-media-carousel-dot-active-color:var(--lx-text-color);--lx-media-carousel-dot-shadow:none;--lx-media-carousel-radius:var(--lx-radius,8px)}
-#{{id}} [data-part="card-wrapper"]{background:transparent;border:1px solid var(--lx-border-color);border-radius:var(--lx-radius,8px);box-shadow:none;transition:none}
-#{{id}} [data-part="badge"]{border-radius:var(--lx-radius,4px);background:var(--lx-text-color);color:var(--lx-bg-color)}
-```
-
-**productcarousel/cards-quiet** - plain cards, no actions, no hover media, no entry animation; section owns the h2. Default "You may also like".
-```json
-{"props":{"products":"{{related.products}}","cardVariant":"default","showQuickAdd":false,"showLearnMore":false,"showWishlist":false,"showQuickView":false,"hoverAdvance":false,"mediaTransition":"none","animate":false}}
-```
-
-**productcarousel/cards-quickadd-light** - adds the quick-add button (requires `head.use_cart_v2:true`), fade media swap, entry fade. Use on collection and bundle pages.
-```json
-{"props":{"products":"{{related.products}}","cardVariant":"default","showQuickAdd":true,"showLearnMore":false,"showWishlist":false,"showQuickView":false,"hoverAdvance":false,"mediaTransition":"fade","animate":true}}
-```
-```css
-#{{id}} [data-part="quick-add"]{border-radius:var(--lx-radius,8px);background:var(--lx-accent-color);color:#ffffff}
-```
-
-**productcarousel/rows-compact** - list rows (image, title, price) for sidebars and "complete the set". Use with 3-5 products.
-```json
-{"props":{"products":"{{related.products}}","cardVariant":"compactRows","showQuickAdd":false,"showLearnMore":false,"hoverAdvance":false,"mediaTransition":"none","animate":false}}
-```
-```css
-#{{id}} [data-part="row"]{border-bottom:1px solid var(--lx-border-color);padding:12px 0}
-#{{id}} [data-part="row-image"]{border-radius:var(--lx-radius,6px)}
-```
-
-### 3.9 Footer
-
-**footer/columns-dark** - inverted footer, 3-4 link columns, text social links (no glyphs), no newsletter. Default.
-```json
-{"props":{"logo":{"src":"{{brand.logo_url}}","alt":"{{brand.name}}"},"tagline":"{{brand.tagline}}","columns":"{{footer.columns}}","copyright":"{{brand.copyright}}","borderStyle":"none","tileLayout":false,"style":{"layout":"columns","bgColor":"var(--lx-text-color)","textColor":"var(--lx-bg-color)","linkColor":"var(--lx-bg-color)","linkHoverColor":"var(--lx-accent-color)","headingColor":"var(--lx-bg-color)","accentColor":"var(--lx-accent-color)","borderColor":"rgba(255,255,255,.15)","fontFamily":"var(--lx-font-body)","fontSize":"14px","padding":"64px 0 32px","maxWidth":"1280px","logoHeight":"24px","logoFilter":"invert(1)"}}}
-```
-
-**footer/simple-light** - one row of links, hairline top, page background. Use on campaign landers.
-```json
-{"props":{"logo":{"src":"{{brand.logo_url}}","alt":"{{brand.name}}"},"links":"{{footer.links}}","copyright":"{{brand.copyright}}","borderStyle":"solid","style":{"layout":"simple","bgColor":"var(--lx-bg-color)","textColor":"var(--lx-text-muted)","linkColor":"var(--lx-text-color)","linkHoverColor":"var(--lx-accent-color)","borderColor":"var(--lx-border-color)","fontSize":"13px","padding":"32px 0","maxWidth":"1280px","logoHeight":"20px"}}}
-```
-
-**footer/newsletter-split-light** - newsletter on one side, columns on the other, page background with hairline. Use when the plan names email capture as a goal and no EmailCapture island is on the page.
-```json
-{"props":{"logo":{"src":"{{brand.logo_url}}","alt":"{{brand.name}}"},"columns":"{{footer.columns}}","newsletter":{"heading":"{{newsletter.heading}}","placeholder":"Email address","buttonText":"Subscribe"},"successMessage":"Thanks, you are on the list.","copyright":"{{brand.copyright}}","borderStyle":"solid","style":{"layout":"newsletterSplit","bgColor":"var(--lx-bg-color)","textColor":"var(--lx-text-color)","linkColor":"var(--lx-text-color)","linkHoverColor":"var(--lx-accent-color)","headingColor":"var(--lx-text-color)","accentColor":"var(--lx-accent-color)","borderColor":"var(--lx-border-color)","fontSize":"14px","padding":"64px 0 32px","maxWidth":"1280px","logoHeight":"24px"}}}
-```
-```css
-#{{id}} [data-part="newsletter"] input{border:1px solid var(--lx-border-color);border-radius:var(--lx-radius,8px);background:transparent}
-#{{id}} [data-part="newsletter"] button{border-radius:var(--lx-radius,8px)}
-```
-
-### 3.10 ReviewCarousel
-
-Shared flat card CSS:
-```css
-#{{id}} [data-part="card"]{background:transparent;border:1px solid var(--lx-border-color);border-radius:var(--lx-radius,12px);box-shadow:none}
-#{{id}} [data-part="nav-prev"],#{{id}} [data-part="nav-next"]{background:var(--lx-bg-color);border:1px solid var(--lx-border-color);color:var(--lx-text-color);box-shadow:none}
-#{{id}} [data-part="dot"]{background:var(--lx-border-color)}
-```
-
-**reviewcarousel/grid-flat** - all reviews visible, no motion. Default when 3-6 reviews.
-```json
-{"props":{"collectionId":"{{reviews.collection_id}}","minRating":4,"pageSize":8,"variant":"grid","autoplay":false}}
-```
-
-**reviewcarousel/single-quiet** - one card at a time, manual arrows, no autoplay. Use when review bodies are long.
-```json
-{"props":{"collectionId":"{{reviews.collection_id}}","minRating":4,"pageSize":6,"variant":"default","autoplay":false,"interval":6000}}
-```
-
-**reviewcarousel/strip-compact** - short strip of one-line reviews with slow rotation. Use near the BuyBox as a proof line, bodies under 60 chars.
-```json
-{"props":{"collectionId":"{{reviews.collection_id}}","minRating":4,"pageSize":6,"variant":"compact","autoplay":true,"interval":6000}}
-```
-```css
-#{{id}} [data-part="verified"]{display:none}
-```
-
-### 3.11 InventoryIndicator
-
-**inventoryindicator/text-quiet** - inline sentence under the price, shows only below 10 units. Default.
-```json
-{"props":{"variantId":"{{product.default_variant_id}}","quantity":"{{product.inventory_quantity}}","variant":"text","showExactCount":true,"lowStockThreshold":10,"urgentThreshold":3,"listenForEvents":true}}
-```
-```css
-#{{id}} [data-part="message"]{color:var(--lx-text-muted);font-size:13px}
-#{{id}} [data-part="dot"]{background:var(--lx-accent-color)}
-```
-
-**inventoryindicator/bar-accent** - thin progress bar in the accent colour. Use for drops and limited runs.
-```json
-{"props":{"variantId":"{{product.default_variant_id}}","quantity":"{{product.inventory_quantity}}","variant":"bar","showExactCount":true,"lowStockThreshold":25,"urgentThreshold":5,"listenForEvents":true}}
-```
-```css
-#{{id}} [data-part="bar-track"]{background:var(--lx-border-color);height:4px;border-radius:9999px}
-#{{id}} [data-part="bar-fill"]{background:var(--lx-accent-color);border-radius:9999px}
-```
-
-**inventoryindicator/badge-outline** - outlined pill, no exact count. Use when stock numbers should stay private.
-```json
-{"props":{"variantId":"{{product.default_variant_id}}","quantity":"{{product.inventory_quantity}}","variant":"badge","showExactCount":false,"lowStockThreshold":5,"urgentThreshold":2,"listenForEvents":true}}
-```
-```css
-#{{id}} [data-part="root"]{background:transparent;border:1px solid var(--lx-border-color);color:var(--lx-text-color);border-radius:9999px;padding:4px 10px;font-size:12px}
-```
-
-### 3.12 DeliveryEstimate
-
-**deliveryestimate/inline-quiet** - one muted line, no icon, countdown on. Default under the BuyBox CTA.
-```json
-{"props":{"variant":"inline","estimatedDays":"{{shipping.days}}","cutoffHour":"{{shipping.cutoff_hour}}","showCountdown":true}}
-```
-```css
-#{{id}} [data-part="icon"]{display:none}
-#{{id}} [data-part="text"]{color:var(--lx-text-muted);font-size:13px}
-#{{id}} [data-part="date"]{color:var(--lx-text-color);font-weight:600}
-```
-
-**deliveryestimate/card-outline** - card variant with its surface removed, hairline border, free-shipping threshold. Use in a "shipping and returns" block.
-```json
-{"props":{"variant":"card","estimatedDays":"{{shipping.days}}","cutoffHour":"{{shipping.cutoff_hour}}","showCountdown":true,"freeShippingThreshold":"{{shipping.free_threshold_minor}}"}}
-```
-```css
-#{{id}} [data-part="root"]{background:transparent;border:1px solid var(--lx-border-color);border-radius:var(--lx-radius,12px);box-shadow:none}
-#{{id}} [data-part="icon"]{display:none}
-```
-
-`banner` variant intentionally has no preset: it paints a full-width surface, which breaks the one-background rule.
-
-## 4. Preset system proposal
-
-Goal: a plan says `BuyBox: preset buybox/compact-dark`; design applies exact props and CSS; compile and the validator can prove it. Smallest change that does this: one reference file, one line in `page-plan.md` per section, one field per manifest island. No new tool, no runtime change.
-
-### 4.1 File location and shape
-
-`skills/storefront-engine/references/island-presets.md` (loaded by `/plan-page` for `Preset:` ids and by `/design-page` next to `design-rules.md`). One `##` per island, one `###` per preset id, each with a single fenced `json` block containing the whole preset entry (props + css + metadata). Markdown keeps it human-reviewable; the fenced block is machine-extractable with the same regex the validator already uses for `<script type="application/json">`.
-
-Optionally mirror as `skills/design-page/assets/island-presets.json` (array of entries) if a script needs to load it; generate it from the `.md`, do not hand-maintain two copies.
-
-### 4.2 Preset entry schema (minimal JSON Schema)
-
-```json
-{"$schema":"https://json-schema.org/draft/2020-12/schema","title":"LexsisIslandPreset","type":"object","required":["id","island","schemaVersion","props"],"additionalProperties":false,
- "properties":{
-  "id":{"type":"string","pattern":"^[a-z]+/[a-z0-9]+(-[a-z0-9]+)+$","description":"<island-lowercase>/<intent>-<tone>"},
-  "island":{"type":"string","description":"Exact runtime island name, e.g. BuyBox"},
-  "schemaVersion":{"type":"string","description":"island_schema version the preset was verified against, e.g. 5.1.0"},
-  "hydrate":{"type":"string","enum":["immediate","visible","idle","interaction"]},
-  "mode":{"type":"string","enum":["native","headless"],"default":"native"},
-  "props":{"type":"object","description":"Verbatim island props; string values may contain {{placeholders}}"},
-  "css":{"type":"string","description":"Section CSS scoped with #{{id}}; only [data-part] selectors and --lx-* variables"},
-  "requires":{"type":"object","properties":{"cartV2":{"type":"boolean"},"iconSet":{"type":"string","enum":["none","page"]},"fullBleedMoment":{"type":"boolean"},"minItems":{"type":"integer"}}},
-  "placeholders":{"type":"array","items":{"type":"string"},"description":"Every {{token}} used, so design can check bindings"},
-  "use":{"type":"string","description":"One line: when to pick it"},
-  "houseRules":{"type":"array","items":{"type":"string"},"description":"Rules this preset was checked against: no-emoji, no-gradient, one-background, one-icon-set, no-motion-effects"}
- }}
-```
-
-Example entry:
-```json
-{"id":"buybox/compact-dark","island":"BuyBox","schemaVersion":"5.1.0","hydrate":"immediate","mode":"native","props":{"product":"{{product}}","variant":"compact","ctaText":"{{cta.text}}","showTrustBadges":false,"animate":false,"buttonStyle":{"borderRadius":"0","padding":"18px 28px","fontSize":"13px"}},"css":"#{{id}} [data-part=\"cta\"]{background:var(--lx-text-color);color:var(--lx-bg-color);text-transform:uppercase;letter-spacing:.08em}","requires":{"cartV2":true},"placeholders":["product","cta.text"],"use":"Single-variant product in bundles, upsell rows, sticky sidebars.","houseRules":["no-emoji","no-gradient","one-background","one-icon-set","no-motion-effects"]}
-```
-
-### 4.3 How `/plan-page` selects
-
-`plan-page/SKILL.md` today forbids island names and props in the plan. Keep that for props, relax it for preset ids: a preset id is a *design intent token*, not implementation. Add one optional line per section in `page-plan.md`:
-
-```text
-## Sections
-3. Buy
-   Purpose: convert; primary CTA.
-   Preset: buybox/compact-dark, stickybar/product-dark
-```
-
-Rules: ids must exist in `island-presets.md`; the plan lists at most one preset per island role; the plan's "Design direction" block names the tone once (`light`, `dark`, `quiet`, `editorial`) and every chosen preset's tone must match it or be listed as an explicit exception. Header and footer presets are picked in the "Design direction" block, not per section.
-
-### 4.4 How `/design-page` applies and overrides
-
-1. Read `island-presets.md`; for each `Preset:` line resolve the entry. Unknown id = stop and ask (return `PRESET_NOT_FOUND`).
-2. Check `requires`: `cartV2` -> `head.use_cart_v2:true`; `iconSet:"none"` -> the page uses no other icons; `fullBleedMoment` -> the plan names one; `minItems` -> enough products/reviews. Fail = pick the sibling preset with the same intent or return `PRESET_REQUIREMENT_UNMET`.
-3. Emit `<lx-island name="{{island}}" id="{{sectionId}}-{{islandLower}}" hydrate="{{hydrate}}">` with `props` after placeholder substitution, and append `css` (with `#{{id}}` substituted) to that section's `<style>`.
-4. Overrides: a section may add `Preset override:` lines in the plan or the designer may deviate; every deviation is recorded in the manifest as `islands[].presetOverrides` (JSON merge patch against the preset props) and in `page-plan.md` under "Design direction". No silent edits to preset props.
-5. Never edit a preset in place for one page; add a new id if a new look is needed.
-
-### 4.5 How compile validates
-
-- `lexsis_pages compile` remains the authority for prop shape; presets are pre-validated once per `schemaVersion`, so a compile error on a preset-applied island means either an override or a schema drift. Log the island `version` from `island_schema` and fail fast when it differs from `preset.schemaVersion`.
-- Extend `validate_page_workspace.py` (design phase) with three cheap checks: (a) every `islands[].preset` id exists in the preset file; (b) props in source equal preset props after substitution plus recorded `presetOverrides` (deep-equal after removing `{{...}}`-bound keys); (c) preset `css` text is present in the section's `<style>`. Emit `island_preset_mismatch` as a blocking finding in `SOURCE_PHASES`.
-- House-rule checks already in `design-rules.md` (emoji grep, distinct backgrounds) run unchanged; presets are pre-checked against them, and `houseRules` records which.
-
-### 4.6 Manifest
-
-`islands[]` already carries `{sectionId, name, schemaVersion, lifecycleStatus, mode}`. Add:
-
-```json
-{"sectionId":"buy","name":"BuyBox","schemaVersion":"5.1.0","lifecycleStatus":"active","mode":"native","preset":"buybox/compact-dark","presetOverrides":{"ctaText":"Add to bag"}}
-```
-
-`preset` is a string or `null` (custom composition, rationale in `page-plan.md`). `presetOverrides` omitted when empty. `design.stylePack` stays; a preset set is not a style pack, but when a page uses presets of a single tone, record `design.presetTone`.
-
-Source: internal island-preset audit (2026-09-10).
+A saved `Preset: <island>/<intent>-<tone>` label records visual intent, not a versioned prop bundle or a schema variant. Translate the intent through `references/workflows/island-selection-workflow.md` using the current schema, and record the actual decision and any deviation in the page decision record. Use `references/authoring/css-and-styling.md` for scoped CSS; there is no static prop map to paste.
 
 ---
 
-# Generation Protocol — How Pages Are Built
+# Compile and draft protocol
 
-> House rules in `storefront-engine/references/design-rules.md` override every example below.
-> Examples show structure and copy intent; their styling (gradients, hover transforms,
-> uppercase labels, pills, emoji, section fills) is illustrative and must not be copied.
-> Where an example conflicts with a house rule, the rule wins.
+House rules in `storefront-engine/references/design-rules.md` govern the
+presentation. The source contract is `references/authoring/source-authoring.md`;
+`references/source-artifact-workflow.md` owns artifact and manifest state.
+Choose section order from the page-type contract, not from this protocol.
 
-> This is the canonical reference for how AI agents generate storefront pages using the Lexsis AI MCP. All operational skills reference this protocol.
+## Compile exact inputs
 
-> **Compiled runtime reference:** any `data-island` or `data-props` snippets in
-> storage-format examples below are renderer output, not page source. New pages
-> use `<lx-island>` with a JSON script child as defined in `source-format.md`.
+1. Reuse the bound workspace, store and theme; read current page context for
+   edits through `lexsis_pages.edit_context` and editable source through
+   `lexsis_pages.source` or `lexsis_pages.section_source`.
+2. Prepare complete source and any page-wide theme CSS as values, not
+   mandatory files. Resolve only the interactive
+   decisions through `references/workflows/island-selection-workflow.md`.
+3. Call `lexsis_pages.compile` with the exact `source`, `head`, `theme_css`
+   and optional `scripts` inputs. `lexsis_pages.compile_artifact` retrieves
+   an existing result by `compile_id` for inspection; it does not compile.
+4. Read all `validation_errors`, publish validation and missing utility
+   candidates. Repair the source rather than mutating compiled JSON. A
+   fast-draft repair budget remains bounded by `references/fast-build.md`.
+5. Save the successful response and input hashes as compile evidence.
 
----
+## Create or edit one draft
 
-## MCP Workflow (Correct Order)
+Use `lexsis_page_create.create` with `compile_id` and `publish: false`
+only when the workspace has no existing page id. Otherwise use the relevant
+versioned draft action: `page_update_section`, `page_patch`, `page_replace`,
+`page_update_head`, `page_move_section`, or `page_remove_section` on
+`lexsis_drafts`, with `expected_version` when the action supports it.
+On a version conflict, read the latest context and reconcile; do not overwrite
+blindly. Return the hosted draft URL and exact version as `DRAFT_CREATED`.
 
-```
-1. Read the selected store/theme from `work/storefront/setup/setup.json`
-2. Read its saved brand design and exact theme CSS
-3. Read current products, variants, assets, permissions, and island schemas
-4. Require a valid page plan and a completed design asset decision, or record
-   explicit skips
-5. Promote the approved canonical source with final production assets
-6. lexsis_pages → compile
-7. lexsis_page_create → create draft
-8. Host-agent responsive and commerce verification
-```
+## Review and release boundary
 
-Setup provides slow-changing design context. Commerce, assets, schemas,
-permissions, analytics, and remote versions are always read live.
+A clean compile is structural evidence, not a visual pass. Hosted design
+review and production checks follow `references/qa-recipe.md`. A fast draft
+may leave review pending; production-ready output cannot claim approval
+without evidence. Publication follows `references/publishing.md` and requires
+explicit authorization. Report the exact state and do not equate draft
+creation, approval, publication, and live HTTP verification.
 
-For a first draft explicitly routed through `/build` or
-`/build-with-template`, create the minimum plan and source artifacts, record
-`plan-page` and `design-page` in `workflow.skippedSkills`, compile once with at
-most one targeted repair, and create with `publish:false`. Return
-`DRAFT_CREATED` before critique, hosted QA, commerce QA, or hash
-reconciliation. Those checks belong to a later `/generate` upgrade.
-
-An optional visual concept inside `/design-page` uses existing Lexsis image
-generation and remains design evidence only. Never insert the concept image
-into page source or treat generated text inside it as factual copy.
-
-> **Brand kit ↔ design.md precedence**: exact tokens normally come from the
-> saved theme, while design.md supplies style philosophy and component guidance.
-> Before authoring, compare any explicit `NEVER`, `must`, or `non-negotiable`
-> design rule with the matching token. If they directly contradict each other,
-> return `THEME_CONTEXT_CONFLICT` with both values and stop using that property
-> until the theme or guide is corrected. Never silently choose a
-> property-by-property winner or invent a blended rule.
-
-> **Documentation precedence**: live MCP contracts win over bundled docs. For
-> islands, use `vibe://schema/island/{name}` (or `lexsis_design` action
-> `island_schema`) first, bundled
-> `references/islands/{slug}/schema.json` second, and prose/layout examples
-> last. Never merge prop shapes from different versions.
-
-> **Authoring format**: write pages in the HTML-native **source format** (`source-format.md`) — plain HTML sections delimited by `<!-- section: id -->`, islands as `<lx-island name>` with a JSON `<script>` child. The compiler produces VibePage JSON and does all escaping.
-
-> **Local source**: follow `source-artifact-workflow.md`.
-> `lexsis-source.html` is the canonical editable visual and production
-> artifact. It is compiled and saved as one unpublished hosted draft during
-> `/design-page`; `/generate` reuses that draft for deeper QA.
-
-> **Templates**: search before drafting. Retrieve templates you intend to edit
-> with `lexsis_design` action `get_section`. Each returned `source` is ready for
-> editing and compiling. `format: "compiled_reference"` is renderer output and cannot be passed directly to
-> source-authoring tools.
+The exact mutually exclusive creation inputs and hosted verification
+are owned by `references/source-artifact-workflow.md`.
 
 ---
 
-## Two-Phase Generation (Fast Iteration Pattern)
+# HTML-native source format
 
-### Phase 4a — Draft Source HTML
+House rules in `storefront-engine/references/design-rules.md` govern the
+page. `references/authoring/source-authoring.md` is the authoring contract;
+`references/authoring/css-and-styling.md` owns CSS. This entry point covers
+only the input shape passed to the compiler.
 
-Generate the FULL page as source-format HTML first:
-- Plain HTML + Tailwind, sections delimited by `<!-- section: id -->`
-- Focus on layout, visual hierarchy, spacing, typography
-- Write all copy naturally — apostrophes/quotes need no escaping
-- Set all colors via `--lx-*` CSS variables (from `lexsis_brand.compile_theme`)
-- Mobile-first responsive; use shared keyframes, `data-behavior="gsap-*"`
-  presets, or `application/lexsis-motion` only for the plan-named motion moment
-- Islands go in directly as `<lx-island name="BuyBox">` with a JSON `<script>` child — use `lexsis_design` action `island_schema` for exact prop shapes
+## Page structure
 
-### Phase 4b — Compile & Fix
-
-Run `lexsis_pages` action `compile`:
-- Returns the compiled VibePage + compile issues + publish validation
-- Fix reported issues in the source (unknown islands, bad props, missing hooks) and re-compile
-- Require `missing_candidates` to be empty
-- When clean, `lexsis_page_create` action `create` persists a draft; retrieve
-  source later with `lexsis_pages` action `source`
-
-### Why Two-Phase?
-- Compile is instant and deterministic — validation before anything persists
-- The hosted draft is the one renderer source of truth
-- Separates source compatibility from hosted visual and commerce QA
-- Escaping failures are impossible: the compiler, not the model, writes `data-props`
-
----
-
-## VibePage JSON Structure (storage format — compiler output)
-
-> You do not write this by hand. The source-format compiler produces it as the storage and rendering format.
-
-```json
-{
-  "head": {
-    "title": "Page Title — Brand Name",
-    "fonts": ["https://fonts.googleapis.com/css2?family=..."],
-    "use_cart_v2": true
-  },
-  "theme_css": ":root { --lx-accent-color: #4F46E5; --lx-font-heading: 'Playfair Display', serif; }",
-  "sections": [
-    {
-      "id": "hero",
-      "html": "<section>...</section>",
-      "css": "...",
-      "js": "...",
-      "motion": [{ "version": 1, "id": "hero-object", "capabilities": ["three"] }]
-    }
-  ]
-}
-```
-
-### Rules
-- **Tailwind CSS** in HTML class attributes. The compiler emits one
-  deterministic `compiled_page_css`; there is no runtime Tailwind CDN.
-- **CSS Variables** (`--lx-*`) for all brand colors/fonts — set in `theme_css` (generate with `lexsis_brand.compile_theme`)
-- **Islands** compile to `data-island="Name"` + `data-props='JSON'` attributes (in source format, write `<lx-island>` instead)
-- **Section IDs** must be unique, kebab-case: "hero", "social-proof", "faq"
-- **Managed motion** is authored as
-  `<script type="application/lexsis-motion">` and compiled into `motion[]`.
-  Read `animation-system.md`; never hand-write the compiled object.
-- **Section JS** is compatibility-only. It is lifecycle-wrapped and cannot use
-  global DOM queries, unmanaged observers/loops, programmatic clicks, fetch,
-  eval, or storage.
-- **Shared keyframes** already loaded: fadeUp, fadeIn, scaleIn, slideInLeft,
-  slideInRight, marquee, float, shimmer, wordFade, pulseRing. GSAP presets and
-  managed custom motion are available, never by default.
-- **No @import, no external URLs in CSS**. Page `scripts[]` is for approved
-  integrations, not GSAP, Three.js, Lottie, or Rive.
-
-### Available CSS Variables (override in theme_css)
-| Variable | Default | Purpose |
-|----------|---------|---------|
-| `--lx-accent-color` | #5055aa | Primary CTA color |
-| `--lx-accent-color-hover` | #4045aa | Hover state |
-| `--lx-text-color` | #1a1a2e | Primary text |
-| `--lx-text-muted` | #6b7280 | Secondary text |
-| `--lx-bg-color` | #ffffff | Page background |
-| `--lx-bg-surface` | #ffffff | Card backgrounds |
-| `--lx-border-color` | #e5e7eb | Borders/dividers |
-| `--lx-font-heading` | system-ui | Heading font |
-| `--lx-font-body` | system-ui | Body font |
-| `--lx-surface-alt` | #f9fafb | Component tint (chips, hover fills, selected state); never a section background |
-| `--lx-lavender` | #c9b8e8 | Secondary accent |
-| `--lx-teal` | #5bc8c0 | Tertiary accent |
-
----
-
-## Visual Verification (Critical Step)
-
-After `lexsis_page_create` returns a `preview_url`, always verify visually.
-Use the calling agent's browser capability; Lexsis does not create a shared
-Playwright session or browser pool.
-
-Test 390px, 768px, and 1280px. Use screenshots when available. Otherwise use
-computed styles, DOM bounds, scroll dimensions, image completeness, hover
-state, and console inspection. If the host has no browser capability, return
-the preview URL and state that visual QA remains.
-
-### What to Check
-- [ ] Hero section visible above fold (no scroll needed for headline + CTA)
-- [ ] Brand colors applied (not default purple)
-- [ ] Fonts loading (not system fallback)
-- [ ] Images rendering (not broken placeholders)
-- [ ] Mobile layout not broken (stack columns, readable text)
-- [ ] Islands hydrated (BuyBox shows product, not empty div)
-- [ ] CTA buttons have proper contrast (WCAG AA: 4.5:1 min)
-- [ ] No horizontal scroll on mobile
-- [ ] Section spacing consistent (not cramped or overly spaced)
-
----
-
-## Island Integration Reference
-
-Islands are React components that hydrate client-side. They handle interactive commerce functionality.
-
-### How to Embed
-```html
-<lx-island name="IslandName">
-  <script type="application/json">{ "key": "value" }</script>
-</lx-island>
-```
-
-### Key Islands by Use Case
-
-The catalog is the source of truth: read `lexsis_design` action `islands`, then
-`island_schema` for the one you pick. Prop shapes below are indicative only.
-
-| Need | Island | Note |
-|------|--------|------|
-| Add to cart | BuyBox | the only commerce island for purchase; never a custom button |
-| Product images | ProductGallery, or ProductHero for a split PDP hero | layout by image count |
-| Cart | none on the page | Cart V2 through `head.use_cart_v2` and the cart profile; CartDrawer is deprecated |
-| Reviews | ReviewCarousel or ReviewList | bound to a real collection or product ids from the Proof ledger |
-| FAQ accordion | none | native `<details>`/`<summary>`; the FAQ island is deprecated |
-| Email capture | EmailCapture | consent copy is authored HTML beside it |
-| Announcement | AnnouncementBar | one message; paired with Navbar, not SiteHeader |
-| Navigation | Navbar or SiteHeader, plus MobileMenu | full-nav page types only |
-| Footer | Footer | last section |
-| Product grid | none | a card composition per `references/product-grid.md` with QuickAdd, or FeaturedCollectionStage for a group |
-| Trust badges | none | static HTML with the issuer text from the Proof ledger |
-| Countdown | CountdownTimer | required prop is `endDate`; only with a verified end |
-| Recent-purchase popup | none, ever | fabricated proof (`references/proof/proof-ledger.md`) |
-
-### Prop Data Sources
-- Product data → `lexsis_catalog` action `get` or `list`
-- Navigation → `lexsis_brand` action `navigation`
-- Reviews → `lexsis_catalog` actions `reviews_status`, `review_collections`,
-  `reviews` (the plan's Proof sources line); island props `collectionId` or
-  `productIds` plus `minRating`, never `reviewsEndpoint`; never invent
-  reviewers, ratings, locations, or counts
-- Brand tokens → `lexsis_brand` action `brand_kit` or `lexsis_brand.get_theme`
-
-### Locale and Market Rules
-
-- Derive currency, tax language, shipping promises, and payment methods from
-  the selected store. Do not default every page to USD or to India.
-- For India storefronts, format INR with `₹`, use pincode-aware delivery
-  language, and mention GST, COD, or UPI only when store data confirms them.
-- Localize names, units, dates, and cities without fabricating regional proof.
-
----
-
-## Deprecated Tools (DO NOT USE)
-
-These tools appeared in older skill versions but are no longer available:
-
-| Removed | Replacement |
-|---------|-------------|
-| `get_theme_json` | `lexsis_brand` action `brand_kit` (includes theme data) |
-| `provision_store` | Handle via onboarding flow, not page generation |
-| `extract_brand_design` / `capture_design_source` / `list_design_sources` | No replacement — no MCP tool for reference-URL design extraction currently exists |
-| `lexsis_template_library.search_sections` returning `html`/`css`/`js` inline | Search is metadata-only now; call `lexsis_design.get_section({ ids })` for compile-ready source |
-
-`lexsis_design.islands` and `lexsis_design.island_schema` remain active tools — use them for island discovery and schema lookups, alongside the `vibe://catalog/islands` resource.
-
----
-
-## Quality Gates (Before Publishing)
-
-1. `lexsis_pages` action `compile`
-2. `lexsis_pages` action `integrity`
-3. Host-agent visual verification
-
-If compile fails, fix source and retry. If integrity warns, assess and fix.
-If visual QA fails, update local source, compile the complete page, patch only
-changed sections with `expected_version`, update the manifest, then repeat QA.
-
----
-
-# Source Format — HTML-Native Page Authoring (V2)
-
-> House rules in `storefront-engine/references/design-rules.md` override every example below.
-> Examples show structure and copy intent; their styling (gradients, hover transforms,
-> uppercase labels, pills, emoji, section fills) is illustrative and must not be copied.
-> Where an example conflicts with a house rule, the rule wins.
-
-> **This is the preferred way to author pages.** Write plain HTML with
-> `<lx-island>` elements; `lexsis_pages` action `compile` and
-> `lexsis_page_create` action `create` compile it deterministically. Never
-> hand-write `data-island` / `data-props` or escape HTML into JSON strings.
-
-For durable page work, store this format in `lexsis-source.html` and follow
-`source-artifact-workflow.md`. The design workflow authors that same file,
-dry-run compiles it with `page-theme.css`, and hydrates the compiled result
-through the exported island preview runtime.
-
-## Why this format exists
-
-The old path (VibePage JSON with HTML in strings and JSON inside `data-props='...'` attributes) forced triple escaping and caused the top agent failure classes: entity-escaped markup rendering as literal text, apostrophes in copy breaking props, giant-blob page updates. In source format those failures are impossible by construction.
-
-## The format
+Author a source string with one delimiter and matching section id per section:
 
 ```html
-<!-- section: hero -->
-<section class="py-12 md:py-16 lg:py-20" style="background-color: var(--lx-bg-color)">
-  <h1 class="text-4xl md:text-5xl font-bold" style="font-family: var(--lx-font-heading)">
-    Don't miss the "Summer Drop"
-  </h1>
-
-  <lx-island name="CountdownTimer" hydrate="visible">
-    <script type="application/json">
-      { "endDate": "2026-09-15T00:00:00Z", "style": "flip" }
-    </script>
-  </lx-island>
-</section>
-
-<style>
-  /* becomes section.css — scope selectors to this section */
-  .hero-lede { max-width: 62ch; }
-</style>
-
-<script
-  type="application/lexsis-motion"
-  data-motion-id="hero-entrance"
-  data-capabilities="waapi"
-  data-mode="entrance"
-  data-importance="decorative"
-  data-reduced-motion="static"
->
-({ dom, waapi }) => {
-  const lede = dom.query(".hero-lede");
-  if (!lede) return;
-  waapi.animate(lede, [
-    { opacity: 0.25, transform: "translateY(18px)" },
-    { opacity: 1, transform: "translateY(0)" }
-  ], { duration: 600, fill: "both" });
-}
-</script>
-
 <!-- section: faq -->
-<section class="py-12">
+<section id="faq" class="px-4 py-16">
+  <h2>Ordering questions</h2>
   <details>
-    <summary>Can I return it?</summary>
-    <p>Yes — 30 days, no questions asked.</p>
+    <summary class="flex min-h-[48px] items-center">Where are the shipping terms?</summary>
+    <p>Read the product's shipping policy before ordering.</p>
   </details>
 </section>
 ```
 
-### Rules
+Use actual merchant policy copy and links. An interactive section contains
+`<lx-island>` with one `application/json` child copied from the schema fetched
+for that decision. `hydrate` is an authored attribute; generated
+`data-island` and `data-props` markers are renderer output, not source.
+Supported headless hooks and fallback markup are resolved through the same
+live schema, not a static hook or prop table.
 
-1. **Sections** are delimited by `<!-- section: kebab-case-id -->` comments. Ids must be unique.
-2. **Islands** are `<lx-island name="IslandName">` with props as a `<script type="application/json">` child. Write natural copy — apostrophes, quotes, em-dashes are all fine; no escaping needed.
-3. **`<lx-island>` attributes**: `name` (required), `hydrate` (`immediate|visible|idle|interaction`), `headless` (headless mode — see below), plus `class`/`id`/`style` which pass through to the compiled element.
-4. **Section CSS** goes in a top-level `<style>` block. New custom animation
-   goes in `<script type="application/lexsis-motion">`. Plain top-level
-   `<script>` remains compatibility section JS. `application/json` / `ld+json`
-   scripts stay in the HTML.
-5. **External libraries** do not go in section HTML. Approved analytics and
-   integrations use `scripts`; GSAP, Three.js, Lottie, and Rive use managed
-   motion loaders instead.
-6. **`head`, `theme_css`, `scripts`** are structured tool arguments. Save the
-   selected theme and approved page-wide additions in `page-theme.css`, then
-   pass that file's exact contents as `theme_css`.
-7. Tailwind classes compile into one `compiled_page_css` artifact. Fix every
-   missing candidate; do not add Tailwind CDN or a separate generated sheet.
+## Tool inputs
 
-### Tool workflow
+Pass `source`, structured `head`, optional `scripts` and any page-wide
+`theme_css` directly to `lexsis_pages.compile`; no local files are created. Follow `references/source-artifact-workflow.md`. Templates come from
+`lexsis_design.get_section` as editable `source`; compiled references are
+inspection artifacts only. `references/generation-protocol.md` owns repairs,
+draft creation and subsequent versioned edits.
 
-```
-lexsis_brand → list_themes/get_theme → theme_css
-draft source HTML (whole page)
-lexsis_pages { action: "compile", args: { source, head, theme_css, scripts } }
-fix any issues, then:
-lexsis_page_create { action: "create", args: { source, head, theme_css, scripts, slug, publish: false } }
-edits: lexsis_drafts → page_update_section or page_patch
-round-trip: lexsis_pages → source/section_source → lexsis_drafts
-```
-
-`page_update_section` compiles one section and upserts it. `page_patch` batches
-related localized changes into one version. Pass `expected_version`.
-
-## Starting From a Template
-
-Search the section library before writing a section from scratch. When you pick
-a template, request editable source:
-
-```text
-lexsis_design({ action: "get_section", args: { ids: ["template-id"] } })
-```
-
-The response's `source` is one complete source-format section: a delimiter,
-`<lx-island>` markup, and the template CSS/JS. Tailor it, then run
-`lexsis_pages` action `compile`.
-
-`format: "compiled_reference"` is renderer output containing
-`data-island` / `data-props`. It is useful for inspection but must never be
-given to source-authoring tools.
-
-## Headless islands (fully custom markup)
-
-For maximum design freedom, add `headless` and author the island's internals yourself; behavior attaches to `data-lx-*` hooks. Currently supported: **BuyBox** (plus the long-standing Navbar/Footer/SiteHeader hydration modes — see island-patterns.md).
-
-```html
-<lx-island name="BuyBox" headless>
-  <script type="application/json">
-    { "product": { "title": "Serum", "price": "$49.00", "variants": [
-      { "id": "v1", "title": "30ml", "price": "$49.00", "available": true },
-      { "id": "v2", "title": "50ml", "price": "$69.00", "available": true }
-    ] } }
-  </script>
-
-  <p class="text-3xl font-bold" data-lx-buybox="price">$49.00</p>
-  <div class="flex gap-2">
-    <button data-lx-buybox="variant-option" data-variant-id="v1" class="px-4 py-2 border rounded-full">30ml</button>
-    <button data-lx-buybox="variant-option" data-variant-id="v2" class="px-4 py-2 border rounded-full">50ml</button>
-  </div>
-  <div class="flex items-center gap-3">
-    <button data-lx-buybox="qty-dec">−</button>
-    <span data-lx-buybox="qty">1</span>
-    <button data-lx-buybox="qty-inc">+</button>
-  </div>
-  <button data-lx-buybox="add" class="w-full py-4 rounded-full text-white"
-          style="background: var(--lx-accent-color)">Add to Cart</button>
-  <p data-lx-buybox="error" class="text-red-600 text-sm">Couldn't add — try again.</p>
-</lx-island>
-```
-
-### BuyBox hooks
-
-| Hook | Required | Behavior |
-|---|---|---|
-| `add` | **yes** | add-to-cart trigger; gets `lx-adding` / `lx-added` classes |
-| `price` | recommended | text kept in sync with selected variant/plan |
-| `compare-price` | no | compare-at price; hidden when none |
-| `variant-option` | no | one per variant, needs `data-variant-id="v1"`; gets `lx-selected` / `lx-disabled` |
-| `qty` / `qty-inc` / `qty-dec` | no | quantity display (or `<input>`) + stepper |
-| `stock` | no | availability text; override via `data-in-stock-text` / `data-out-of-stock-text` |
-| `error` | no | revealed when add-to-cart fails |
-
-Style the state classes in section CSS: `.lx-selected { ... }`, `.lx-adding { opacity: .6 }`, `.lx-disabled { pointer-events: none; opacity: .4 }`.
-
-## Animations
-
-Read `animation-system.md` before authoring any plan-named custom motion.
-
-### Presets — `data-behavior`
-
-```html
-<section data-behavior="gsap-reveal" data-config='{"targets":".card","y":40,"stagger":0.1}'>
-<div data-behavior="gsap-parallax" data-config='{"speed":0.3}'>
-<section data-behavior="gsap-pin" data-config='{"stepDuration":0.5}'>  <!-- children: [data-pin-step] -->
-<div data-behavior="gsap-marquee-scroll" data-config='{"distance":-200}'>
-```
-
-Presets use the renderer-owned pinned GSAP loader and respect reduced motion.
-Also available (CSS-driven, pre-existing): `scroll-reveal`, `accordion`,
-`horizontal-scroll`, `content-slider`, and `sticky-reveal`.
-
-### Custom managed motion
-
-Use `<script type="application/lexsis-motion">` for custom WAAPI, GSAP, SVG,
-Canvas 2D, WebGL, Three.js, Lottie, Rive, video, pointer, scroll, or runtime
-event work. Declare capabilities and use managed timers, observers, loops,
-assets, and engine loaders. Do not add animation libraries through `scripts`.
-
-The MCP compiler extracts managed motion into `section.motion[]`, validates the
-AST and performance budgets, and round-trips it through source reads and page
-patches. Plain section JS remains only for compatibility behavior.
-
-## What NOT to do
-
-```html
-<!-- Don't: hand-written island markers (old format — compiler rejects raw usage in source) -->
-<div data-island="FAQ" data-props='{"items":[...]}'></div>
-
-<!-- Don't: escaped HTML — never escape anything -->
-&lt;section&gt;...&lt;/section&gt;
-
-<!-- Don't: external scripts in section HTML — use the scripts param -->
-<script src="https://cdn.example.com/lib.js"></script>
-```
+The compiler escapes storage representations. Do not escape a whole section
+or construct JSON strings of HTML manually. Valid HTML entities in authored
+text or attribute values remain normal HTML; they are not an escaped page.
+Motion, if the plan requires it, follows `references/animation-system.md`.
 
 ---
 
@@ -3918,10 +2447,10 @@ Use one owning command at a time.
 
 ```text
 /setup
-  → /plan-page
-  → /design-page
-  → /generate
-  → /publish
+  U+2192 /plan-page
+  U+2192 /design-page
+  U+2192 /generate
+  U+2192 /publish
 ```
 
 - Setup is normally run once and refreshed only for changed stores/themes.
@@ -3933,7 +2462,7 @@ Use one owning command at a time.
 - Publish is a separate explicit release.
 
 Commands do not silently invoke one another. When a user intentionally starts
-later, create the minimum missing artifact and record the skipped command.
+later, recover the minimum missing decision evidence and record the skipped command.
 
 Infer `fast-draft`, `production-ready`, or `publish` from the user's complete
 request and current conversation. Reversible ambiguity defaults to
@@ -3970,7 +2499,7 @@ inference never authorizes publishing, paid generation, or deletion.
   version data live.
 - Search existing assets before paid generation.
 - Resolve island schemas before authoring.
-- Keep production changes local-first and stop on version drift.
+- Keep production changes in source-based MCP operations and stop on version drift.
 - Create drafts with `publish:false`.
 - Keep concept images out of production source and asset slots.
 - Limit fast-build compilation to one initial attempt and one targeted repair.
@@ -3978,772 +2507,9 @@ inference never authorizes publishing, paid generation, or deletion.
 
 ---
 
-# Conversion Psychology — Storefront Design Intelligence
+# Conversion decisions
 
-> **Not real islands:** `CompareTable`. They have no schema. Verify every island name
-> against `lexsis_design` action `islands`; the replacement for each job is in
-> `references/workflows/island-selection-workflow.md`.
-
-> House rules in `storefront-engine/references/design-rules.md` override every example below.
-> Examples show structure and copy intent; their styling (gradients, hover transforms,
-> uppercase labels, pills, emoji, section fills) is illustrative and must not be copied.
-> Where an example conflicts with a house rule, the rule wins.
-
-> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
-
-> When to load: ALWAYS. Read before generating any ecommerce page.
-
-## The Conversion Stack (AIDA → Sections)
-
-Map the AIDA framework to section order. Each stage requires specific psychology and placement.
-
-### Short Page (5-7 sections) — Impulse / Low-consideration products
-
-1. **Attention (1 section)**: Hero section
-   - Product image or typographic hero on the page background. No gradient.
-   - Benefit-driven headline (6-10 words)
-   - `font-size: clamp(2.5rem, 5vw, 3.5rem)` for headline
-   - Sticky CTA bar for persistent action
-
-2. **Interest (2 sections)**: Value props + social proof stats
-   - 3 benefits max, as a definition list or asymmetric two-column; icons only if the plan's icon decision says so
-   - Numbers: customer count, star rating, review count
-   - `py-8 md:py-12` spacing
-
-3. **Desire (2 sections)**: Reviews + transformation proof
-   - Star-first review display, 3-6 reviews
-   - Before/after images or testimonial carousel
-   - `data-island="ReviewCarousel"` for dynamic trust
-
-4. **Action (2 sections)**: CTA + footer
-   - Urgency element (countdown or inventory indicator)
-   - CTA names the action in brand voice ("Add to cart")
-   - `data-island="CountdownTimer"` or `data-island="InventoryIndicator"`
-
-### Medium Page (8-12 sections) — Considered purchase / New-to-brand
-
-1. **Attention (1)**: Hero with video or interactive media
-2. **Interest (3)**: Value props → logo carousel → stats
-   - Logo carousel = trust transfer from known brands
-3. **Desire (5)**: Feature grid → testimonials → before/after → reviews → comparison table
-   - 3-6 features as a definition list or asymmetric two-column; icons only if the plan's icon decision says so
-   - Transformation proof with `data-island="BeforeAfter"`
-   - Compare you vs. 2 alternatives (3 columns max)
-4. **Action (3)**: FAQ → CTA → footer
-   - Preemptive objection handling (5-8 questions)
-   - `data-island="EmailCapture"` for fence-sitters
-   - `data-island="FAQ"` for progressive disclosure
-
-### Long Page (12-16 sections) — High-ticket / Complex products
-
-1. **Attention (2)**: Hero + announcement bar
-   - Free shipping threshold / promo in bar
-2. **Interest (4)**: Value props → logo carousel → stats → press mentions
-   - Layer authority progressively: claims → endorsements → proof
-3. **Desire (7)**: Feature showcase → testimonials → case study → feature grid → reviews → comparison → risk reversal
-   - Hero feature with `data-island="VideoPlayer"`
-   - Full customer journey (problem → solution → result)
-   - Guarantee + return policy badge-driven
-4. **Action (3)**: FAQ → dual CTA → footer
-   - Dual CTA: buy now / learn more
-   - `data-island="BundleBuilder"` for upsells
-
-**Section Order Rules:**
-- Never reviews before value props (prove value before social proof)
-- FAQ immediately before final CTA (remove last objection)
-- Stats or logo carousel within first 3 sections for trust anchoring
-- Footer always last (consistency signal)
-
----
-
-## Above-the-Fold Rules
-
-What MUST be visible without scroll (< 900px viewport height). Violating this kills 40%+ of conversions.
-
-### PDP (Product Detail Page)
-
-**Mandatory visible elements:**
-- Product image (left 50-60% width, min 600px tall)
-- Product title (max 2 lines)
-- Price + compare_at_price (if discounted)
-- Star rating + review count (clickable to reviews)
-- Primary CTA button
-- 1-2 trust lines as plain text (free shipping, guarantee)
-
-**HTML pattern:**
-```html
-<section class="grid md:grid-cols-2 gap-8 max-w-7xl mx-auto px-4 py-8">
-  <div class="relative">
-    <img src="/product.jpg" alt="Product" class="w-full h-auto rounded-lg" />
-  </div>
-  <div class="flex flex-col justify-center space-y-6">
-    <h1 class="text-4xl md:text-5xl font-bold leading-tight" style="color:var(--lx-text-color)">
-      Premium Product Name
-    </h1>
-    <p class="text-lg md:text-xl opacity-80">One-line benefit promise that resonates</p>
-    <div class="flex items-baseline gap-3">
-      <span class="text-3xl font-bold" style="color:var(--lx-text-color)">$89.00</span>
-      <!-- compare-at only when Shopify has one: struck text, no pill -->
-      <span class="text-lg line-through opacity-40">$129.00</span>
-    </div>
-    <!-- rating as plain text, only when the count is real -->
-    <p class="text-sm opacity-70">4.8 from 312 reviews</p>
-    <div data-island="BuyBox" data-props='{"productId":"gid://shopify/Product/123","ctaText":"Add to cart","showQuantity":true}'></div>
-    <!-- trust line: plain text over a 1px hairline, no icons, no emoji -->
-    <p class="text-sm pt-4 opacity-70" style="border-top:1px solid var(--lx-border-color)">Free shipping. Money-back guarantee.</p>
-  </div>
-</section>
-```
-
-### Landing Page (paid traffic)
-
-**Mandatory visible:**
-- Headline with specific benefit (not generic)
-- Subline addressing pain point
-- Hero image/video showing product in use
-- Primary CTA (above fold)
-- 1 trust signal (review stars or customer count)
-
-**HTML pattern:**
-```html
-<section class="relative min-h-screen flex items-center justify-center text-center px-4 py-20" style="background:var(--lx-bg-color)">
-  <div class="max-w-4xl mx-auto space-y-8">
-    <h1 class="text-5xl md:text-7xl font-bold leading-none" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">
-      Get Flawless Skin in 30 Days
-    </h1>
-    <p class="text-xl md:text-2xl" style="color:var(--lx-text-muted)">
-      Without harsh chemicals or expensive treatments. Guaranteed.
-    </p>
-    <button class="px-10 py-5 text-xl font-bold rounded-lg transition-colors hover:bg-[var(--lx-accent-color-hover)]" style="background:var(--lx-accent-color);color:white">
-      Start your transformation
-    </button>
-    <p class="text-sm" style="color:var(--lx-text-muted)">Join 47,000+ customers who transformed their skin</p>
-  </div>
-  <div data-island="CountdownTimer" data-props='{"endDate":"2026-06-30T23:59:59Z","message":"Offer ends in:","urgencyThreshold":3600}'></div>
-  <div data-island="SocialProofPopup" data-props='{"displayDuration":5000,"interval":15000,"maxPopups":3}'></div>
-</section>
-```
-
-Never hardcode hex; use `--lx-*` tokens.
-
-### Collection Page
-
-**Mandatory visible:**
-- Category headline + product count
-- Filter bar (collapsible on mobile)
-- First 4-6 products (2x3 grid desktop, 2 columns mobile)
-- Sort dropdown
-- Trust signal (delivery promise or return policy)
-
-**Layout rule:** First product fold < 600px from top on desktop, < 800px on mobile.
-
----
-
-## Price Psychology Patterns
-
-### Anchoring (strikethrough + current)
-
-Show original price crossed out. The "minimum 20%, optimal 30-40%" heuristic is market-specific; never apply it to a merchant's real price list. Show compare-at only when Shopify has one. No percentage pill unless the merchant runs a named sale.
-
-```html
-<div class="flex items-baseline gap-3">
-  <span class="text-3xl font-bold" style="color:var(--lx-text-color)">$79.99</span>
-  <span class="text-lg line-through opacity-40">$119.99</span>
-</div>
-<p class="text-sm mt-2 opacity-70">Save $40 today</p>
-```
-
-### Charm Pricing
-
-Market-specific (US DTC); never apply to a merchant's real price list. Where the merchant already prices this way: .97, .95 or .99 for mid-market ($50-$300), .00 for premium ($500+).
-
-**Examples:**
-- Low-ticket (<$50): $29.97, $14.99
-- Mid-ticket ($50-$300): $129.95, $79.97
-- High-ticket ($300+): $999.00, $1,500.00
-
-### Bundle Pricing (quantity breaks)
-
-Show per-unit savings, not just total discount.
-
-```html
-<!-- equal cards; the recommended tier gets a 1px accent border and one sentence-case line — no scale, no caps pill, no glow -->
-<div class="grid md:grid-cols-3 gap-4">
-  <div class="p-6 rounded-lg" style="border:1px solid var(--lx-border-color)">
-    <div class="text-center space-y-2">
-      <p class="text-sm opacity-60">Buy 1</p>
-      <p class="text-3xl font-bold" style="color:var(--lx-text-color)">$59.99</p>
-      <p class="text-sm opacity-70">$59.99 each</p>
-      <button class="w-full px-4 py-2 mt-4 rounded" style="border:1px solid var(--lx-accent-color);color:var(--lx-accent-color)">
-        Select
-      </button>
-    </div>
-  </div>
-  <div class="p-6 rounded-lg" style="border:1px solid var(--lx-accent-color)">
-    <div class="text-center space-y-2">
-      <p class="text-sm" style="color:var(--lx-accent-color)">Most chosen</p>
-      <p class="text-sm opacity-60">Buy 3</p>
-      <p class="text-3xl font-bold" style="color:var(--lx-text-color)">$119.99</p>
-      <p class="text-sm opacity-70">$40.00 each — Save $60</p>
-      <button class="w-full px-4 py-2 mt-4 rounded font-bold text-white transition-colors hover:bg-[var(--lx-accent-color-hover)]" style="background:var(--lx-accent-color)">
-        Select
-      </button>
-    </div>
-  </div>
-  <div class="p-6 rounded-lg" style="border:1px solid var(--lx-border-color)">
-    <div class="text-center space-y-2">
-      <p class="text-sm opacity-60">Buy 2</p>
-      <p class="text-3xl font-bold" style="color:var(--lx-text-color)">$99.99</p>
-      <p class="text-sm opacity-70">$50.00 each — Save $20</p>
-      <button class="w-full px-4 py-2 mt-4 rounded" style="border:1px solid var(--lx-accent-color);color:var(--lx-accent-color)">
-        Select
-      </button>
-    </div>
-  </div>
-</div>
-```
-
-### Payment Splitting (Afterpay/Klarna)
-
-Show "or 4 payments of $X" beneath price. Increases conversion 20-30% for $100+ items.
-
-```html
-<div class="space-y-2">
-  <p class="text-3xl font-bold" style="color:var(--lx-text-color)">$159.99</p>
-  <p class="text-sm opacity-70">or 4 interest-free payments of $40.00 with <strong>Afterpay</strong></p>
-</div>
-```
-
-### Decoy Pricing (3-tier)
-
-Always show 3 options. Middle option is the target, positioned as "most popular".
-
-```html
-<!-- equal cards; the target tier gets a 1px accent border and a sentence-case line — no scale, no caps pill, no glow, no glyph bullets -->
-<div class="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-  <div class="p-8 rounded-lg" style="border:1px solid var(--lx-border-color)">
-    <h3 class="text-2xl font-bold mb-2">Basic</h3>
-    <p class="text-4xl font-bold mb-4" style="color:var(--lx-text-color)">$49.99</p>
-    <ul class="space-y-3 mb-6 text-sm">
-      <li>Feature A</li>
-      <li>Feature B</li>
-    </ul>
-    <button class="w-full px-6 py-3 rounded" style="border:1px solid var(--lx-accent-color);color:var(--lx-accent-color)">
-      Choose Basic
-    </button>
-  </div>
-  <div class="p-8 rounded-lg" style="border:1px solid var(--lx-accent-color)">
-    <p class="text-sm mb-2" style="color:var(--lx-accent-color)">Most popular</p>
-    <h3 class="text-2xl font-bold mb-2">Pro</h3>
-    <div class="flex items-baseline gap-2 mb-4">
-      <p class="text-4xl font-bold" style="color:var(--lx-text-color)">$89.99</p>
-      <p class="text-lg line-through opacity-40">$129.99</p>
-    </div>
-    <ul class="space-y-3 mb-6 text-sm">
-      <li>Feature A</li>
-      <li>Feature B</li>
-      <li>Feature C</li>
-      <li>Feature D</li>
-    </ul>
-    <button class="w-full px-6 py-3 rounded font-bold text-white transition-colors hover:bg-[var(--lx-accent-color-hover)]" style="background:var(--lx-accent-color)">
-      Choose Pro
-    </button>
-  </div>
-  <div class="p-8 rounded-lg" style="border:1px solid var(--lx-border-color)">
-    <h3 class="text-2xl font-bold mb-2">Premium</h3>
-    <p class="text-4xl font-bold mb-4" style="color:var(--lx-text-color)">$149.99</p>
-    <ul class="space-y-3 mb-6 text-sm">
-      <li>Everything in Pro</li>
-      <li>Feature E</li>
-      <li>Feature F</li>
-      <li>Priority support</li>
-    </ul>
-    <button class="w-full px-6 py-3 rounded" style="border:1px solid var(--lx-accent-color);color:var(--lx-accent-color)">
-      Choose Premium
-    </button>
-  </div>
-</div>
-```
-
----
-
-## Social Proof Hierarchy
-
-Rank order by persuasive power (highest to lowest). Use this sequence in sections.
-
-### 1. Numbers (stats bar)
-
-Raw metrics. Most credible when specific and large.
-
-```html
-<!-- figures inline on the page background; sentence-case labels; no band, no oversized accent numerals -->
-<section class="py-16 px-4">
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-6xl mx-auto">
-    <div>
-      <p class="text-3xl md:text-4xl font-bold" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">{{customer_total}}</p>
-      <p class="text-sm mt-2" style="color:var(--lx-text-muted)">Happy customers</p>
-    </div>
-    <div>
-      <p class="text-3xl md:text-4xl font-bold" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">{{average_rating}}/5</p>
-      <p class="text-sm mt-2" style="color:var(--lx-text-muted)">Average rating</p>
-    </div>
-    <div>
-      <p class="text-3xl md:text-4xl font-bold" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">{{review_total}}</p>
-      <p class="text-sm mt-2" style="color:var(--lx-text-muted)">Verified reviews</p>
-    </div>
-    <div>
-      <p class="text-3xl md:text-4xl font-bold" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">{{recommend_pct}}</p>
-      <p class="text-sm mt-2" style="color:var(--lx-text-muted)">Would recommend</p>
-    </div>
-  </div>
-</section>
-```
-
-Every `{{…}}` figure is a placeholder for a value returned by `lexsis_catalog` action `reviews` (`total`, ratings) or a claim the merchant confirmed in the plan. Never type a number here; omit the figure when no source exists (house rule N11).
-
-
-**When to use:** First 3 sections. Anchor trust before storytelling.
-
-### 2. Faces (testimonial cards)
-
-A real person's words with their name and city. Most effective for emotional products (beauty, wellness, lifestyle).
-
-```html
-<!-- one featured quote in the heading face; name and city muted; no stars, no avatar ring, no card -->
-<section class="py-16 px-4">
-  <div class="max-w-3xl mx-auto">
-    <blockquote class="text-2xl md:text-3xl leading-snug" style="color:var(--lx-text-color);font-family:var(--lx-font-heading)">
-      "This completely changed how I approach skincare. I saw results in just 2 weeks."
-    </blockquote>
-    <p class="mt-6 text-sm" style="color:var(--lx-text-muted)">Sarah M., Portland — verified buyer</p>
-  </div>
-</section>
-```
-
-**When to use:** After interest stage, before feature deep-dive. One featured quote per section; a plain list of 3-6 only if the plan asks for it.
-
-### 3. Logos (logo carousel)
-
-Trust transfer from known brands. Works for B2B, press mentions, "as seen on".
-
-```html
-<!-- page background, static: no band, no hover effects -->
-<section class="py-12 px-4">
-  <div class="max-w-6xl mx-auto">
-    <p class="text-center text-sm mb-8" style="color:var(--lx-text-muted)">Trusted by leading brands</p>
-    <div class="flex justify-center items-center gap-12 flex-wrap">
-      <img src="/logos/forbes.svg" alt="Forbes" class="h-10 opacity-60" />
-      <img src="/logos/techcrunch.svg" alt="TechCrunch" class="h-10 opacity-60" />
-      <img src="/logos/wsj.svg" alt="Wall Street Journal" class="h-10 opacity-60" />
-    </div>
-  </div>
-</section>
-```
-
-**When to use:** Section 2-3. Before testimonials, after value props.
-
-### 4. Quotes (review list)
-
-Text-only reviews. Lowest impact but high volume works (10+ reviews).
-
-```html
-<section class="py-16 px-4">
-  <div class="max-w-6xl mx-auto">
-    <h2 class="text-3xl md:text-4xl font-bold text-center mb-12" style="color:var(--lx-text-color)">What customers say</h2>
-    <div data-island="ReviewCarousel" data-props='{"collectionId":"<active collection id from the plan>","minRating":4,"pageSize":8,"variant":"grid"}'></div>
-  </div>
-</section>
-```
-
-**When to use:** Mid-page (sections 5-8). Pile-on after testimonials for reinforcement.
-
----
-
-## Urgency & Scarcity
-
-Three types. Each requires different implementation and psychology.
-
-### 1. Real Scarcity (Inventory)
-
-Only use if actually tracking inventory. False scarcity destroys brand trust.
-
-```html
-<!-- text only: no emoji, no tinted pill -->
-<p class="text-sm font-semibold" style="color:var(--lx-text-color)">Only 7 left in stock</p>
-<div data-island="InventoryIndicator" data-props='{"threshold":10,"lowStockMessage":"Only {count} left in stock","outOfStockMessage":"Sold out — join waitlist"}'></div>
-```
-
-**When to use:** High-demand products, limited editions, seasonal items.
-
-### 2. Deadline (Countdown)
-
-Time-limited offers. Must have real expiration.
-
-```html
-<!-- deadline bars live in the announcement bar (the only permitted band, house rule N2) and use its tokens — never a red hex fill, never emoji -->
-<div data-island="AnnouncementBar" data-props='{"message":"Summer sale: 30% off ends soon","link":"#shop","dismissible":false}'></div>
-<div data-island="CountdownTimer" data-props='{"endDate":"2026-06-30T23:59:59Z","message":"Ends in","urgencyThreshold":3600}'></div>
-```
-
-**When to use:** Flash sales, product launches, abandoned cart recovery.
-
-### 3. Exclusivity (Limited Access)
-
-Member-only, waitlist, invite-only framing.
-
-```html
-<section class="py-20 px-4 text-center">
-  <div class="max-w-2xl mx-auto space-y-6">
-    <h2 class="text-4xl font-bold" style="color:var(--lx-text-color)">Join the Waitlist</h2>
-    <p class="text-lg opacity-80">Limited to 500 founding members. Next batch ships August 2026.</p>
-    <p class="text-sm font-semibold" style="color:var(--lx-text-muted)">127 spots remaining</p>
-    <div data-island="EmailCapture" data-props='{"placeholder":"Enter your email","buttonText":"Reserve Your Spot"}'></div>
-  </div>
-</section>
-```
-
-**When to use:** Pre-launch, beta access, VIP tiers.
-
-### Anti-Patterns (Fake Urgency)
-
-| Don't | Why | Do |
-|----------|-----|-------|
-| Evergreen countdowns (timer resets on refresh) | Users notice, trust tanks | Use real sale end dates, or remove timer |
-| "Only 2 left!" for digital products | Obvious lie | Use enrollment caps ("Only 50 spots in this cohort") |
-| "Sale ends tonight" every night | Cried wolf effect | Run real weekly/monthly sales with calendar |
-| SocialProofPopup with fake names | "John from New York just bought" on loop | Only use if pulling real order events from API |
-
----
-
-## Cognitive Load Management
-
-Max 3 choices per section. More options = decision paralysis = abandonment.
-
-### Feature Grid (3 features, not 7)
-
-**Good (3 features):**
-```html
-<!-- definition list, no icons -->
-<section class="py-16 px-4">
-  <dl class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-    <div>
-      <dt class="text-xl font-bold">Fast results</dt>
-      <dd class="mt-2 opacity-80">See improvements in 7 days or less</dd>
-    </div>
-    <div>
-      <dt class="text-xl font-bold">Risk-free</dt>
-      <dd class="mt-2 opacity-80">60-day money-back guarantee</dd>
-    </div>
-    <div>
-      <dt class="text-xl font-bold">Loved by customers</dt>
-      <dd class="mt-2 opacity-80">Join 47,000+ happy customers</dd>
-    </div>
-  </dl>
-</section>
-```
-
-**If you have 6+ features:** Split into 2 sections (benefits vs. technical specs).
-
-### CompareTable (3 columns max, 5-8 rows)
-
-```html
-<div data-island="CompareTable" data-props='{"columns":[{"name":"Competitor A","highlight":false},{"name":"You","highlight":true},{"name":"Competitor B","highlight":false}],"rows":[{"feature":"Feature 1","values":["No","Yes","No"]},{"feature":"Feature 2","values":["Yes","Yes","No"]},{"feature":"Feature 3","values":["No","Yes","Yes"]}]}'></div>
-```
-
-### Progressive Disclosure (Tabs/FAQ)
-
-Use islands for deep info. Don't dump paragraphs.
-
-```html
-<div data-island="Tabs" data-props='{"tabs":[{"label":"How It Works","content":"..."},{"label":"Ingredients","content":"..."},{"label":"Shipping","content":"..."}]}'></div>
-<div data-island="FAQ" data-props='{"items":[{"question":"How long does shipping take?","answer":"2-3 business days."}]}'></div>
-```
-
----
-
-## Trust Escalation Ladder
-
-Move visitors from low-commitment → high-commitment actions. Don't ask for the sale immediately.
-
-### Sequence:
-
-1. **Browse encouragement** (no commitment)
-   - Hero: "Explore our collection"
-   - Value props: "See why 47,000+ customers love us"
-
-2. **Email capture** (small commitment)
-   - Offer: "Get 10% off your first order"
-   - Placement: Section 3-5
-   - `data-island="EmailCapture"`
-
-3. **Cart confidence** (medium commitment)
-   - `data-island="BuyBox"` with "Add to Cart"
-   - Show: trust badges, free shipping, easy returns
-
-4. **Purchase trigger** (high commitment)
-   - Final CTA: "Complete your order"
-   - Add: `data-island="CountdownTimer"` or `data-island="InventoryIndicator"`
-   - Show: risk reversal (guarantee)
-
----
-
-## CTA Psychology
-
-Button copy is conversion science. Every word matters.
-
-### Name the Action in Brand Voice
-
-**Bad (vague):**
-- "Get Started"
-- "Submit"
-- "Download"
-
-**Good (names the action, brand voice, sentence case):**
-- "Add to cart"
-- "Start free trial"
-- "Send me the guide"
-
-**Why it works:** The visitor knows exactly what happens next. No "MY"/"ME" caps — shouted first-person reads as template copy.
-
-```html
-<button class="px-8 py-4 text-lg font-bold rounded-lg" style="background:var(--lx-accent-color);color:white">
-  Add to cart
-</button>
-```
-
-### Benefit-Driven Copy
-
-**Bad (action-only):**
-- "Submit"
-- "Continue"
-- "Next"
-
-**Good (action + benefit):**
-- "Get My Discount"
-- "Unlock Free Shipping"
-- "Claim My Spot"
-
-```html
-<button class="px-8 py-4 text-lg font-bold rounded-lg" style="background:var(--lx-accent-color);color:white">
-  Claim My 30% Off
-</button>
-```
-
-### Contrast Principle
-
-CTA button must have 4.5:1 contrast ratio against background (WCAG AA). Use high-chroma colors.
-
-```html
-<button class="px-8 py-4 text-lg font-bold rounded-lg transition-colors hover:bg-[var(--lx-accent-color-hover)]" style="background:var(--lx-accent-color);color:white">
-  Add to cart
-</button>
-```
-
-**Contrast pairs (tokens, never hex):**
-- Accent CTA on page: `var(--lx-accent-color)` on `var(--lx-bg-color)`
-- Inverted CTA on dark: `var(--lx-bg-color)` on `var(--lx-text-color)`
-- Check the merchant's real token values against 4.5:1; never substitute a hardcoded hex.
-
-### Button Hierarchy
-
-**Primary (main action):**
-```html
-<button class="px-8 py-4 text-lg font-bold rounded-lg" style="background:var(--lx-accent-color);color:white">
-  Buy Now — $89
-</button>
-```
-
-**Secondary (alternative action):**
-```html
-<button class="px-6 py-3 rounded-lg" style="border:2px solid var(--lx-accent-color);color:var(--lx-accent-color)">
-  Learn More
-</button>
-```
-
-**Ghost (low-commitment):**
-```html
-<button class="px-6 py-3 rounded-lg hover:bg-opacity-10" style="color:var(--lx-accent-color)">
-  View Details
-</button>
-```
-
-**Link (minimal friction):**
-```html
-<a href="#learn-more" class="underline" style="color:var(--lx-accent-color)">
-  Learn More
-</a>
-```
-
-### Dual CTA (high + low commitment)
-
-Offer high-commitment + low-commitment options.
-
-```html
-<div class="flex gap-4 justify-center">
-  <button class="px-8 py-4 text-lg font-bold rounded-lg" style="background:var(--lx-accent-color);color:white">
-    Buy Now — $89
-  </button>
-  <button class="px-6 py-3 rounded-lg" style="border:2px solid var(--lx-accent-color);color:var(--lx-accent-color)">
-    Learn More
-  </button>
-</div>
-```
-
-**When to use:** High-ticket products ($300+), complex products needing education.
-
----
-
-## Visual Hierarchy for Conversion
-
-Eye-flow patterns direct attention to CTAs.
-
-### Focal Points (element styles)
-
-Use scale, color, and whitespace to create hierarchy.
-
-**Headline (most important):**
-```html
-<h1 class="text-5xl md:text-7xl font-extrabold leading-tight mb-4" style="color:var(--lx-text-color)">
-  Transform Your Skin in 30 Days
-</h1>
-```
-
-**Subline (secondary):**
-```html
-<p class="text-xl md:text-2xl leading-relaxed mb-8" style="color:var(--lx-text-muted)">
-  Clinically proven formula with visible results in just 2 weeks
-</p>
-```
-
-**CTA (action):**
-```html
-<button class="px-10 py-5 text-xl font-bold rounded-lg transition-colors hover:bg-[var(--lx-accent-color-hover)]" style="background:var(--lx-accent-color);color:white">
-  Add to cart
-</button>
-```
-
-### Whitespace for Emphasis
-
-Surround CTAs with empty space (min 2rem padding).
-
-```html
-<section class="py-20 px-4">
-  <!-- CTA content -->
-</section>
-```
-
----
-
-## Anti-Patterns (Conversion Killers)
-
-| Don't | Why | Do |
-|----|-----|-----|
-| Generic headlines ("Welcome to Our Store") | No hook, no benefit | "Get [Specific Benefit] in [Timeframe]" |
-| Hidden prices ("Contact for Pricing") | Friction, distrust | Show price upfront (even if high) |
-| Walls of text (5-paragraph descriptions) | Cognitive overload | Bullet points, max 3 benefits |
-| Too many CTAs (3+ above fold) | Decision paralysis | 1 primary CTA, 1 optional secondary |
-| Tiny mobile buttons (40px tap target) | Poor UX, missed clicks | 48px minimum (py-3 or py-4) |
-| Auto-playing video with sound | Annoys users | Muted autoplay, click to unmute |
-| No trust signals above fold | Credibility gap | Add star rating or customer count near CTA |
-| Fake urgency (evergreen countdown) | Trust erosion | Real sale end dates or remove timer |
-| Cluttered forms (8-field email capture) | Abandonment | Email only with `data-island="EmailCapture"` |
-| Slow load times (5+ second hero load) | Bounce rate spike | Optimize images, lazy-load below fold |
-| No mobile optimization (desktop-only) | Poor mobile UX | Responsive spacing, clamp() font sizes |
-| Unclear value prop ("We're the best") | Generic, meaningless | "Save 10 hours/week with automated [task]" |
-| No risk reversal (no guarantee) | Fear of loss | Risk reversal section before final CTA |
-| Dead-end pages (no next step) | Lost momentum | Every section ends with CTA or link |
-| Inconsistent branding (5 button styles) | Unprofessional | Consistent colors via CSS vars |
-
----
-
-## Complete Page Recipes
-
-### Recipe 1: Lead Gen (Email Capture)
-
-**Goal:** Maximize email signups for nurture sequence.
-
-**VibePage structure (abbreviated):**
-```json
-{
-  "head": {
-    "title": "Get the Ultimate Skincare Guide",
-    "fonts": ["<from lexsis_brand.compile_theme>"]
-  },
-  "theme_css": "<output of lexsis_brand.compile_theme — never hand-written hex>",
-  "sections": [
-    {
-      "id": "hero",
-      "html": "<section class='py-20 px-4 text-center' style='background:var(--lx-bg-color)'><div class='max-w-3xl mx-auto space-y-6'><h1 class='text-5xl md:text-6xl font-bold' style='color:var(--lx-text-color);font-family:var(--lx-font-heading)'>Get the Flawless Skin Guide</h1><p class='text-xl' style='color:var(--lx-text-muted)'>Learn how to achieve radiant skin in 30 days. Free download.</p><div data-island='EmailCapture' data-props='{\"placeholder\":\"Enter your email\",\"buttonText\":\"Send Me the Guide\"}'></div></div></section>",
-      "css": "",
-      "js": ""
-    },
-    {
-      "id": "value-props",
-      "html": "<section class='py-16 px-4'><dl class='grid md:grid-cols-3 gap-8 max-w-5xl mx-auto'><div><dt class='text-xl font-bold'>Science-backed methods</dt><dd class='mt-2 opacity-80'>Proven techniques from dermatologists</dd></div><div><dt class='text-xl font-bold'>Natural ingredients</dt><dd class='mt-2 opacity-80'>No harsh chemicals or side effects</dd></div><div><dt class='text-xl font-bold'>30-day results</dt><dd class='mt-2 opacity-80'>See visible improvements in one month</dd></div></dl></section>",
-      "css": "",
-      "js": ""
-    },
-    {
-      "id": "stats",
-      "html": "<section class='py-12 px-4'><div class='grid grid-cols-2 gap-8 max-w-4xl mx-auto'><div><p class='text-3xl font-bold' style='color:var(--lx-text-color);font-family:var(--lx-font-heading)'>47,000+</p><p class='text-sm mt-2' style='color:var(--lx-text-muted)'>Downloads</p></div><div><p class='text-3xl font-bold' style='color:var(--lx-text-color);font-family:var(--lx-font-heading)'>4.9/5</p><p class='text-sm mt-2' style='color:var(--lx-text-muted)'>Rating</p></div></div></section>",
-      "css": "",
-      "js": ""
-    },
-    {
-      "id": "cta",
-      "html": "<section class='py-20 px-4 text-center'><div class='max-w-2xl mx-auto space-y-6'><h2 class='text-4xl font-bold' style='color:var(--lx-text-color)'>Ready to Get Started?</h2><div data-island='EmailCapture' data-props='{\"placeholder\":\"Enter your email\",\"buttonText\":\"Download Now — It\\'s Free\"}'></div></div></section>",
-      "css": "",
-      "js": ""
-    }
-  ]
-}
-```
-
-### Recipe 2: Direct Purchase (Low-ticket <$100)
-
-**Goal:** Impulse buy, minimal friction.
-
-**VibePage structure (abbreviated):**
-```json
-{
-  "sections": [
-    {
-      "id": "hero",
-      "html": "<section class='grid md:grid-cols-2 gap-8 max-w-7xl mx-auto px-4 py-8'><div><img src='/product.jpg' class='w-full rounded-lg'/></div><div class='flex flex-col justify-center space-y-6'><h1 class='text-5xl font-bold' style='color:var(--lx-text-color)'>Premium Serum</h1><p class='text-xl opacity-80'>Transform your skin in 30 days</p><div class='flex items-baseline gap-3'><span class='text-3xl font-bold' style='color:var(--lx-text-color)'>$79.99</span><span class='text-lg line-through opacity-40'>$119.99</span></div><div data-island='BuyBox' data-props='{\"productId\":\"gid://shopify/Product/123\",\"ctaText\":\"Add to Cart — Free Shipping\"}'></div></div></section>",
-      "css": "",
-      "js": ""
-    }
-  ]
-}
-```
-
-### Recipe 3: High-AOV ($500+)
-
-**Goal:** Build trust for expensive purchase.
-
-**VibePage structure (abbreviated):**
-```json
-{
-  "sections": [
-    {
-      "id": "hero",
-      "html": "<section class='relative min-h-screen flex items-center justify-center px-4' style='background:url(/hero.jpg) center/cover'><div class='max-w-3xl text-center space-y-6 text-white'><h1 class='text-6xl font-extrabold'>Enterprise CRM Platform</h1><p class='text-2xl'>Trusted by Fortune 500 companies</p><button class='px-8 py-4 text-lg font-bold rounded-lg' style='background:white;color:var(--lx-accent-color)'>Schedule a Demo</button></div></section>",
-      "css": "",
-      "js": ""
-    },
-    {
-      "id": "logos",
-      "html": "<section class='py-12 px-4'><p class='text-center text-sm mb-8' style='color:var(--lx-text-muted)'>Trusted by industry leaders</p><div class='flex justify-center gap-12 flex-wrap'><img src='/logos/company1.svg' class='h-10 opacity-60'/><img src='/logos/company2.svg' class='h-10 opacity-60'/><img src='/logos/company3.svg' class='h-10 opacity-60'/></div></section>",
-      "css": "",
-      "js": ""
-    }
-  ]
-}
-```
-
----
-
-**End of conversion-psychology.md**
+Use `references/consumer-behavior-cro.md` to choose a shopper uncertainty and a testable response, then the selected `references/page-types/_index.md` contract for section order and `references/copy/copy-frameworks.md` for the argument. House rules in `storefront-engine/references/design-rules.md` govern the presentation; a psychological hypothesis never authorizes unverified proof or urgency.
 
 ---
 
@@ -4760,11 +2526,11 @@ Before asking the merchant or choosing a module:
 1. Read the product, variants, price, inventory, existing media, reviews,
    policies, audience, traffic source, and available analytics.
 2. Classify the visitor's likely primary mode:
-   - **confirm** — knows the product and wants confidence to buy;
-   - **compare** — deciding between options or alternatives;
-   - **explore** — needs inspiration or use-case education;
-   - **complete** — wants the full solution, routine, or setup;
-   - **replenish** — returning for a refill, replacement, or repeat order.
+   - **confirm**  -  knows the product and wants confidence to buy;
+   - **compare**  -  deciding between options or alternatives;
+   - **explore**  -  needs inspiration or use-case education;
+   - **complete**  -  wants the full solution, routine, or setup;
+   - **replenish**  -  returning for a refill, replacement, or repeat order.
 3. Write the three most important questions the shopper must answer before
    buying.
 4. Select at most three behavioral patterns that answer those questions.
@@ -4783,22 +2549,22 @@ three questions in one turn.
 
 Useful conditional questions include:
 
-- **Gallery gap:** “The current media shows the pack and texture, but not scale
-  or in-use context. Should I use existing media only, or generate two custom
-  gallery images for those jobs?”
-- **Relationship:** “Should the recommendation help shoppers complete the
+- **Gallery gap:** "The current media shows the pack and texture, but not scale
+  or in-use context. Can you supply the real scale and
+  in-use photos, or should those jobs remain pending?"
+- **Relationship:** "Should the recommendation help shoppers complete the
   routine, compare alternatives, replenish later, or should this page avoid
-  recommendations?”
-- **Compatibility:** “Do you have a verified model, size, shade, ingredient,
-  room-dimension, or usage mapping for these add-ons?”
-- **Risk:** “Which verified shipping, returns, trial, warranty, cancellation,
-  or guarantee terms can appear beside the purchase decision?”
-- **Audience state:** “Is this primarily a first purchase, an experienced
-  buyer, or a returning/replenishment visit?”
-- **Traffic context:** “Which promise or creative brought this traffic here,
-  if the page must preserve message match?”
+  recommendations?"
+- **Compatibility:** "Do you have a verified model, size, shade, ingredient,
+  room-dimension, or usage mapping for these add-ons?"
+- **Risk:** "Which verified shipping, returns, trial, warranty, cancellation,
+  or guarantee terms can appear beside the purchase decision?"
+- **Audience state:** "Is this primarily a first purchase, an experienced
+  buyer, or a returning/replenishment visit?"
+- **Traffic context:** "Which promise or creative brought this traffic here,
+  if the page must preserve message match?"
 
-Never ask “Do you want custom images?” without first identifying the missing
+Never ask "Do you want custom images?" without first identifying the missing
 decision job, proposed image count, purpose, and likely placement. Paid image
 generation remains separately credit-gated.
 
@@ -4811,13 +2577,13 @@ generation remains separately credit-gated.
 | Scale, fit, and sensory confidence | Size, fit, texture, finish, shade, or quantity is hard to judge | Add dimension diagrams, familiar-object scale, model measurements, texture close-ups, swatches, or use-context imagery | Returns, fit questions, conversion |
 | Information scent | Shoppers need detail but will not parse a wall of copy | Lead with benefit and decision fact, then expose specifications, ingredients, care, or methodology through clear progressive disclosure | Detail interaction, conversion |
 | Choice reduction | Too many variants, bundles, or recommendations compete | Prioritize the likely default, explain differences, and keep the first recommendation set to two or three choices | Variant completion, conversion |
-| Guided comparison | Visitor is deciding between products or tiers | Compare only decision-driving attributes; state “best for” and meaningful trade-offs without manufacturing a winner | Comparison interaction, product selection |
+| Guided comparison | Visitor is deciding between products or tiers | Compare only decision-driving attributes; state "best for" and meaningful trade-offs without manufacturing a winner | Comparison interaction, product selection |
 | Compatibility confidence | Add-on usefulness depends on model, shade, size, ingredient, room, or regimen fit | Show the verified fit reason beside each recommendation and suppress incompatible or unavailable items | Attach rate, support questions, returns |
 | Solution completeness | The hero SKU is only one part of the shopper's job | Present the minimum complete outfit, routine, stack, recipe, room, setup, care kit, or commissioning kit with individually selectable items | Attach rate, AOV, revenue per visitor |
 | Sequence and next step | Products are understood as stages or order of use | Show when, how, and in what order products are used; distinguish morning/evening, setup/use/care, or beginner/advanced | Bundle attach rate, education engagement |
 | Context and mental simulation | Shopper cannot picture ownership or final use | Show the product in the actual scene, occasion, room, routine, task, or before/after context using truthful media | Context-image engagement, conversion |
 | Replenishment and continuity | Consumable, maintenance item, size progression, or replacement cycle exists | Explain serving/use count, refill timing, cadence, compatible replacement, or easy reorder without inventing depletion dates | Repeat purchase, subscription opt-in |
-| Returning-customer shortcut | Existing buyers need less education and more continuity | Prefer refill, reorder, saved configuration, compatible replacement, or “what changed” paths when reliable customer context exists | Repeat conversion, time to purchase |
+| Returning-customer shortcut | Existing buyers need less education and more continuity | Prefer refill, reorder, saved configuration, compatible replacement, or "what changed" paths when reliable customer context exists | Repeat conversion, time to purchase |
 | Proof proximity | A claim creates doubt at a specific decision point | Place sourced review excerpts, customer media, certification, test evidence, or expert proof beside the claim it supports | Proof interaction, conversion |
 | Risk reversal | Delivery, fit, efficacy expectations, warranty, returns, or subscription cancellation creates hesitation | Put verified policy and guarantee language beside the relevant CTA or choice; make conditions legible | Checkout progression, support contacts |
 | Price comprehension | Shopper cannot understand total value or recurring cost | Show current price, factual compare-at price, unit/cost-per-use where accurate, bundle contents, cadence, and savings calculation without deceptive anchoring | Conversion, AOV, margin |
@@ -4831,7 +2597,7 @@ generation remains separately credit-gated.
 
 ## Relationship-Based Merchandising
 
-Name the customer's job instead of using a generic “Recommended for You.”
+Name the customer's job instead of using a generic "Recommended for You."
 Start with two or three relevant products and show why each belongs.
 
 | Vertical | Useful relationship names and jobs |
@@ -4865,14 +2631,13 @@ Treat the gallery as decision support. Check only jobs relevant to the product:
 - installation, sequence, routine, or setup;
 - sourced result, proof, or customer media.
 
-Existing media wins. When a decision-critical job is missing, create a planned
-asset slot with the job as its purpose. Ask once whether to use existing media,
-import a supplied asset, or generate the named gaps. Never generate a
-replacement product identity image when verified Shopify media exists.
+Use `references/workflows/section-asset-workflow.md` for unresolved gallery
+jobs and inspection. That procedure applies the source/generation policies;
+a behavioral hypothesis does not authorize synthetic product or result media.
 
 ## Plan Handoff
 
-Add this compact block to `page-plan.md`:
+Add this compact block to `page plan`:
 
 ```markdown
 ## Consumer decision model
@@ -4882,7 +2647,7 @@ Add this compact block to `page-plan.md`:
 **Selected behavioral patterns.** At most three, each with observed evidence.
 **First decision area.** Facts, proof, and action visible before deeper detail.
 **Gallery jobs.** covered; missing; asset slots created for missing jobs.
-**Guided merchandising.** relationship name, reason, 2–3 products or none.
+**Guided merchandising.** relationship name, reason, 2-3 products or none.
 **Risk and trust.** sourced proof/policy placed beside the relevant decision.
 **Mobile context.** what remains visible or is repeated during long scroll.
 **Hypothesis and metric.** one primary behavior change and measurement.
@@ -4923,922 +2688,107 @@ This framework synthesizes merchant-provided Shopify CRO research with:
 
 ---
 
-# Island Patterns — Wrapper HTML & Combination Recipes
+# Island composition
 
-> **Not real islands:** `CompareTable`, `ExitIntent`, `TrustBadgeBar`. They have no schema. Verify every island name
-> against `lexsis_design` action `islands`; the replacement for each job is in
-> `references/workflows/island-selection-workflow.md`.
-
-> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
-
-How to properly embed, wrap, and combine React islands in vibe-code HTML sections. Load when using commerce or engagement islands.
+Use `references/workflows/island-selection-workflow.md` to select an active island and resolve its live schema. `references/authoring/source-authoring.md` owns source markup and supported headless behavior, while `references/authoring/css-and-styling.md` owns scoped styling. Section order comes from the page-type contract, not an island combination table.
 
 ---
 
-## Island Embedding Rules
-
-1. `data-island` attribute = exact island name (case-sensitive)
-2. `data-props` = valid JSON in **single-quoted** attribute value
-3. One `BuyBox` per page (multiple breaks cart state)
-4. Cart: set `head.use_cart_v2: true` on every commerce page — never author a cart section (`CartDrawer` is deprecated V1)
-5. Islands hydrate client-side — surrounding HTML renders immediately (SSR)
-6. Never put islands inside other islands
-7. Always wrap in a containing section with proper spacing
-
----
-
-## Commerce Islands
-
-### BuyBox — Primary Purchase Action
-
-**Always pair with surrounding context (title, price are in the BuyBox island itself):**
-
-```html
-<section class="px-4 sm:px-6 lg:px-8 py-8">
-  <div class="max-w-2xl mx-auto">
-    <div data-island="BuyBox" data-props='{"productId":"gid://shopify/Product/123","ctaText":"Add to Cart"}'></div>
-  </div>
-</section>
-```
-
-**PDP layout — Gallery + BuyBox side by side:**
-
-```html
-<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-16">
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-    <!-- Left: Gallery -->
-    <div data-island="ProductGallery" data-props='{"productId":"gid://shopify/Product/123","layout":"grid","enableLightbox":true}'></div>
-    <!-- Right: BuyBox -->
-    <div class="lg:sticky lg:top-24 lg:self-start">
-      <div data-island="BuyBox" data-props='{"productId":"gid://shopify/Product/123","ctaText":"Add to Cart"}'></div>
-    </div>
-  </div>
-</section>
-```
-
-### Cart — V2 is the default (CartDrawer V1 is DEPRECATED)
-
-Set `head.use_cart_v2: true` on every commerce page. The renderer injects the resolved published cart profile separately, so **never author a cart section in the page**. Use `lexsis_cart.get`, `lexsis_drafts.cart_set`, and `lexsis_drafts.cart_edit` for MCP cart work. Full composition guide: load the `cart-composition` reference.
-
-```jsonc
-{ "head": { "title": "...", "use_cart_v2": true } }   // that's the whole cart setup
-```
-
-Legacy note: `CartDrawer` (V1) exists only on old pages that predate cart profiles. Don't add it to new pages; when editing a legacy page, prefer migrating it (remove CartDrawer, set the flag).
-
-### StickyBar — Scroll-triggered Bottom CTA
-
-```html
-<section>
-  <div data-island="StickyBar" data-props='{"productId":"gid://shopify/Product/123","cta":"Add to Cart","showAfter":"#primary-buy-box"}'></div>
-</section>
-```
-
-`showAfter` is a CSS selector. Give the primary BuyBox wrapper a stable ID and
-use that selector so the bar appears only after the primary purchase UI leaves
-the viewport.
-
-### QuantityBreaks — Volume Discounts
-
-Place directly below or beside BuyBox:
-
-```html
-<section class="px-4 sm:px-6 lg:px-8 pb-6">
-  <div class="max-w-2xl mx-auto">
-    <div data-island="QuantityBreaks" data-props='{"productId":"gid://shopify/Product/123","tierQuantities":[2,3,5],"variant":"cards"}'></div>
-  </div>
-</section>
-```
-
-### ProductCarousel — Cross-sells / Related
-
-```html
-<section class="py-12 lg:py-20 px-4 sm:px-6 lg:px-8" style="background:var(--lx-bg-surface)">
-  <div class="max-w-7xl mx-auto">
-    <h2 class="text-center font-bold mb-8" style="font-family:var(--lx-font-heading);font-size:clamp(1.25rem,2.5vw,2rem)">
-      You May Also Like
-    </h2>
-    <div data-island="ProductCarousel" data-props='{"productIds":["gid://shopify/Product/1","gid://shopify/Product/2","gid://shopify/Product/3","gid://shopify/Product/4"],"columns":4,"showQuickAdd":true}'></div>
-  </div>
-</section>
-```
-
-### ProductGallery — Image Gallery with Zoom
-
-```html
-<div data-island="ProductGallery" data-props='{"productId":"gid://shopify/Product/123","layout":"grid","enableLightbox":true}'></div>
-```
-
-Layout options: `"grid"` (thumbnails below), `"stack"` (vertical scroll), `"carousel"` (swipe).
-
----
-
-## Social Proof Islands
-
-### ReviewCarousel — Customer Reviews
-
-**With custom reviews (no Shopify fetch):**
-
-```html
-<section class="py-12 lg:py-20 px-4" style="background:var(--lx-bg-surface)">
-  <div class="max-w-6xl mx-auto">
-    <div class="text-center mb-10">
-      <p class="text-xs uppercase tracking-[0.2em] mb-2" style="color:var(--lx-accent-color)">Testimonials</p>
-      <h2 class="font-bold" style="font-family:var(--lx-font-heading);font-size:clamp(1.5rem,3vw,2.25rem)">What Customers Say</h2>
-    </div>
-    <div data-island="ReviewCarousel" data-props='{"collectionId":"<review collection uuid from the plan>","minRating":4,"pageSize":8,"variant":"grid"}'></div>
-  </div>
-</section>
-```
-
-**Data source.** Reviews come from the merchant's imported library
-(`lexsis_catalog` actions `reviews_status`, `review_collections`, `reviews`,
-`reviews_search`) as recorded in the plan's Proof sources line. Pass
-`collectionId` (an active collection) or `productIds`; omit
-`reviewsEndpoint`, the page supplies it at runtime. Use the carousel only with
-3 or more real reviews. For 1-2 verified reviews, render static testimonial
-cards quoting them. If there are no reviews, use product proof, certifications,
-guarantees, or verified press instead. Never fabricate names, ratings,
-locations, or review counts.
-
-### Trust Signals — Static HTML
-
-```html
-<section class="py-4 border-y" style="border-color:var(--lx-border-color)">
-  <ul class="grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
-    <li>Secure checkout</li>
-    <li>Free shipping</li>
-    <li>Easy returns</li>
-    <li>Quality guarantee</li>
-  </ul>
-</section>
-```
-
-### SocialProofPopup — Recent Activity Toasts
-
-Place once (invisible section):
-
-```html
-<section class="hidden">
-  <div data-island="SocialProofPopup" data-props='{"events":[{"name":"Priya","product":"Daily Face Serum","location":"Mumbai","time":"2 minutes ago"},{"name":"Rohit","product":"Daily Face Serum","location":"Delhi","time":"5 minutes ago"}],"position":"bottom-left","interval":8000}'></div>
-</section>
-```
-
-Use localized names, currency, tax/shipping language, and city references only
-when the selected store market supports them. For an India storefront, prefer
-INR (`₹`), pincode-aware delivery language, and COD/UPI claims only when those
-payment methods are actually configured.
-
----
-
-## Content Patterns
-
-### FAQ — Native Accordion
-
-```html
-<section class="py-12 lg:py-20 px-4">
-  <div class="max-w-3xl mx-auto">
-    <h2 class="text-center font-bold mb-10" style="font-family:var(--lx-font-heading);font-size:clamp(1.5rem,3vw,2.25rem)">
-      Frequently Asked Questions
-    </h2>
-    <div class="space-y-3">
-      <details><summary>How do I use this product?</summary><p>Apply 2-3 drops to clean skin morning and night.</p></details>
-      <details><summary>Is it suitable for sensitive skin?</summary><p>Use only verified product guidance here.</p></details>
-    </div>
-  </div>
-</section>
-```
-
-### Tabbed Content — Native Disclosure
-
-```html
-<section class="py-12 px-4">
-  <div class="max-w-4xl mx-auto">
-    <details open><summary>Details</summary><p>Full product details and specifications.</p></details>
-    <details><summary>Ingredients</summary><p>Use verified ingredient data.</p></details>
-    <details><summary>How to Use</summary><p>Use verified usage instructions.</p></details>
-  </div>
-</section>
-```
-
-### BeforeAfter — Comparison Slider
-
-```html
-<section class="py-12 lg:py-20 px-4">
-  <div class="max-w-2xl mx-auto text-center">
-    <h2 class="font-bold mb-8" style="font-family:var(--lx-font-heading);font-size:clamp(1.5rem,3vw,2.25rem)">
-      Real Results
-    </h2>
-    <div data-island="BeforeAfter" data-props='{"before":{"src":"BEFORE_IMAGE_URL","label":"Day 1"},"after":{"src":"AFTER_IMAGE_URL","label":"Day 30"}}'></div>
-  </div>
-</section>
-```
-
----
-
-## Engagement Islands
-
-### IngredientExplorer — Interactive Ingredients
-
-```html
-<section class="py-12 lg:py-20 px-4" style="background:var(--lx-bg-surface)">
-  <div class="max-w-4xl mx-auto">
-    <div class="text-center mb-10">
-      <p class="text-xs uppercase tracking-[0.2em] mb-2" style="color:var(--lx-accent-color)">Transparency</p>
-      <h2 class="font-bold" style="font-family:var(--lx-font-heading);font-size:clamp(1.5rem,3vw,2.25rem)">What's Inside</h2>
-    </div>
-    <div data-island="IngredientExplorer" data-props='{"ingredients":[{"name":"Hyaluronic Acid","description":"Multi-molecular weight complex","benefit":"Deep multi-layer hydration"},{"name":"Niacinamide 5%","description":"Vitamin B3 derivative","benefit":"Minimizes pores, evens tone"},{"name":"Ceramide Complex","description":"Skin-identical lipids","benefit":"Repairs moisture barrier"}],"layout":"grid"}'></div>
-  </div>
-</section>
-```
-
-### Product Comparison — Static Table
-
-```html
-<section class="py-12 lg:py-20 px-4">
-  <div class="max-w-4xl mx-auto">
-    <h2 class="text-center font-bold mb-10" style="font-family:var(--lx-font-heading);font-size:clamp(1.5rem,3vw,2.25rem)">
-      Why We're Different
-    </h2>
-    <table class="w-full text-left">
-      <thead><tr><th>Feature</th><th>Our product</th><th>Alternative</th></tr></thead>
-      <tbody><tr><td>Clean ingredients</td><td>Yes</td><td>Check source</td></tr></tbody>
-    </table>
-  </div>
-</section>
-```
-
-### EmailCapture — Lead Capture
-
-```html
-<section class="py-12 lg:py-16 px-4" style="background:var(--lx-accent-color)">
-  <div class="max-w-xl mx-auto text-center">
-    <h2 class="text-white text-2xl font-bold mb-2" style="font-family:var(--lx-font-heading)">Join the Club</h2>
-    <p class="text-white/70 text-sm mb-6">Get 10% off your first order + early access to new launches.</p>
-    <div data-island="EmailCapture" data-props='{"placeholder":"Enter your email","buttonText":"Get 10% Off","discount":"10% off your first order","variant":"compact"}'></div>
-  </div>
-</section>
-```
-
-### Modal — Exit-Intent Offer
-
-Place once (invisible):
-
-```html
-<section class="hidden">
-  <div data-island="Modal" data-props='{"trigger":"exit_intent","headline":"Wait! Don't leave empty-handed","body":"Use code EXIT15 for 15% off your first order","triggerLabel":"Claim My Discount","position":"center"}'></div>
-</section>
-```
-
----
-
-## Common Combinations
-
-### PDP Core (minimum viable PDP)
-
-```
-1. ProductGallery + BuyBox (side-by-side on desktop)
-2. Static trust row (immediately below)
-3. Native details/ingredient disclosures
-4. ReviewCarousel
-5. StickyBar (scroll-triggered)
-6. head.use_cart_v2: true (cart injected — no section needed)
-```
-
-### Landing Page Core
-
-```
-1. Hero section (HTML, no island)
-2. Static trust row
-3. Benefits section (HTML grid)
-4. BeforeAfter or IngredientExplorer
-5. ReviewCarousel
-6. EmailCapture or BuyBox
-7. Native FAQ details
-8. Modal with exit-intent trigger (hidden)
-```
-
-### Collection Page
-
-```
-1. Collection header (HTML)
-2. ProductCarousel (featured picks)
-3. Product grid with QuickAdd per card
-4. TrustBadgeBar
-5. EmailCapture (footer)
-```
-
----
-
-## Data-Props Formatting Rules
-
-1. **Single quotes** around attribute value: `data-props='...'`
-2. **Double quotes** inside JSON: `{"key":"value"}`
-3. **No apostrophes** in text values — use `'` or rephrase
-4. **No line breaks** in data-props — must be one line
-5. **Numbers without quotes**: `{"qty":2,"discount":10}`
-6. **Booleans without quotes**: `{"autoPlay":true}`
-7. **Arrays**: `{"items":[{...},{...}]}`
-
-### Escaping gotchas
-
-```html
-<!-- WRONG: apostrophe breaks parsing -->
-<div data-props='{"text":"Don't miss out"}'></div>
-
-<!-- RIGHT: avoid apostrophes -->
-<div data-props='{"text":"Do not miss out"}'></div>
-
-<!-- RIGHT: use HTML entity in surrounding HTML, not in props -->
-```
-
----
-
-## PDP Template Recipes
-
-### DTC Beauty PDP
-
-```
-ProductGallery (vertical, listenForVariant:true)
-├── VariantSwatches (color, image type)
-├── SubscriptionToggle
-├── BuyBox (listenForEvents:true, showVariantSelector:false)
-├── DeliveryEstimate (variant:"inline")
-├── TrustBadgeBar (compact)
-├── PaymentOptions (variant:"inline", listenForEvents:true)
-├── InventoryIndicator (variant:"badge", listenForEvents:true)
-├── Tabs (underline)
-├── ReviewCarousel
-├── BundleBuilder (layout:"horizontal")
-├── ProductCarousel ("You may also like")
-├── StickyBar
-└── SocialProofPopup    # cart: head.use_cart_v2: true (injected)
-```
-
-### Fashion/Apparel PDP
-
-```
-ProductGallery (layout:"grid", listenForVariant:true)
-├── VariantSwatches (color, image) + VariantSwatches (type:"size_grid", axis mode)
-├── OptionResolver (productId)
-├── SizeGuide
-├── BuyBox (variant:"expanded", listenForEvents:true, showVariantSelector:false)
-├── InventoryIndicator (variant:"text", listenForEvents:true)
-├── DeliveryEstimate (variant:"card")
-├── Tabs (style:"underline")
-├── ReviewCarousel
-├── BundleBuilder (title:"Complete the look", layout:"stacked")
-├── ProductCarousel
-├── StickyBar
-└── ExitIntent          # cart: head.use_cart_v2: true (injected)
-```
-
-### Supplements/Wellness PDP
-
-```
-ProductGallery (vertical)
-├── VariantSwatches (flat, image type for flavors)
-├── QuantityBreaks
-├── SubscriptionToggle
-├── BuyBox (listenForEvents:true)
-├── PaymentOptions (variant:"expandable")
-├── TrustBadgeBar (badges: GMP, vegan, lab-tested)
-├── IngredientExplorer (layout:"interactive")
-├── FAQ (style:"accordion")
-├── ReviewCarousel
-├── CompareTable (vs competitors)
-├── BundleBuilder (title:"Stack for results")
-├── StickyBar
-└── CountdownTimer      # cart: head.use_cart_v2: true (injected) (style:"simple", inline with price)
-```
-
-### Personalized Product PDP (Gifts/Jewelry)
-
-```
-ProductGallery (layout:"grid")
-├── VariantSwatches (type:"text")
-├── BuyBox (variant:"expanded", listenForEvents:true)
-├── DeliveryEstimate (variant:"banner")
-├── PaymentOptions (variant:"inline")
-├── Tabs
-├── ReviewCarousel
-├── ProductCarousel ("Complete the gift set")
-└── StickyBar            # cart: head.use_cart_v2: true (injected)
-```
-
-### Island Communication on PDP
-
-Key event flows for PDP islands:
-- VariantSwatches → (variant:changed) → BuyBox, ProductGallery, InventoryIndicator, PaymentOptions
-- OptionResolver → (variant:changed) → all listeners above (for multi-axis products)
-- SubscriptionToggle → (subscription:changed) → BuyBox
-- BundleBuilder → (bundle:add) → cart drawer (injected cart profile)
-- InventoryIndicator → (inventory:updated) → StickyBar, BuyBox
-
-Always set `listenForEvents:true` on listener islands when they co-exist with emitters.
-
----
-
-## New PDP Islands (v2)
-
-### ProductHero — Split-Layout PDP Hero
-
-Premium split-hero for PDPs. Media pane on one side, BuyBox on the other.
-
-```html
-<div data-island="ProductHero" data-props='{"images":[{"url":"/product-1.jpg","objectFit":"contain","objectPosition":"center"},{"url":"/product-2.jpg","objectFit":"cover"}],"layout":"splitLeft","thumbnails":"rail","thumbnailPosition":"left","navigation":"floatingArrows","transition":"fade","listenForVariant":true}'></div>
-```
-
-**Layout options:** `splitLeft` (media left 60%), `splitRight`, `fullHeight`, `stacked`
-**ALWAYS PAIR WITH:** BuyBox in the adjacent grid cell. Use CSS grid in the containing HTML section to create the split.
-
-### ProductCarousel — Related Products
-
-Mixed-type grid with center feature card for bundles or highlighted products.
-
-```html
-<div data-island="ProductCarousel" data-props='{"products":[{"id":"123","title":"Product A","price":"$29","image":"/a.jpg"},{"id":"456","title":"Product B","price":"$35","image":"/b.jpg"}],"columns":2,"showQuickAdd":true}'></div>
-```
-
-### Product Detail Cards — Static HTML
-
-Information cards for product specs, taste profiles, pairings, certifications.
-
-```html
-<div class="grid gap-4 md:grid-cols-2">
-  <article><h3>Taste Profile</h3><p>Bright citrus · Smooth finish · Medium body</p></article>
-  <article><h3>Pairs With</h3><p>Dark chocolate · Aged cheese · Fresh berries</p></article>
-</div>
-```
-
-Place below the ProductHero/BuyBox section and above reviews.
-
----
-
-## Navigation Islands — Hydration Mode (Preferred)
-
-Navigation islands (Navbar, Footer, SiteHeader) support **hydration mode**: you generate ANY HTML/CSS, then place `data-lx-*` tags on functional elements. The island attaches behavior (cart state, mobile toggle, newsletter) without touching your design.
-
-### Why Hydration Mode?
-
-- Complete design freedom — any layout, any CSS
-- Only 2-5 behavior props (vs 15+ style props in legacy mode)
-- Cart state auto-syncs — no prop management
-- Publish validator enforces required tags — can't ship broken nav
-
-### Navbar — Hydration Mode
-
-**Required tags:** `data-lx-nav="root|cart-trigger|cart-count|mobile-trigger|mobile-panel"`
-
-**Behavior props:** `sticky` (bool), `cartMode` ("drawer"|"link"), `transparent` (bool)
-
-```html
-<div data-island="Navbar" data-props='{"sticky":true,"cartMode":"drawer"}'>
-  <nav data-lx-nav="root" class="fixed top-0 w-full z-50 bg-white/95 backdrop-blur border-b border-gray-100">
-    <div class="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
-      <a href="/" data-lx-nav="logo">
-        <img src="{{brand_logo}}" class="h-8" alt="{{brand_name}}" />
-      </a>
-      <nav class="hidden lg:flex items-center gap-8">
-        <a href="/collections" data-lx-nav="link" class="text-sm font-medium">Shop</a>
-        <a href="/about" data-lx-nav="link" class="text-sm font-medium">About</a>
-      </nav>
-      <div class="flex items-center gap-4">
-        <button data-lx-nav="cart-trigger" class="relative p-2">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0"/>
-          </svg>
-          <span data-lx-nav="cart-count" class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-black text-white text-[10px] flex items-center justify-center" style="display:none"></span>
-        </button>
-        <button data-lx-nav="mobile-trigger" class="lg:hidden p-2">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 12h18M3 6h18M3 18h18"/>
-          </svg>
-        </button>
-      </div>
-    </div>
-    <div data-lx-nav="mobile-panel" class="hidden lg:hidden border-t px-6 py-4">
-      <a href="/collections" class="block py-3 text-sm font-medium">Shop</a>
-      <a href="/about" class="block py-3 text-sm font-medium">About</a>
-    </div>
-  </nav>
-</div>
-```
-
-**CSS requirement** (include in section CSS):
-```css
-[data-lx-nav="mobile-panel"] { display: none; }
-[data-lx-nav="mobile-panel"].lx-open { display: block; }
-```
-
-**Dropdowns (optional):**
-```html
-<div class="relative">
-  <a href="/shop" data-lx-nav="dropdown-trigger">Shop ▾</a>
-  <div data-lx-nav="dropdown-panel" class="absolute top-full mt-2 bg-white shadow-lg rounded-lg p-4">
-    <a href="/collections/new" class="block py-2 text-sm">New Arrivals</a>
-  </div>
-</div>
-```
-
-**Hide cart (no cart-trigger/cart-count needed):**
-```html
-<div data-island="Navbar" data-props='{"sticky":true,"hideCart":true}'>
-```
-
-### Footer — Hydration Mode
-
-**Required tags:** `data-lx-footer="root"`  
-**Optional tags:** `newsletter-form`, `newsletter-input`, `newsletter-success`, `year`
-
-```html
-<div data-island="Footer" data-props='{"links":[]}'>
-  <footer data-lx-footer="root" class="bg-gray-950 text-gray-300 py-16 px-6">
-    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
-      <div>
-        <img src="{{brand_logo}}" class="h-8 mb-4 invert" alt="{{brand_name}}" />
-        <p class="text-sm text-gray-400">{{brand_tagline}}</p>
-      </div>
-      <div>
-        <h4 class="text-white font-semibold text-sm mb-4">Shop</h4>
-        <a href="/collections" class="block text-sm py-1.5 text-gray-400 hover:text-white">All Products</a>
-      </div>
-      <div>
-        <h4 class="text-white font-semibold text-sm mb-4">Newsletter</h4>
-        <form data-lx-footer="newsletter-form" class="flex">
-          <input data-lx-footer="newsletter-input" type="email" placeholder="your@email.com" class="flex-1 px-3 py-2 bg-gray-900 border border-gray-700 text-sm text-white rounded-l" />
-          <button type="submit" class="px-4 py-2 bg-white text-black text-sm font-medium rounded-r">→</button>
-        </form>
-        <p data-lx-footer="newsletter-success" style="display:none" class="text-sm text-green-400 mt-2"></p>
-      </div>
-    </div>
-    <div class="max-w-7xl mx-auto mt-10 pt-6 border-t border-gray-800 text-sm text-gray-500">
-      © <span data-lx-footer="year"></span> All rights reserved.
-    </div>
-  </footer>
-</div>
-```
-
-### SiteHeader — Hydration Mode
-
-Combines announcement + navbar. Uses BOTH `data-lx-header` and `data-lx-nav` tags.
-
-**Required tags:** `data-lx-header="root"` + same nav tags as Navbar
-
-```html
-<div data-island="SiteHeader" data-props='{"sticky":true,"announcement":{"messages":["Free shipping over $75","New summer collection"],"dismissible":true},"navbar":{"logo":{"src":"BRAND_LOGO_URL"},"links":[]}}'>
-  <header data-lx-header="root" class="fixed top-0 w-full z-50">
-    <div data-lx-header="announcement" class="bg-black text-white text-center py-2 text-xs relative">
-      <span data-lx-header="announcement-text">Free shipping over $75</span>
-      <button data-lx-header="announcement-dismiss" class="absolute right-3 top-1/2 -translate-y-1/2">&times;</button>
-    </div>
-    <nav class="bg-white border-b">
-      <!-- Same data-lx-nav tags as Navbar example above -->
-    </nav>
-  </header>
-</div>
-```
-
-### Tag Reference
-
-| Tag | Islands | Behavior |
-|-----|---------|----------|
-| `data-lx-nav="root"` | Navbar, SiteHeader | Sticky/scroll attaches here |
-| `data-lx-nav="cart-trigger"` | Navbar, SiteHeader | Click → open cart drawer or navigate |
-| `data-lx-nav="cart-count"` | Navbar, SiteHeader | textContent auto-updated from $cartLines |
-| `data-lx-nav="mobile-trigger"` | Navbar, SiteHeader | Click toggles mobile-panel .lx-open class |
-| `data-lx-nav="mobile-panel"` | Navbar, SiteHeader | Toggle target for mobile menu |
-| `data-lx-nav="dropdown-trigger"` | Navbar, SiteHeader | Hover shows dropdown-panel |
-| `data-lx-nav="dropdown-panel"` | Navbar, SiteHeader | Shown/hidden on hover (same parent) |
-| `data-lx-footer="root"` | Footer | Root element |
-| `data-lx-footer="newsletter-form"` | Footer | Form submit → POST endpoint |
-| `data-lx-footer="newsletter-input"` | Footer | Email input |
-| `data-lx-footer="newsletter-success"` | Footer | Shown after successful submit |
-| `data-lx-footer="year"` | Footer | textContent = current year |
-| `data-lx-header="root"` | SiteHeader | Root + spacer via ResizeObserver |
-| `data-lx-header="announcement"` | SiteHeader | Hidden on dismiss |
-| `data-lx-header="announcement-text"` | SiteHeader | Rotates through messages[] |
-| `data-lx-header="announcement-dismiss"` | SiteHeader | Click hides + persists to sessionStorage |
-
-### Validation (Publish Blocks If Missing)
-
-The publish validator enforces required tags when hydration mode detected:
-- Navbar/SiteHeader: `root` + `cart-trigger` + `cart-count` + `mobile-trigger` + `mobile-panel`
-- Footer: `root`
-- Cart tags skipped if `hideCart: true` in props
-
----
-
-# Style Packs — Named `data-part` CSS Bundles
-
-> Scope every rule in a pack to its section id, as
-> `references/island-presets.md` does with `#{{id}} [data-part=...]`. An
-> unscoped `[data-part]` selector becomes page-global once compiled. Any
-> accent-tinted `box-shadow` in a pack is a glow and is banned by
-> `references/design-rules.md` N7 regardless of its offsets.
-
-> House rules in `storefront-engine/references/design-rules.md` override every example below.
-> Examples show structure and copy intent; their styling (gradients, hover transforms,
-> uppercase labels, pills, emoji, section fills) is illustrative and must not be copied.
-> Where an example conflicts with a house rule, the rule wins.
-
-> Pre-tested visual treatments for rendered-mode islands. Pick ONE pack per page and paste its island overrides into the relevant sections' `<style>` blocks. Packs only touch visual properties (radius, borders, shadows, typography case/tracking) via `[data-part]` selectors and `--lx-*` variables — never layout. For fully custom island markup use headless mode instead (source-format.md).
-
-## Choosing
-
-| Pack | Feel | Best for |
-|---|---|---|
-| `editorial` | serif confidence, hairline rules, generous air | premium skincare, fashion, coffee |
-| `soft-luxury` | pill shapes, soft shadows, muted warmth | beauty, wellness, jewelry |
-| `brutalist` | hard edges, thick borders, high contrast | streetwear, drops, gen-z brands |
-| `playful` | big radii, bouncy hovers, chunky buttons | kids, snacks, novelty, pets |
-| `minimal` | flat, monochrome, quiet CTAs | tech accessories, tools, minimal brands |
-
-## editorial
+# Style direction
+
+A style direction translates the merchant's palette, typography, imagery and
+object-radius scale into one coherent page. It does not override
+`references/design-rules.md` or supply island props.
+
+| Direction | Deliberate choice |
+|---|---|
+| Editorial | Strong image hierarchy, readable measure, restrained supporting type |
+| Soft luxury | Quiet geometry, craftsmanship imagery, generous pacing |
+| Brutalist | Firm alignment, explicit hierarchy, minimal ornament |
+| Playful | Merchant-approved palette and composition, not decorative UI effects |
+| Minimal | Sparse hierarchy with enough detail to make the purchase decision |
+
+## Applying a direction
+
+Record it in the plan. Apply tokens in `theme_css`; keep section
+geometry in utilities unless the styling contract permits custom CSS.
+`references/authoring/css-and-styling.md` owns scope, contrast, radii and
+parts. After the live schema confirms a part, a visual override can be:
 
 ```css
-[data-part="cta"] { border-radius: 0; text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.85rem; padding: 1.1rem 2.5rem; }
-[data-part="variant-btn"] { border-radius: 0; border-width: 1px; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.75rem; }
-[data-part="heading"] { font-family: var(--lx-font-heading); font-weight: 400; letter-spacing: -0.01em; }
-[data-part="item"] { border: none; border-bottom: 1px solid var(--lx-border-color); border-radius: 0; }
-[data-part="badge"] { border-radius: 0; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.65rem; }
+#buy-box [data-part="cta"] { border-radius: var(--r-control); }
 ```
 
-## soft-luxury
-
-```css
-[data-part="cta"] { border-radius: 9999px; box-shadow: 0 8px 24px color-mix(in srgb, var(--lx-accent-color) 35%, transparent); padding: 1rem 2.75rem; }
-[data-part="variant-btn"] { border-radius: 9999px; border-color: var(--lx-border-color); }
-[data-part="item"] { border-radius: 1.25rem; border: 1px solid var(--lx-border-color); box-shadow: 0 2px 12px rgb(0 0 0 / 0.04); }
-[data-part="badge"] { border-radius: 9999px; }
-[data-part="trust-badges"] { opacity: 0.75; }
-```
-
-## brutalist
-
-```css
-[data-part="cta"] { border-radius: 0; border: 3px solid var(--lx-text-color); box-shadow: 4px 4px 0 var(--lx-text-color); text-transform: uppercase; font-weight: 800; }
-[data-part="cta"]:hover { background: var(--lx-accent-color-hover); }
-[data-part="variant-btn"] { border-radius: 0; border: 2px solid var(--lx-text-color); font-weight: 700; }
-[data-part="item"] { border: 2px solid var(--lx-text-color); border-radius: 0; box-shadow: 4px 4px 0 var(--lx-border-color); }
-[data-part="badge"] { border-radius: 0; border: 2px solid var(--lx-text-color); font-weight: 800; }
-```
-
-## playful
-
-```css
-[data-part="cta"] { border-radius: 1.25rem; font-weight: 800; padding: 1.1rem 2.5rem; transition: background-color 150ms ease; }
-[data-part="cta"]:hover { background: var(--lx-accent-color-hover); text-decoration: underline; }
-[data-part="variant-btn"] { border-radius: 1rem; border-width: 2px; font-weight: 700; }
-[data-part="item"] { border-radius: 1.5rem; border: 2px solid var(--lx-border-color); }
-[data-part="badge"] { border-radius: 9999px; font-weight: 800; }
-```
-
-## minimal
-
-```css
-[data-part="cta"] { border-radius: 0.375rem; box-shadow: none; font-weight: 500; }
-[data-part="variant-btn"] { border-radius: 0.375rem; border-color: var(--lx-border-color); font-weight: 400; }
-[data-part="item"] { border: none; border-radius: 0.5rem; background: var(--lx-surface-alt); box-shadow: none; } /* --lx-surface-alt is a component tint, never a section background */
-[data-part="badge"] { border-radius: 0.25rem; font-weight: 500; }
-[data-part="trust-badges"] { filter: grayscale(1); opacity: 0.6; }
-```
-
-## Rules
-
-1. One pack per page — mixing packs is the #1 way to make a page look broken.
-2. Scope to a section if two islands need different treatments: `#hero [data-part="cta"] { ... }`.
-3. Packs compose with `lexsis_brand.compile_theme` output — they reference `--lx-*` variables, never hardcode colors.
-4. Check the island's `schema.json` `parts` array before targeting a part name (`lexsis_design.island_schema`).
-5. Packs never override `design-rules.md`.
+Do not add global part selectors, accent-tinted shadows, word accents,
+background bands or motion to make a direction recognizable. Its identity
+must survive without those effects. A saved island intent label is resolved
+against the live schema, not copied as a prop bundle.
 
 ---
 
-# Asset Pipeline — Multi-Source Visual Strategy
+# Standalone asset operations
 
-> **Compiled runtime reference:** any `data-island` or `data-props` snippets below are renderer output, not page source. For new pages, use `<lx-island>` with a JSON script child as defined in `source-format.md`, then call `lexsis_pages` with action `compile`.
+For page assets, execute `references/workflows/section-asset-workflow.md`.
+For an asset-only request, accept the brand/store/theme binding, intended
+role and delivery requirements without invoking page planning or design.
+Eligibility and rights come from `references/assets/asset-sourcing-sequence.md`;
+generation permissions come from `references/assets/generation-policy.md`.
 
-> **Inputs:** A standalone asset brief or an existing page workspace
-> **Outputs:** Verified permanent asset bindings
-> **When to load:** During `/design-page` asset selection or an independent
-> `/asset-prep` request.
+## Import and upload mechanics
 
----
+| Operation | Use |
+|---|---|
+| `lexsis_asset_library.search` | Find existing library assets; an empty query lets the user browse |
+| `lexsis_assets.capabilities` | Discover current generation providers and capabilities |
+| `lexsis_asset_import.import` | Import exactly one supplied source: URL, image base64 with MIME type, or conversation attachments |
+| `lexsis_asset_upload.upload` | Open the local image/video upload UI |
+| `lexsis_drafts.asset_generate` | Execute an approved generation request |
+| `lexsis_assets.view` | Inspect the returned asset through the shared fit procedure |
 
-## Decision Tree
+Import arguments are exactly one of `url`, image `data` + `mime_type`, or
+non-empty `attachments` with `attachment_id` per entry. Import never opens UI.
+Upload arguments contain only the selected `workspace_id` and `theme_id`.
+Wait for the user's uploaded-asset message; opening the panel is not a
+completed upload. Without inline UI, request a URL or conversation attachment
+and import it instead. `references/lexsis-mcp-contract.md` owns this contract.
 
-```
-Need an image or video for a section?
-│
-├─ lexsis_asset_library({ action: "search", args: { query, workspace_id, theme_id } })
-│  → found good match?
-│  ├─ YES → use it (free, on-brand)
-│  └─ NO ↓
-│
-├─ Product shot needed?
-│  ├─ YES → use real images from lexsis_catalog action list/get
-│  └─ NO ↓
-│
-├─ What type of asset?
-│  ├─ Static image (background, lifestyle, texture, composite)
-│  │  └─ lexsis_drafts action asset_generate
-│  │
-│  ├─ Video (hero, demo, UGC-style)
-│  │  └─ External MCP: HiggsField / Runway / Kling
-│  │
-│  ├─ Reference/mood imagery (competitor screenshots, inspiration)
-│  │  └─ External MCP: Exa (web_search_exa)
-│  │
-│  ├─ Stock photography (realistic, non-AI look needed)
-│  │  └─ External MCP: Unsplash / Pexels
-│  │
-│  └─ Specialized illustration (custom style beyond built-in)
-│     └─ External MCP: OpenArt
-│
-└─ After sourcing → lexsis_asset_import action import
-```
+## External-provider handoff
 
----
+When the merchant chooses an available external provider, retain that provider
+and its credit/approval evidence. Persist its output with
+`lexsis_asset_import.import` before binding it to a page; use the returned
+permanent asset URL, not a transient provider URL. Inspect it through the
+shared asset workflow. Do not imply a provider exists merely because an old
+example named it.
 
-## Built-In Tools (Lexsis AI MCP)
+## Result record
 
-| Tool | What it does | Cost |
-|------|-------------|------|
-| `lexsis_asset_library` → `search` | Search workspace assets | Free |
-| `lexsis_drafts` → `asset_generate` | Generate, composite, inpaint, or restyle | Credits |
-| `lexsis_assets` → `view` | Verify an asset | Free |
-| `lexsis_asset_import` → `import` | Import exactly one source: URL, image base64 plus MIME type, or conversation attachments; never opens UI | Free |
-| `lexsis_asset_upload` → `upload` | Open the local image/video upload panel; wait for the user's uploaded-asset message with the resulting asset id and URL | Free |
-
-Ask the user whether they want to pick from the library before searching; an empty `query` browses and opens the asset picker (`Design asset selection:` carries `asset_ids` and `selection_order`). Pass `workspace_id` explicitly when multiple workspaces
-are available and the selected `theme_id` whenever the discovered action
-schema supports it.
-
-For import, supply exactly one of `url`, image `data` + `mime_type`, or a
-non-empty `attachments` array with `attachment_id` per entry. Never call
-import without a source. For the upload UI, call `lexsis_asset_upload` with
-`action: "upload"` and only `workspace_id` and `theme_id` in `args`.
-Opening the panel does not import an asset. Wait for the user's uploaded-asset
-message; if inline UI is unavailable, ask for a URL or conversation attachment
-and use `lexsis_asset_import` with `action: "import"` instead.
-
-See `design-enrichment.md` for detailed prompt patterns, style selection guide, compositing recipes, and HTML placement patterns.
+Save the final bindings in
+`work/storefront-assets/<brief-name>/asset-manifest.json`: role, source type,
+asset id, permanent URL, and verification status. Shopify media retains its
+product and media ids. Prompt history and rights evidence stay in the brief.
+For an existing page, update only the requested slots and recompile once;
+visible changes return to design approval. No page publication is implied.
 
 ---
 
-## External MCPs (Detected at Runtime)
+# Hosted draft verification
 
-These tools are available when the user has the corresponding MCP installed. Check availability before suggesting.
+## Evidence gate
 
-### Exa — Image Research & Reference
+Follow `references/source-artifact-workflow.md`. There are no local QA steps,
+page decision records or source-file prerequisites.
 
-```
-web_search_exa({ query: "skincare brand hero photography editorial style" })
-```
+1. Check compiler results for the exact submitted inputs.
+2. Reuse the existing unpublished draft, or create it once with `publish:false`.
+3. Read persisted source, bundle and version through MCP; reconcile drift.
+4. Run `lexsis_pages.integrity` and read `lexsis_pages.qa`.
+5. Check the page-type contract, house rules and proof/offer evidence against
+   that persisted source and the hosted draft. Type and copy findings are
+   review notes; unsupported proof/offer content blocks readiness.
 
-Use for: mood boards, competitor visual research, finding reference imagery to brief `lexsis_drafts` action `asset_generate` more precisely, sourcing real lifestyle photos.
-
-**Flow:** Exa search → find URL → `lexsis_asset_import` action `import` → use
-the returned permanent URL.
-
-### HiggsField / Runway / Kling — Video Generation
-
-Use when: TikTok traffic source, fashion/luxury vertical, product demo needed, brand has no existing video content.
-
-**Flow:**
-1. Generate video via external MCP (short clip, 3-8 seconds)
-2. `lexsis_campaigns.frames` → pull best frame as thumbnail
-3. Use video URL in HeroMedia island or `<video>` tag
-4. Set click-to-play; a muted loop is allowed only as the plan's single motion moment (`references/assets/video-rules.md`)
-
-**Video placement patterns:**
-- Hero: click-to-play with compelling thumbnail image
-- Product demo: inline player after benefits section
-- Social proof: UGC-style video carousel
-- Background: muted loop, heavily dimmed (luxury only)
-
-### OpenArt — Specialized AI Illustration
-
-Use when: `lexsis_drafts(action: "asset_generate", args: style: "illustration")` doesn't provide enough control over style, need specific artistic direction, or brand has a custom illustration language.
-
-### Unsplash / Pexels — Stock Photography
-
-Use when: brand has no library assets, AI generation looks too synthetic, need real-world photography (locations, hands, diverse models).
-
----
-
-## Feeding External Assets Into Pages
-
-All external assets MUST be persisted before use:
-
-```
-1. Source asset via external MCP → get URL
-2. lexsis_asset_import({
-     action: "import",
-     args: { url, purpose: "hero_bg", tags: ["lifestyle", "summer"], workspace_id, theme_id }
-   })
-   → returns { asset_id, url, width, height }
-3. Use returned URL in page HTML (same as built-in assets)
-```
-
-This ensures: the asset is stored in the brand's library, available for reuse, and won't break if the external source goes down.
-
----
-
-## Per-Page-Type Asset Budget
-
-| Page Type | Hero (high) | Supporting imagery (medium) | Lifestyle (medium) | Video | Total assets |
-|-----------|-------------|---------------------|--------------------|----|------|
-| PDP | 1 | 0-1 | 1 | 0-1 | 2-4 |
-| Landing | 1 | 2-3 | 0-1 | 0-1 | 3-5 |
-| Homepage | 1 | 1 | 0 | 0 | 2 |
-| Editorial | 1 | 3-4 | 2-3 | 0-1 | 6-9 |
-| Collection | 0-1 | 0 | 0 | 0 | 0-1 |
-| Bundle | 1 | 1 | 0 | 0 | 2-3 |
-
-**Rules:**
-- Check `lexsis_workspace` action `credits` before generation
-- Use `quality: "medium"` default; `"high"` only for hero images
-- Products have their own Shopify images — never generate product shots
-
----
-
-## Video in Pages
-
-### When Video Converts Better
-- TikTok/Reels traffic (video-native audience)
-- Fashion/beauty (texture, movement, try-on)
-- Luxury (cinematic brand storytelling)
-- Product demos (85% say video convinced them to buy)
-
-### Technical Integration
-```html
-<!-- Click-to-play video hero -->
-<lx-island name="HeroMedia">
-  <script type="application/json">
-    { "type": "video", "videoSrc": "VIDEO_URL", "poster": "THUMBNAIL_URL", "autoplay": false }
-  </script>
-</lx-island>
-
-<!-- Inline video (no island needed for simple playback) -->
-<video class="w-full rounded-xl" poster="THUMBNAIL_URL" controls playsinline>
-  <source src="VIDEO_URL" type="video/mp4" />
-</video>
-```
-
-### Anti-Patterns
-- NEVER autoplay video with sound; see `references/assets/video-rules.md` for the muted-loop exception
-- NEVER use video as only hero content (needs fallback image)
-- NEVER serve uncompressed video; use the imported CDN URL
-
----
-
-## Compact Asset Record
-
-After sourcing, update `page-manifest.json` and return:
-
-```json
-{
-  "role": "hero",
-  "sectionId": "hero",
-  "sourceType": "lexsis",
-  "assetId": "asset-uuid",
-  "url": "https://cdn.trylexsis.com/assets/abc123.jpg",
-  "status": "verified"
-}
-```
-
-Shopify catalog media uses `sourceType: "shopify"` with `productId` and
-`mediaId` instead of `assetId`. Never require a Lexsis asset ID for a Shopify
-image.
-
-Keep crop guidance, alt-text intent, prompts, and creative reasoning in the
-plan or standalone asset brief. Asset names alone do not establish identity.
-Visually inspect product, creator, and endorsement imagery. Generation uses
-only permanent verified URLs.
-
----
-
-## Cost Control
-
-1. `lexsis_asset_library` action `search` first
-2. `lexsis_workspace` action `credits` before expensive operations
-3. Prefer `quality: "medium"` — reserve `"high"` for hero only
-4. External MCP assets → `lexsis_asset_import` action `import`
-5. The page background for sections that don't need imagery
-6. Reuse: one hero image can serve as dimmed background for 2-3 sections
-
----
-
-# Before Showing Draft to Merchant — QA Recipe
-
-## Pre-flight Checklist
-
-1. **Validate local artifacts** — run the shared page workspace validator
-2. **Compile complete source** — `lexsis_pages` action `compile`
-3. **Save as draft** — `lexsis_page_create` action `create` with `publish:false`
-4. **Fetch and compare persisted source/content** — reject hash drift
-5. **Check integrity** — `lexsis_pages` action `integrity`
+First drafts may be returned with QA pending. Production readiness requires
+the hosted checks below; no browser access means no claimed visual pass.
 
 ## Browser QA (if available)
 
@@ -5852,7 +2802,7 @@ only permanent verified URLs.
 - [ ] All images load (no broken/gray placeholders)
 - [ ] Hero section visible above fold on both viewports
 - [ ] Text readable without zooming on mobile
-- [ ] Interactive islands respond to clicks (FAQ accordion, BuyBox variant selection)
+- [ ] Native disclosures and interactive islands respond to clicks (details, BuyBox selection)
 - [ ] Expected Shopify variant enters the cart
 - [ ] Cart opens and quantity/subtotal update
 - [ ] Authored header and footer appear exactly once and in source order
@@ -5872,176 +2822,85 @@ only permanent verified URLs.
 - [ ] Functional-looking filter/sort controls work or are absent
 - [ ] No console errors blocking render
 
-Write the result to `qa-report.md`, including source hash, remote version, copy
-lint, claims review, asset verification, blockers, and publish readiness.
+Keep results with the hosted URL, source/bundle hash and tested version.
+Record claims review, asset verification, screenshots, interaction evidence,
+blockers and readiness. Save supported evidence with
+`lexsis_drafts.page_record_qa` using its current schema; reread the QA record.
 
 ## Common Issues
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
 | Gray product cards | Missing `image`/`media` in product data | Add image URLs or use `productIds` for auto-fetch |
-| FAQ items don't toggle | Missing island hydration script | Ensure page includes island runtime |
+| Native disclosure does not toggle | Broken details/summary markup or blocked input | Repair source and test keyboard/pointer input on the hosted draft |
 | 401 on publish | OAuth session expired or revoked | Reconnect the MCP and complete browser OAuth |
 | Insufficient scope on publish | Connection has Read or Build access | Reauthorize with Publish access after user approval |
-| Images too large/slow | Using original Shopify CDN URLs | Append `&width=800` to resize |
+| Images too large/slow | Using original Shopify CDN URLs | Use the supported image transformation for that URL; preserve its query parameters |
 
 ## Draft vs Live
 
-- `publish: false` → draft at `/v/{slug}?shop={domain}&preview=1`
+- `publish: false` U+2192 draft at `/v/{slug}?shop={domain}&preview=1`
 - `lexsis_page_create` is draft-only and rejects `publish:true`
 - Publish later with `lexsis_live_ops` action `publish` after explicit approval
 - Draft edits do not replace the public `published_version_id`
 
 ---
 
-# Storefront Publishing & Lifecycle
+# Publishing and lifecycle
 
-Manage page publishing, previews, and lifecycle.
+Publication promotes a reviewed draft; it does not create another page.
+`references/source-artifact-workflow.md` owns source and version evidence.
 
-## Publish Flow
+## Publish gate
 
-1. Require local artifacts from `source-artifact-workflow.md`
-2. Confirm the page's saved store/theme binding
-3. `lexsis_pages` action `compile`
-4. `lexsis_page_create` action `create` with `publish:false`
-5. Fetch persisted source/content and record matching local and remote hashes
-6. `lexsis_pages` action `integrity`
-7. Verify the hosted draft at 390px, 768px, and 1280px, then run commerce QA
-8. Recheck remote version and local synchronization
-9. `lexsis_live_ops` action `publish` after explicit approval
+1. Resolve the existing page id and confirm its store/theme binding.
+2. Read current `lexsis_pages.edit_context`, source and integrity.
+3. Match the current version and source/bundle hashes to the approved hosted
+   QA evidence from `references/qa-recipe.md`. Stale evidence blocks release.
+4. Verify current publish permissions and entitlement.
+5. Obtain explicit approval naming this page and version.
+6. Call `lexsis_live_ops.publish` using the discovered argument schema.
+7. Re-read the published version and verify the returned public URL. Report
+   publication and live HTTP verification separately.
 
-## Operations
+If no draft exists, use `references/generation-protocol.md` first. If a draft
+exists, reuse its returned preview URL; previewing never creates another page.
+No local source, CSS, manifest, compile artifact or QA file is required.
 
-### Create Draft (New Page)
-```
-lexsis_pages({ action: "compile", args: { source, head, theme_css, scripts } })
-lexsis_page_create({ action: "create", args: { source, head, theme_css, scripts, slug, publish: false } })
-```
-Returns: page_id, page_url, preview_url
+## Other lifecycle operations
 
-### Preview (Draft)
-```
-lexsis_page_create({ action: "create", args: { source, head, theme_css, scripts, slug, publish: false } })
-```
-Returns: preview_url (not visible to store visitors)
+`lexsis_live_ops.unpublish` and `lexsis_live_ops.rollback` require explicit
+authorization and a confirmed target. Edits to a published page remain
+draft-only until publish succeeds. A failed republish leaves the previous
+published version in place; verify this rather than assuming recovery.
 
-### Publish Existing Page
-```
-lexsis_live_ops({ action: "publish", args: { page_id } })
-```
-Promotes the exact reviewed version to `published_version_id`.
-
-### Unpublish
-```
-lexsis_live_ops({ action: "unpublish", args: { page_id } })
-```
-Takes page offline but preserves it in DB.
-
-Use the experiment workflow for duplication and variants so each remote page
-has its own local source and manifest first.
-
-## Prerequisites
-
-- The manifest's store and theme exist in the saved one-time setup
-- Current permissions and store entitlement are read live
-- Require `qa-report.md` with no blocking failures
-- Require local source, page theme, remote bundle, and remote version to match
-  the manifest baseline
-
-Edits to a published page remain draft-only until publish succeeds. A failed
-republish keeps the prior public version live.
-
-## Post-Publish
-
-After publishing, the page is served via:
-- Shopify store (native page)
-- pages.lexsis.app (standalone via edge worker)
-- Custom domain (if tracking domain configured)
+Variants follow `references/ab-testing.md`; every variant keeps its own
+page/version and hosted QA evidence. Never infer publication from draft
+creation, design approval, experiment creation or a request for a preview.
 
 ---
 
-# Storefront Page Generation
+# Page generation
 
-> **Full workflow:** See `generation-protocol.md` for Phases 1-5 execution (context gathering, HTML generation, validation, publishing, visual verification).
-
-Use `source-artifact-workflow.md` for the local working directory, static
-visual-reference placeholders, readable canonical source, synchronization, and
-section-patch policy.
-
-This file covers quick-reference patterns for generation.
-
----
-
-## Template-First Rule
-
-Always search `lexsis_template_library.search_sections` before generating sections from scratch. It returns metadata only — fetch markup for the ids you pick with `lexsis_design.get_section`:
-
-```
-lexsis_template_library.search_sections({ query: "hero with video background for fashion", section: "hero", industry: "fashion", mood: "editorial" })
-lexsis_design.get_section({ ids: ["<chosen id from results>"] })
-```
-
-- If a suitable template is found: fetch and use it. The fetched `source`
-  contains the section markup, CSS, and JS ready to tailor with brand-specific
-  copy/images, then pass to
-  `lexsis_pages` action `compile`.
-- If no match: generate from scratch in Phase 4.
-
-Templates are conversion-proven, pixel-perfect, and faster than custom generation.
-Use `format: "compiled_reference"` only to inspect renderer output; never paste its
-`data-island` / `data-props` markup into source-authoring tools.
-
-For a full page, check `lexsis_template_library.search_page_kits` before assembling sections one at a time — it returns curated multi-section groupings that already share one palette/vertical:
-
-```
-lexsis_template_library.search_page_kits({ query: "clinical supplements PDP", page_type: "pdp", industry: "supplements" })
-```
-
----
-
-## Page Type Section Defaults
-
-**Product Landing (PDP)** — 8-10 sections:
-Hero (split) → Gallery → BuyBox → Benefits → Ingredients/Specs → Reviews → Related Products → FAQ → Sticky CTA → Footer
-
-**Campaign Landing** — 10 sections:
-Hero → Problem/Pain → Solution → Key Benefits → Social Proof → How It Works → Comparison → Offer/Pricing → FAQ → CTA
-
-**Homepage** — 7-8 sections:
-Hero → Featured Products → Brand Story → Categories → Testimonials → Newsletter → Trust Bar → Footer
-
-**Collection** — 6 sections:
-Hero Banner → Filter/Sort → Product Grid → Promo Card → Social Proof → Footer
-
-**Editorial** — 6-8 sections:
-Full-Bleed Hero → Intro Copy → Shoppable Gallery → Content Block → Product Spotlight → Related Reads → Footer
-
-**Listicle** — 7-9 sections:
-Hero + TOC → Methodology → Numbered Items → Comparison Table → Verdict → FAQ → CTA
-
-**Bundle** — 6-8 sections:
-Hero + Savings Hook → Step Progress → Product Selection → Social Proof → FAQ → Sticky Summary
+Choose the type through `references/page-types/_index.md`, execute `references/workflows/_how-to-read.md`, and use `references/generation-protocol.md` for compile, draft, and QA state transitions. Templates are starting source, not a second authority for section ordering.
 
 ---
 
 # Storefront Page Editing
 
-Edit existing pages through canonical local source and section-level remote
+Edit existing pages through canonical editable source and section-level remote
 operations. Read `source-artifact-workflow.md` first.
 
 ## Edit Flow
 
-1. Open the local working directory. If an older page has no local files,
-   create them from the current remote page once and record the synchronized
-   baseline before editing.
-2. `lexsis_pages` action `edit_context`
-3. Compare its version with `manifest.remote.lastKnownVersion`; stop on drift.
-4. Edit `lexsis-source.html`.
-5. Run the local source gate and compile the complete source.
-6. Compare current section hashes with the synchronized baseline.
-7. Patch only changed sections with `expected_version`,
-   `expected_source_sha256`, and an idempotency key.
-8. Update manifest version/hashes after success, then run `diff` and `integrity`.
+1. Read `lexsis_pages.edit_context` and `lexsis_pages.source`.
+2. Compare the current version with the last recorded version; reconcile drift.
+3. Edit the returned source value and compile the complete changed inputs.
+4. Compare section changes with the persisted baseline.
+5. Patch only changed sections with `expected_version`,
+   `expected_source_sha256` and an idempotency key where supported.
+6. Update recorded version/hashes after success, then run `diff`, `integrity`
+   and the affected checks on the hosted draft.
 
 For existing pages, `page_id` is authoritative. Do not require the user to
 reselect a workspace or pass `store_id`; an optional store ID is only an
@@ -6106,12 +2965,12 @@ lexsis_drafts({ action: "page_move_section", args: { page_id, section_id, positi
 
 ## Best Practices
 
-- Never make the remote page the only copy of an intentional change
+- Retain the intended change and returned version in the task handoff
 - Always call `lexsis_pages` action `edit_context` before a write
 - Stop on unexpected version drift
-- Re-read source and reconcile locally when an edit returns `version_conflict`
+- Re-read source and reconcile against the current version when an edit returns `version_conflict`
 - Reference section IDs from the page data (don't guess)
-- Compile the complete local source before section patching
+- Compile the complete editable source before section patching
 - After editing, run `diff` and `integrity`
 - Batch related multi-section changes with `page_patch` so they create one
   version.
@@ -6121,13 +2980,12 @@ lexsis_drafts({ action: "page_move_section", args: { page_id, section_id, positi
   and setting `productIds` removes `products`; never send both.
 - Reusing an idempotency key with the same request returns the original result.
   Reusing it with different content is an error.
-- Update local hashes and manifests only after a successful remote write.
+- Update input hashes and manifests only after a successful remote write.
 - Preserve existing CSS variables and island configurations
 - Don't break mobile responsiveness when editing desktop layout
 
-Minor edits do not repeat planning, but they still require a local source
-workspace and a matching saved store/theme setup. Adoption creates page files;
-it does not rerun `setup`.
+Minor edits do not repeat planning or create page files. Resolve the saved
+binding or current MCP context; keep the existing page id authoritative.
 
 For published pages, `current_version` can advance while the live renderer
 remains pinned to `published_version_id`. Publish only after QA.
@@ -6136,207 +2994,79 @@ remains pinned to `published_version_id`. Publish only after QA.
 
 Read `merchant-templates.md`. `template_apply` follows the same edit
 preconditions and materializes source into the page. After success, fetch edit
-context, update the local source and hashes, then run `diff` and `integrity`.
+context, read back the persisted source and hashes, then run `diff` and `integrity`.
 
 ---
 
-# Storefront Page Files
+# MCP source and verification state
 
-Use local files to pass work between commands without depending on chat
-history.
+Author pages directly through MCP. Do not create local page decision records,
+source/CSS files, compile artifacts, preview builds or local QA reports.
+The persisted page source and bundle are the baseline; the hosted draft is
+the only preview used by these workflows.
 
-## Workspace
+## Create one draft
 
-```text
-work/campaigns/<campaign-slug>/pages/<page-handle>/
-├── page-plan.md
-├── page-manifest.json
-├── lexsis-source.html
-├── page-theme.css
-├── compile-artifact.json
-├── qa-report.md
-└── assets/
-```
+1. Confirm the workspace, store and theme binding through saved context or
+   current MCP reads. Prepare `source` and structured `head` with a title.
+   Include `theme_css` only when supplying page-wide CSS. Omitting the field
+   does not excuse missing theme tokens or accessibility styles.
+2. Send the exact values to `lexsis_pages.compile`. Read blocking errors,
+   warnings, missing utilities, hashes and the short-lived `compile_id`.
+   Repair source, not compiled JSON.
+3. Call `lexsis_page_create.create` with `compile_id`, creation metadata and
+   `publish:false`. Omit `source`, `head`, `theme_css`, `scripts` and
+   `runtime_dependencies` when passing `compile_id`. Alternatively send the
+   exact source/head and optional CSS/scripts directly; create compiles them
+   server-side. Never combine the two input modes.
+4. Reuse an existing page id rather than spending another creation credit.
+   If the compile id expires, recompile the unchanged inputs once.
+5. Record the returned page id, version, preview URL and compile hash in the
+   task handoff. Surface `DRAFT_CREATED` immediately; it is not a QA pass.
 
-Files appear progressively. Planning creates only the plan, compact manifest,
-and assets directory. Design creates source, CSS, a compile artifact, and the
-unpublished hosted draft. Generation creates or updates the QA report and
-remote synchronization state.
+`lexsis_pages.compile_artifact` retrieves an existing compile result for
+inspection; it is not another compile route. `lexsis_drafts.page_attach_bundle`
+is recovery for a source write whose bundle attachment failed, with
+`expected_version`; it is not a normal creation step.
 
-## Compact Manifest
+## Edit the persisted source
 
-Use `schemaVersion: 3`.
+1. Read `lexsis_pages.edit_context` and `lexsis_pages.source` or
+   `lexsis_pages.section_source`. Confirm the target and current version.
+2. Reconcile unexpected version drift before writing. Edit the source value
+   returned by MCP, keeping stable section ids.
+3. Compile changed inputs, compare the intended section changes and use the
+   smallest source-based draft action with `expected_version`.
+4. Update recorded version/hash evidence only after a successful write.
+   Read back source and run `lexsis_pages.diff` and `lexsis_pages.integrity`.
+5. Review the updated hosted draft. Editing a draft is not publishing it.
 
-The manifest is a machine state ledger. Store only:
+## Evidence without files
 
-- page, workspace, store, and theme IDs
-- compact inferred workflow intent and any user override
-- selected template and section IDs
-- compact product and final asset bindings
-- section order and compact island schema evidence
-- approved local hashes
-- remote page ID, version, hashes, and section hashes
-- compact QA status
+Keep the plan, proof/offer ledgers, confirmed asset decisions, approvals and
+QA findings in the task's handoff record. `references/page-files.md` defines
+the fields, not a filesystem requirement. Do not invent an MCP action for
+storing a plan or manifest.
 
-Do not store copy intent, claims research, template-search transcripts,
-omitted-component explanations, generation prompts, crop prose, or QA
-narrative. Those belong in `page-plan.md`, an asset brief, or `qa-report.md`.
+On continuation, recover the page through MCP and recover or re-establish
+any missing evidence and approvals. A page id is not evidence that a claim,
+asset right or previous approval was verified.
 
-Do not prefill future stages with null fields.
+For production readiness, compare the reviewed inputs with the persisted
+source, bundle and version; perform `references/qa-recipe.md` against the
+hosted draft. Use `lexsis_pages.qa` to read recorded QA and
+`lexsis_drafts.page_record_qa` to save supported evidence fields according to
+the current schema. A tool acknowledgment does not replace browser evidence.
+Missing browser access, evidence or matching hashes keeps QA pending.
 
-## Design State
-
-`/design-page` adds:
-
-```json
-{
-  "config": {
-    "head": {},
-    "scripts": [],
-    "productBinding": {},
-    "commerceConfig": {}
-  },
-  "assets": [],
-  "islands": [],
-  "design": {
-    "status": "pending-approval",
-    "stylePack": "editorial",
-    "compiledStyleManifest": {},
-    "sourceHash": "...",
-    "themeCssHash": "...",
-    "configHash": "...",
-    "structureHash": "...",
-    "bundleHash": "...",
-    "compiledBundleHash": "..."
-  }
-}
-```
-
-`lexsis-source.html` and `page-theme.css` are the only editable design inputs.
-`compile-artifact.json` is generated. The hosted draft is the only interactive
-preview and the renderer source of truth.
-
-## Remote State
-
-Immediately after unpublished creation, `/design-page`, `/build`, or
-`/generate` adds:
-
-```json
-{
-  "status": "draft_created",
-  "workflow": {
-    "intentMode": "fast-draft",
-    "intentConfidence": "high",
-    "intentSignals": ["requested a preview"],
-    "userOverride": false
-  },
-  "sync": {
-    "lastCompiledBundleHash": "..."
-  },
-  "remote": {
-    "pageId": "...",
-    "lastKnownVersion": 1,
-    "previewUrl": "https://..."
-  },
-  "qa": {
-    "status": "pending"
-  }
-}
-```
-
-This state is `DRAFT_CREATED`; it does not claim remote synchronization or
-hosted QA.
-
-After production-ready verification, `/generate` upgrades the state:
-
-```json
-{
-  "status": "qa_passed",
-  "sync": {
-    "lastCompiledBundleHash": "...",
-    "lastSyncedBundleHash": "...",
-    "lastSyncedSectionHashes": {},
-    "lastChangedSections": [],
-    "remoteSourceHash": "...",
-    "remoteBundleHash": "..."
-  },
-  "remote": {
-    "pageId": "...",
-    "lastKnownVersion": 1,
-    "previewUrl": "https://..."
-  },
-  "qa": {
-    "status": "passed",
-    "version": 1,
-    "bundleHash": "...",
-    "checks": {
-      "responsive": true,
-      "visualRegression": true,
-      "commerce": true,
-      "copy": true,
-      "claims": true,
-      "assets": true,
-      "integrity": true
-    }
-  }
-}
-```
-
-Detailed screenshots, interaction results, blockers, and publish readiness stay
-in `qa-report.md`.
-
-## Synchronization
-
-For creation, use the clean design compile artifact when its input hashes still
-match. Recompile only after an input changes. After draft creation, fetch the
-persisted source and remote bundle and reject hash drift.
-
-`lexsis_page_create` action `create` consumes the `compile_id` directly, so a
-normal build never fetches the bundle itself. `lexsis_pages` action
-`compile_artifact` retrieves a stored bundle by `compile_id` for inspection
-only, and `lexsis_drafts` action `page_attach_bundle` exists solely to recover
-a page whose source was stored but whose bundle attachment failed (pass
-`expected_version`).
-
-For editing:
-
-1. Fetch the remote version and stop on drift.
-2. Change local source first.
-3. Compile only if an input changed.
-4. Compare section hashes.
-5. Patch only changed sections with `expected_version`.
-6. Update synchronization state only after success.
-
-Legacy schema-v1 and schema-v2 workspaces use
-`skills/generate/scripts/migrate_page_workspace_v3.py`. Existing local preview
-files and hydration fields are ignored for compatibility; they are never
-required or regenerated.
+Publication requires explicit approval for that same page and version under
+`references/publishing.md`. No local validator or file can grant approval.
 
 ---
 
-# Design Page Workflow
+# Visual layout workflow
 
-`/design-page` turns an approved one-page section plan into canonical Lexsis
-source and one unpublished hosted draft.
-
-It owns:
-
-- existing-asset inventory and the single generation decision
-- responsive layout and copy composition
-- island selection and schema resolution
-- `lexsis-source.html` and `page-theme.css`
-- one clean compile artifact and hosted preview URL
-- hosted 390px and 1280px approval
-
-The plan supplies section intent, not islands. `/generate` supplies tablet and
-full real-commerce QA.
-
-Local and temporary placeholder assets are not allowed. Source must use
-permanent Lexsis or Shopify media before draft creation.
-
-An optional `/asset-prep` run may replace or improve media, but it is not a
-required handoff. Any visible replacement returns the design to
-`changes-pending-approval`.
+Use `references/workflows/_how-to-read.md` for the plan-to-design handoff and `references/design-concepts.md` when the merchant requests a visual concept first. The approved direction is implemented in the single source workspace defined by `references/source-artifact-workflow.md`.
 
 ---
 
@@ -6347,16 +3077,16 @@ journey:
 
 ```text
 /setup
-  → /plan-page
-  → /design-page
-  → /generate
-  → /publish
+  U+2192 /plan-page
+  U+2192 /design-page
+  U+2192 /generate
+  U+2192 /publish
 ```
 
 | Command | Owns | Main output |
 |---|---|---|
 | `setup` | Saved store and theme design context | `setup.json` and design files |
-| `plan-page` | One-page campaign and section strategy | approved `page-plan.md` |
+| `plan-page` | One-page campaign and section strategy | approved `page plan` |
 | `design-page` | Assets, islands, source, compile, and hosted design review | `DRAFT_CREATED` or `DESIGN_APPROVED` |
 | `generate` | Draft creation when needed, then synchronization and hosted QA | `DRAFT_CREATED` or `DRAFT_READY` |
 | `publish` | Explicit live release | published version |
@@ -6378,9 +3108,9 @@ Seven optional commands support the workflow:
 1. Each command owns one outcome and can be invoked independently.
 2. Commands read artifacts from earlier steps but never invoke earlier steps
    automatically.
-3. Explicit skips are recorded in the page manifest.
+3. Explicit skips are recorded in the page record.
 4. Every page binds one saved store/theme pair.
-5. `lexsis-source.html` is the production source of truth.
+5. Persisted MCP source and version are the edit baseline.
 6. Draft creation is not publishing approval.
 7. Infer fast-draft versus production-ready intent from the whole request;
    reversible ambiguity defaults to fast-draft.
@@ -6558,7 +3288,7 @@ non-production, and do not:
 - claim live prices, inventory, variants, assets, commerce, or island behavior
 - create or patch a Lexsis page
 
-An offline prototype does not update the normal page manifest or replace the
+An offline prototype does not update the normal page record or replace the
 standard Lexsis workflow.
 
 ### Individual capability unavailable
@@ -6577,7 +3307,7 @@ Examples:
 
 ## Result Evidence
 
-When useful for diagnosis, a Lexsis-dependent command result or `qa-report.md`
+When useful for diagnosis, a Lexsis-dependent command result or `QA record`
 reports:
 
 - MCP connection status
@@ -6589,10 +3319,10 @@ reports:
 - blocking limitations
 
 Do not store discovery logs, capability inventories, action transcripts, or
-connection status in `page-manifest.json`. The manifest is a compact workflow
+connection status in `page record`. The manifest is a compact workflow
 state ledger.
 
-`setup` has no page manifest, so it returns this evidence directly with its
+`setup` has no page record, so it returns this evidence directly with its
 saved setup paths.
 
 ---
@@ -6677,7 +3407,7 @@ Do not:
 - regenerate an entire page when a reusable section can be applied;
 - assume a template is Header/Footer-specific.
 
-Use Templates → My templates for the user-owned library. Use the Design Library
+Use Templates U+2192 My templates for the user-owned library. Use the Design Library
 for brand tokens and navigation/footer link data, not as a second page renderer.
 
 ---
@@ -6743,11 +3473,9 @@ Section CSS can override earlier rules at equal specificity. Keep global
 tokens and page-wide rules in theme CSS, and scope section overrides by
 section ID.
 
-The renderer already supplies its reset, base typography, smooth scrolling,
-and shared keyframes:
-
-`fadeUp`, `fadeIn`, `scaleIn`, `slideInLeft`, `slideInRight`, `marquee`,
-`float`, `shimmer`, `wordFade`, and `pulseRing`.
+The renderer supplies base styles; do not recreate its reset. Motion follows
+`references/design-rules.md` N10 and `references/animation-system.md`, not
+a list of renderer keyframes to reuse by default.
 
 ## Template-First Composition
 
@@ -6793,7 +3521,7 @@ For every interactive element:
 Author islands as `<lx-island>` with one readable `application/json` child.
 Never hand-author compiled `data-island` or `data-props` markup.
 
-If the catalogue marks an island deprecated or superseded, follow its
+If the catalogue marks an island deprecated or retired, follow its
 replacement guidance. The replacement may be another island or supported
 native HTML/CSS such as `<details>`; do not force a deprecated island into the
 page.
@@ -6840,7 +3568,7 @@ Record the design decision:
 ```
 
 `template.mode` is `page-kit`, `sections`, or `custom`. Keep selection reasons
-and evaluated alternatives in `page-plan.md`, not the manifest. After
+and evaluated alternatives in `page plan`, not the page record. After
 compilation, store the returned style manifest under
 `design.compiledStyleManifest`.
 
@@ -6857,7 +3585,7 @@ exactly one before it searches templates, assets or proof, records it in the
 `## Page type` block and in `page.pageType`, and then loads only that type's
 file. `/design-page`, `/build` and `/generate` re-read the same file. Each
 type file follows `references/page-types/_checklist-format.md` and ends with
-a JSON checklist that `plan-page/scripts/plan_lint.py` enforces.
+a JSON checklist shared by the workflow and repository contract tests.
 
 ## 1. Inputs to read from the brief
 
@@ -6881,45 +3609,45 @@ section 4.
 
 ```text
 Is the visitor's job to BUY (or add to cart) on this page?
-├── no ─ what is the job?
-│   ├── answer questions / route to the right product ........... quiz-funnel
-│   ├── leave an email or phone (giveaway, waitlist, early access)
-│   │   ├── product not yet purchasable ....................... launch-waitlist-preorder
-│   │   └── incentive or contest ............................... lead-capture-giveaway
-│   ├── read a story, learn who we are ......................... brand-story-founder
-│   ├── understand the science, ingredients, materials, method . ingredient-science
-│   ├── browse many products
-│   │   ├── whole store, first visit ........................... homepage
-│   │   ├── one category or collection ......................... collection-landing
-│   │   ├── by recipient or price for a holiday ................ gift-guide
-│   │   └── outfits, rooms, looks with shoppable items ......... lookbook-shop-the-look
-│   ├── get help, policies, answers ............................ faq-support-led
-│   ├── refer a friend, join a programme, see tiers ............ referral-loyalty-vip
-│   ├── just paid; what next .................................... thank-you-post-purchase
-│   └── order in volume for resale ............................. wholesale-b2b
-└── yes ─ has the visitor already seen this product or brand?
-    ├── no (cold) ─ what brought them?
-    │   ├── a social ad with a story or problem hook (meta, tiktok, native)
-    │   │   ├── long-read wanted, price hidden until late ...... advertorial
-    │   │   ├── "N reasons / best X" list framing ............. listicle
-    │   │   ├── creator or customer video is the hero .......... ugc-creator-collab
-    │   │   ├── one long video does the selling ................ video-sales-page
-    │   │   └── direct-response, single product, single CTA .... ad-landing-page
-    │   ├── a search for the product or category (google, shopping)
-    │   │   ├── "X vs Y", "alternatives" ....................... comparison-us-vs-them
-    │   │   ├── "best X", "top N X", buyer's guide, roundup ..... seo-buyers-guide
-    │   │   └── product or category intent ..................... pdp (search-intent variant)
-    │   └── a sample, trial or starter offer ................... trial-sample
-    └── yes (warm or hot) ─ what is the page selling?
-        ├── one product at full price, full store context ....... pdp
-        ├── one product, paid-traffic focus, no navigation ...... pdp-hybrid-landing
-        ├── two or more products as a set or configurator ....... bundle-kit
-        ├── a recurring plan ..................................... subscription
-        ├── a specific discount, code, GWP or BOGO .............. offer-page
-        ├── many products at reduced prices for a window ........ sale-clearance-flash
-        ├── an occasion or holiday assortment .................... seasonal-gifting
-        ├── a product that is back or newly available ............ restock
-        └── a return visit after abandonment or a prior view ..... retargeting-warm
++-- no - what is the job?
+|   +-- answer questions / route to the right product ........... quiz-funnel
+|   +-- leave an email or phone (giveaway, waitlist, early access)
+|   |   +-- product not yet purchasable ....................... launch-waitlist-preorder
+|   |   +-- incentive or contest ............................... lead-capture-giveaway
+|   +-- read a story, learn who we are ......................... brand-story-founder
+|   +-- understand the science, ingredients, materials, method . ingredient-science
+|   +-- browse many products
+|   |   +-- whole store, first visit ........................... homepage
+|   |   +-- one category or collection ......................... collection-landing
+|   |   +-- by recipient or price for a holiday ................ gift-guide
+|   |   +-- outfits, rooms, looks with shoppable items ......... lookbook-shop-the-look
+|   +-- get help, policies, answers ............................ faq-support-led
+|   +-- refer a friend, join a programme, see tiers ............ referral-loyalty-vip
+|   +-- just paid; what next .................................... thank-you-post-purchase
+|   +-- order in volume for resale ............................. wholesale-b2b
++-- yes - has the visitor already seen this product or brand?
+    +-- no (cold) - what brought them?
+    |   +-- a social ad with a story or problem hook (meta, tiktok, native)
+    |   |   +-- long-read wanted, price hidden until late ...... advertorial
+    |   |   +-- "N reasons / best X" list framing ............. listicle
+    |   |   +-- creator or customer video is the hero .......... ugc-creator-collab
+    |   |   +-- one long video does the selling ................ video-sales-page
+    |   |   +-- direct-response, single product, single CTA .... ad-landing-page
+    |   +-- a search for the product or category (google, shopping)
+    |   |   +-- "X vs Y", "alternatives" ....................... comparison-us-vs-them
+    |   |   +-- "best X", "top N X", buyer's guide, roundup ..... seo-buyers-guide
+    |   |   +-- product or category intent ..................... pdp (search-intent variant)
+    |   +-- a sample, trial or starter offer ................... trial-sample
+    +-- yes (warm or hot) - what is the page selling?
+        +-- one product at full price, full store context ....... pdp
+        +-- one product, paid-traffic focus, no navigation ...... pdp-hybrid-landing
+        +-- two or more products as a set or configurator ....... bundle-kit
+        +-- a recurring plan ..................................... subscription
+        +-- a specific discount, code, GWP or BOGO .............. offer-page
+        +-- many products at reduced prices for a window ........ sale-clearance-flash
+        +-- an occasion or holiday assortment .................... seasonal-gifting
+        +-- a product that is back or newly available ............ restock
+        +-- a return visit after abandonment or a prior view ..... retargeting-warm
 ```
 
 ## 2b. Keyword lookup
@@ -6967,36 +3695,36 @@ A fast first pass before the tree. The tree still decides.
 
 | Type id | One line | Stage | Awareness | Typical traffic | Length | CTAs | Proof | Nav |
 |---|---|---|---|---|---|---|---|---|
-| `ad-landing-page` | Single product, single CTA, message-matched to a paid ad | tof/mof | problem→product | meta, tiktok, google | 8–11 | 3 | 2–4 | none |
-| `pdp` | Full product page inside the store; gallery, buy box, details, reviews | mof/bof | product/most | organic, search, email, nav | 7–11 | 2 | 2–4 | full |
-| `pdp-hybrid-landing` | PDP anatomy with landing-page focus: no nav, ad message match, one goal | mof | solution→product | meta, google shopping | 8–11 | 2–3 | 2–4 | none |
-| `advertorial` | Editorial article that sells by story; price and CTA arrive late | tof | unaware/problem | meta, native, tiktok | 8–12 | 1–3 | 2–4 | none |
-| `listicle` | Numbered reasons for one product; each reason answers an objection and earns a click | tof/mof | problem/solution | meta, tiktok | 8–13 | 3–6 | 2–4 | none/minimal |
-| `seo-buyers-guide` | Search-intent roundup or "best X" guide: TOC, methodology, ranked entries, comparison table | tof/mof | problem/solution | google organic, google ads | 9–14 | per entry + 1 | 2–4 | full |
-| `comparison-us-vs-them` | Attribute table against named or generic alternatives | mof | solution/product | google, retargeting | 7–10 | 2–3 | 2–3 | minimal |
-| `quiz-funnel` | Questions route the visitor to a recommendation | tof/mof | problem/solution | meta, tiktok, email | 4–7 | 1 + result | 1–2 | none |
-| `bundle-kit` | Fixed or build-your-own set with visible savings math | mof/bof | product | email, pdp cross-link, ads | 7–10 | 2 | 2–3 | minimal/full |
-| `offer-page` | One named promotion (code, GWP, BOGO, first order) | mof/bof | product/most | email, sms, retargeting | 6–9 | 2–3 | 1–3 | minimal |
-| `sale-clearance-flash` | Many products, reduced prices, real window | bof | most | email, sms, social | 5–8 | per card | 1–2 | full |
-| `seasonal-gifting` | Occasion assortment with delivery cutoffs and gift options | mof | solution/product | email, social, search | 7–10 | per card + 1 | 1–3 | full |
-| `gift-guide` | Curated picks by recipient or price band | tof/mof | solution | organic, email, social | 6–9 | per card | 1–2 | full |
-| `launch-waitlist-preorder` | Not yet buyable: capture intent or take pre-orders | tof/mof | problem/solution | email, social, PR | 6–9 | 1–2 | 1–3 | minimal |
-| `restock` | Product is back; convert the demand already there | bof/retention | most | email, sms | 5–7 | 2 | 1–2 | minimal |
-| `subscription` | Recurring plan; cadence, savings, cancellation clarity | mof/bof | product | pdp, email, ads | 7–10 | 2 | 2–3 | minimal/full |
-| `ugc-creator-collab` | Creator or customer content is the hero and the proof | tof/mof | problem/solution | tiktok, instagram, influencer | 6–9 | 2–3 | 3–5 | none |
-| `video-sales-page` | One long video, then the offer | tof/mof | problem/solution | meta, youtube, email | 5–8 | 1–2 | 1–3 | none |
-| `brand-story-founder` | Who we are and why; sells belief, not a SKU | tof/retention | unaware/problem | organic, nav, PR | 6–9 | 1–2 | 1–2 | full |
-| `ingredient-science` | Mechanism, ingredients, materials, studies | mof | solution/product | organic, pdp link, google | 7–10 | 1–2 | 2–4 | full |
-| `collection-landing` | One category; grid with filters and a short story | mof | solution | organic, nav, google | 5–8 | per card | 1–2 | full |
-| `homepage` | Store front door; route to collections, best sellers, story | tof/retention | all | direct, organic, brand search | 7–10 | 2–3 | 2–3 | full |
-| `lookbook-shop-the-look` | Editorial imagery with shoppable items | tof/mof | solution | instagram, organic, email | 5–8 | per look | 1–2 | full |
-| `lead-capture-giveaway` | Email or SMS in exchange for an incentive | tof | unaware/problem | social, partner, ads | 3–6 | 1 | 1–2 | none |
-| `referral-loyalty-vip` | Programme rules, tiers, rewards, join | retention | most | email, account, nav | 5–8 | 1–2 | 1–2 | full |
-| `retargeting-warm` | Visitor saw it already; handle objections, restate offer | bof | product/most | meta/google retargeting | 5–8 | 2–3 | 2–4 | none/minimal |
-| `thank-you-post-purchase` | Order confirmed; next steps, one relevant add-on, referral | retention | most | checkout | 3–6 | 1–2 | 0–1 | minimal |
-| `faq-support-led` | Answers first; policies, shipping, sizing, care | mof/retention | product | organic, nav, support links | 4–7 | 1 | 0–2 | full |
-| `trial-sample` | Low-risk first purchase; what happens after is explicit | tof/mof | solution | ads, email | 6–9 | 2 | 2–3 | minimal |
-| `wholesale-b2b` | MOQ, tiers, lead times, line sheet, inquiry | mof | product | organic, outreach | 5–8 | 1–2 | 1–3 | minimal |
+| `ad-landing-page` | Single product, single CTA, message-matched to a paid ad | tof/mof | problemU+2192product | meta, tiktok, google | 8-11 | 3 | 2-4 | none |
+| `pdp` | Full product page inside the store; gallery, buy box, details, reviews | mof/bof | product/most | organic, search, email, nav | 7-11 | 2 | 2-4 | full |
+| `pdp-hybrid-landing` | PDP anatomy with landing-page focus: no nav, ad message match, one goal | mof | solutionU+2192product | meta, google shopping | 8-11 | 2-3 | 2-4 | none |
+| `advertorial` | Editorial article that sells by story; price and CTA arrive late | tof | unaware/problem | meta, native, tiktok | 8-12 | 1-3 | 2-4 | none |
+| `listicle` | Numbered reasons for one product; each reason answers an objection and earns a click | tof/mof | problem/solution | meta, tiktok | 8-13 | 3-6 | 2-4 | none/minimal |
+| `seo-buyers-guide` | Search-intent roundup or "best X" guide: TOC, methodology, ranked entries, comparison table | tof/mof | problem/solution | google organic, google ads | 9-14 | per entry + 1 | 2-4 | full |
+| `comparison-us-vs-them` | Attribute table against named or generic alternatives | mof | solution/product | google, retargeting | 7-10 | 2-3 | 2-3 | minimal |
+| `quiz-funnel` | Questions route the visitor to a recommendation | tof/mof | problem/solution | meta, tiktok, email | 4-7 | 1 + result | 1-2 | none |
+| `bundle-kit` | Fixed or build-your-own set with visible savings math | mof/bof | product | email, pdp cross-link, ads | 7-10 | 2 | 2-3 | minimal/full |
+| `offer-page` | One named promotion (code, GWP, BOGO, first order) | mof/bof | product/most | email, sms, retargeting | 6-9 | 2-3 | 1-3 | minimal |
+| `sale-clearance-flash` | Many products, reduced prices, real window | bof | most | email, sms, social | 5-8 | per card | 1-2 | full |
+| `seasonal-gifting` | Occasion assortment with delivery cutoffs and gift options | mof | solution/product | email, social, search | 7-10 | per card + 1 | 1-3 | full |
+| `gift-guide` | Curated picks by recipient or price band | tof/mof | solution | organic, email, social | 6-9 | per card | 1-2 | full |
+| `launch-waitlist-preorder` | Not yet buyable: capture intent or take pre-orders | tof/mof | problem/solution | email, social, PR | 6-9 | 1-2 | 1-3 | minimal |
+| `restock` | Product is back; convert the demand already there | bof/retention | most | email, sms | 5-7 | 2 | 1-2 | minimal |
+| `subscription` | Recurring plan; cadence, savings, cancellation clarity | mof/bof | product | pdp, email, ads | 7-10 | 2 | 2-3 | minimal/full |
+| `ugc-creator-collab` | Creator or customer content is the hero and the proof | tof/mof | problem/solution | tiktok, instagram, influencer | 6-9 | 2-3 | 3-5 | none |
+| `video-sales-page` | One long video, then the offer | tof/mof | problem/solution | meta, youtube, email | 5-8 | 1-2 | 1-3 | none |
+| `brand-story-founder` | Who we are and why; sells belief, not a SKU | tof/retention | unaware/problem | organic, nav, PR | 6-9 | 1-2 | 1-2 | full |
+| `ingredient-science` | Mechanism, ingredients, materials, studies | mof | solution/product | organic, pdp link, google | 7-10 | 1-2 | 2-4 | full |
+| `collection-landing` | One category; grid with filters and a short story | mof | solution | organic, nav, google | 5-8 | per card | 1-2 | full |
+| `homepage` | Store front door; route to collections, best sellers, story | tof/retention | all | direct, organic, brand search | 7-10 | 2-3 | 2-3 | full |
+| `lookbook-shop-the-look` | Editorial imagery with shoppable items | tof/mof | solution | instagram, organic, email | 5-8 | per look | 1-2 | full |
+| `lead-capture-giveaway` | Email or SMS in exchange for an incentive | tof | unaware/problem | social, partner, ads | 3-6 | 1 | 1-2 | none |
+| `referral-loyalty-vip` | Programme rules, tiers, rewards, join | retention | most | email, account, nav | 5-8 | 1-2 | 1-2 | full |
+| `retargeting-warm` | Visitor saw it already; handle objections, restate offer | bof | product/most | meta/google retargeting | 5-8 | 2-3 | 2-4 | none/minimal |
+| `thank-you-post-purchase` | Order confirmed; next steps, one relevant add-on, referral | retention | most | checkout | 3-6 | 1-2 | 0-1 | minimal |
+| `faq-support-led` | Answers first; policies, shipping, sizing, care | mof/retention | product | organic, nav, support links | 4-7 | 1 | 0-2 | full |
+| `trial-sample` | Low-risk first purchase; what happens after is explicit | tof/mof | solution | ads, email | 6-9 | 2 | 2-3 | minimal |
+| `wholesale-b2b` | MOQ, tiers, lead times, line sheet, inquiry | mof | product | organic, outreach | 5-8 | 1-2 | 1-3 | minimal |
 
 ## 4. Tie-breaks between near neighbours
 
@@ -7019,7 +3747,7 @@ A fast first pass before the tree. The tree still decides.
 | `brand-story-founder` vs `ingredient-science` | science when the brief names ingredients, studies or "how it works" | mechanism vs meaning |
 | Brief is silent on stage | the type that assumes less (`ad-landing-page` over `retargeting-warm`, `advertorial` over `ad-landing-page` for unaware audiences) | over-assuming knowledge loses cold visitors |
 
-## 5. Awareness level → headline and page posture
+## 5. Awareness level U+2192 headline and page posture
 
 Eugene Schwartz's five stages decide how much the page may assume and what
 the headline leads with.
@@ -7048,7 +3776,7 @@ social traffic is problem-aware at best. Brand search is product-aware.
 
 ## 7. Recording the choice
 
-Plan block (`page-plan.md`):
+Plan block (`page plan`):
 
 ```markdown
 ## Page type
@@ -7063,7 +3791,7 @@ Plan block (`page-plan.md`):
 **Mandatory sections omitted.** none
 ```
 
-Manifest (`page-manifest.json`): `page.pageType`, `page.funnelStage`,
+Manifest (`page record`): `page.pageType`, `page.funnelStage`,
 `page.awareness`, `page.trafficSource`, plus `offer` and `campaign` blocks
 (`references/page-files.md`).
 
@@ -7127,7 +3855,7 @@ The traffic file fixes tone and message match. House rules
 
 Every file in `references/page-types/` (except `_index.md` and this file)
 describes one page type in the same shape so that `/plan-page`, `/design-page`,
-`/build` and `plan-page/scripts/plan_lint.py` can read it the same way. The
+`/build` and repository contract tests can read it the same way. The
 heart of each file is its `## Workflow`: the ordered thinking the model follows
 for that type, section by section, with the asset decision, the island
 decision and the tool call that settles each. The `## Checklist` JSON is the
@@ -7138,8 +3866,8 @@ still apply to every page.
 ## How a skill uses a page-type file
 
 1. `/plan-page` identifies the type with `references/page-types/_index.md`,
-   records the `## Page type` block in `page-plan.md` and `page.pageType` in
-   `page-manifest.json`, then loads only the matching file.
+   records the `## Page type` block in `page plan` and `page.pageType` in
+   `page record`, then loads only the matching file.
 2. `/plan-page` follows the file's **Workflow**: the context reads first, then
    each section in order with its media decision (search, generate, ask or
    skip), island decision and copy ceiling. The **Checklist** JSON is the
@@ -7150,8 +3878,9 @@ still apply to every page.
    fold**, **Proof**, **Offer and CTA**, **Imagery** and **Copy** as the
    guide. Where source and plan disagree with the checklist, it lists the
    differences in the plan and continues.
-4. `python3 <plan-page-skill>/scripts/plan_lint.py <page-workspace>` prints
-   the mechanical review (advisory by default; `--strict` exits non-zero).
+4. Review the checklist against the plan, then the persisted source and
+   hosted draft. Type deviations are advisory; proof/offer violations
+   block readiness. Repository fixture checks test this contract separately.
 
 ## Required prose sections, in order
 
@@ -7180,35 +3909,26 @@ inventory, review count band, theme tokens and voice, asset library inventory
 by tag, ad creative for message match).
 
 ### Section by section
-One block per Anatomy section, in order:
 
-**`<section id>`**
-- Purpose: one line.
-- Media: needs imagery yes/no; which image job(s); search order (catalog
-  media, then the `lexsis_asset_library.search` tag, then semantic, then
-  merchant-owned sources); every candidate is opened with
-  `lexsis_assets.view` and judged against this section before it is used;
-  generation purpose if nothing is found and the
-  policy allows it; otherwise tell the merchant exactly what is missing and
-  offer upload (`lexsis_asset_upload.upload`) or MCP generation when
-  feasible. The section is skipped or merged only if the merchant chooses.
-  Follows `references/workflows/section-asset-workflow.md`.
-- Island: `none`, or the island name and the context that decides its
-  configuration (image count, variant axes, review band, page length,
-  vertical). Variants and props are not listed here; they are resolved live
-  from `lexsis_design.islands` and `lexsis_design.island_schema` as
-  `references/workflows/island-selection-workflow.md` describes.
-- Copy: pattern and ceiling.
-- Decide with: the data or tool call that settles the choices above.
+Link `references/workflows/_how-to-read.md` once. It supplies the shared
+asset/fallback, view-and-fit, island-resolution and copy procedures.
+Keep one row per Anatomy section, in order, with type-specific inputs only:
+
+| Section | Purpose | Media job and source | Interactive decision | Copy constraints | Decision evidence |
+|---|---|---|---|---|---|
+| `<section id>` | Shopper job | Needed job, tag/query, crop and specific alternative | Native content or candidate family plus decision inputs | Type-specific message or ceiling | Data that settles the decision |
+
+Do not repeat the shared procedures or enumerate props. Planning records
+functional intent; design resolves the current island schema. Default copy
+ceilings remain in the copy-policy owner, with deliberate type exceptions
+recorded in the plan.
 
 ### Asset budget
-A table: what the catalog and library already supply for this type, which
-jobs are usually missing, and for each missing job whether to reuse, generate
-(with purpose) when the policy allows, or tell the merchant and offer upload
-or generation. A missing asset is always reported to the merchant; a section
-is skipped or merged only on the merchant's decision. Never fill a gap with a
-colour band, emoji, icon tiles or a wall of copy; a section is imagery plus a
-few words, or the merchant decides what happens to it.
+
+A table records what the catalogue and library supply, which jobs are
+missing, and type-specific alternatives. Execute gaps through the shared
+asset workflow rather than reproducing its question and fallback rules.
+A deliberately text-only section remains valid when the type specifies it.
 
 ## Above the fold (390px)
 What must be visible in the first screen on mobile, in order. What must not.
@@ -7370,7 +4090,7 @@ mean of all published ratings for that scope, never of a `minRating` subset.
 | Step | Call | Read | Then |
 |---|---|---|---|
 | 0.1 | `lexsis_catalog.reviews_status` | source connected (Judge.me), imported count, last sync | connected and count > 0: tier 1. Otherwise: tier 4 |
-| 0.2 | write "Proof sources" line in `page-plan.md` | source, count, sync date, tier reached | always, even when the answer is "none" |
+| 0.2 | write "Proof sources" line in `page plan` | source, count, sync date, tier reached | always, even when the answer is "none" |
 
 ## Tier 1: active collections
 
@@ -7435,7 +4155,7 @@ Render a field only when the record contains it. Never fill a gap.
 | Field | Render only if | Rendering |
 |---|---|---|
 | Rating | `rating` present, integer 1 to 5 from the author | as given; never recalculated (IS 19000 cl. 5.7.3) |
-| Body | `body` present | verbatim; `[…]` trim only; "Read more" reveals the full text |
+| Body | `body` present | verbatim; `[...]` trim only; "Read more" reveals the full text |
 | Title | `title` present | verbatim |
 | Name | `reviewer_name` present | first name + last initial, or as the app displays it publicly |
 | Location | `location` present | city or region as stored |
@@ -7525,22 +4245,18 @@ kind; none is review-shaped.
 ## Rules
 
 RS1. Never render a review element that is not a ledger row from tiers 0 to 3 or an `external-verified` row from tier 4. OPERATOR.
-Check: every `ReviewCarousel` or `ReviewList` `data-props` carries `collectionId` or `productIds`; any static `reviews[]` item id appears in the ledger.
-```bash
-perl -ne 'while(/data-island="Review[A-Za-z]*"[^>]*data-props=\x27([^\x27]*)\x27/g){print "unbound\n" unless $1=~/collectionId|productIds/}' $W/lexsis-source.html | wc -l   # 0
-```
+Check: each authored review island's `application/json` child binds the
+confirmed collection or product scope using its live schema. Every static
+quote id appears in the ledger. Inspect source-format JSON, not compiled
+`data-props` markers in the source file.
 
 RS2. Run tiers in order and stop at the first tier that yields usable rows; never open tier 4 while tier 1 or 2 has data. OPERATOR.
 Check: the plan's "Proof sources" line names the tier reached and the calls made.
 
 RS3. Show an average only at n >= 5, always beside n, to one decimal, computed from all published ratings for the scope. RESEARCH [H] Baymard; LAW (a headline 5.0 from two ratings is misleading by omission, FTC 465.7, CMA "publishing in a misleading way").
 Check: every rating string is followed by a count in the same element (review the hits; prices also match the pattern).
-```bash
-grep -oE '[0-5]\.[0-9](/5| out of 5)[^<]{0,40}' $W/lexsis-source.html | grep -vcE '[0-9][0-9,]* (reviews|ratings)'   # 0
-```
 
 RS4. Never show 5.0 unless every review is five stars and n >= 20; never show two decimals. HEURISTIC, mirrors `proof-ledger.md` display rule 3.
-Check: `grep -c '5\.0' $W/lexsis-source.html` is 0 unless the ledger row records n >= 20 and a distribution of 100% five-star.
 
 RS5. Show the distribution at n >= 20 (optional at 10 to 19, hidden below 10), expanded, every bar present including one-star, bars acting as mutually exclusive filters. RESEARCH [H] Baymard distribution summary.
 Check: in the hosted draft the distribution element exists when the ledger's n >= 20 and lists five bars.
@@ -7552,10 +4268,6 @@ RS7. Never relabel a store-level aggregate as a product rating, never average bu
 Check: each `review-summary` row names the exact `product_id` or `collectionId` its numbers came from.
 
 RS8. A `minRating` filter is allowed only on a carousel that is labelled as a selection ("Selected reviews"), links to the full list ("Read all n reviews"), and sits with an unfiltered avg + n. Never on the full list, never for `averageRating` or `totalReviews`. LAW FTC 465.7(b); DMCC banned practice 13.
-Check:
-```bash
-grep -oE '"minRating":[[:space:]]*[2-5]' $W/lexsis-source.html | wc -l   # 0, or each carousel section also contains 'Read all' and the ledger avg + n
-```
 
 RS9. Negative reviews stay reachable: at n >= 20 at least one review rated 3 or lower is visible without filtering when one exists; sort default is disclosed in one line and does not bury low ratings. LAW FTC 465.7; FTC v. Fashion Nova ($4.2M, 2022); IS 19000 (no discouraging negatives). RESEARCH [H] Baymard: presence of negatives makes positives believable.
 Check: hosted draft at 1280 shows the sort label and, for B3+, at least one card with rating <= 3 in the default view.
@@ -7563,20 +4275,15 @@ Check: hosted draft at 1280 shows the sort label and, for B3+, at least one card
 RS10. Render each review field only when the record contains it (field-gating table). Verified badge only with order linkage or Shop source. LAW EU Annex I 23b (verification is material information); Shopify Shop badge semantics.
 Check: no `verified` prop set to true on a static item whose ledger row lacks order linkage; no `avatar` URL that is not the reviewer's own media.
 
-RS11. Quote verbatim. Trim with `[…]` only; keep the reviewer's specifics (variant, timeframe, use); prefer a quote that includes a limitation; never stitch sentences from two reviews; never fix grammar. LAW CAP 3.47; Trustpilot "quote reviews exactly as written"; IS 19000 (administrator may not edit content).
-Check: each `review-quote` body is a substring of the API record with `[…]` removed.
+RS11. Quote verbatim. Trim with `[...]` only; keep the reviewer's specifics (variant, timeframe, use); prefer a quote that includes a limitation; never stitch sentences from two reviews; never fix grammar. LAW CAP 3.47; Trustpilot "quote reviews exactly as written"; IS 19000 (administrator may not edit content).
+Check: each `review-quote` body is a substring of the API record with `[...]` removed.
 
 RS12. Render merchant replies when present, visually distinct and labelled as the store's reply. RESEARCH [H] Baymard: 37% weigh the reply; 87% of sites never reply.
 Check: reply markup uses a distinct class and the label "Reply from <store>".
 
 RS13. Label incentivised reviews on the card and beside the summary when the app flags them; incentives may never be conditioned on sentiment. LAW FTC 465.4 and 465.5; CMA208; Google review-snippet policy.
-Check: if any record has the incentivised flag, `grep -c 'Incentivised' $W/lexsis-source.html` >= 2.
 
 RS14. Review islands take `collectionId` or `productIds`, `minRating`, `pageSize` <= 12; `averageRating` and `totalReviews` come only from the API total for the same scope; never `reviewsEndpoint`; never `SocialProofPopup`. OPERATOR.
-Check:
-```bash
-grep -cE 'SocialProofPopup|reviewsEndpoint|"pageSize":[[:space:]]*(1[3-9]|[2-9][0-9])' $W/lexsis-source.html   # 0
-```
 
 RS15. Only `active` collections bind to `collectionId`; a draft collection is `pending` until the merchant activates it. The plan never activates a collection. OPERATOR.
 Check: the `collectionId` in source matches an id returned with `collection_status: "active"` on the plan date.
@@ -7591,13 +4298,8 @@ RS18. When B0 persists after tier 4, use tier 5 substitutes in order; "nothing" 
 Check: plan records the substitute chosen and why the higher rows were unavailable.
 
 RS19. Never write, paraphrase, summarise as if quoted, or generate a review; never present staff or founders as customers; never reuse a review for a different product. LAW FTC 16 CFR 465.2 and 465.5; FTC v. Rytr 2024; FTC v. Sunday Riley 2020; India E-Commerce Rules 2020 r.5(2).
-Check: `grep -ciE 'lorem|example review|sample review|\[name\]|\[city\]' $W/lexsis-source.html` is 0; no review text exists in source that is absent from the API.
 
 RS20. Autoplay video reviews muted only; sound on tap; captions present. LAW WCAG 2.1 SC 1.4.2.
-Check:
-```bash
-perl -ne 'print if /<video[^>]*autoplay(?![^>]*muted)/' $W/lexsis-source.html | wc -l   # 0
-```
 
 ## Regulatory spine
 
@@ -7653,13 +4355,13 @@ sibling files.
 
 | # | Kind | Supports claim | Source | Evidence | Verified | Section | Status |
 |---|---|---|---|---|---|---|---|
-| P1 | review-summary | overall quality | lexsis_catalog.reviews product gid://…/123 | 4.6 avg, 212 reviews, min rating 1 | API 2026-09-10 | review-summary | verified |
-| P2 | review-quote | "no more 3pm crash" | collection 7f2e… item 9a1c… | verbatim text, name initial + city as stored, 2026-04-02 | API | benefits | verified |
-| P3 | press-logo-linked | credibility | Vogue India | https://www.vogue.in/… (article names the brand) | fetched 2026-09-10 | press-marquee | verified |
-| P4 | certification | "FSSAI licensed" | merchant | licence no. 1001…; issuer FSSAI | merchant doc | trust-bar | verified |
-| P5 | ugc-video | in-use proof | creator @…, rights email 2026-08-21 | asset id … | merchant consent | ugc-grid | verified |
+| P1 | review-summary | overall quality | lexsis_catalog.reviews product gid://.../123 | 4.6 avg, 212 reviews, min rating 1 | API 2026-09-10 | review-summary | verified |
+| P2 | review-quote | "no more 3pm crash" | collection 7f2e... item 9a1c... | verbatim text, name initial + city as stored, 2026-04-02 | API | benefits | verified |
+| P3 | press-logo-linked | credibility | Vogue India | https://www.vogue.in/... (article names the brand) | fetched 2026-09-10 | press-marquee | verified |
+| P4 | certification | "FSSAI licensed" | merchant | licence no. 1001...; issuer FSSAI | merchant doc | trust-bar | verified |
+| P5 | ugc-video | in-use proof | creator @..., rights email 2026-08-21 | asset id ... | merchant consent | ugc-grid | verified |
 | P6 | customer-count | "50,000+ customers" | merchant | Shopify orders export, 51,204 unique customers to 2026-08-31 | merchant doc | stats | pending |
-| P7 | before-after | "visible in 4 weeks" | merchant | none supplied | none | — | dropped |
+| P7 | before-after | "visible in 4 weeks" | merchant | none supplied | none |  -  | dropped |
 ```
 
 Columns:
@@ -7681,8 +4383,8 @@ Columns:
 
 | Kind | Minimum evidence before `verified` | Never |
 |---|---|---|
-| review-summary | `lexsis_catalog.reviews` total and average for the exact product or collection; count ≥ 5 to show an average, ≥ 1 to show a count | rounding 4.3 to 5.0; "5.0" with under 20 reviews; stars without a count |
-| review-quote / review-list / review-with-media | row exists in `lexsis_catalog.reviews` or `review_collection_items`; text verbatim; attribution exactly as stored; date present | edited wording beyond `[…]` trimming; invented names, cities, photos; five identical five-star quotes |
+| review-summary | `lexsis_catalog.reviews` total and average for the exact product or collection; count >= 5 to show an average, >= 1 to show a count | rounding 4.3 to 5.0; "5.0" with under 20 reviews; stars without a count |
+| review-quote / review-list / review-with-media | row exists in `lexsis_catalog.reviews` or `review_collection_items`; text verbatim; attribution exactly as stored; date present | edited wording beyond `[...]` trimming; invented names, cities, photos; five identical five-star quotes |
 | external-verified-quote | public URL, platform terms allow reuse, merchant written approval, verbatim text, attribution the platform allows; manifest `reviews.source: external-verified` | marketplace text that the platform's terms forbid copying; quotes from DMs without consent |
 | ugc-photo / ugc-video / creator-video | asset id in the library, rights record (email, contract, platform rights request), creator handle, paid disclosure flag when paid | stock people as customers; generated people; content without rights |
 | before-after | merchant-supplied, same subject, same framing and lighting, unretouched, timeframe stated, consent, category permitted (`references/proof/before-after-and-claims.md`) | generated, composite, or "illustrative" results; medical outcomes without substantiation |
@@ -7694,7 +4396,7 @@ Columns:
 | guarantee / policy-fact | store policy page URL or merchant confirmation; exact terms | "free returns" when returns cost; "lifetime" without terms |
 | community-screenshot | platform, date, consent from the poster (or public brand-owned content) | screenshots of paid or fake accounts |
 | stock-count | live `lexsis_catalog.get` inventory read at render time via island binding | fixed numbers in copy |
-| social-proof-popup, live-viewer-count, press-logo-unlinked | never verified; never rendered | — |
+| social-proof-popup, live-viewer-count, press-logo-unlinked | never verified; never rendered |  -  |
 
 ## Display rules
 
@@ -7713,7 +4415,7 @@ Columns:
    A filtered carousel (`minRating`) is labelled as a selection, links to the
    full unfiltered list, and sits beside the unfiltered average and count;
    `averageRating` and `totalReviews` are never computed from a filtered set.
-4. **Quotes.** Verbatim. Trim with `[…]` only. Keep the reviewer's own
+4. **Quotes.** Verbatim. Trim with `[...]` only. Keep the reviewer's own
    specifics (product variant, timeframe, use). Attribution exactly as
    stored plus the date. Prefer reviews that mention the claim and, where
    possible, a limitation.
@@ -7732,7 +4434,7 @@ Columns:
    interval, "Individual results vary" where the category requires it,
    never in the hero, never generated.
 10. **Numbers in copy.** Every numeral inside a proof, trust, stats or press
-    section appears in the ledger. `design_lint.py` lists them; the review
+    section appears in the ledger. the source/hosted review lists them; the review
     checks each.
 
 ## Fallback order when the ledger is thin
@@ -7747,15 +4449,6 @@ Columns:
    founder contact, review request) that says the product is new.
 7. Nothing. A page with no proof section is honest; a page with invented
    proof is a liability.
-
-## Lint hooks
-
-- `plan_lint.py` T9: a reviews section requires `manifest.reviews.available
-  > 0` from an allowed source.
-- `design_lint.py`: emoji stars (N1), fabricated pills (N9), numerals in
-  proof sections (N11, manual), unlinked press logos (`<img>` inside a
-  `press-marquee` section that is not wrapped in `<a href`), forbidden kinds
-  (`SocialProofPopup`, "people are viewing", "bought in the last").
 
 ---
 
@@ -7900,7 +4593,7 @@ and the plan carry provenance as well.
 
 ## 7. Recording
 
-Plan (`page-plan.md`), one block after "## Asset slots":
+Plan (`page plan`), one block after "## Asset slots":
 
 ```markdown
 ## Generation record
@@ -7911,13 +4604,13 @@ Plan (`page-plan.md`), one block after "## Asset slots":
 | A7 | product_lifestyle | portrait | photography / medium | "..." | ... | ... | lexsis | 9f01... | CompositeSynthetic | "AI-generated scene" | "yes, generate A7" Aditi 2026-09-10 |
 ```
 
-Manifest (`page-manifest.json`): the slot's `assets[]` entry gets
+Manifest (`page record`): the slot's `assets[]` entry gets
 `"sourceType": "lexsis"`, `"assetId"`, `"url"`, `"generated": true`,
 `"provider": "<provider>"`, and `role` equal to the purpose. For an approved
 ASK slot the role is `product_lifestyle`, the entry also carries
 `"askApproved": true`, and the merchant's words live in the plan record
-(`plan_lint.py` T8 rejects an ASK role without that flag). Nothing else about
-generation enters the manifest.
+(the type checklist review T8 rejects an ASK role without that flag). Nothing else about
+generation enters the page record.
 
 ## 8. Generation request checklist
 
@@ -7941,44 +4634,37 @@ or any external generator. One no stops the call.
 
 ## 9. Rules
 
-`$W` is the page workspace. `PEOPLE` is the regex
+Checks use persisted MCP source and the hosted draft. `PEOPLE` is the regex
 `\b(woman|women|man|men|girl|boy|person|people|model|customer|shopper|reviewer|hand|hands|face|smile|smiling|doctor|nurse|dermatologist|founder|team|staff|child|kid|baby|toddler|family|couple|influencer|creator)\b`.
 
 GP1. Never generate anything in section 2; no instruction, design.md line or brief lifts the block. LAW.
 Rationale: fake testimonials and misrepresented products carry regulatory penalties and platform rejection (sources in section 2).
-Check: `python3 -c "import json;a=[x for x in json.load(open('$W/page-manifest.json'))['assets'] if x.get('generated')];print([x['slotId'] for x in a if x['role'] not in ('hero_bg','section_bg','card_bg','texture_fill','pattern_tile','decorative_element','product_composite','product_lifestyle','icon_set')])"` prints `[]`; every `product_lifestyle` row in the Generation record has a non-empty "Approved by".
 
 GP2. Composite only over a real cut-out and leave the product pixels untouched. LAW, OPERATOR.
 Rationale: a repainted product misleads about what ships (GN1); `references/design-enrichment.md` compositing recipes assume a real reference image.
-Check: view the composite beside the source packshot with `lexsis_assets.view`; colour, shape and label identical (yes/no in `qa-report.md`); Generation record cites the reference asset id.
+Check: view the composite beside the source packshot with `lexsis_assets.view`; colour, shape and label identical (yes/no in `QA record`); Generation record cites the reference asset id.
 
 GP3. Give decorative generated images `alt=""` and `aria-hidden="true"`; give composites a product alt that names the product. LAW.
 Rationale: W3C alt decision tree https://www.w3.org/WAI/tutorials/images/decision-tree/ .
-Check: for each generated decorative URL `U`, `grep -c "src=\"U\"[^>]*alt=\"\"" $W/lexsis-source.html` is 1; for composites the alt contains the product name.
 
 GP4. Never let people words appear in the alt text or prompt of a generated slot unless the ASK synthetic-model case was approved. LAW.
 Rationale: 16 CFR 465; ASCI prohibited tier.
-Check: `grep -oE 'alt="[^"]*"' $W/lexsis-source.html` filtered to generated slot URLs, then `perl -ne 'print if /PEOPLE/i'` prints nothing; the same regex over the Generation record prompts prints nothing unless the row's "Approved by" quotes the synthetic-model yes.
 
 GP5. Never generate text into an image; every headline, price, label and badge is HTML. LAW.
 Rationale: WCAG 1.4.5; Google and Shopify overlay rules (section 2).
-Check: `perl -ne 'print if /\b(text|letters|typography|lettering|headline|price|label|badge|logo|caption)\b/i' <<< "<prompt>"` matches only inside the negative list; view the output for stray glyphs.
 
 GP6. Place `hero_bg` and `section_bg` only in the plan's bold moment; keep one page background everywhere else. OPERATOR.
 Rationale: N2 and N7 in `references/design-rules.md`; a generated band per section is the template tell those rules exist to stop.
 Check: count of full-width elements with a generated background image is 0 or 1 and its section id equals the plan's "Bold moment" line (browser check from N2).
 
-GP7. Record provenance three ways: metadata on the original, `generated: true` plus `provider` in the manifest, and the Generation record in the plan. LAW.
+GP7. Record provenance three ways: metadata on the original, `generated: true` plus `provider` in the page record, and the Generation record in the plan. LAW.
 Rationale: Google requires `IPTC DigitalSourceType`; EU and ASCI labelling decisions must be auditable; hosts may strip file metadata.
-Check: `exiftool -DigitalSourceType <original>` prints a value when the tool is available; `grep -c '"generated": true' $W/page-manifest.json` equals the Generation record row count.
 
 GP8. Show a visible label wherever section 6 requires one and place it adjacent to the image. LAW.
 Rationale: EU Art. 50 first-exposure labelling; ASCI medium tier.
-Check: for every record row with a non-empty "Visible label", `grep -c '<label text>' $W/lexsis-source.html` is at least 1 within the same section.
 
 GP9. Read credits and obtain a yes for the named batch before spending; cap generated assets at four per page. OPERATOR, HEURISTIC.
 Rationale: `/design-page` authorises page creation, not generation; more than a few generated backdrops read as a template.
-Check: `grep -c '"generated": true' $W/page-manifest.json` is 4 or fewer; the session shows `lexsis_workspace.credits` before the first generate call.
 
 GP10. Use `high` quality only for `hero_bg`; `medium` for section and card backgrounds and composites; `low` for textures and decoration. OPERATOR.
 Rationale: cost table in `references/design-enrichment.md`.
@@ -8017,7 +4703,7 @@ Check: every `generated` slot's Role/purpose job is `context`, a backdrop, a tex
 
 # Offer types
 
-The canonical offer catalogue. `page-manifest.json` `offer.type` takes exactly
+The canonical offer catalogue. `page record` `offer.type` takes exactly
 one id from this file; page-type checklists list the same ids under
 `offer_compat`. Every offer renders only from a verified row in the plan's
 `## Offer ledger` (`references/offers/offer-ledger.md`). Price display rules
@@ -8235,25 +4921,21 @@ Section ids come from `references/page-types/_checklist-format.md`.
 ## Cross-cutting rules
 
 OF1. One offer per page. `offer.type` holds one id; a second offer needs its own ledger block and a reason. Exempt page types: `sale-clearance-flash`, `seasonal-gifting` (offer-ledger rule 6).
-Check: `grep -c '<!-- section: offer' $W/lexsis-source.html` is 0 or 1 unless `page.pageType` is exempt.
 
 OF2. Rule of 100. Always show the currency saving (offer-ledger rule 2). Under $100 or ₹8,000 the percent may lead ("32% off, save $28"); above it currency leads and percent is optional ("Save $128 (18%)"); never a percent without the currency amount on high-ticket goods. RESEARCH: Berger; JBR 2015 three-study replication. The ₹8,000 crossover is HEURISTIC.
 Check: every `savings-math` line contains a currency figure; the leading figure matches the side of the line the ledger price falls on.
 
 OF3. Luxury never shows percent, a struck price, a timer, "sale" or "clearance". Allowed ids: `none`, `gwp`, `free-shipping` (phrased "complimentary shipping", no threshold), `limited-edition`, `pre-order-price`, `price-lock`, `loyalty`, `gift-card`. RESEARCH and OPERATOR: Kapferer and Bastien anti-laws; Langer on price volatility and equity decay.
-Check: when the plan loads `references/vertical-luxury.md`, `offer.type` is in the allowed list and `grep -ciE 'sale|% off|save [$₹£€]' $W/lexsis-source.html` is 0.
 
 OF4. Bundle, tiered and BOGO pages show their arithmetic. `bundle`, `bundle-decoy`, `tiered-volume`, `bogo` require a `savings-math` or `quantity-breaks` section whose figures are ledger rows.
-Check: `offer.type` in that set implies `grep -cE '<!-- section: (savings-math|quantity-breaks)' $W/lexsis-source.html` is at least 1.
 
 OF5. "Free", "gift", "bonus" and "complimentary" appear only when the buyer pays nothing extra and the conditions sit in the same section (LAW, FTC 16 CFR 251.1; UK banned practice; EU UCPD Annex I.20).
 Check: every section containing `\bfree\b` also contains the threshold, shipping cost or eligibility text; no `*` after "free".
 
 OF6. No pre-ticked add-on, subscription, gift wrap, insurance, donation or upsell (LAW, India CCPA basket sneaking; ROSCA; EU CRD Art 22). Detail in `references/anti-patterns/dark-patterns.md`.
-Check: `grep -cE '<input[^>]*checked' $W/lexsis-source.html` is 0 outside variant pickers.
 
 OF7. The offer moves down the page as awareness falls. On `tof` page types the offer section index is greater than the `mechanism`, `how-it-works` or `solution` index; on `bof` types the offer is in the hero (`funnel-stages.md` FS4).
-Check: compare section order in `page-manifest.json` against `page.funnelStage`.
+Check: compare section order in `page record` against `page.funnelStage`.
 
 OF8. Retargeting never shows a deeper discount than the visitor already saw, and never the first-order code (OPERATOR: trains abandonment).
 Check: `page.pageType` is `retargeting-warm` implies `offer.type` is not `first-order` and the ledger notes the prior offer depth.
@@ -8262,7 +4944,7 @@ OF9. Free-offer frequency. A size or SKU carries a Free or BOGO offer no more th
 Check: ledger row for `bogo` or `gwp` records the months this year the offer has run on that SKU.
 
 OF10. Compare-at is struck-through text only; no pills, ribbons or caps (design-rules N9).
-Check: design-rules N9 grep returns 0.
+Check: the hosted offer presentation passes N9.
 
 OF11. Promise only what the discount configuration can do. Native BXGY does not auto-add the get item; a GWP auto-add needs a Discount Function; tiered pricing needs an app or Function; shipping discounts never combine with each other; at most 25 active automatic discounts (Shopify Help).
 Check: ledger row O9 names the mechanic (code, automatic, Function, app) and the page instruction matches it.
@@ -8271,7 +4953,7 @@ OF12. Terms travel with the offer: exclusions, stacking, regions, code, minimum 
 Check: the `legal` or `disclaimer` text for the offer is in the same or the next section as the first `offer`, `pricing` or `buy-box`.
 
 OF13. Unknown market means the strictest rule: EU 30-day prior price, UK duration and volume, India MRP display and single-figure total.
-Check: `page-manifest.json` has a market list, or the ledger notes "strictest applied".
+Check: `page record` has a market list, or the ledger notes "strictest applied".
 
 OF14. Never render an offer the merchant has not confirmed on the offer-ledger "Claims to confirm" list. Missing timing, compare-at basis or stock answers mean the price renders alone: no strike, no urgency, no scarcity.
 Check: every offer-ledger row that the page uses has status `verified`.
@@ -8362,7 +5044,7 @@ Catalogue of deceptive interface practices a generated page must never
 contain. Each entry gives the regulator's definition, an ecommerce example,
 the page-builder rule, a severity and a check. `/plan-page` applies these when
 it writes the Offer ledger; `/design-page` applies them in Compose step 6;
-`design_lint.py` runs the O1 to O4 checks. Offer-specific detail lives in
+the source/hosted review runs the O1 to O4 checks. Offer-specific detail lives in
 `references/offers/offer-ledger.md`, `references/offers/price-presentation.md`
 and `references/offers/urgency-scarcity.md`; proof detail in
 `references/proof/proof-ledger.md`. This file is the canonical list; the two
@@ -8373,9 +5055,7 @@ publish), WARN (fix unless the plan records a reason). Tag: LAW (a regulator
 names it), RESEARCH (usability evidence), OPERATOR (practitioner consensus),
 HEURISTIC (this project's judgement).
 
-Checks use `$W` for the page workspace (`work/campaigns/<campaign-slug>/pages/<handle>`) and
-`$T` for the extracted text: `perl -pe 's/<[^>]+>/ /g' $W/lexsis-source.html > $T`.
-Browser checks run in the hosted draft at 390 and 1280.
+Inspect the persisted source and hosted purchase flow.
 
 ## 1. Regulatory frame
 
@@ -8401,67 +5081,53 @@ Prevalence (CMA evidence review): 75 percent of the top 200 US ecommerce sites c
 - Definition. CCPA Annexure 1, item 1: "falsely stating or implying the sense of urgency or scarcity so as to mislead a user into making an immediate purchase". FTC bucket I: countdown timers on offers that are not time-limited. UCPD Annex I item 7. CMA: countdown clocks that reset.
 - Example. A "Sale ends in 14:59" timer that restarts on every page load; "limited time" sales where the same deal continues after the deadline (Emma Sleep undertakings, 22 May 2026: https://www.gov.uk/cma-cases/emma-group-consumer-protection-case ).
 - Rule. A countdown binds to the Offer ledger's confirmed `endsAt` (ISO datetime with timezone), disappears after it, and the deal actually ends. No per-session, per-visitor or resetting timers. No "ends soon" in static copy.
-- Check. `grep -c '<lx-island name="Countdown' $W/lexsis-source.html` is 0, or `grep -ciE 'end date.*20[0-9]{2}-[0-9]{2}-[0-9]{2}' $W/page-plan.md` is at least 1 (lint O2). `grep -ciE '\b(ends? (soon|tonight|today|in)|last chance|limited time|hurry)\b' $T` is 0 (lint O1).
 
 ### DP2. Fake scarcity (stock)  BLOCK  LAW
 - Definition. CCPA item 1(ii): "stating that quantities of a particular product or service are more limited than they actually are". FTC: "almost sold out" with ample supply. UK banned practice: pretending a product is available only for a very limited time.
 - Example. "Only 3 left!" hardcoded in copy on a made-to-order item; "Low stock" badge on every variant.
 - Rule. Stock statements come only from a live inventory binding (`lexsis_catalog.get` at render) and read the real count. "Limited edition" states the run size from the ledger. No stock words in static copy.
-- Check. `grep -ciE '\b(only [0-9]+ left|low stock|almost gone|selling fast|limited stock|while (stocks|supplies) last)\b' $T` is 0 (lint O1). Any `stock-indicator` section requires `offer.stockVerified` in the manifest (plan_lint T10).
 
 ### DP3. Fake popularity (viewer and purchase counts)  BLOCK  LAW
 - Definition. CCPA item 1(i): "showing false popularity of a product or service". FTC bucket I: false "others are viewing" and "recently purchased" notices. deceptive.design: fake social proof.
 - Example. "23 people are viewing this" from a random-number script; "Priya from Mumbai just bought" popups with no order behind them.
 - Rule. No viewer counts, activity feeds or "recently bought" toasts of any kind, even if fed by analytics; the proof vocabulary lists `social-proof-popup` and `live-viewer-count` as never rendered. Aggregate counts ("over 51,000 customers") only as verified proof-ledger rows.
-- Check. `grep -ciE 'SocialProofPopup|people are viewing|viewing this|bought in the last|just (bought|purchased|ordered)' $W/lexsis-source.html` is 0 (lint P1).
 
 ### DP4. Basket sneaking  BLOCK  LAW
 - Definition. CCPA item 2: "inclusion of additional items such as products, services, payments to charity or donation at the time of checkout from a platform, without the consent of the user, such that the total amount payable by the user is more than the amount payable for the product(s) and/or service(s) chosen by the user". Free samples and disclosed necessary fees are exempt.
 - Example. Sports Direct added a GBP 1 magazine to every basket (https://deceptive.design/types/sneaking ); shipping protection auto-added in the cart drawer.
 - Rule. Nothing enters the cart that the shopper did not tap. Cart-drawer add-ons are opt-in buttons, not pre-added lines. A bundle is one product the shopper chose, not silently combined items.
-- Check. Cart island props contain no `autoAdd`, `preselected` or default add-on ids: `grep -ciE 'auto-?add|pre-?select(ed)?=.?true' $W/lexsis-source.html` is 0. Browser: add the hero product; the cart total equals the displayed price plus stated shipping and tax only.
 
 ### DP5. Preselection (pre-ticked paid add-ons and consent)  BLOCK  LAW
 - Definition. deceptive.design "preselection"; CJEU Planet49: pre-ticked boxes are not consent; GDPR Recital 32; EU Consumer Rights Directive Art. 22: no default options that require payment; CCPA basket sneaking covers paid defaults.
 - Example. Gift wrap, insurance, donation, warranty, or "Subscribe and save" ticked by default; marketing checkbox pre-checked under the email field.
 - Rule. No `checked` on any checkbox or radio whose label carries a price, a cadence, or a consent verb. Purchase type defaults to one-time. Marketing and SMS consent boxes start unchecked and are never `required`.
 - Check.
-```bash
-grep -cE '<input[^>]*type="(checkbox|radio)"[^>]*\bchecked\b' $W/lexsis-source.html   # 0 unless data-lx-default marks a free, non-consent default (lint O3)
-grep -ciE '<input[^>]*(consent|marketing|sms|newsletter)[^>]*\brequired\b' $W/lexsis-source.html   # 0
-```
 
 ### DP6. Confirmshaming  BLOCK  LAW
 - Definition. CCPA item 3: "using a phrase, video, audio or any other means to create a sense of fear or shame or ridicule or guilt in the mind of the user so as to nudge the user to act in a certain way". Amazon's "No, I don't want Free Shipping" decline button is now banned by court order (https://www.ftc.gov/news-events/news/press-releases/2025/09/ftc-secures-historic-25-billion-settlement-against-amazon ).
 - Example. "No thanks, I like paying full price"; "I don't care about my skin".
 - Rule. Decline and close labels are neutral: "No thanks", "Close", "Not now", "Continue without". No first-person self-deprecation, no consequence framing, no sarcasm.
-- Check. `grep -ciE "no,? (thanks,? )?i (don'?t|do not|hate|prefer|like paying|want to pay)|i'?ll (pay full price|stay|pass on)|(full price|miss out|rather|don'?t care|waste)" $T` is 0 (lint O4 plus additions in section 4).
 
 ### DP7. Forced action  BLOCK  LAW
 - Definition. CCPA item 4: "forcing a user into taking an action that would require the user to buy any additional good(s) or subscribe or sign up for an unrelated service or share personal information, in order to buy or subscribe to the product or service originally intended by the user". Baymard: 18 to 19 percent of US shoppers abandoned a checkout because the site wanted an account. https://baymard.com/lists/cart-abandonment-rate
 - Example. Email gate before the price is shown; "Create an account to continue"; forced app download.
 - Rule. Guest checkout is the primary path. No gate on price, shipping, reviews or the CTA. Email and phone are asked once, optional unless needed for delivery, and marketing consent is separate.
-- Check. Every primary CTA href resolves to the cart or checkout, never to a capture step: `grep -oE 'href="[^"]*"' $W/lexsis-source.html` for elements inside `buy-box` or `sticky-cta` sections contains no `#signup`, `/account`, `/register`. No `<lx-island name="Popup"` or dialog carries `dismissible="false"`.
 
 ### DP8. Subscription trap, hard to cancel, roach motel  BLOCK  LAW
 - Definition. CCPA item 5: making cancellation "impossible or a complex and lengthy process", hiding the cancel option, forcing payment details for a free trial, or giving "ambiguous instructions for cancellation". ROSCA: simple cancellation mechanism. DSA Art. 25(3)(c): termination may not be harder than subscribing. FTC v. Amazon, Vonage (USD 100M, 2022: https://www.ftc.gov/news-events/news/press-releases/2022/11/ftc-action-against-vonage-results-100-million-customers-trapped-illegal-dark-patterns-junk-fees-when-trying-cancel-service ) and Adobe (2024: https://www.ftc.gov/news-events/news/press-releases/2024/06/ftc-takes-action-against-adobe-executives-hiding-fees-preventing-consumers-easily-cancelling ).
 - Example. "Cancel anytime" in the hero, "call us Monday to Friday" in the terms.
 - Rule. The cancellation path is one sentence beside the subscribe control ("Pause or cancel from your account, no call needed") and it is true for this store's subscription app. Free trials state the conversion date and price in the CTA block.
-- Check. For every `subscription-toggle` or `plan-selector` section: `grep -ciE 'cancel' <section text>` is at least 1 and the offer ledger row "subscription terms" is `verified`.
 
 ### DP9. Hidden recurring terms (SaaS billing, hidden subscription)  BLOCK  LAW
 - Definition. CCPA item 12 "SaaS billing": generating and collecting recurring payments "by exploiting positive acquisition loops in recurring subscriptions ... as surreptitiously as possible", including silent trial conversion. ROSCA s.4: all material terms clearly and conspicuously before obtaining billing information. deceptive.design "hidden subscription".
 - Example. "$19" in the buy box, "/month" in 10 px grey; first-charge date only in the confirmation email.
 - Rule. Recurring amount, cadence, first-charge date, renewal price after any intro period and the cancel path sit in the same visual block as the price, at body size and contrast. A subscribe option never wins by default (DP5).
 - Check.
-```bash
-perl -0ne 'while(/<!-- section: (subscription-toggle|plan-selector|pricing)[^>]*-->(.*?)(?=<!-- section:|\z)/sg){ $s=$2; print "$1: ", ($s=~/(every|per|\/)\s*(month|week|[0-9]+ days)/i && $s=~/cancel/i ? "ok" : "MISSING cadence or cancel"), "\n" }' $W/lexsis-source.html
-```
 
 ### DP10. Interface interference, visual interference, false hierarchy  BLOCK  LAW
 - Definition. CCPA item 6: "a design element that manipulates the user interface in ways that (a) highlights certain specific information; and (b) obscures other relevant information relative to the other information". DSA Art. 25(3)(a): giving more prominence to certain choices. FTC bucket II: un-bolded fees "sandwiched between bold paragraphs".
 - Example. Bright "Yes, upgrade" button with a grey 12 px "no" text link; a close icon at 2:1 contrast; compare-at price larger than the price paid.
-- Rule. In any binary choice (consent, upsell, subscription vs one-time), both options are the same element type, within 1.5x of each other's area, both at 4.5:1. Close controls are at least 24 x 24 CSS px at 3:1 and close on first tap. The price paid is never smaller than the compare-at.
+- Rule. In any binary choice (consent, upsell, subscription vs one-time), both options are the same element type, within 1.5x of each other's area, both at 4.5:1. Close controls meet A11's 48 x 48 CSS px floor, have 3:1 contrast and close on first tap. The price paid is never smaller than the compare-at.
 - Check (browser).
 ```js
 (() => { const d = document.querySelector('[role=dialog]'); if (!d) return 'no dialog';
@@ -8503,28 +5169,23 @@ perl -0ne 'while(/<!-- section: (subscription-toggle|plan-selector|pricing)[^>]*
 - Definition. CCPA item 11: "deliberate use of confusing or vague language like confusing wording, double negatives, or other similar tricks, in order to misguide or misdirect a user". CMA: complex language starred as almost always harmful.
 - Example. "Uncheck to not receive no updates"; a toggle labelled "Opt out" whose on state means subscribed.
 - Rule. Choice labels are affirmative, single-clause, no negation: "Email me offers" / "No thanks". Toggle labels describe the on state. No double negatives anywhere in choice UI.
-- Check. `grep -ciE '\b(opt.?out|un(check|tick|subscribe)|do not|don'"'"'t) .*(receive|get|miss)\b|not .* (unless|except|without)' $T` restricted to label and button text is 0.
 
 ### DP16. Rogue malware and fake system UI  BLOCK  LAW
 - Definition. CCPA item 13: scareware and ransomware tactics.
 - Rule. No fake virus warnings, fake OS dialogs, fake download buttons, fake "connection lost" banners.
-- Check. `grep -ciE 'virus|infected|your (device|phone|computer) (is|has)|system alert' $T` is 0.
 
 ### DP17. Fake reviews and undisclosed incentives  BLOCK  LAW
 - Definition. FTC 16 CFR 465 bans fake, AI-generated or bought reviews, insider reviews without disclosure, and suppression of negative reviews (Fashion Nova, USD 4.2M, 2022: https://www.ftc.gov/news-events/news/press-releases/2022/01/fashion-nova-will-pay-42-million-part-settlement-ftc-allegations-it-blocked-negative-reviews-website ). UK DMCC banned practice on fake reviews. Endorsement Guides: incentivised reviews disclosed; results claims need typicality.
 - Rule. Every quote, star, count and photo of a customer is a `verified` row in the proof ledger (`references/proof/proof-ledger.md`); sourcing in `references/proof/reviews-sourcing.md`. No invented names, avatars or cities. Never only five-star sets. "Results not typical" alone is not a disclosure.
-- Check. lint P1 to P4 and N11; `grep -ciE 'results (may )?(not typical|vary)' $T` hits require a "generally expected results" statement in the same section.
 
 ### DP18. Misdirection  BLOCK  LAW
 - Definition. deceptive.design: design that steers attention to the seller's preferred option and away from the shopper's. CMA "sensory manipulation" and "decoys". Overlaps DP10 but concerns steering rather than hiding.
 - Example. A highlighted "MOST POPULAR" middle tier that exists only to make the top tier look cheap; a colour-only difference between "one-time" and "subscribe" that favours subscribe.
 - Rule. Plan tiers are presented with the same visual weight; a recommended tier is labelled with a reason from the ledger ("Most ordered in the last 90 days" with the count), never a ribbon (design-rules N9). One-time and subscribe options are visually equal with one-time first.
-- Check. `grep -cE 'BEST VALUE|MOST POPULAR|RECOMMENDED' $W/lexsis-source.html` is 0 (lint N9). Purchase-type radio order: one-time appears before subscribe in DOM.
 
 ### DP19. Obstruction and sludge  FAIL  LAW
 - Definition. deceptive.design "obstruction"; CMA "sludge": excessive friction on the action the shopper wants (returns, cancellation, contact).
 - Rule. Returns, refund, cancellation and contact information reach in at most two taps from any CTA: a one-line statement under the CTA linked to the full policy.
-- Check. `grep -ciE 'return|refund|guarantee' <buy-box or closing-cta section text>` is at least 1 and contains an `<a href` to the policy URL recorded in the offer ledger.
 
 ### DP20. Comparison prevention  WARN  LAW
 - Definition. deceptive.design: making it hard to compare prices or features; CMA "partitioned pricing".
@@ -8540,7 +5201,6 @@ perl -0ne 'while(/<!-- section: (subscription-toggle|plan-selector|pricing)[^>]*
 - Definition. FTC bucket I (induce false beliefs); CCPA interface interference. Progress indicators and "analysing your answers..." delays that do not reflect real work.
 - Example. "Applying your discount... 87 percent" spinner; "Step 2 of 3" on a one-step form; quiz "Building your routine" delay with a fixed timer.
 - Rule. Progress UI reflects real remaining steps from the funnel definition. No decorative delays or fake percentages.
-- Check. `grep -cE 'data-part="progress"' $W/lexsis-source.html` equals the count of those with `data-steps-total`. `grep -ciE 'analy[sz]ing|calculating|applying your' $T` is 0 unless a real async call exists.
 
 ## 3. Enforcement cases to cite when a merchant pushes back
 
@@ -8557,42 +5217,12 @@ perl -0ne 'while(/<!-- section: (subscription-toggle|plan-selector|pricing)[^>]*
 | India CCPA advisory, 5 Jun 2025 | All 13 patterns | Mandatory self-audit within 3 months; notices to platforms | https://consumeraffairs.nic.in/latestnews/ccpa-advisory-terms-consumer-protection-act-2019-self-audit-e-commerce-platforms |
 | Sports Direct, 2015 | Basket sneaking (GBP 1 magazine) | Public backlash, practice withdrawn | https://deceptive.design/types/sneaking |
 
-## 4. Lint alignment
-
-`design_lint.py` already carries O1 (stock and hurry phrases), O2 (countdown without plan end date), O3 (pre-checked inputs), O4 (confirmshaming) and P1 (social-proof popups and live counts). Adopt these additions:
-
-```python
-# O1 extension (DP1, DP2): add to STOCK_PHRASES
-r"|\bends? (soon|tonight|today|in)\b|\blimited time\b|\bwhile (stocks|supplies) last\b|\blow stock\b"
-# O4 extension (DP6): decline copy with consequence framing
-CONFIRMSHAME_EXT = r"i'?ll (pay full price|stay|pass on)|\b(full price|miss out|rather|don'?t care|waste)\b"   # apply to text inside [data-action=decline], button, a
-# O5 NEW (DP5, DP7): required consent inputs
-r'<input[^>]*(consent|marketing|sms|newsletter)[^>]*\brequired\b'          # expect 0
-# O6 NEW (DP9): subscription sections must state cadence and cancel path
-# for each <!-- section: (subscription-toggle|plan-selector|pricing) --> body: require /(every|per|\/)\s*(month|week|\d+ days)/i and /cancel/i
-# O7 NEW (DP12): buy-box / pricing / offer section must mention shipping and tax
-# for each <!-- section: (buy-box|pricing|offer) --> body: require /shipping|delivery/i and /tax|gst|inclusive/i
-# O8 NEW (DP13): advertorial / listicle label
-# if manifest page.pageType in {advertorial, listicle}: require /advertis(ement|ing)|sponsored|paid partnership/i in the first 600 px (browser) or before the third section delimiter (static)
-# O9 NEW (DP15): negated choice labels
-r"\b(opt.?out|un(check|tick|subscribe)|do not|don'?t) .*(receive|get|miss)\b"   # within <label>, <button> text; expect 0
-# O10 NEW (DP16, DP22): fake system UI and faux processing
-r"\b(virus|infected|system alert|analy[sz]ing your|applying your discount)\b"    # expect 0
-# O11 NEW (DP18): tier ribbons already in N9; add
-r"\bRECOMMENDED\b"
-# O12 NEW (DP21): strike-through without source
-r"<(s|del)\b(?![^>]*data-source=)"   # expect 0
-```
-
-Browser-only checks (record in `qa-report.md`): DP10 parity script, DP13 label position, DP14 single-overlay assertion, DP4 cart-total equality.
-
 ---
 
 # Copy anti-patterns
 
 The canonical vocabulary and structure blacklist for generated page copy.
-`/design-page` applies it in Compose step 8; `design_lint.py` C1 to C4
-mirror the lists below (update both together); `brand_kit.banned_phrases`
+`/design-page` applies it in Compose step 8; `brand_kit.banned_phrases`
 is merged in at run time. Positive rules for headlines, CTAs, FAQs and
 microcopy are in `references/copy/headline-and-cta-rules.md`; frameworks in
 `references/copy/copy-frameworks.md`; sourcing real language in
@@ -8604,9 +5234,9 @@ when it appears in body text fewer than two times; FAIL at two or more body
 hits. Text inside `<blockquote>` and review islands is exempt: reviews are
 verbatim (`references/proof/proof-ledger.md` rule 4).
 
-Severity BLOCK, FAIL, WARN. Tag LAW, RESEARCH, OPERATOR, HEURISTIC. `$T` is
-the extracted text with quotes removed:
-`perl -0pe 's/<blockquote.*?<\/blockquote>//sg; s/<lx-island name="Review.*?<\/lx-island>//sg; s/<[^>]+>/ /g' $W/lexsis-source.html > $T`.
+Severity BLOCK, FAIL, WARN describes the editorial rule, not permission to
+invent claims. Review authored copy outside verbatim quotes against this list
+on the persisted source and hosted page; no local extraction script is used.
 
 ## 1. Evidence
 
@@ -8646,137 +5276,78 @@ from X to Y and everything in between, welcome to, at [Brand], we believe, disco
 your journey, level up, game on, ready to ..., unlock your potential, step into, dive in
 ```
 
-Allowlist handling. `brand_kit.allowlist` (or the plan's "Copy allowlist" line) removes a term when it is literal: a brand named "Elevate", a tier named "Premium", a hair oil that is literally "curated" by a named person. Every allowlisted hit is recorded in `page-plan.md` with the reason.
+Allowlist handling. `brand_kit.allowlist` (or the plan's "Copy allowlist" line) removes a term when it is literal: a brand named "Elevate", a tier named "Premium", a hair oil that is literally "curated" by a named person. Every allowlisted hit is recorded in `page plan` with the reason.
 
 ## 3. Claims
 
-| Id | Tell | Rule | Sev | Tag | Check |
-|---|---|---|---|---|---|
-| CP2 | Superlatives and objective claims without substantiation: best, #1, No.1, most trusted, most advanced, clinically proven, doctor recommended, dermatologist tested, award-winning, 100% natural, chemical-free, toxin-free, guaranteed results, proven to | FTC: objective claims need a reasonable basis before publication; "clinically proven" needs that evidence. India ASCI/CCPA: "No.1" only with market-share data; disclaimers may not contradict the claim. Each hit must map to a proof-ledger row (`test-data`, `award`, `certification`, `customer-count`). https://www.ftc.gov/business-guidance/resources/advertising-faqs-guide-small-business ; https://www.ascionline.in/wp-content/uploads/2022/09/asci_june_july_2020_ccc_pr.pdf | BLOCK | LAW | `grep -niE '\b(#\s?1|no\.?\s?1|number one|the best|world'"'"'s (best|most)|most (trusted|advanced|popular|loved)|clinically (proven|tested)|(doctor|dermatologist)[- ](recommended|tested)|award[- ]winning|100% (natural|safe|effective)|chemical-free|toxin-free|guaranteed results|proven to)\b' $T`; every line maps to a ledger row |
-| CP3 | Hedged non-claims: may help support, can help promote, is believed to, designed to help, supports healthy ... | Either a substantiated fact with a number, or cut the sentence. Where regulation mandates a hedge (supplement structure/function claims), keep the mandated wording and pair it with dose, ingredient or study n. | WARN | OPERATOR | `grep -ciE '\b(may help|can help|might help|is believed to|designed to help|helps? support|supports? (healthy|overall))\b' $T` |
-| CP4 | "Results not typical" or "results may vary" as the only qualifier beside a results testimonial | FTC Endorsement Guides: disclose the generally expected result in the same block; the bare disclaimer does not comply. https://www.govinfo.gov/content/pkg/CFR-2023-title16-vol1/pdf/CFR-2023-title16-vol1-part255.pdf | BLOCK | LAW | any hit of `results (may )?(not typical|vary)` requires `generally|typical(ly)? (see|lose|gain|report)` in the same section |
+| Id | Tell | Rule | Sev | Tag |
+| --- | --- | --- | --- | --- |
+| CP2 | Superlatives and objective claims without substantiation: best, #1, No.1, most trusted, most advanced, clinically proven, doctor recommended, dermatologist tested, award-winning, 100% natural, chemical-free, toxin-free, guaranteed results, proven to | FTC: objective claims need a reasonable basis before publication; "clinically proven" needs that evidence. India ASCI/CCPA: "No.1" only with market-share data; disclaimers may not contradict the claim. Each hit must map to a proof-ledger row (`test-data`, `award`, `certification`, `customer-count`). https://www.ftc.gov/business-guidance/resources/advertising-faqs-guide-small-business ; https://www.ascionline.in/wp-content/uploads/2022/09/asci_june_july_2020_ccc_pr.pdf | BLOCK | LAW |
+| CP3 | Hedged non-claims: may help support, can help promote, is believed to, designed to help, supports healthy ... | Either a substantiated fact with a number, or cut the sentence. Where regulation mandates a hedge (supplement structure/function claims), keep the mandated wording and pair it with dose, ingredient or study n. | WARN | OPERATOR |
+| CP4 | "Results not typical" or "results may vary" as the only qualifier beside a results testimonial | FTC Endorsement Guides: disclose the generally expected result in the same block; the bare disclaimer does not comply. https://www.govinfo.gov/content/pkg/CFR-2023-title16-vol1/pdf/CFR-2023-title16-vol1-part255.pdf | BLOCK | LAW |
 
 ## 4. Structure tells
 
-| Id | Tell | Rule | Sev | Tag | Check |
-|---|---|---|---|---|---|
-| CP5 | Em-dash chains | At most one em dash per 150 words; none in headings, buttons or subheads. Prefer a full stop. Pangram: 10x more em dashes in AI text. | FAIL | RESEARCH | lint C3 (headline chains); `perl -ne '$d+=()=/\x{2014}|\x{2013}| - /g; $w+=split; END{printf "%.2f per 150w\n",$d/($w/150)}' $T` under 1.0 |
-| CP6 | Rule of three everywhere ("soft, breathable, and durable") | At most one adjective triad per section. Lists of specifics beat adjective triads. | WARN | RESEARCH | `grep -ciE '\b\w+, \w+,? and \w+\b'` per section text at most 1 |
-| CP7 | Antithesis: "not just X, it's Y", "isn't just ... it's", "more than just" | Zero. | FAIL | RESEARCH | `grep -ciE "(isn'?t|not|is more than) just\b.*\b(but|it'?s|it is)\b" $T` is 0 |
-| CP8 | Rhetorical-question openers ("Tired of ...?", "Ever wondered ...?") | At most one question heading per page; never the h1 unless the type uses `qualifier-lead` and the question genuinely selects the reader. | WARN | OPERATOR | `grep -c '?' <headings>` at most 1 |
-| CP9 | "Imagine ..." or "Picture this" | Zero. | FAIL | RESEARCH | `grep -ciE '^\s*(imagine|picture this)\b' $T` is 0 |
-| CP10 | Exclamation marks | Zero outside verbatim reviews. | FAIL | OPERATOR | `grep -c '!' $T` is 0 |
-| CP11 | Uniform sentence and paragraph length | Standard deviation of sentence length at least 4 words per section; no three consecutive paragraphs within 10 percent of the same word count. | WARN | HEURISTIC | sentence-length variance script in section 9 |
-| CP12 | Identical section rhythm (headline, subhead, three bullets, CTA, repeated) | Adjacent sections never share the same layout skeleton (`references/anti-patterns/design-anti-patterns.md` DA14). | FAIL | OPERATOR | DA14 check |
-| CP13 | Alliterative or fragment triad headlines ("Pure. Potent. Proven.") | At most one fragment-triad heading per page. | FAIL | RESEARCH | `grep -cE '^[A-Z][a-z]+\. [A-Z][a-z]+\. [A-Z][a-z]+\.$' <headings>` at most 1 |
-| CP14 | Summary and conclusion language ("In conclusion", "Ultimately", "Overall", "To sum up") | Zero. A landing page asks; it does not conclude. | FAIL | OPERATOR | `grep -ciE '\b(in conclusion|ultimately|overall|to sum up|in summary|all in all)\b' $T` is 0 |
-| CP15 | Colon reveal in headings ("The result: skin that ...") | At most one per page. | WARN | RESEARCH | `grep -c ': ' <headings>` at most 1 |
-| CP16 | Title Case Headings | Sentence case for headings, subheads, buttons, labels; product names keep brand casing. USAGov moved to sentence case sitewide in 2023 with no trust drop. https://www.usa.gov/blog/2023/09/making-the-case-for-sentence-case | FAIL | RESEARCH | `grep -cE '^([A-Z][a-z]+\s){3,}[A-Z][a-z]+' <headings>` is 0 after the product-name allowlist |
-| CP17 | Bold-label bullets ("**Fast:** ...", "**Simple:** ...") | Zero. Write the specific. | FAIL | RESEARCH | `grep -cE '<li>\s*<(strong|b)>[^<]{1,20}:</(strong|b)>' $W/lexsis-source.html` is 0 |
-| CP18 | False ranges ("from busy parents to pro athletes") | Only when X and Y are real endpoints of one scale the merchant serves. | WARN | RESEARCH | `grep -ciE '\bfrom \w+( \w+)? to \w+( \w+)?( and everything in between)?\b' $T`; each hit reviewed |
-| CP19 | Generic openers ("Welcome to ...", "At [Brand], we believe ...", "We are passionate about") | Zero. Lead with the shopper's problem or a specific. | FAIL | OPERATOR | `grep -ciE '^\s*(welcome to|at [A-Z][A-Za-z]+,? we (believe|are passionate)|we are passionate)' $T` is 0 |
-| CP20 | Subhead restates the headline | The subhead resolves the headline (mechanism, proof or who it is for); token overlap with the h1 under 50 percent. | FAIL | OPERATOR | overlap script in section 9 |
+| Id | Tell | Rule | Sev | Tag |
+| --- | --- | --- | --- | --- |
+| CP5 | Em-dash chains | At most one em dash per 150 words; none in headings, buttons or subheads. Prefer a full stop. Pangram: 10x more em dashes in AI text. | FAIL | RESEARCH |
+| CP6 | Rule of three everywhere ("soft, breathable, and durable") | At most one adjective triad per section. Lists of specifics beat adjective triads. | WARN | RESEARCH |
+| CP7 | Antithesis: "not just X, it's Y", "isn't just ... it's", "more than just" | Zero. | FAIL | RESEARCH |
+| CP8 | Rhetorical-question openers ("Tired of ...?", "Ever wondered ...?") | At most one question heading per page; never the h1 unless the type uses `qualifier-lead` and the question genuinely selects the reader. | WARN | OPERATOR |
+| CP9 | "Imagine ..." or "Picture this" | Zero. | FAIL | RESEARCH |
+| CP10 | Exclamation marks | Zero outside verbatim reviews. | FAIL | OPERATOR |
+| CP11 | Uniform sentence and paragraph length | Standard deviation of sentence length at least 4 words per section; no three consecutive paragraphs within 10 percent of the same word count. | WARN | HEURISTIC |
+| CP12 | Identical section rhythm (headline, subhead, three bullets, CTA, repeated) | Adjacent sections never share the same layout skeleton (`references/anti-patterns/design-anti-patterns.md` DA14). | FAIL | OPERATOR |
+| CP13 | Alliterative or fragment triad headlines ("Pure. Potent. Proven.") | At most one fragment-triad heading per page. | FAIL | RESEARCH |
+| CP14 | Summary and conclusion language ("In conclusion", "Ultimately", "Overall", "To sum up") | Zero. A landing page asks; it does not conclude. | FAIL | OPERATOR |
+| CP15 | Colon reveal in headings ("The result: skin that ...") | At most one per page. | WARN | RESEARCH |
+| CP16 | Title Case Headings | Sentence case for headings, subheads, buttons, labels; product names keep brand casing. USAGov moved to sentence case sitewide in 2023 with no trust drop. https://www.usa.gov/blog/2023/09/making-the-case-for-sentence-case | FAIL | RESEARCH |
+| CP17 | Bold-label bullets ("**Fast:** ...", "**Simple:** ...") | Zero. Write the specific. | FAIL | RESEARCH |
+| CP18 | False ranges ("from busy parents to pro athletes") | Only when X and Y are real endpoints of one scale the merchant serves. | WARN | RESEARCH |
+| CP19 | Generic openers ("Welcome to ...", "At [Brand], we believe ...", "We are passionate about") | Zero. Lead with the shopper's problem or a specific. | FAIL | OPERATOR |
+| CP20 | Subhead restates the headline | The subhead resolves the headline (mechanism, proof or who it is for); token overlap with the h1 under 50 percent. | FAIL | OPERATOR |
 
 ## 5. Punctuation and case
 
-| Id | Tell | Rule | Sev | Tag | Check |
-|---|---|---|---|---|---|
-| CP21 | Hype punctuation: "!!", "?!", "..." trails in headings | Zero. | FAIL | OPERATOR | lint C2 `!{2,}|\?!` |
-| CP22 | ALL-CAPS words of six or more letters | None outside a `CAPS_ALLOWLIST` of acronyms and registered marks (GST, FSSAI, UPI, MRP, BIS, ISO, NSF, USDA, SPF, COD, EMI, BNPL). Labels of three words or fewer may be caps only under a merchant-stated rule (design-rules N5). | FAIL | RESEARCH | lint C2 `[A-Z]{6,}(?![a-z])` after allowlist removal |
-| CP23 | Arrow glyphs or "->" in link and button text | Design-rules N12. | FAIL | OPERATOR | lint N12 |
-| CP24 | Emoji anywhere in copy | Design-rules N1. | FAIL | OPERATOR | lint N1 |
-| CP25 | Middle dots (U+00B7) joining meta strings ("Free shipping", dot, "30-day returns", dot, "Made in India") | Use a full stop or separate lines; N12 names middle-dot joins as chrome. | WARN | OPERATOR | `grep -c '\xc2\xb7' $W/lexsis-source.html` is 0 |
+| Id | Tell | Rule | Sev | Tag |
+| --- | --- | --- | --- | --- |
+| CP21 | Hype punctuation: "!!", "?!", "..." trails in headings | Zero. | FAIL | OPERATOR |
+| CP22 | ALL-CAPS words of six or more letters | None outside a `CAPS_ALLOWLIST` of acronyms and registered marks (GST, FSSAI, UPI, MRP, BIS, ISO, NSF, USDA, SPF, COD, EMI, BNPL). Labels of three words or fewer may be caps only under a merchant-stated rule (design-rules N5). | FAIL | RESEARCH |
+| CP23 | Arrow glyphs or "->" in link and button text | Design-rules N12. | FAIL | OPERATOR |
+| CP24 | Emoji anywhere in copy | Design-rules N1. | FAIL | OPERATOR |
+| CP25 | Middle dots (U+00B7) joining meta strings ("Free shipping", dot, "30-day returns", dot, "Made in India") | Use a full stop or separate lines; N12 names middle-dot joins as chrome. | WARN | OPERATOR |
 
 ## 6. CTA and control copy
 
-| Id | Tell | Rule | Sev | Tag | Check |
-|---|---|---|---|---|---|
-| CP26 | Stock CTA labels: Shop Now, Get Started, Learn More, Buy Now (tof/mof), Submit, Click here, Continue (no object), OK, Yes, Go, Read more | Design-rules A12; `references/copy/headline-and-cta-rules.md` HC12 to HC14. The CTA is verb plus object plus outcome or price, at most four words, sentence case. | FAIL | OPERATOR | lint A12 and C4 plus the extension in section 10 |
-| CP27 | CTA that does not start with a verb, or exceeds four words | HC12. | FAIL | OPERATOR | CTA verb script in section 9 |
-| CP28 | "Free" with an asterisk or a later condition | Offers OF5: the condition sits in the same line. | BLOCK | LAW | `grep -ciE '\bfree\*' $T` is 0 |
+| Id | Tell | Rule | Sev | Tag |
+| --- | --- | --- | --- | --- |
+| CP26 | Stock CTA labels: Shop Now, Get Started, Learn More, Buy Now (tof/mof), Submit, Click here, Continue (no object), OK, Yes, Go, Read more | Design-rules A12; `references/copy/headline-and-cta-rules.md` HC12 to HC14. The CTA is verb plus object plus outcome or price, at most four words, sentence case. | FAIL | OPERATOR |
+| CP27 | CTA that does not start with a verb, or exceeds four words | HC12. | FAIL | OPERATOR |
+| CP28 | "Free" with an asterisk or a later condition | Offers OF5: the condition sits in the same line. | BLOCK | LAW |
 
 ## 7. Placeholder and model leakage
 
-| Id | Tell | Rule | Sev | Tag | Check |
-|---|---|---|---|---|---|
-| CP29 | Placeholder text: lorem ipsum, TODO, TBD, [brand], [product], {{ }}, "Your headline here", "Insert ...", "Product name", "Lorem" | Zero. A12 already forbids placeholder copy. | BLOCK | OPERATOR | `grep -ciE 'lorem|ipsum|\bTODO\b|\bTBD\b|\[(brand|product|name|city|number)\]|\{\{|your (headline|text|copy) here|insert (your|a|the)|product name here' $W/lexsis-source.html` is 0 |
-| CP30 | Framework labels leaking into copy ("Problem:", "Agitate:", "Solution:", "Benefit:", "Call to action") | Zero. Frameworks shape the order, never the words. | FAIL | OPERATOR | `grep -ciE '^\s*(problem|agitat(e|ion)|solution|benefit|proof|push|hook|story|offer|call to action)\s*:' $T` is 0 |
-| CP31 | Assistant voice leaking ("As an AI", "Certainly", "Here's a", "I hope this helps", "Feel free to") | Zero. | BLOCK | OPERATOR | `grep -ciE "as an ai|certainly|here'?s an? |i hope this|feel free to|let me know" $T` is 0 |
+| Id | Tell | Rule | Sev | Tag |
+| --- | --- | --- | --- | --- |
+| CP29 | Placeholder text: lorem ipsum, TODO, TBD, [brand], [product], {{ }}, "Your headline here", "Insert ...", "Product name", "Lorem" | Zero. A12 already forbids placeholder copy. | BLOCK | OPERATOR |
+| CP30 | Framework labels leaking into copy ("Problem:", "Agitate:", "Solution:", "Benefit:", "Call to action") | Zero. Frameworks shape the order, never the words. | FAIL | OPERATOR |
+| CP31 | Assistant voice leaking ("As an AI", "Certainly", "Here's a", "I hope this helps", "Feel free to") | Zero. | BLOCK | OPERATOR |
 
 ## 8. Brand voice
 
-| Id | Tell | Rule | Sev | Tag | Check |
-|---|---|---|---|---|---|
-| CP32 | A `brand_kit.banned_phrases` entry appears | BLOCK in any position, including body. Merged into the lint list at run time; the plan's "Copy allowlist" cannot override a merchant ban. | BLOCK | OPERATOR | `for p in "${BANNED[@]}"; do grep -ciF "$p" $T; done` all 0 |
-| CP33 | Register mismatch with `voice_md` (jokey copy for a clinical brand; clinical copy for a playful brand) | Reviewed by an LLM pass against the voice adjectives and "we say / we don't say" pairs; not regex. | WARN | OPERATOR | one-line finding per section in `qa-report.md` |
-| CP34 | Brand name outnumbers "you/your" | Second person leads; Apple's iPhone 5 copy used "you/your" more than "iPhone" and "Apple" combined. https://neilpatel.com/blog/write-copy-like-apple/ | WARN | RESEARCH | ratio script in section 9 |
-| CP35 | Spelling locale drift (color and colour on one page) | One locale from `brand_kit` or the store market. | WARN | OPERATOR | `grep -ciE '\bcolor\b' $T` and `grep -ciE '\bcolour\b' $T` are not both non-zero |
-
-## 9. Canonical regex and scripts
-
-Python `re` form, case-insensitive, applied to `$T`. Lines marked `# lint` are already in `design_lint.py`; `# NEW` are additions for the lead to adopt.
-
-```python
-SLOP_WORDS = r"\b(elevate[sd]?|unleash(es|ed)?|unlock(s|ed)?|delve[sd]?|seamless(ly)?|game-?changer|game-?changing|revolutioni[sz]e[sd]?|revolutionary|effortless(ly)?|curated|indulge|embrace|look no further|say goodbye to|in today'?s fast-paced|whether you'?re|it'?s not just|crafted with (care|love|passion)|meticulously|premium quality|world-class|cutting-edge|next-level|transform(s|ed)? your|elevate your|discover the (power|magic|difference)|experience the (difference|magic)|the ultimate|your journey|treat yourself|introducing the)\b"   # lint C1
-SLOP_WORDS_EXT = r"\b(empower(s|ed|ing)?|harness(es|ed)?|leverage[sd]?|supercharge[sd]?|streamline[sd]?|reimagine[sd]?|redefine[sd]?|showcas(e|es|ed|ing)|foster(s|ed)?|dive into|next-gen(eration)?|state-of-the-art|best-in-class|innovative|unparalleled|unmatched|unrivall?ed|exquisite|meticulous|intricate|bespoke|artisanal|holistic|synergy|robust|tapestry|realm|testament|beacon|pivotal|crucial|vibrant|must-have|perfect for|stunning|breathtaking|say hello to|designed with you in mind|the perfect blend|at its finest|like never before|you deserve|the secret to|your go-to|made for modern life|we'?ve got you covered|sit back and relax|the best part\?|here'?s the thing|let'?s face it|in a world where|gone are the days|nestled|boasts|a testament to|and everything in between|welcome to|at [A-Z][a-z]+,? we believe|level up|unlock your potential|step into|dive in)\b"   # NEW
-HYPE_PUNCT = r"!{2,}|\?!|[A-Z]{6,}(?![a-z])"   # lint C2 (apply CAPS_ALLOWLIST first)
-CAPS_ALLOWLIST = {"FSSAI","GST","UPI","MRP","BIS","ISO","NSF","USDA","SPF","COD","EMI","BNPL","INCI","GMP","HACCP"}   # NEW
-HEADLINE_EMDASH = r"<h[1-3][^>]*>[^<]*\u2014[^<]*\u2014"   # lint C3 (the script uses the literal em dash)
-STOCK_CTA = r">\s*(Submit|Click here|Learn more)\s*<"   # lint C4
-STOCK_CTA_EXT = r">\s*(Shop now|Get started|Buy now|Read more|Continue|OK|Yes|Go|Sign up|Download)\s*(<|$)"   # NEW (Buy now only when funnelStage != bof)
-ANTITHESIS = r"(isn'?t|not|is more than) just\b.*\b(but|it'?s|it is)\b"   # NEW
-IMAGINE = r"^\s*(imagine|picture this)\b"   # NEW
-SUMMARY = r"\b(in conclusion|ultimately|overall|to sum up|in summary|all in all)\b"   # NEW
-GENERIC_OPENER = r"^\s*(welcome to|at [A-Z][A-Za-z]+,? we (believe|are passionate)|we are passionate)"   # NEW
-BOLD_LABEL_BULLET = r"<li>\s*<(strong|b)>[^<]{1,20}:</(strong|b)>"   # NEW (source html)
-SUPERLATIVE = r"\b(#\s?1|no\.?\s?1|number one|the best|world'?s (best|most)|most (trusted|advanced|popular|loved)|clinically (proven|tested)|(doctor|dermatologist)[- ](recommended|tested)|award[- ]winning|100% (natural|safe|effective)|chemical-free|toxin-free|guaranteed results|proven to)\b"   # NEW, BLOCK unless ledger row
-HEDGE = r"\b(may help|can help|might help|is believed to|designed to help|helps? support|supports? (healthy|overall))\b"   # NEW, WARN
-RESULTS_DISCLAIMER = r"results (may )?(not typical|vary)"   # NEW, BLOCK without 'generally expected'
-PLACEHOLDER = r"lorem|ipsum|\bTODO\b|\bTBD\b|\[(brand|product|name|city|number)\]|\{\{|your (headline|text|copy) here|insert (your|a|the)|product name here"   # NEW, BLOCK
-FRAMEWORK_LABEL = r"^\s*(problem|agitat(e|ion)|solution|benefit|proof|push|hook|story|offer|call to action)\s*:"   # NEW
-ASSISTANT_VOICE = r"as an ai|certainly|here'?s an? |i hope this|feel free to|let me know"   # NEW, BLOCK
-FREE_ASTERISK = r"\bfree\*"   # NEW, BLOCK
-TITLE_CASE_HEADING = r"^([A-Z][a-z]+\s){3,}[A-Z][a-z]+"   # NEW, on heading text after product-name allowlist
-FRAGMENT_TRIAD = r"^[A-Z][a-z]+\. [A-Z][a-z]+\. [A-Z][a-z]+\.$"   # NEW, on heading text, allow 1
-```
-
-```python
-# CP11 sentence-length variance, CP20 subhead overlap, CP27 CTA verb, CP34 you/brand ratio
-import re, statistics
-def sentences(t): return [s for s in re.split(r'[.!?]+\s', t) if s.strip()]
-def cp11(section_text):
-    L = [len(s.split()) for s in sentences(section_text)]
-    return len(L) < 3 or statistics.pstdev(L) >= 4
-def cp20(h1, sub):
-    a, b = set(re.findall(r'\w+', h1.lower())), set(re.findall(r'\w+', sub.lower()))
-    return len(a & b) / max(1, len(b)) < 0.5
-VERBS = {'add','get','start','claim','buy','shop','send','try','join','grab','order','choose','see','show','save','pre-order','subscribe','reserve','book','take','find','build','pick','complete','apply','check'}
-def cp27(label):
-    w = label.strip().lower().split()
-    return 1 <= len(w) <= 4 and w[0] in VERBS and (len(w) > 1 or w[0] in {'buy','shop','order','subscribe'})
-def cp34(text, brand):
-    return len(re.findall(r'\byou(r|rs)?\b', text, re.I)) >= len(re.findall(re.escape(brand), text, re.I))
-```
+| Id | Tell | Rule | Sev | Tag |
+| --- | --- | --- | --- | --- |
+| CP32 | A `brand_kit.banned_phrases` entry appears | BLOCK in any position, including body. Merged into the lint list at run time; the plan's "Copy allowlist" cannot override a merchant ban. | BLOCK | OPERATOR |
+| CP33 | Register mismatch with `voice_md` (jokey copy for a clinical brand; clinical copy for a playful brand) | Reviewed by an LLM pass against the voice adjectives and "we say / we don't say" pairs; not regex. | WARN | OPERATOR |
+| CP34 | Brand name outnumbers "you/your" | Second person leads; Apple's iPhone 5 copy used "you/your" more than "iPhone" and "Apple" combined. https://neilpatel.com/blog/write-copy-like-apple/ | WARN | RESEARCH |
+| CP35 | Spelling locale drift (color and colour on one page) | One locale from `brand_kit` or the store market. | WARN | OPERATOR |
 
 ## 10. Rewrite procedure for a hit
 
 1. Ask Harry Dry's three questions of the sentence: can the reader visualise it, can it be falsified, could no competitor say it. A line failing all three is deleted, not rephrased. https://www.demandcurve.com/lessons/fundamental-rules-of-good-copy
 2. Replace the banned word with what specifically happens: "seamless" becomes "arrives assembled, no tools"; "premium quality" becomes the material, weight or test.
 3. Pull the replacement from the voice-of-customer worksheet (`references/copy/voice-of-customer-mining.md`) before inventing one.
-4. Re-run the section checks; a heading hit blocks compile, a body hit produces a rewrite note in `qa-report.md` with the span and the rule id.
-
-## 11. Lint alignment
-
-`design_lint.py` today: C1 `SLOP_WORDS`, C2 `HYPE_PUNCT`, C3 headline em-dash chains, C4 Submit/Click here/Learn more. Adopt, in this order of value:
-
-1. Merge `SLOP_WORDS_EXT` into C1 and honour `brand_kit.allowlist` plus the plan's "Copy allowlist" line (CP1).
-2. Merge `brand_kit.banned_phrases` as literal, case-insensitive matches, BLOCK in any position (CP32).
-3. Add `CAPS_ALLOWLIST` stripping before C2 (CP22).
-4. Add `STOCK_CTA_EXT` to C4, with "Buy now" gated on `manifest.page.funnelStage != "bof"` (CP26).
-5. New checks C5 `ANTITHESIS`, C6 `IMAGINE`, C7 `SUMMARY`, C8 `GENERIC_OPENER`, C9 `BOLD_LABEL_BULLET`, C10 `PLACEHOLDER` (BLOCK), C11 `FRAMEWORK_LABEL`, C12 `ASSISTANT_VOICE` (BLOCK), C13 `FREE_ASTERISK` (BLOCK), C14 `SUPERLATIVE` (BLOCK unless a ledger row is named in `page-plan.md` "Claims confirmed"), C15 `HEDGE` (WARN), C16 `RESULTS_DISCLAIMER` (BLOCK without a "generally expected" phrase in the same section).
-6. Heading-text checks C17 `TITLE_CASE_HEADING`, C18 `FRAGMENT_TRIAD` (allow 1), C19 question headings (allow 1), C20 colon reveals (allow 1), C21 em-dash density under 1 per 150 words on `$T`.
-7. Structural scripts C22 `cp11`, C23 `cp20`, C24 `cp27` on every button and `a.btn` label, C25 `cp34`.
-8. Scope: run C1 and the structure checks on `$T` with `<blockquote>` and review islands removed, and report heading hits as FAIL and body hits as WARN (FAIL at two or more).
+4. Re-run the section checks; a heading hit blocks compile, a body hit produces a rewrite note in `QA record` with the span and the rule id.
 
 ---
 
@@ -8799,7 +5370,7 @@ first), **!** requires explicit approval (`lexsis_live_ops`).
 | 2 | `lexsis_workspace.stores` | R | choosing the store |
 | 3 | `lexsis_brand.context` | R | any design decision |
 | 4 | `lexsis_brand.brand_kit` | R | palette, fonts, voice, banned phrases |
-| 5 | `lexsis_brand.list_themes` then `.get_theme` | R | `page-theme.css` |
+| 5 | `lexsis_brand.list_themes` then `.get_theme` | R | `theme_css` |
 | 6 | `lexsis_brand.navigation` | R | header/footer links (full-nav types only) |
 | 7 | `lexsis_design.guide` | R | `brand-design.md` |
 
@@ -8834,9 +5405,9 @@ Order matters: identify the type before searching anything.
 | 19b | `lexsis_capture.form_schemas`, then `.submissions` for an existing form | R | field shapes; whether a live form already collects what the page needs (PII is redacted) | lead-capture, giveaway, wholesale, waitlist |
 | 20 | `lexsis_drafts.review_collection_create` | W | draft shortlist for the merchant to activate | only when asked |
 
-Output: `page-plan.md` with Page type, Design direction, Consumer decision
+Output: `page plan` with Page type, Design direction, Consumer decision
 model, Proof ledger, Offer ledger, Imagery plan, Asset slots; compact
-`page-manifest.json`. Run `plan_lint.py` before approval.
+`page record`. Review the type checklist before approval.
 
 ## Stage 2: Design
 
@@ -8844,7 +5415,7 @@ model, Proof ledger, Offer ledger, Imagery plan, Asset slots; compact
 |---|---|---|---|---|
 | 1 | read plan + manifest + page-type file | local | follow its `## Workflow`; note deviations | ask only when a deviation is unexplained |
 | 2 | `lexsis_brand.context`, `.get_theme` | R | live tokens | compare with saved; `THEME_CONTEXT_CONFLICT` on value clash |
-| 3 | `lexsis_template_library.get_kit` then `lexsis_design.get_section` (1 to 3 ids per call, kit order) | R | authoring source | only ids in the manifest |
+| 3 | `lexsis_template_library.get_kit` then `lexsis_design.get_section` (1 to 3 ids per call, kit order) | R | authoring source | only ids in the page record |
 | 4 | `lexsis_template_library.list_mine` then `.get_mine` | R | merchant's saved sections | when the user names one |
 | 5 | `lexsis_design.islands` | R | compact catalog | select only interactive needs |
 | 6 | `lexsis_design.island_schema` | R | exact props | per island actually used, or per compile error |
@@ -8857,8 +5428,8 @@ model, Proof ledger, Offer ledger, Imagery plan, Asset slots; compact
 | 13 | host browser at 390 and 1280 | local | hosted design review | production-ready only |
 | 14 | `lexsis_drafts.page_update_section` / `.page_patch` (`expected_version`) | W | fix review findings | never a second draft |
 
-Output: `lexsis-source.html`, `page-theme.css`, `compile-artifact.json`,
-`DRAFT_CREATED`, later `DESIGN_APPROVED`.
+Output: persisted page id/version, hosted preview and compile evidence;
+`DRAFT_CREATED`, later `DESIGN_APPROVED`. No local page files are created.
 
 ## Stage 3: Generate (sync + QA)
 
@@ -8883,7 +5454,7 @@ Output: `DRAFT_READY`.
 |---|---|---|---|
 | 1 | `lexsis_live_ops.publish` | W ! | named page and version only |
 | 2 | `lexsis_analytics.page`, `.timeseries`, `.attribution` | R | first-week read |
-| 3 | `lexsis_drafts.page_variation` then `.experiment_create` | W | challengers (`/ab-test`) |
+| 3 | `lexsis_drafts.page_duplicate` then `.experiment_create` | W | challengers (`/ab-test`) |
 | 4 | `lexsis_analytics.experiment` then `lexsis_live_ops.scale_winner` | R / W ! | evaluate, then scale |
 | 5 | `lexsis_live_ops.rollback` / `.unpublish` | W ! | undo |
 
@@ -8898,3 +5469,472 @@ Output: `DRAFT_READY`.
   result is a lookup miss.
 - Never call a `lexsis_live_ops` action without the user's explicit approval
   for that page and version in the current conversation.
+
+---
+
+# MCP router/action inventory
+
+Derived from the `CONSOLIDATED_ROUTERS` declaration in the sibling MCP
+service on 2026-09-11: 18 routers, 92 actions. Re-derive this inventory when
+that source changes. This lists operation names, not arguments or island
+props; resolve an unfamiliar action schema before calling it.
+
+| Router | Actions |
+|---|---|
+| `lexsis_workspace` | `lexsis_workspace.list`, `lexsis_workspace.get`, `lexsis_workspace.stores`, `lexsis_workspace.credits` |
+| `lexsis_assets` | `lexsis_assets.capabilities`, `lexsis_assets.view` |
+| `lexsis_asset_library` | `lexsis_asset_library.search` |
+| `lexsis_asset_import` | `lexsis_asset_import.import` |
+| `lexsis_asset_upload` | `lexsis_asset_upload.upload` |
+| `lexsis_campaigns` | `lexsis_campaigns.creatives`, `lexsis_campaigns.analyze`, `lexsis_campaigns.frames`, `lexsis_campaigns.personas`, `lexsis_campaigns.match_persona` |
+| `lexsis_brand` | `lexsis_brand.context`, `lexsis_brand.brand_kit`, `lexsis_brand.list_themes`, `lexsis_brand.get_theme`, `lexsis_brand.navigation`, `lexsis_brand.compile_theme` |
+| `lexsis_catalog` | `lexsis_catalog.list`, `lexsis_catalog.get`, `lexsis_catalog.reviews_status`, `lexsis_catalog.reviews`, `lexsis_catalog.reviews_search`, `lexsis_catalog.review_collections`, `lexsis_catalog.review_collection_items` |
+| `lexsis_pages` | `lexsis_pages.list`, `lexsis_pages.find`, `lexsis_pages.get`, `lexsis_pages.edit_context`, `lexsis_pages.content`, `lexsis_pages.source`, `lexsis_pages.section_source`, `lexsis_pages.inspect`, `lexsis_pages.diff`, `lexsis_pages.integrity`, `lexsis_pages.qa`, `lexsis_pages.compile`, `lexsis_pages.compile_artifact` |
+| `lexsis_drafts` | `lexsis_drafts.asset_generate`, `lexsis_drafts.theme_update`, `lexsis_drafts.page_replace`, `lexsis_drafts.page_patch`, `lexsis_drafts.page_attach_bundle`, `lexsis_drafts.page_update_section`, `lexsis_drafts.page_remove_section`, `lexsis_drafts.page_move_section`, `lexsis_drafts.page_update_head`, `lexsis_drafts.page_record_qa`, `lexsis_drafts.page_duplicate`, `lexsis_drafts.page_variation`, `lexsis_drafts.template_create`, `lexsis_drafts.template_update`, `lexsis_drafts.template_apply`, `lexsis_drafts.experiment_create`, `lexsis_drafts.funnel_create`, `lexsis_drafts.funnel_update`, `lexsis_drafts.cart_set`, `lexsis_drafts.cart_edit`, `lexsis_drafts.review_collection_create`, `lexsis_drafts.send_feedback` |
+| `lexsis_page_create` | `lexsis_page_create.create` |
+| `lexsis_live_ops` | `lexsis_live_ops.publish`, `lexsis_live_ops.unpublish`, `lexsis_live_ops.delete`, `lexsis_live_ops.rollback`, `lexsis_live_ops.template_publish`, `lexsis_live_ops.template_archive`, `lexsis_live_ops.scale_winner` |
+| `lexsis_design` | `lexsis_design.guide`, `lexsis_design.islands`, `lexsis_design.island_schema`, `lexsis_design.get_section` |
+| `lexsis_template_library` | `lexsis_template_library.search_sections`, `lexsis_template_library.search_page_kits`, `lexsis_template_library.get_kit`, `lexsis_template_library.list_mine`, `lexsis_template_library.get_mine` |
+| `lexsis_analytics` | `lexsis_analytics.timeseries`, `lexsis_analytics.page`, `lexsis_analytics.attribution`, `lexsis_analytics.experiment` |
+| `lexsis_capture` | `lexsis_capture.form_schemas`, `lexsis_capture.submissions`, `lexsis_capture.funnel_templates`, `lexsis_capture.funnel_template`, `lexsis_capture.get_funnel`, `lexsis_capture.validate_funnel`, `lexsis_capture.preview_funnel` |
+| `lexsis_cart` | `lexsis_cart.get` |
+| `lexsis_support` | `lexsis_support.search_docs` |
+
+---
+
+# Shared page workflow
+
+The compiler determines valid input. `references/design-rules.md` owns house
+requirements; domain policy owns evidence and permissions. The selected
+page-type contract owns anatomy and type-specific decisions. Workflows
+execute those decisions, never relax their requirements.
+
+## Reading order
+
+1. Select one contract through `references/page-types/_index.md`.
+2. Read its context requirements and checklist. Keep the required headings
+   and JSON contract; record deviations with their reasons.
+3. Execute each section's type-specific row through the four procedures
+   below. Read each procedure once, then apply it to every relevant section.
+4. Reconcile the asset budget and evidence, then inspect compiler results and
+   perform hosted review for the requested draft or production-ready mode.
+
+## Four procedures
+
+| Procedure | Single home | Type-specific inputs |
+|---|---|---|
+| Asset acquisition and missing-slot handling | `references/workflows/section-asset-workflow.md` section 1 | Job, source/tag, crop, required count and legitimate fallback |
+| View and section fit | `references/workflows/section-asset-workflow.md` section 2 | Product/variant, composition, adjacent slots and intended crop |
+| Interactive selection | `references/workflows/island-selection-workflow.md` | Candidate family and the decision that requires behavior |
+| Copy execution | `references/workflows/copy-workflow.md` | Message, evidence, specific ceilings and CTA destination |
+
+A type file supplies the differences, not another copy of these procedures.
+"Media: no" is a valid type-specific decision; not every section needs an
+image. Static facts, native disclosures and tables remain legitimate content.
+
+## Planning and design responsibilities
+
+`/plan-page` resolves context and asset jobs, records functional intent and
+visual direction, and names deviations. It does not choose schema props or
+force an island. `/design-page` executes the interactive-selection procedure
+against the current catalog and schemas, then compiles the source. Reopen a
+planned decision only when new evidence or a contract conflict requires it.
+A saved preset label is descriptive intent, not a prop bundle to paste.
+
+## Evidence and handoff
+
+Use `references/page-files.md` and `references/source-artifact-workflow.md`
+for page/campaign records, direct MCP authoring and version evidence. Do not create
+another ledger format here. Source eligibility and generation permissions
+remain in `references/assets/`; proof and offer rows remain in their domain
+ledgers. Production claims need the appropriate confirmed evidence.
+
+Type deviations and copy findings are review notes; unsupported proof and
+offers block readiness. Review notes do not make unsupported claims acceptable.
+Hosted evidence and draft/release state follow `references/qa-recipe.md`
+and `references/workflow-intent.md`.
+
+---
+
+# Section asset workflow
+
+This is the single execution procedure for sourcing, missing-slot handling,
+and visual fit. Type files provide jobs, tags, crops and budgets; policy
+lives in `references/assets/asset-sourcing-sequence.md`,
+`references/assets/generation-policy.md`, `references/assets/slot-spec.md`,
+`references/assets/video-rules.md` and the relevant proof ledger.
+
+## 1. Acquisition and missing-slot handling
+
+1. Read the type's section job and budget. Decide whether imagery is needed;
+   a native disclosure or factual table does not need a decorative image.
+2. Inventory real catalogue media, the merchant's selections, and existing
+   library assets before planning new media. Assign each candidate its actual
+   job, product/variant, dimensions and rights evidence.
+3. Follow the source eligibility order in
+   `references/assets/asset-sourcing-sequence.md`. Use the type's search tags
+   and queries. A missing tag is not proof that the library is empty.
+4. Run the fit review in section 2 before binding a candidate. Retain rejection
+   reasons so the same unsuitable image is not proposed repeatedly.
+5. For a remaining slot, consult `references/assets/generation-policy.md`.
+   That file owns ALLOW / ASK / NEVER, credit approval, identity protection,
+   prompts and generation records. Do not infer permission from a page type.
+6. Tell the merchant what is missing: section, job, aspect, count and why it
+   matters. Offer **upload**, **generate** only where that policy permits it,
+   or **skip/merge** with an explanation of what the page loses. Group gaps
+   into one useful message, not a question for each section.
+7. A fast draft may use the closest existing asset that honestly performs a
+   suitable job, or leave the slot `planned`. Record all unresolved slots in
+   the plan and draft summary. Do not silently remove a required section.
+   Production readiness requires resolution of its required slots; an
+   explicit type deviation still needs a reason and appropriate evidence.
+8. Skip or merge a section only on the merchant's decision. A generation ban
+   is not permission to invent media, substitute irrelevant stock, or hide
+   the missing job behind a decorative band.
+
+### Import, upload and selection
+
+- `lexsis_asset_library.search` selects existing assets. With an empty query,
+  wait for the `Design asset selection:` message when inline selection UI is
+  available; map its selection order to the named slots.
+- `lexsis_asset_import.import` persists an available URL, image base64 with
+  MIME type, or conversation attachments. Supply exactly one source.
+- `lexsis_asset_upload.upload` opens the local-file UI. Scope it to the
+  selected workspace/theme and wait for the user's uploaded-asset message.
+  Without inline UI, ask for a URL or conversation attachment and import it.
+  Opening a panel is not an upload. The exact argument contract is in
+  `references/lexsis-mcp-contract.md`.
+
+### Search efficiently
+
+Use the current search schema. Tags such as `hero`, `lifestyle`,
+`product-shot`, `social-proof` and `logo` are conventions, not a closed enum.
+Try semantic queries for missing jobs and filename lookup for a supplied
+filename. Where supported, OCR search helps identify baked-in overlays and
+similarity search around a verified seed helps maintain a coherent set.
+Result geometry screens candidates before the visual review; metadata never
+replaces inspection. Keep the selected workspace and theme binding explicit.
+
+## 2. View and fit review
+
+Nothing is used sight unseen. Open each candidate with `lexsis_assets.view`;
+if the host cannot display it, inspect the returned permanent URL with the
+available image viewer. Judge the asset **in its intended section**:
+
+| Check | Required decision |
+|---|---|
+| Identity and job | Correct product/variant; the image actually demonstrates the assigned job |
+| Crop | Desktop and mobile crops preserve the subject and required detail |
+| Text placement | Copy has an appropriate quiet region, or moves outside the image; A7 still governs contrast |
+| Set consistency | View adjacent/grid candidates together; they should read as one shoot rather than unrelated finds |
+| Palette | The image works with the plan's visual direction without falsifying product appearance |
+| Resolution | Detail survives at the actual mobile and desktop rendered sizes |
+| Source integrity | Rights are recorded; no misleading overlay, watermark or competitor branding; genuine product labels remain readable where the job requires them |
+
+A near-uniform preview can be a failed preview. Inspect the original URL
+before rejecting the asset or spending credits on a replacement. Apply this
+same review after generation; payment is not evidence of suitability. A
+rejected generation returns to the policy's bounded repair/fallback route.
+
+## 3. Asset budget and record
+
+The type's budget records supplied jobs, missing jobs and type-specific
+alternatives. It does not redefine source permissions. Assign each slot a
+source decision, rights basis, final asset or Shopify media id, and status.
+Use the workspace record defined in `references/page-files.md`; generation
+records follow the generation-policy owner. Mark rejected or unresolved jobs
+accurately even when a different verified image allows a reversible draft.
+
+Example merchant message: "The kit has a packaging image but no image of
+all included items. Supply one overhead kit photo, or choose to omit the
+optional unboxing section; the included-items job is still pending."
+
+## 4. Write to the resolved job
+
+After the media decision, execute `references/workflows/copy-workflow.md`.
+Do not invent benefit imagery or pad the copy because a requested image is
+missing. A deliberately text-only section follows its type contract.
+
+---
+
+# Live island selection
+
+This is the single procedure for choosing interactive components. A page
+contract names candidate families and decision inputs, not a prop schema.
+Planning records functional intent; design resolves implementation.
+`references/authoring/source-authoring.md` owns markup, and
+`references/authoring/css-and-styling.md` owns styling.
+
+## 1. Decide whether behavior is required
+
+Use static HTML for factual text, comparisons, native disclosures, linked
+logos, tables, navigation anchors and simple product lists. Add an island
+only for required state, catalogue binding, media behavior, capture,
+subscription/variant selection or an overlay. Do not create an island merely
+because a legacy file named one.
+
+## 2. Resolve the current catalog and schema
+
+1. Read the type's decision inputs: product and media count, variant axes,
+   selling plans, review availability, capture purpose and page length.
+2. Call `lexsis_design.islands` for the compact current catalog. Exclude
+   entries marked deprecated and entries disallowed by domain policy.
+3. Call `lexsis_design.island_schema` for the selected candidate. Read its
+   supported variants, required props, defaults, authoring examples,
+   hydration mode, parts, CSS variables and headless support.
+4. Select only a variant and props justified by the actual page decision.
+   Bind real catalogue/ledger ids. Do not infer a field from a sibling
+   island, old prose example, intent label or bundled prop map.
+5. Check defaults against the house requirements. Disable incidental motion
+   when the plan does not authorize it; a schema default is not a policy
+   exemption. Do not hide data with filters when the section claims to show
+   the full distribution.
+6. Use source-format examples from that live schema and compile. Revisit the
+   schema when an error or an unmet behavior requires it; never fetch every
+   full schema without a decision that needs it.
+
+## 3. Candidate families
+
+| Job | Candidate direction | Decision inputs |
+|---|---|---|
+| Purchase | BuyBox | Actual product, variants, selling plans and approved design |
+| Gallery | ProductGallery, ProductHero, ImageZoom | Image count/jobs, aspect, variant images and inspection needs |
+| Linked purchase bar | StickyBar | Page length and the live purchase synchronization contract |
+| Product browsing | QuickAdd, ProductCarousel, FeaturedCollectionStage | Need for commerce behavior beyond native product links |
+| Reviews | ReviewCarousel, ReviewList | Eligibility and scope from `references/proof/reviews-sourcing.md` |
+| Product explanation | IngredientExplorer, BeforeAfter | Verified product/evidence requirements, not decorative proof |
+| Media | VideoPlayer, MediaCarousel, ShoppableVideoFeed | User-controlled behavior required by the type |
+| Capture | EmailCapture, FunnelRuntime | Real form schema and the type's authorized goal |
+| Availability or deadline | InventoryIndicator, CountdownTimer | Verified offer-ledger basis and type permission |
+| Navigation/overlay | SiteHeader, Navbar, Footer, MobileMenu, Modal | Required navigation or interaction, with one owner per role |
+
+These are candidate names, not a frozen catalog or prop map. Re-check the
+current catalog before use. Policy owners decide whether a candidate's job
+is allowed; an available component is not permission to deploy it.
+
+## 4. Purchase state and styling
+
+Keep one owner for purchase state. When the live schemas support linked
+BuyBox and StickyBar controls, use their matching synchronization key and
+complete variant catalog so variant, quantity, effective price, selling plan,
+availability and cart-pending state remain consistent. External selectors
+must use the group's supported scoped-event contract. Never replace this
+with two independent cart handlers. If the current schemas cannot express
+the intended linkage, route the secondary control back to the main form.
+
+Record actual variant/props and schema evidence in the page decision record. A
+`Preset: <island>/<intent>-<tone>` label describes the desired appearance; it
+is not executable configuration. Resolve its intent now and record deviations.
+Use only live schema parts/CSS variables, scoped by section id.
+
+## 5. Retired jobs
+
+| Retired component name | Current implementation |
+|---|---|
+| FAQ | Native `details` and `summary` |
+| Tabs | Native radio controls with labels or disclosures |
+| Marquee | Static linked logo/list markup; no ticker by default |
+| StatCards | Static semantic figures with sourced values |
+| BackToTop | Native anchor to a stable page id |
+| Carousel | Native scroll snap or a justified active specialist |
+| CartDrawer | Cart V2 through `head.use_cart_v2` |
+| Countdown | CountdownTimer, only after ledger and live-schema checks |
+
+Retained schema files for older pages are compatibility artifacts. They do
+not authorize using retired components in new source. Non-existent names
+have no schema to resolve; use the native job or an active catalog candidate.
+
+---
+
+# Copy execution
+
+This workflow applies copy policy; it does not define another blacklist,
+word-budget table or persuasion framework. Defaults and numeric ceilings
+live in `references/copy/headline-and-cta-rules.md`. Framework selection lives
+in `references/copy/copy-frameworks.md`; paid-traffic assessment lives in
+`references/copy/message-match.md`.
+
+## Procedure
+
+1. Read the section's purpose, resolved media job, evidence and CTA target.
+   Write the copy to what the shopper can actually inspect, including a
+   deliberate text-only section where the type specifies one.
+2. Apply the default ceilings from the copy-policy owner. The type may supply
+   a specific message, section budget or deliberate exception; record the
+   reason instead of copying the universal ceiling into every type file.
+3. Use the merchant's voice and concrete product facts. Keep quotations
+   verbatim and trace proof/offer numbers to their ledger rows.
+4. Make the CTA describe its real action and destination. A navigation link
+   must not pretend to add to cart. Preserve the selected type's goal model.
+5. Check the actual layout at review widths. Rework an overlong heading or
+   paragraph rather than hiding content, reducing contrast or inventing an
+   image. Alt text follows `references/assets/slot-spec.md`.
+6. Review the blacklist in `references/anti-patterns/copy-anti-patterns.md`
+   and house N1/N3/N5/N6/N12/A12. Run copy lint as an advisory review;
+   unsupported proof or offer content remains blocking in hosted design review.
+
+---
+
+# Source authoring
+
+The compiler owns acceptance of source. House requirements are in
+`references/design-rules.md`; CSS is owned by
+`references/authoring/css-and-styling.md`. This file owns markup mechanics,
+not another style policy or island-selection table.
+
+## Source inputs
+
+Author one source value and pass it directly to MCP. Pass structured `head`,
+optional `scripts` and any page-wide `theme_css` separately from the HTML.
+`references/source-artifact-workflow.md` owns the direct-input contract and
+persisted version evidence; no HTML or CSS file is created.
+
+## Section identity
+
+A section starts at `<!-- section: kebab-case-id -->` and continues to the
+next delimiter. Use one matching `<section id="kebab-case-id">` per delimiter.
+Ids come from `references/page-types/_checklist-format.md`, including its
+suffix convention. Keep ids stable across patches; renaming can break
+anchors and version history. Announcement, header, footer and navigation are
+ordinary source sections in the declared order, not a hidden renderer shell.
+
+## Island markup
+
+Resolve interactive decisions through
+`references/workflows/island-selection-workflow.md`. For the chosen island,
+use `<lx-island name="...">` with one readable `application/json` child
+containing the props confirmed by its current schema. Use the live schema's
+authoring example rather than a static prop map.
+
+Allowed source attributes are `name`, `hydrate`, `class`, `id`, `style`,
+and `headless` where supported. Read the hydration default and headless
+contract live. A different island's defaults or hooks are not evidence.
+Source uses `hydrate`; `data-island`, `data-props` and `data-hydrate` are
+compiled renderer markers and are not hand-authored source.
+
+A fallback is one `data-lx-island-fallback` child alongside the JSON child.
+It contains readable static information, not a competing purchase handler.
+Supported headless behavior is different from fallback content: fetch the
+current required hooks, preserve their state contract, and test the result.
+Navigation hydration hooks likewise come from the selected live schema.
+
+Cart behavior comes from `head.use_cart_v2` and the published cart profile,
+not an authored cart section. Required singleton roles and linked purchase
+state are resolved in the island-selection owner.
+
+## Native content
+
+Use semantic HTML for content that does not need an island: disclosures,
+comparison tables, static statistics, linked logos and product navigation.
+Preserve native keyboard/focus behavior. A radio group needs real labels;
+a table needs meaningful headers and an appropriate caption. House A11 owns
+control sizing. Native markup is not a license to recreate cart logic.
+
+## Head and external code
+
+- `head.title` contains the real title; approved font stylesheet URLs belong
+  in structured `head.fonts`, not CSS imports or section link tags.
+- `scripts[]` is for approved integrations and analytics. Animation engines
+  use the managed loaders described in `references/animation-system.md`.
+- Keep JSON and JSON-LD scripts in their supported HTML locations. Never
+  escape a whole section into an HTML string; valid HTML entities in text
+  and attribute values remain ordinary HTML.
+- Custom motion uses `application/lexsis-motion` under the house budget.
+  Follow the managed API contract rather than copying raw timers, global
+  DOM access, observers, storage, networking or programmatic clicks into JS.
+- Plain top-level section script is compatibility behavior, not a route
+  around the compiler's managed-code checks.
+
+## Compile handoff
+
+Write complete source, then follow `references/generation-protocol.md` for
+exact-input compilation, repair, draft creation or versioned editing. A clean
+compile does not prove visual quality. Hosted design review and production
+readiness follow `references/qa-recipe.md`.
+
+---
+
+# CSS and styling
+
+The compiler accepts or rejects CSS and utilities. House visual and
+accessibility rules live in `references/design-rules.md`; do not weaken
+them through a theme, template, preset or component default.
+
+## 1. Cascade and ownership
+
+The cascade is theme CSS, generated Tailwind utilities, then section CSS in
+page order. The renderer supplies its reset and base styles; do not duplicate
+them. The page-wide `theme_css` value owns theme tokens, the plan's radius/type scales,
+page-wide focus styles and reduced-motion handling. Literal utility classes
+own layout, spacing, sizing, responsive behavior and state styling.
+Section CSS is exceptional and always scoped to its section id.
+
+## 2. Utilities first
+
+Author mobile first using literal classes supported by the compiler. Do not
+construct class names at runtime, add a Tailwind CDN, or invent unconfigured
+utilities. Resolve every `missing_candidates` entry rather than assuming it
+will render. The house rules own the spacing/type scales and permitted
+state feedback; this file does not define another set of values.
+
+## 3. Section CSS jobs
+
+Use section CSS only for geometry utilities cannot express, visual overrides
+of schema-declared parts/variables, the plan's named motion, a feature-query
+fallback, or a scoped print/RTL adjustment. Complex named-grid geometry can
+need CSS; ordinary columns and breakpoints remain utilities.
+
+Every selector begins with the section id. Scope each selector in a comma
+list separately. Keyframes have unique section-qualified names. Never add
+page-global element selectors, a second container system, or `!important`.
+Tokens belong in the theme; do not redefine brand variables inside sections.
+
+## 4. Tokens and contrast
+
+Use the theme's verified `--lx-*` values and plan-declared object radius
+tokens. `--lx-text-muted` is the secondary text pairing; opacity on primary
+text is not a substitute for a contrast-checked color. A7 owns contrast.
+N2 owns surfaces and its exhaustive exceptions. N7 owns effects; no accent
+glow is allowed under the name of a neutral shadow.
+
+An inline reference to a theme token is valid, as is an approved image focal
+point. Do not use inline styles to rebuild layout already covered by
+utilities. A page-level token override belongs in `theme_css` and must
+still satisfy the house requirements and binding rules.
+
+## 5. Island styling
+
+Discover `parts` and `css_vars` from `lexsis_design.island_schema` for the
+selected component. Prefer its supported CSS variables for geometry; use
+scoped part selectors for visual properties. Do not assume another island
+has the same parts. Do not target implementation classes or override an
+island's internal layout with `display`, positioning or a new grid.
+
+After the live schema confirms the part, a visual override can be:
+
+```css
+#buy-box [data-part="cta"] { border-radius: var(--r-control); }
+```
+
+A saved preset label is visual intent, not frozen configuration. Resolve the
+actual props and styling now; record the result and any intentional departure
+in the workspace. Do not paste a static per-island prop or hydration table.
+
+## 6. Responsive and accessible implementation
+
+Follow A3/A4/A7/A11 for type, measure, contrast and interaction sizing.
+A11's 48px minimum governs every authored tap target; external 24px or 44px
+floors do not reduce it. Review at the workflow's specified widths, including
+390px and 1280px for hosted design approval. Use native scrolling rather than
+clipping content or intercepting input. Preserve visible keyboard focus.
+
+## 7. Motion and repair
+
+N10 owns the motion budget. `references/animation-system.md` owns managed
+motion syntax and runtime APIs. A shared renderer animation is not permission
+to deploy a banned effect. Static content remains visible when motion fails.
+
+When styling fails: check source syntax, the compiler's missing utilities,
+selector scope, live schema parts and CSS variables, then cascade order.
+Fix the owning layer rather than escalating specificity or patching compiled
+output. Recompile the exact inputs and inspect the hosted result.

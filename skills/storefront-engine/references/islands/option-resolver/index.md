@@ -1,17 +1,12 @@
-# OptionResolver — Island Directory
+# OptionResolver
 
-Product variant/option selector island. Resolves user selections to a specific product variant.
+For `OptionResolver`, fetch `lexsis_design.islands` and
+`lexsis_design.island_schema` during the decision that needs this behavior.
+Use the current authoring example, variants, props, parts, hydration and
+headless support; the bundled JSON is a compatibility reference, not a
+second source of defaults.
 
-## Quick Reference
-
-- **Variants**: dropdown, buttons, visual
-- **Required prop**: `options` (array of option groups)
-- **Schema**: `vibe://schema/island/OptionResolver`
-- **Contract**: follows `_contract.md` rules
-
-## Composition
-
-- Pair with: BuyBox (inside or adjacent), SizeGuide, WishlistButton
-- Resolves user selections to a specific variant before add-to-cart
-- Usually embedded within BuyBox section or directly above CTA
-- Place SizeGuide trigger link near size option group
+`references/workflows/island-selection-workflow.md` owns selection and
+linked state. `references/authoring/source-authoring.md` owns source syntax;
+`references/authoring/css-and-styling.md` owns styling. Placement and evidence
+come from the selected page-type contract and its domain policies.

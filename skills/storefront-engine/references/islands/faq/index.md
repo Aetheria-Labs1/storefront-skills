@@ -1,17 +1,10 @@
-# FAQ — Island Directory
+# FAQ
 
-Collapsible question-and-answer island for addressing objections and improving SEO.
+This entry identifies a retired component for compatibility inspection.
+Do not author it in new source. The native or active replacement is listed
+in `references/workflows/island-selection-workflow.md` under Retired jobs.
 
-## Quick Reference
-
-- **Variants**: default, compact
-- **Schema**: `vibe://schema/island/FAQ`
-- **Contract**: follows `_contract.md` rules
-
-## Composition
-
-- Place mid-to-lower page (after product details, before footer)
-- Pair with: EmailCapture (below FAQ), TrustBadgeBar
-- Never place above the fold or before primary CTA
-- Compact variant embeds within other sections (no own wrapper)
-- Max 8-10 items for readability; group by category if >6
+`references/workflows/island-selection-workflow.md` owns selection and
+linked state. `references/authoring/source-authoring.md` owns source syntax;
+`references/authoring/css-and-styling.md` owns styling. Placement and evidence
+come from the selected page-type contract and its domain policies.

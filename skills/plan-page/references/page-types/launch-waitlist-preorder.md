@@ -109,290 +109,53 @@ Sections between chrome: 6 to 9.
 
 ## Workflow
 
+Apply `references/workflows/_how-to-read.md` to these type-specific
+decisions. It links the shared asset/fallback, fit, live-island and
+copy procedures; this table supplies their inputs, not another policy.
+
 ### Context reads
-1. Merchant facts into the offer ledger before anything else: variant
-   (pre-launch, pre-order live, post-launch week), launch date or window,
-   estimated ship-by date and its basis, public price and launch price,
-   charge timing (deposit, full, at ship), cancellation and refund terms,
-   edition size and whether it is read live, drop datetime for a countdown
-   (`references/offers/campaign-calendar.md`, `launch` row and CC7).
-2. `lexsis_catalog.get` for the product: does real prototype or production
-   media exist (footnote f in `references/assets/image-jobs-by-page-type.md`);
-   price; a pre-order purchase option or selling plan; inventory tracking.
-   No pre-order option in Shopify means no buy box: the page runs the
-   waitlist variant.
-3. `lexsis_capture.form_schemas` for the one-field waitlist form and its
-   consent text; the referral mechanic if the form supports one.
-4. Founder facts: full name, title, the photo the merchant approves in
-   writing, the note text; test data documents (method, units, date);
-   roadmap stages with status (`references/proof/proof-ledger.md` rows).
-   `lexsis_brand.brand_kit` for tokens, voice and banned phrases;
-   `lexsis_brand.context` for the `theme_id`; `lexsis_brand.navigation`
-   only for the one utility link.
-5. `lexsis_campaigns.creatives` when teaser ads run: the hero must match
-   the ad frame (`references/copy/message-match.md`).
-6. `lexsis_asset_library.search` with `theme_id`, `mode: "tags"`, one call
-   each for `product-shot`, `hero`, `lifestyle`, `logo`, `social-proof`;
-   then semantic "<product> prototype" and "<founder name>"; view every
-   candidate with `lexsis_assets.view`. Press rows fetched and verified per
-   `references/proof/press-and-media-mentions.md`.
-7. `lexsis_catalog.reviews_status` is read only to confirm the count is
-   zero for this product; nothing review-shaped is planned
-   (`references/proof/reviews-sourcing.md`, zero-review playbook).
-8. `lexsis_design.islands` for the active catalog; `lexsis_workspace.credits`
-   is read; generation here is limited to a `hero_bg` behind a typographic
-   hero at most (`references/assets/generation-policy.md`, GN2).
+
+1. Merchant facts into the offer ledger before anything else: variant (pre-launch, pre-order live, post-launch week), launch date or window, estimated ship-by date and its basis, public price and launch price, charge timing (deposit, full, at ship), cancellation and refund terms, edition size and whether it is read live, drop datetime for a countdown (`references/offers/campaign-calendar.md`, `launch` row and CC7).
+2. `lexsis_catalog.get` for the product: does real prototype or production media exist (footnote f in `references/assets/image-jobs-by-page-type.md`); price; a pre-order purchase option or selling plan; inventory tracking. No pre-order option in Shopify means no buy box: the page runs the waitlist variant.
+3. `lexsis_capture.form_schemas` for the one-field waitlist form and its consent text; the referral mechanic if the form supports one.
+4. Founder facts: full name, title, the photo the merchant approves in writing, the note text; test data documents (method, units, date); roadmap stages with status (`references/proof/proof-ledger.md` rows). `lexsis_brand.brand_kit` for tokens, voice and banned phrases; `lexsis_brand.context` for the `theme_id`; `lexsis_brand.navigation` only for the one utility link.
+5. `lexsis_campaigns.creatives` when teaser ads run: the hero must match the ad frame (`references/copy/message-match.md`).
+6. `lexsis_asset_library.search` with `theme_id`, `mode: "tags"`, one call each for `product-shot`, `hero`, `lifestyle`, `logo`, `social-proof`; then semantic "<product> prototype" and "<founder name>" with `lexsis_assets.view`. Press rows fetched and verified per `references/proof/press-and-media-mentions.md`.
+7. `lexsis_catalog.reviews_status` is read only to confirm the count is zero for this product; nothing review-shaped is planned (`references/proof/reviews-sourcing.md`, zero-review playbook).
+8. `lexsis_design.islands` for the active catalog; `lexsis_workspace.credits` is read; generation here is limited to a `hero_bg` behind a typographic hero at most (`references/assets/generation-policy.md`, GN2).
 
 ### Section by section
-Media per section follows `references/workflows/section-asset-workflow.md`:
-when nothing covers a slot, tell the merchant what is missing (job, aspect,
-count), offer upload via `lexsis_asset_upload.upload` or generation where the
-purpose is ALLOW or ASK in `references/assets/generation-policy.md`, and skip
-or merge the section only when the merchant chooses; a fast draft uses the
-closest existing asset or leaves the slot `planned` and lists every gap in the
-plan and the draft summary. No asset is used sight unseen: every candidate is
-opened with `lexsis_assets.view` and judged against the section per section 1b
-of that file (subject, crop to the slot aspect, a quiet area for the copy, the
-lighting and styling of the neighbouring slots, the plan's palette, no
-baked-in text, watermark or overlay); candidates for one grid, set or lookbook
-are viewed together so the set reads as one shoot, and a generated asset is
-viewed the same way after it returns. On this type the product itself is never
-generated: a missing product photo is "needs a real photo" in every message.
-Islands follow `references/workflows/island-selection-workflow.md`: the lines
-below name the island and the inputs; variants and props are resolved live
-from `lexsis_design.island_schema`, with autoplay and entry motion off unless
-the plan names that motion moment (N10). Copy ceilings follow
-`references/copy/copy-frameworks.md` and
-`references/anti-patterns/copy-anti-patterns.md`.
 
-**`header`**
-- Purpose: logo plus one utility link; no category navigation.
-- Media: logo from the brand kit; a text wordmark when none.
-- Island: SiteHeader in its minimal treatment (not sticky, one link, cart
-  hidden pre-launch, CTA to the form or buy box); resolve from
-  `lexsis_design.island_schema`; preset `siteheader/minimal-light`.
-- Copy: one link label.
-- Decide with: the variant.
-
-**`hero`**
-- Purpose: one-line value proposition, the date or window, and the primary
-  action inline.
-- Media: job `identity` packshot of the real prototype or production unit when
-  it exists (catalog media, then library `product-shot`, then merchant upload;
-  ad-matched frame when creatives exist), treatment `packshot`. Otherwise
-  `typographic` with no product slot. Generation: `hero_bg` (ALLOW) behind the
-  type only; never a product render (GN2); a merchant's own render only
-  captioned "Rendering; final packaging may vary". Missing: tell the merchant
-  (a real prototype photo, 4:5 and 16:9, one image) and offer upload; the page
-  ships typographic in the meantime and the plan records it. No-go: stars, a
-  review count, a discount pill, "coming soon" without a date. View every
-  candidate with `lexsis_assets.view` and run the section fit review before
-  use.
-- Island: none for the image (static `<picture>`); HeroMedia only when a
-  real photo is the full-bleed bold moment, image mode, autoplay off;
-  resolve from `lexsis_design.island_schema`.
-- Copy: H1 10 words or fewer stating the outcome; subhead names the date or
-  window and who it is for.
-- Decide with: `lexsis_catalog.get` media count viewed; the ledger date row.
-
-**`waitlist-form`** (conditional: pre-launch; then mandatory)
-- Purpose: one field, consent unchecked, what happens next in one line.
-- Media: the prototype identity image beside the form when one exists;
-  otherwise the form alone is the object (N8).
-- Island: EmailCapture, one per page; decide the incentive line from a
-  `gwp` or `price-lock` ledger row; consent text is HTML beside the form
-  naming brand, purpose and frequency; resolve from
-  `lexsis_design.island_schema`.
-- Copy: one line after the button; pattern `join-waitlist`.
-- Decide with: `lexsis_capture.form_schemas` (one field, email or phone).
-
-**`buy-box`** (conditional: pre-order live; then mandatory)
-- Purpose: "Pre-order" with the ship-by date, price basis and terms within
-  one scroll.
-- Media: yes; job `identity` of the real unit beside the box from catalog
-  media. Missing means no pre-order page: tell the merchant and run the
-  waitlist variant until a real photo arrives. View every candidate with
-  `lexsis_assets.view` and run the section fit review before use.
-- Island: BuyBox; decide the compact or default treatment from the variant
-  count; ship-by, charge timing and refund line as HTML under the button;
-  public price and launch price as separate text, never a strike-through
-  against a deposit (`references/offers/price-presentation.md`); resolve
-  from `lexsis_design.island_schema`; preset `buybox/compact-dark` or
-  `buybox/default-light`.
-- Copy: "Estimated to ship by <date>", "We charge when it ships" or the
-  deposit amount, "Cancel any time before dispatch for a full refund".
-- Decide with: the Shopify pre-order option in `lexsis_catalog.get` and the
-  ledger terms rows.
-
-**`offer`** (recommended)
-- Purpose: what early action earns.
-- Media: a `gwp` wants the gift's `identity` image from catalog media; a
-  `price-lock` or founder tier is text and merges into the hero price block
-  rather than standing alone. Missing gift image: offer upload; if skipped,
-  the offer is a line in the price block. View every candidate with
-  `lexsis_assets.view` and run the section fit review before use.
-- Island: none.
-- Copy: one sentence; a future-price comparison only when the price will
-  rise on the stated date.
-- Decide with: the offer-ledger row and the gift's image.
-
-**`benefits`** (recommended)
-- Purpose: three to five bullets each with a number, material or test.
-- Media: yes; one real prototype photo per bullet (`detail`, `scale`, `in-use`
-  with the prototype) from merchant upload or library, or one authored inline
-  SVG `diagram` anchoring the list. Generation: none (GP14). Missing: tell the
-  merchant (one photo per bullet, 4:5, count) and offer upload; if skipped,
-  the three strongest facts fold into the hero subhead and the section leaves.
-  View every candidate with `lexsis_assets.view` and run the section fit
-  review; view the benefit images together so lighting, backgrounds and crops
-  agree.
-- Island: none.
-- Copy: bullets 15 words each, one fact per bullet.
-- Decide with: count of viewed prototype photos.
-
-**`founder-note`**
-- Purpose: named founder with title and photo, why the product exists,
-  signed.
-- Media: yes; job `founder-or-team`, real photo (4:5, in context) from library
-  `lifestyle` or merchant upload with written approval in the ledger; never
-  stock or generated (GN3). Missing: tell the merchant (a real photo of the
-  founder, 4:5, one image) and offer upload only; the signed text stands on
-  its own in the meantime (allowed by the asset workflow) and production-ready
-  approval waits for the photo. View every candidate with `lexsis_assets.view`
-  and run the section fit review before use.
-- Island: none.
-- Copy: first person, under 120 words, name and title as the signature.
-- Decide with: the `founder-note` ledger row (approval recorded).
-
-**`specs`** (conditional: prototype test data exists)
-- Purpose: what was tested, on how many units, when, with what result.
-- Media: an HTML facts table is the object; a real photo of the test rig or
-  the merchant's document photo may sit beside it; an authored inline SVG
-  `diagram` for a measured curve. Generation: never a lab, chart or result
-  image (GN4). Missing photo: the table stands alone; the merchant is told a
-  rig photo could be uploaded. View every candidate with `lexsis_assets.view`
-  and run the section fit review before use.
-- Island: none.
-- Copy: numbers copied exactly from the `test-data` ledger row; method and
-  date in one line.
-- Decide with: the document or URL in the ledger.
-
-**`how-it-works`** roadmap (recommended; mandatory for pre-order)
-- Purpose: design, tooling, production, ship with status and a plain
-  "what this means" line per stage; the launch schedule with the public
-  price date.
-- Media: yes; job `diagram` as an authored inline SVG timeline with every
-  label and date in HTML text, plus real `sequence` photos of the process
-  (tooling, factory, samples) from merchant upload where they exist.
-  Generation: none. Missing process photos: tell the merchant and offer
-  upload; the SVG timeline carries the section meanwhile; never icon tiles per
-  stage. View every candidate with `lexsis_assets.view` and run the section
-  fit review before use.
-- Island: none.
-- Copy: one noun phrase and one "this means" sentence per stage.
-- Decide with: the roadmap stages the merchant confirmed.
-
-**`testimonial-spotlight`** (conditional: named early testers with written
-approval and a disclosed connection)
-- Purpose: two quotes styled as tester quotes, never as customer reviews.
-- Media: quotes are the artefact; real photos only with consent; never
-  generated people. View every candidate with `lexsis_assets.view` and run the
-  section fit review before use.
-- Island: none; static blockquotes with the connection line ("In-home
-  tester"). ReviewCarousel is not used: these are not reviews.
-- Copy: verbatim, two quotes, 60 words each.
-- Decide with: `expert-quote` ledger rows.
-
-**`referral-form`** (recommended in pre-launch)
-- Purpose: "Refer two friends, move up the list", stated exactly.
-- Media: no.
-- Island: none; the mechanic is text with the post-signup share link from
-  the capture form's schema; a second EmailCapture is not mounted.
-- Copy: the mechanic in one sentence.
-- Decide with: `lexsis_capture.form_schemas` exposing a referral link.
-
-**`press-marquee`** or **`expert-endorsement`** (conditional: verified,
-linked)
-- Purpose: three to six linked editorial logos, or one expert quote with a
-  credential line.
-- Media: outlet SVGs from library `logo`, each linked
-  (`references/proof/press-and-media-mentions.md`); the expert's real photo
-  only with consent. Generation: never (GN5). Missing logo files: ask the
-  merchant; fewer than three rows renders quotes. View every candidate with
-  `lexsis_assets.view` and run the section fit review before use.
-- Island: none; a static linked row (the Marquee island is deprecated).
-- Copy: caption "In the press"; credential line under the quote.
-- Decide with: count of `verified` press rows.
-
-**`countdown`** (conditional: ledger `endsAt`, final 48 hours only)
-- Purpose: the drop time.
-- Media: no.
-- Island: CountdownTimer (the Countdown island is deprecated) bound to the
-  ledger `endsAt`, with the expired state naming what is live next; resolve
-  from `lexsis_design.island_schema`.
-- Copy: one line naming what happens at zero.
-- Decide with: the ledger row and the current time being inside 48 hours
-  (`references/offers/urgency-scarcity.md`).
-
-**`stock-indicator`** (conditional: a real edition size read live)
-- Purpose: "Edition of 500, 212 reserved".
-- Media: no.
-- Island: InventoryIndicator only when the edition is tracked as live
-  inventory on a buyable product; the island's own guidance excludes
-  pre-order and made-to-order items, so the reserved count on a pre-order
-  page is an HTML line bound to a live orders query (`sales-count` ledger
-  row) or it is omitted; resolve from `lexsis_design.island_schema`; preset
-  `inventoryindicator/text-quiet`.
-- Copy: one line, numbers from the live read, rounded down.
-- Decide with: inventory tracking in `lexsis_catalog.get` and the ledger.
-
-**`faq`**
-- Purpose: ship date, price, charge timing, cancellation, delay handling,
-  why the deposit.
-- Media: no.
-- Island: none; native `<details>` and `<summary>` (the FAQ island is
-  deprecated).
-- Copy: five to seven questions, the fact first, 60 words each.
-- Decide with: the ledger terms rows.
-
-**`closing-cta`** (recommended)
-- Purpose: the action repeated with the ship-by line.
-- Media: the real product image again when one exists; otherwise the
-  button and line alone.
-- Island: none; an anchor button to the hero form or buy box (a second
-  EmailCapture or BuyBox is not mounted).
-- Copy: the CTA label plus "Estimated to ship by <date>".
-- Decide with: the variant.
-
-**`sticky-cta`** (conditional: pre-order variant)
-- Purpose: keep the pre-order action available below the fold.
-- Media: the product image inside the bar from catalog media.
-- Island: StickyBar in product mode, appearing after the hero; decide from
-  page length in 390px screens; resolve from
-  `lexsis_design.island_schema`; preset `stickybar/product-light`.
-- Copy: the label carries the action and the date.
-- Decide with: the variant and the BuyBox being present.
-
-**`footer`**
-- Purpose: legal entity, contact, refund policy link.
-- Media: logo only.
-- Island: Footer with links from `lexsis_brand.navigation`; resolve from
-  `lexsis_design.island_schema`; preset `footer/simple-light`.
-- Decide with: the navigation result.
+| Section | Purpose | Media job and source | Interactive decision | Copy constraints | Decision evidence |
+|---|---|---|---|---|---|
+| `header` | logo plus one utility link; no category navigation. | logo from the brand kit; a text wordmark when none. | SiteHeader in its minimal treatment (not sticky, one link, cart hidden pre-launch, CTA to the form or buy box). | one link label. | the variant. |
+| `hero` | one-line value proposition, the date or window, and the primary action inline. | job `identity` packshot of the real prototype or production unit when it exists (catalog media, then library `product-shot`, then merchant upload; ad-matched frame when creatives exist), treatment `packshot`. Otherwise `typographic` with no product slot. Generation: `hero_bg` behind the type only; never a product render (GN2); a merchant's own render only captioned "Rendering; final packaging may vary". Missing media: (a real prototype photo, 4:5 and 16:9, one image) and; the page ships typographic in the meantime and the plan records it. No-go: stars, a review count, a discount pill, "coming soon" without a date. | none for the image (static `<picture>`); HeroMedia only when a real photo is the full-bleed bold moment, image mode, autoplay off | H1 10 words or fewer stating the outcome; subhead names the date or window and who it is for. | `lexsis_catalog.get` media count viewed; the ledger date row. |
+| `waitlist-form` (conditional: pre-launch; then mandatory) | one field, consent unchecked, what happens next in one line. | the prototype identity image beside the form when one exists; otherwise the form alone is the object (N8). | EmailCapture, one per page; decide the incentive line from a `gwp` or `price-lock` ledger row; consent text is HTML beside the form naming brand, purpose and frequency | one line after the button; pattern `join-waitlist`. | `lexsis_capture.form_schemas` (one field, email or phone). |
+| `buy-box` (conditional: pre-order live; then mandatory) | "Pre-order" with the ship-by date, price basis and terms within one scroll. | yes; job `identity` of the real unit beside the box from catalog media. Missing means no pre-order page: run the waitlist variant until a real photo arrives. | BuyBox; decide the compact or default treatment from the variant count; ship-by, charge timing and refund line as HTML under the button; public price and launch price as separate text, never a strike-through against a deposit (`references/offers/price-presentation.md`). | "Estimated to ship by <date>", "We charge when it ships" or the deposit amount, "Cancel any time before dispatch for a full refund". | the Shopify pre-order option in `lexsis_catalog.get` and the ledger terms rows. |
+| `offer` (recommended) | what early action earns. | a `gwp` wants the gift's `identity` image from catalog media; a `price-lock` or founder tier is text and merges into the hero price block rather than standing alone. Missing gift image:; if skipped, the offer is a line in the price block. | none. | one sentence; a future-price comparison only when the price will rise on the stated date. | the offer-ledger row and the gift's image. |
+| `benefits` (recommended) | three to five bullets each with a number, material or test. | yes; one real prototype photo per bullet (`detail`, `scale`, `in-use` with the prototype) from merchant upload or library, or one authored inline SVG `diagram` anchoring the list. Generation: none (GP14). Missing media: (one photo per bullet, 4:5, count) and; if skipped, the three strongest facts fold into the hero subhead and the section leaves. view the benefit images together so lighting, backgrounds and crops agree. | none. | bullets 15 words each, one fact per bullet. | count of viewed prototype photos. |
+| `founder-note` | named founder with title and photo, why the product exists, signed. | yes; job `founder-or-team`, real photo (4:5, in context) from library `lifestyle` or merchant upload with written approval in the ledger; never stock or generated (GN3). Missing media: (a real photo of the founder, 4:5, one image) ; the signed text stands on its own in the meantime (allowed by the asset workflow) and production-ready approval waits for the photo. | none. | first person, under 120 words, name and title as the signature. | the `founder-note` ledger row (approval recorded). |
+| `specs` (conditional: prototype test data exists) | what was tested, on how many units, when, with what result. | an HTML facts table is the object; a real photo of the test rig or the merchant's document photo may sit beside it; an authored inline SVG `diagram` for a measured curve. Generation: never a lab, chart or result image (GN4). Missing photo: the table stands alone; the merchant is told a rig photo could be uploaded. | none. | numbers copied exactly from the `test-data` ledger row; method and date in one line. | the document or URL in the ledger. |
+| `how-it-works` roadmap (recommended; mandatory for pre-order) | design, tooling, production, ship with status and a plain "what this means" line per stage; the launch schedule with the public price date. | yes; job `diagram` as an authored inline SVG timeline with every label and date in HTML text, plus real `sequence` photos of the process (tooling, factory, samples) from merchant upload where they exist. Generation: none. Missing process photos:; the SVG timeline carries the section meanwhile; never icon tiles per stage. | none. | one noun phrase and one "this means" sentence per stage. | the roadmap stages the merchant confirmed. |
+| `testimonial-spotlight` (conditional: named early testers with written | two quotes styled as tester quotes, never as customer reviews. | quotes are the artefact; real photos only with consent; never generated people. | none; static blockquotes with the connection line ("In-home tester"). ReviewCarousel is not used: these are not reviews. | verbatim, two quotes, 60 words each. | `expert-quote` ledger rows. |
+| `referral-form` (recommended in pre-launch) | "Refer two friends, move up the list", stated exactly. | no. | none; the mechanic is text with the post-signup share link from the capture form's schema; a second EmailCapture is not mounted. | the mechanic in one sentence. | `lexsis_capture.form_schemas` exposing a referral link. |
+| `press-marquee` or `expert-endorsement` (conditional: verified, | three to six linked editorial logos, or one expert quote with a credential line. | outlet SVGs from library `logo`, each linked (`references/proof/press-and-media-mentions.md`); the expert's real photo only with consent. Generation: never (GN5). Missing logo files: ask the merchant; fewer than three rows renders quotes. | none; a static linked row (the Marquee island is deprecated). | caption "In the press"; credential line under the quote. | count of `verified` press rows. |
+| `countdown` (conditional: ledger `endsAt`, final 48 hours only) | the drop time. | no. | CountdownTimer (the Countdown island is deprecated) bound to the ledger `endsAt`, with the expired state naming what is live next | one line naming what happens at zero. | the ledger row and the current time being inside 48 hours (`references/offers/urgency-scarcity.md`). |
+| `stock-indicator` (conditional: a real edition size read live) | "Edition of 500, 212 reserved". | no. | InventoryIndicator only when the edition is tracked as live inventory on a buyable product; the island's own guidance excludes pre-order and made-to-order items, so the reserved count on a pre-order page is an HTML line bound to a live orders query (`sales-count` ledger row) or it is omitted. | one line, numbers from the live read, rounded down. | inventory tracking in `lexsis_catalog.get` and the ledger. |
+| `faq` | ship date, price, charge timing, cancellation, delay handling, why the deposit. | no. | none; native `<details>` and `<summary>`. | five to seven questions, the fact first, 60 words each. | the ledger terms rows. |
+| `closing-cta` (recommended) | the action repeated with the ship-by line. | the real product image again when one exists; otherwise the button and line alone. | none; an anchor button to the hero form or buy box (a second EmailCapture or BuyBox is not mounted). | the CTA label plus "Estimated to ship by <date>". | the variant. |
+| `sticky-cta` (conditional: pre-order variant) | keep the pre-order action available below the fold. | the product image inside the bar from catalog media. | StickyBar in product mode, appearing after the hero; decide from page length in 390px screens. | the label carries the action and the date. | the variant and the BuyBox being present. |
+| `footer` | legal entity, contact, refund policy link. | logo only. | Footer with links from `lexsis_brand.navigation`. | Use the shared procedure. | the navigation result. |
 
 ### Asset budget
+
 | Source | Usually supplies | Usually missing | Per gap |
 |---|---|---|---|
 | catalog media | a prototype or production packshot when the product is set up | `detail`, `scale`, `in-use` with the prototype, `packaging` | ask the merchant to upload prototype photos ("needs a real photo"); typographic hero and no product slot meanwhile; `benefits` leaves only on the merchant's call |
 | asset library | `logo` SVGs for press, sometimes a founder portrait | the founder photo with approval, process photos for the roadmap | ask the merchant to upload with written approval; the authored SVG timeline carries the roadmap; nothing is generated in their place |
 | generation | backdrops, textures, composites only | product, people, results, logos, text | never; `hero_bg` (ALLOW) behind a typographic hero is the only feasible purpose, and `product_composite` needs a real cut-out a pre-launch product usually lacks |
 
-With minimal assets the page is a minimal header, a typographic hero with the
-one-field form, a signed founder note, an authored SVG roadmap, an FAQ and a
-footer; at most one generated asset (`hero_bg`), never more than four per
-page, and every missing photo (prototype, founder, process) listed in the plan
-and the draft summary with upload or skip. Every asset, found or generated,
-was viewed and passed the section fit review before use.
+With minimal assets the page is a minimal header, a typographic hero with the one-field form, a signed founder note, an authored SVG roadmap, an FAQ and a footer; at most one generated asset (`hero_bg`), never more than four per page, and every missing photo (prototype, founder, process) listed in the plan and the draft summary with upload or skip.
 
 ## Above the fold (390px)
 

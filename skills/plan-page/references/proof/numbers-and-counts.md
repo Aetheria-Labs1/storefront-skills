@@ -114,16 +114,12 @@ adults ages 25 to 48" (AG1); "ex vivo, human stool samples" (LOAM)
 
 ## Pre-render numeral checklist
 
-Run on `lexsis-source.html` before compile. Every listed numeral must map to
+Run on `MCP source` before compile. Every listed numeral must map to
 a ledger row id; a numeral with no row is removed from copy, not softened.
-
-```bash
-perl -0ne 'while(/<!-- section: ((?:review|testimonial|ugc|before|expert|press|case|award|community|stats|trust|certif|guarantee|founder)[a-z-]*) -->(.*?)(?=<!-- section: |\z)/gs){my($id,$b)=($1,$2); $b=~s/<[^>]+>/ /g; while($b=~/(\d[\d,\.]*\s*(?:%|\/5|\+|k\b|K\b|lakh|crore|x\b)?)/g){print "$id\t$1\n"}}' $W/lexsis-source.html
-```
 
 | Check | Pass |
 |---|---|
-| Every line of the output has a ledger row id written beside it in `qa-report.md` | yes |
+| Every line of the output has a ledger row id written beside it in `QA record` | yes |
 | Every count is rounded down or exact and phrased with "over" or "+" consistently | yes |
 | Every time-bound count states its window or as-of month | yes |
 | Every average has a count in the same element and n >= 5 | yes |
@@ -136,13 +132,9 @@ perl -0ne 'while(/<!-- section: ((?:review|testimonial|ugc|before|expert|press|c
 ## Rules
 
 NC1. Every numeral in a proof, trust, stats, press, guarantee or founder section maps to a ledger row; no row, no numeral. OPERATOR; LAW CAP 3.7, FTC reasonable basis, UCPD Art. 6, CCPA 2022.
-Check: the checklist extraction above; each output line has a row id in `qa-report.md`.
+Check: the checklist extraction above; each output line has a row id in `QA record`.
 
 NC2. Round counts down to two significant figures and prefix "over" (or suffix "+" in a stats tile); never round up, never "nearly" or "almost". HEURISTIC; consistent with `proof-ledger.md` display rule 5.
-Check:
-```bash
-grep -ciE '(nearly|almost|close to|approximately) [0-9]' $W/lexsis-source.html   # 0
-```
 
 NC3. Show an average only at n >= 5, one decimal, always with the count in the same element; 5.0 only when every review is five stars and n >= 20. RESEARCH [H] Baymard; LAW FTC 465.7 (a headline average that hides its base misrepresents the set).
 Check: `references/proof/reviews-sourcing.md` RS3 and RS4.
@@ -151,51 +143,24 @@ NC4. Time-bound counts state the window ("Jan 2023 to Aug 2026") or the as-of mo
 Check: each `sales-count` and `repeat-rate` string in source contains a month name or a year.
 
 NC5. Percentages carry n, design and duration beside the number or in a footnote visible on the same screen. LAW CAP 3.7; FTC; ASCI. RESEARCH teardown pattern 9.
-Check:
-```bash
-perl -0ne 'while(/<!-- section: (stats|benefits|science|results-timeline|test-data)[a-z-]* -->(.*?)(?=<!-- section: |\z)/gs){my $b=$2; $b=~s/<[^>]+>/ /g; print "bare-percent\n" if $b=~/\d+%/ && $b!~/n\s*=\s*\d+|of \d+ (users|people|participants|adults|women|men)|\[\d+\]|study/i}' $W/lexsis-source.html   # no output
-```
 
 NC6. "#1", "number one", "best-selling", "most popular" name the third-party source, the category and the period, or are removed. LAW ASA (Skinny Tan ruled misleading; Post Office and Vitabiotics upheld only on third-party data); FTC; CCPA.
-Check:
-```bash
-grep -ciE '#1|number one|no\. ?1|best[- ]sell(ing|er)|most popular' $W/lexsis-source.html   # 0, or each hit's element names a source and a date
-```
 
 NC7. Never mix units for one figure and never sum or average across products or sites. LAW CMA208 (misleading aggregation); Google review-snippet policy; HEURISTIC.
 Check: each count row names one unit; no `review-summary` row cites more than one scope.
 
 NC8. Live numbers (stock, recent buys, viewers) come only from island bindings with a hide-on-failure mode; a fixed numeral for any of them is removed; popups are never rendered. LAW FTC Dark Patterns report 2022; CMA Wowcher undertakings; India CCPA Dark Patterns Guidelines 2023 (false urgency, burden of proof on the seller).
-Check:
-```bash
-grep -ciE '[0-9]+ (people|others|shoppers) (are )?(viewing|looking)|bought in the last|left in stock|only [0-9]+ left|SocialProofPopup' $W/lexsis-source.html   # 0 outside an island's live-bound props
-```
 
 NC9. Hedge words never replace a source: a number the merchant cannot document is removed from copy; "up to", "may help", "thousands of", "countless" are not softeners the page may use. LAW CAP 3.7; FTC 255.2(b) ("up to" hides the typical result).
-Check:
-```bash
-grep -ciE 'thousands of|countless|loved by many|up to [0-9]+%|trusted by' $W/lexsis-source.html   # 0
-```
 
 NC10. Locale grouping, currency symbol placement and percent formatting follow the store locale and stay consistent on the page. OPERATOR (`lexsis_catalog.get` currency; store locale); HEURISTIC.
-Check:
-```bash
-grep -oE '[0-9]{1,2},[0-9]{2},[0-9]{3}' $W/lexsis-source.html | wc -l; grep -oE '[0-9]{1,3},[0-9]{3},[0-9]{3}' $W/lexsis-source.html | wc -l   # one of the two is 0
-grep -cE '[0-9] %' $W/lexsis-source.html   # 0
-```
 
 NC11. Structured data for ratings uses `Product` (or another eligible type) with numbers equal to the visible ones; no `Organization` self-serving review markup; no Google-styled seller badge before Google has issued a rating. LAW Google review-snippet policy; Google Ads seller ratings policy.
-Check:
-```bash
-grep -oE '"ratingValue":[[:space:]]*"?[0-9.]+' $W/lexsis-source.html   # equals the visible average
-grep -c '"@type":[[:space:]]*"Organization"[^}]*"aggregateRating"' $W/lexsis-source.html   # 0
-```
 
 NC12. Star glyphs are inline SVG and match the decimal (partial fill), never emoji, never five full stars beside 4.x. LAW none; HEURISTIC; `design-rules.md` N1.
-Check: `design_lint.py` N1 passes; for each average, the SVG group renders `floor(avg)` full stars and one partial.
+Check: the source/hosted review N1 passes; for each average, the SVG group renders `floor(avg)` full stars and one partial.
 
-NC13. Every numeral row is repeated under "Claims to confirm" in `page-plan.md` before design; the merchant confirms or the row is dropped. OPERATOR.
-Check: `grep -c` of numeral rows under the ledger equals the count under "Claims to confirm".
+NC13. Every numeral row is repeated under "Claims to confirm" in `page plan` before design; the merchant confirms or the row is dropped. OPERATOR.
 
 ## Sources
 

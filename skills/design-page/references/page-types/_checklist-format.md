@@ -2,7 +2,7 @@
 
 Every file in `references/page-types/` (except `_index.md` and this file)
 describes one page type in the same shape so that `/plan-page`, `/design-page`,
-`/build` and `plan-page/scripts/plan_lint.py` can read it the same way. The
+`/build` and repository contract tests can read it the same way. The
 heart of each file is its `## Workflow`: the ordered thinking the model follows
 for that type, section by section, with the asset decision, the island
 decision and the tool call that settles each. The `## Checklist` JSON is the
@@ -13,8 +13,8 @@ still apply to every page.
 ## How a skill uses a page-type file
 
 1. `/plan-page` identifies the type with `references/page-types/_index.md`,
-   records the `## Page type` block in `page-plan.md` and `page.pageType` in
-   `page-manifest.json`, then loads only the matching file.
+   records the `## Page type` block in `page plan` and `page.pageType` in
+   `page record`, then loads only the matching file.
 2. `/plan-page` follows the file's **Workflow**: the context reads first, then
    each section in order with its media decision (search, generate, ask or
    skip), island decision and copy ceiling. The **Checklist** JSON is the
@@ -25,8 +25,9 @@ still apply to every page.
    fold**, **Proof**, **Offer and CTA**, **Imagery** and **Copy** as the
    guide. Where source and plan disagree with the checklist, it lists the
    differences in the plan and continues.
-4. `python3 <plan-page-skill>/scripts/plan_lint.py <page-workspace>` prints
-   the mechanical review (advisory by default; `--strict` exits non-zero).
+4. Review the checklist against the plan, then the persisted source and
+   hosted draft. Type deviations are advisory; proof/offer violations
+   block readiness. Repository fixture checks test this contract separately.
 
 ## Required prose sections, in order
 
@@ -55,35 +56,26 @@ inventory, review count band, theme tokens and voice, asset library inventory
 by tag, ad creative for message match).
 
 ### Section by section
-One block per Anatomy section, in order:
 
-**`<section id>`**
-- Purpose: one line.
-- Media: needs imagery yes/no; which image job(s); search order (catalog
-  media, then the `lexsis_asset_library.search` tag, then semantic, then
-  merchant-owned sources); every candidate is opened with
-  `lexsis_assets.view` and judged against this section before it is used;
-  generation purpose if nothing is found and the
-  policy allows it; otherwise tell the merchant exactly what is missing and
-  offer upload (`lexsis_asset_upload.upload`) or MCP generation when
-  feasible. The section is skipped or merged only if the merchant chooses.
-  Follows `references/workflows/section-asset-workflow.md`.
-- Island: `none`, or the island name and the context that decides its
-  configuration (image count, variant axes, review band, page length,
-  vertical). Variants and props are not listed here; they are resolved live
-  from `lexsis_design.islands` and `lexsis_design.island_schema` as
-  `references/workflows/island-selection-workflow.md` describes.
-- Copy: pattern and ceiling.
-- Decide with: the data or tool call that settles the choices above.
+Link `references/workflows/_how-to-read.md` once. It supplies the shared
+asset/fallback, view-and-fit, island-resolution and copy procedures.
+Keep one row per Anatomy section, in order, with type-specific inputs only:
+
+| Section | Purpose | Media job and source | Interactive decision | Copy constraints | Decision evidence |
+|---|---|---|---|---|---|
+| `<section id>` | Shopper job | Needed job, tag/query, crop and specific alternative | Native content or candidate family plus decision inputs | Type-specific message or ceiling | Data that settles the decision |
+
+Do not repeat the shared procedures or enumerate props. Planning records
+functional intent; design resolves the current island schema. Default copy
+ceilings remain in the copy-policy owner, with deliberate type exceptions
+recorded in the plan.
 
 ### Asset budget
-A table: what the catalog and library already supply for this type, which
-jobs are usually missing, and for each missing job whether to reuse, generate
-(with purpose) when the policy allows, or tell the merchant and offer upload
-or generation. A missing asset is always reported to the merchant; a section
-is skipped or merged only on the merchant's decision. Never fill a gap with a
-colour band, emoji, icon tiles or a wall of copy; a section is imagery plus a
-few words, or the merchant decides what happens to it.
+
+A table records what the catalogue and library supply, which jobs are
+missing, and type-specific alternatives. Execute gaps through the shared
+asset workflow rather than reproducing its question and fallback rules.
+A deliberately text-only section remains valid when the type specifies it.
 
 ## Above the fold (390px)
 What must be visible in the first screen on mobile, in order. What must not.

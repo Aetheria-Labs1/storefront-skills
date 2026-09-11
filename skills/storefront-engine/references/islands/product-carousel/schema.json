@@ -29,7 +29,7 @@
   "when_not_to_use": "Not for full-width collections (use collection page with standard grid). Not for single product display (use BuyBox or QuickAdd).",
   "defaultHydrate": "immediate",
   "combine_with": [
-    "CartDrawer (REQUIRED if showQuickAdd:true)",
+    "Cart V2 via head.use_cart_v2",
     "BuyBox or other PDP components (common on PDP pages)"
   ],
   "anti_patterns": [
@@ -284,21 +284,6 @@
     ],
     "headless": {
       "supported": false
-    },
-    "example": "<lx-island name=\"ProductCarousel\">\n  <script type=\"application/json\">\n{\n  \"products\": [\n    {\n      \"id\": \"example-id\",\n      \"handle\": \"example-handle\",\n      \"title\": \"example-title\",\n      \"price\": \"example-price\"\n    }\n  ]\n}\n  </script>\n</lx-island>",
-    "examples": [
-      {
-        "label": "Related products carousel",
-        "source": "<lx-island name=\"ProductCarousel\">\n  <script type=\"application/json\">{\"products\":[{\"id\":\"p1\",\"handle\":\"item1\",\"title\":\"Product 1\",\"price\":\"$49.00\",\"image\":\"https://via.placeholder.com/300\"},{\"id\":\"p2\",\"handle\":\"item2\",\"title\":\"Product 2\",\"price\":\"$59.00\",\"image\":\"https://via.placeholder.com/300\"},{\"id\":\"p3\",\"handle\":\"item3\",\"title\":\"Product 3\",\"price\":\"$69.00\",\"image\":\"https://via.placeholder.com/300\"},{\"id\":\"p4\",\"handle\":\"item4\",\"title\":\"Product 4\",\"price\":\"$79.00\",\"image\":\"https://via.placeholder.com/300\"}],\"title\":\"You May Also Like\",\"showQuickAdd\":true,\"showLearnMore\":true}</script>\n</lx-island>"
-      },
-      {
-        "label": "Trending products with hover advance",
-        "source": "<lx-island name=\"ProductCarousel\">\n  <script type=\"application/json\">{\"products\":[{\"id\":\"p1\",\"title\":\"Item 1\",\"price\":\"$29.00\",\"media\":[{\"src\":\"https://via.placeholder.com/300\"}]},{\"id\":\"p2\",\"title\":\"Item 2\",\"price\":\"$39.00\",\"media\":[{\"src\":\"https://via.placeholder.com/300\"}]}],\"title\":\"Trending Now\",\"mediaTransition\":\"zoom\",\"hoverAdvance\":true}</script>\n</lx-island>"
-      },
-      {
-        "label": "Compact carousel without animations",
-        "source": "<lx-island name=\"ProductCarousel\">\n  <script type=\"application/json\">{\"products\":[{\"id\":\"p1\",\"title\":\"A\",\"price\":\"$10\",\"image\":\"https://via.placeholder.com/300\"},{\"id\":\"p2\",\"title\":\"B\",\"price\":\"$20\",\"image\":\"https://via.placeholder.com/300\"}],\"cardVariant\":\"compact\",\"animate\":false}</script>\n</lx-island>"
-      }
-    ]
+    }
   }
 }

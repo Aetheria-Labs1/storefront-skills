@@ -62,207 +62,44 @@ Sections between chrome: 5 to 8. Word budget 100 to 300. Images 10 to 20 in
 
 ## Workflow
 
+Apply `references/workflows/_how-to-read.md` to these type-specific
+decisions. It links the shared asset/fallback, fit, live-island and
+copy procedures; this table supplies their inputs, not another policy.
+
 ### Context reads
-1. `lexsis_brand.context` for the `theme_id`; `lexsis_asset_library.search`
-   with `mode: "tags"`, one call each for `lifestyle`, `hero`, `flat-lay`,
-   `product-shot`, `social-proof`; record counts; then semantic "<story
-   name> on model outdoors" and "<room> styled with <category>". View every
-   candidate with `lexsis_assets.view`; group frames into looks (wide,
-   medium, detail) in one aspect (4:5 fashion, 4:3 home). A creator or
-   customer in a brand-owned post is UGC and needs a rights row (AS13,
-   `references/proof/ugc-rights-and-display.md`).
-2. `lexsis_catalog.get` per tagged item: first media item as the card
-   identity image, price, options, variant images and availability per size
-   and colour. An item unavailable in every variant is not tagged; a
-   sold-out variant stays visible and disabled.
-3. `lexsis_brand.navigation` for header and footer; `lexsis_brand.brand_kit`
-   for tokens, voice and banned phrases; `references/vertical-fashion.md`
-   for grid layouts and pacing.
-4. `lexsis_catalog.reviews_status`, then `lexsis_catalog.reviews` per tagged
-   item; card average and count only at 5 or more reviews
-   (`references/proof/reviews-sourcing.md`).
-5. Policy page URL for the returns and exchange line beside quick add; the
-   offer ledger for any verified "whole look" bundle saving
-   (`references/offers/offer-ledger.md`).
-6. Real video clips in the library with posters
-   (`references/assets/video-rules.md`); no clip, no `video` section.
-7. `lexsis_design.islands` for the active catalog; `lexsis_workspace.credits`
-   is read, but generation is almost never used here: `in-use` is
-   identity-bound and people are never generated
-   (`references/assets/generation-policy.md`).
+
+1. `lexsis_brand.context` for the `theme_id`; `lexsis_asset_library.search` with `mode: "tags"`, one call each for `lifestyle`, `hero`, `flat-lay`, `product-shot`, `social-proof`; record counts; then semantic "<story name> on model outdoors" and "<room> styled with <category>". with `lexsis_assets.view`; group frames into looks (wide, medium, detail) in one aspect (4:5 fashion, 4:3 home). A creator or customer in a brand-owned post is UGC and needs a rights row (AS13, `references/proof/ugc-rights-and-display.md`).
+2. `lexsis_catalog.get` per tagged item: first media item as the card identity image, price, options, variant images and availability per size and colour. An item unavailable in every variant is not tagged; a sold-out variant stays visible and disabled.
+3. `lexsis_brand.navigation` for header and footer; `lexsis_brand.brand_kit` for tokens, voice and banned phrases; `references/vertical-fashion.md` for grid layouts and pacing.
+4. `lexsis_catalog.reviews_status`, then `lexsis_catalog.reviews` per tagged item; card average and count only at 5 or more reviews (`references/proof/reviews-sourcing.md`).
+5. Policy page URL for the returns and exchange line beside quick add; the offer ledger for any verified "whole look" bundle saving (`references/offers/offer-ledger.md`).
+6. Real video clips in the library with posters (`references/assets/video-rules.md`); no clip, no `video` section.
+7. `lexsis_design.islands` for the active catalog; `lexsis_workspace.credits` is read, but generation is almost never used here: `in-use` is identity-bound and people are never generated (`references/assets/generation-policy.md`).
 
 ### Section by section
-Media per section follows `references/workflows/section-asset-workflow.md`:
-when nothing covers a slot, tell the merchant what is missing (job, aspect,
-count), offer upload via `lexsis_asset_upload.upload` or generation where the
-purpose is ALLOW or ASK in `references/assets/generation-policy.md`, and skip
-or merge the section only when the merchant chooses; a fast draft uses the
-closest existing asset or leaves the slot `planned` and lists every gap in the
-plan and the draft summary. No asset is used sight unseen: every candidate is
-opened with `lexsis_assets.view` and judged against the section per section 1b
-of that file (subject, crop to the slot aspect, a quiet area for the copy, the
-lighting and styling of the neighbouring slots, the plan's palette, no
-baked-in text, watermark or overlay); candidates for one grid, set or lookbook
-are viewed together so the set reads as one shoot, and a generated asset is
-viewed the same way after it returns. Islands follow
-`references/workflows/island-selection-workflow.md`: the lines below name the
-island and the inputs; variants and props are resolved live from
-`lexsis_design.island_schema`, with autoplay, hover-advance and entry motion
-off unless the plan names that motion moment (N10). Copy ceilings follow
-`references/copy/copy-frameworks.md` and
-`references/anti-patterns/copy-anti-patterns.md`.
 
-**`header`**
-- Purpose: full navigation; lookbook visitors browse onward.
-- Media: logo from the brand kit.
-- Island: Navbar; the transparent treatment only when the hero is the
-  plan's full-bleed bold moment; links from `lexsis_brand.navigation`;
-  resolve from `lexsis_design.island_schema`; preset `navbar/sticky-light`
-  or `navbar/transparent-dark`.
-- Copy: nav labels only.
-- Decide with: the bold-moment line in the plan.
-
-**`hero`**
-- Purpose: the story name and one line of mood over a full-bleed image.
-- Media: yes; job `in-use` (on-model or in-room, product legible), treatment
-  `editorial-lifestyle`, natural light, same grading as the gallery
-  (`references/assets/image-jobs-by-page-type.md`, section 5). Search library
-  `hero`, then `lifestyle`, then merchant upload of campaign photography.
-  Generation: none (people and product, "needs a real photo"). Missing: tell
-  the merchant (one editorial frame at 1920 wide with a portrait crop,
-  `references/assets/slot-spec.md`) and offer upload; if skipped, the first
-  look's wide frame is the hero and the plan records it. No-go: a
-  white-background packshot; price or text on the image; a carousel. View
-  every candidate with `lexsis_assets.view` and run the section fit review;
-  view it with the first look's frames so grading and light agree.
-- Island: HeroMedia in image mode when the hero is the full-bleed bold
-  moment, autoplay off, never carousel mode; otherwise a static `<picture>`;
-  resolve from `lexsis_design.island_schema`.
-- Copy: story name 3 words or fewer; one line 15 words or fewer; optional
-  anchor "Shop all looks".
-- Decide with: a viewed frame that passes the hero slot spec.
-
-**`lookbook`**
-- Purpose: ten to twenty images in three to five looks, each with two or
-  three hotspots on the product.
-- Media: yes; jobs `in-use` and `context` per look (wide, medium, `detail`),
-  one aspect across the gallery, under 500 KB each, lazy below the first look.
-  Search library `lifestyle` and `flat-lay`, then merchant upload. Generation:
-  none (GP14). Missing: tell the merchant which looks have fewer than two
-  frames (job, aspect, count per look) and offer upload; if skipped, that look
-  leaves, and a page under three looks retypes to `collection-landing` with
-  the merchant's agreement. No-go: mixed aspects; packshots in the gallery; a
-  PDF or flipbook; more than four hotspots on one image. View every candidate
-  with `lexsis_assets.view` and run the section fit review; view the look
-  images together so lighting, backgrounds and crops agree.
-- Island: static `<figure>` grid per look with HTML hotspot buttons on the
-  product; GalleryLightbox mounted once per page for expansion;
-  MediaCarousel for a look with three or more frames on mobile; decide from
-  frame count per look and the vertical's grid layout; swipe and dots on,
-  autoplay off; looks stack vertically, never one carousel; resolve from
-  `lexsis_design.island_schema`.
-- Copy: two lines per look at most, mood not features.
-- Decide with: verified frame count per look (two or more) and total (ten
-  or more); hotspot count per image.
-
-**`shop-the-look`**
-- Purpose: cards for every tagged item under each image; hotspots alone
-  fail on mobile.
-- Media: yes; job `identity` per item from catalog media, `swatch` chips from
-  catalog hex where colour matters, `size-reference` line (model height and
-  size worn) as HTML. Generation: none. Missing: name the items without an
-  image and offer upload; if skipped, the item is untagged and the merchant is
-  told. No-go: a card that hides the sold-out state. View every candidate with
-  `lexsis_assets.view` and run the section fit review; view the card images
-  together so lighting, backgrounds and crops agree.
-- Island: QuickAdd per item; decide direct add or picker from the variant
-  axes, cart feedback through `head.use_cart_v2`; "Add the whole look" only
-  with a bundle offer-ledger row and a supported bundle island resolving
-  live variants; resolve from `lexsis_design.island_schema`.
-- Copy: fabric, fit, size range or dimensions under 10 words; price on
-  every card; "Free exchanges within 30 days" from the policy row beside
-  the first quick add of each look; labels "Add to bag", never "Shop now".
-- Decide with: `lexsis_catalog.get` availability per variant; the bundle
-  ledger row.
-
-**`story`** (optional)
-- Purpose: one editorial paragraph or pull quote between looks.
-- Media: no; the surrounding looks carry the imagery.
-- Island: none.
-- Copy: 60 words or fewer; a pull quote is one sentence.
-- Decide with: whether the merchant's voice notes hold a line worth
-  quoting; otherwise skip.
-
-**`video`** (optional)
-- Purpose: ten-second styling clips interleaved.
-- Media: real footage only from the library with a poster frame that shows the
-  product (`references/assets/video-rules.md`); never generated. No clip means
-  no section; the merchant is told a clip could be uploaded. View every
-  candidate with `lexsis_assets.view` and run the section fit review before
-  use.
-- Island: VideoPlayer, click to play, muted, captions when there is speech;
-  decide aspect from the clip; resolve from `lexsis_design.island_schema`.
-- Copy: one caption line.
-- Decide with: a viewed clip and poster in the library.
-
-**`ugc-grid`** (conditional: rights-cleared customer photos of the looks)
-- Purpose: six to eight tiles with handles.
-- Media: yes; job `ugc` from library `social-proof` with a ledger `P` row per
-  tile, one aspect, original grading; never staff as customers. Missing: tell
-  the merchant which rights requests are open; pending UGC never renders. View
-  every candidate with `lexsis_assets.view` and run the section fit review;
-  view the tile images together so lighting, backgrounds and crops agree.
-- Island: none for the grid; the page's GalleryLightbox serves expansion.
-- Copy: handle per tile; labelled as customer content.
-- Decide with: count of `verified` UGC rows (six or more).
-
-**`email-capture`** (recommended)
-- Purpose: early access to the next drop, one field, mid-gallery or at the
-  end.
-- Media: a look frame beside the form; the form alone is the object when
-  none is spare (N8).
-- Island: EmailCapture, one per page, or the Footer newsletter layout; no
-  incentive without a ledger row; resolve from
-  `lexsis_design.island_schema`; preset `footer/newsletter-split-light` in
-  the footer case.
-- Copy: one line and one field.
-- Decide with: `lexsis_capture.form_schemas`.
-
-**`product-grid`** (recommended)
-- Purpose: "Shop the collection": every featured item at the end.
-- Media: yes; job `identity` per item from catalog media, same aspect as the
-  cards above (`references/product-grid.md`). View every candidate with
-  `lexsis_assets.view` and run the section fit review; view the grid images
-  together so lighting, backgrounds and crops agree.
-- Island: ProductCarousel with four or more items, FeaturedCollectionStage
-  when the merchant wants one visual stage, the card composition with
-  QuickAdd for three or fewer; decide from tagged item count and image
-  availability; motion off; resolve from `lexsis_design.island_schema`;
-  preset `productcarousel/cards-quickadd-light`.
-- Copy: heading 6 words or fewer; prices from the catalog.
-- Decide with: tagged item count.
-
-**`footer`**
-- Purpose: policies, contact, social.
-- Media: logo only.
-- Island: Footer with links from `lexsis_brand.navigation`; resolve from
-  `lexsis_design.island_schema`; preset `footer/simple-light` or
-  `footer/columns-dark`.
-- Decide with: the navigation result.
+| Section | Purpose | Media job and source | Interactive decision | Copy constraints | Decision evidence |
+|---|---|---|---|---|---|
+| `header` | full navigation; lookbook visitors browse onward. | logo from the brand kit. | Navbar; the transparent treatment only when the hero is the plan's full-bleed bold moment; links from `lexsis_brand.navigation`. | nav labels only. | the bold-moment line in the plan. |
+| `hero` | the story name and one line of mood over a full-bleed image. | yes; job `in-use` (on-model or in-room, product legible), treatment `editorial-lifestyle`, natural light, same grading as the gallery (`references/assets/image-jobs-by-page-type.md`, section 5). Search library `hero`, then `lifestyle`, then merchant upload of campaign photography. Generation: none (people and product, "needs a real photo"). Missing media: (one editorial frame at 1920 wide with a portrait crop, `references/assets/slot-spec.md`) and; if skipped, the first look's wide frame is the hero and the plan records it. No-go: a white-background packshot; price or text on the image; a carousel. view it with the first look's frames so grading and light agree. | HeroMedia in image mode when the hero is the full-bleed bold moment, autoplay off, never carousel mode; otherwise a static `<picture>` | story name 3 words or fewer; one line 15 words or fewer; optional anchor "Shop all looks". | a viewed frame that passes the hero slot spec. |
+| `lookbook` | ten to twenty images in three to five looks, each with two or three hotspots on the product. | yes; jobs `in-use` and `context` per look (wide, medium, `detail`), one aspect across the gallery, under 500 KB each, lazy below the first look. Search library `lifestyle` and `flat-lay`, then merchant upload. Generation: none (GP14). Missing: which looks have fewer than two frames (job, aspect, count per look) and; if skipped, that look leaves, and a page under three looks retypes to `collection-landing` with the merchant's agreement. No-go: mixed aspects; packshots in the gallery; a PDF or flipbook; more than four hotspots on one image. view the look images together so lighting, backgrounds and crops agree. | static `<figure>` grid per look with HTML hotspot buttons on the product; GalleryLightbox mounted once per page for expansion; MediaCarousel for a look with three or more frames on mobile; decide from frame count per look and the vertical's grid layout; swipe and dots on, autoplay off; looks stack vertically, never one carousel | two lines per look at most, mood not features. | verified frame count per look (two or more) and total (ten or more); hotspot count per image. |
+| `shop-the-look` | cards for every tagged item under each image; hotspots alone fail on mobile. | yes; job `identity` per item from catalog media, `swatch` chips from catalog hex where colour matters, `size-reference` line (model height and size worn) as HTML. Generation: none. Missing: name the items without an image and; if skipped, the item is untagged and the merchant is told. No-go: a card that hides the sold-out state. view the card images together so lighting, backgrounds and crops agree. | QuickAdd per item; decide direct add or picker from the variant axes, cart feedback through `head.use_cart_v2`; "Add the whole look" only with a bundle offer-ledger row and a supported bundle island resolving live variants | fabric, fit, size range or dimensions under 10 words; price on every card; "Free exchanges within 30 days" from the policy row beside the first quick add of each look; labels "Add to bag", never "Shop now". | `lexsis_catalog.get` availability per variant; the bundle ledger row. |
+| `story` (optional) | one editorial paragraph or pull quote between looks. | no; the surrounding looks carry the imagery. | none. | 60 words or fewer; a pull quote is one sentence. | whether the merchant's voice notes hold a line worth quoting; otherwise skip. |
+| `video` (optional) | ten-second styling clips interleaved. | real footage only from the library with a poster frame that shows the product (`references/assets/video-rules.md`); never generated. No clip means no section; the merchant is told a clip could be uploaded. | VideoPlayer, click to play, muted, captions when there is speech; decide aspect from the clip | one caption line. | a viewed clip and poster in the library. |
+| `ugc-grid` (conditional: rights-cleared customer photos of the looks) | six to eight tiles with handles. | yes; job `ugc` from library `social-proof` with a ledger `P` row per tile, one aspect, original grading; never staff as customers. Gap: open rights requests; pending UGC never renders. view the tile images together so lighting, backgrounds and crops agree. | none for the grid; the page's GalleryLightbox serves expansion. | handle per tile; labelled as customer content. | count of `verified` UGC rows (six or more). |
+| `email-capture` (recommended) | early access to the next drop, one field, mid-gallery or at the end. | a look frame beside the form; the form alone is the object when none is spare (N8). | EmailCapture, one per page, or the Footer newsletter layout; no incentive without a ledger row. | one line and one field. | `lexsis_capture.form_schemas`. |
+| `product-grid` (recommended) | "Shop the collection": every featured item at the end. | yes; job `identity` per item from catalog media, same aspect as the cards above (`references/product-grid.md`). view the grid images together so lighting, backgrounds and crops agree. | ProductCarousel with four or more items, FeaturedCollectionStage when the merchant wants one visual stage, the card composition with QuickAdd for three or fewer; decide from tagged item count and image availability; motion off. | heading 6 words or fewer; prices from the catalog. | tagged item count. |
+| `footer` | policies, contact, social. | logo only. | Footer with links from `lexsis_brand.navigation`. | Use the shared procedure. | the navigation result. |
 
 ### Asset budget
+
 | Source | Usually supplies | Usually missing | Per gap |
 |---|---|---|---|
 | catalog media | `identity` per tagged item, variant images, on-model product shots | wide `context` frames that place several items in one scene | reuse the strongest on-model catalog frame as a look's medium shot; ask the merchant to upload campaign originals; a look is cut only on the merchant's call |
 | asset library | `lifestyle` and `hero` campaign frames, `social-proof` UGC with rights | consistent grading across looks, detail frames, styling clips | ask the merchant to upload detail frames and clips; `video` and `detail` are skipped only on the merchant's call; never stock people |
 | generation | backdrops, textures, composites only | product, people, results, logos, text | never; a composite (`product_composite`) is `context` only and never a look frame |
 
-With minimal assets the page is a header, one full-bleed frame, three looks of
-two real frames each with quick-add cards, an email field and a footer; zero
-generated assets is the expected outcome, and when fewer than six verified
-lifestyle frames exist the merchant is told the count and offered upload or a
-retype to `collection-landing`. Every asset, found or generated, was viewed
-and passed the section fit review before use.
+With minimal assets the page is a header, one full-bleed frame, three looks of two real frames each with quick-add cards, an email field and a footer; zero generated assets is the expected outcome, and when fewer than six verified lifestyle frames exist the merchant is told the count and offered upload or a retype to `collection-landing`.
 
 ## Above the fold (390px)
 

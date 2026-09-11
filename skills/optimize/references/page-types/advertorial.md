@@ -47,11 +47,12 @@ Forbidden: `header`, `announcement` (an offer bar puts price above the fold), `p
 
 ## Workflow
 
-Assets first, editorial in kind: every story beat that carries an image gets a real one (a person in the situation, the mechanism, the product only after the turn), and no beat is padded with a colour band, an icon row or a wall of prose. Each Media line runs the loop in `references/workflows/section-asset-workflow.md` (sourcing: `references/assets/asset-sourcing-sequence.md`; jobs: `references/assets/image-jobs-by-page-type.md`; ALLOW, ASK and NEVER: `references/assets/generation-policy.md`). Each Island line names the island and its decision inputs per `references/workflows/island-selection-workflow.md`, with the catalog from `lexsis_design.islands` and the variant and props resolved live from `lexsis_design.island_schema`. This type uses almost no islands: the article is HTML and the product turn carries one BuyBox or one link.
-
-Ask rule, used by every Media line below: tell the merchant what is missing (job, aspect, count), offer upload via `lexsis_asset_upload.upload` or MCP generation when the purpose is feasible under `references/assets/generation-policy.md`, and skip or merge the section only if the merchant chooses. In fast-draft, proceed with the closest existing asset or leave the slot `planned`, and list every missing asset in the plan and the draft summary.
+Apply `references/workflows/_how-to-read.md` to these type-specific
+decisions. It links the shared asset/fallback, fit, live-island and
+copy procedures; this table supplies their inputs, not another policy.
 
 ### Context reads
+
 1. `lexsis_catalog.get` with the product id: the `identity` image for `offer-bridge`, any `in-use` or `label-or-facts-panel` media, variant count (a single variant keeps the turn simple), price and compare-at (ledger basis; price appears last but on the page), selling plans (ignored: subscribe-save is a misfit per `references/offers/offer-types.md`), inventory (never shown).
 2. `lexsis_campaigns.creatives` and `analyze`: the ad's hook, its first-person or contrarian voice, the persona, and the scene the hero must echo (`references/copy/message-match.md`); `frames` when the ad was video. `match_persona` for the narrator's register.
 3. `lexsis_catalog.reviews_status`, `review_collections` (active), `reviews` (`product_id`, `limit: 100`, `has_media`): band and dated, specific quotes per `references/proof/reviews-sourcing.md`. `reviews_search` with the mechanism claim, the failed-alternatives beat and the "who it is not for" beat; candidates stay pending until confirmed.
@@ -60,126 +61,29 @@ Ask rule, used by every Media line below: tell the merchant what is missing (job
 6. `lexsis_workspace.credits` only if a `context` composite is wanted after the turn; the editorial hero is never generated.
 
 ### Section by section
-**`dateline`**
-- Purpose: the "Advertisement" or "Sponsored" label, a publication-style kicker, a real named byline and a date.
-- Media: no; an author portrait only as a real `founder-or-team` photo with consent, at byline size. Nothing found: the byline runs as text; generation is never feasible for people (GN3). No-go: a fabricated publication mark, a stock face.
-- Island: `none`.
-- Copy: label first, at most one line; byline "By <real name>, <date>".
-- Decide with: the author record from `lexsis_brand.context`; FTC, ASA and ASCI disclosure wording.
 
-**`hero`**
-- Purpose: the article headline over an editorial image that echoes the ad; no product, no price, no CTA.
-- Media: yes; `editorial-lifestyle` of a person in the situation or the situation itself (`context`); `ugc-screenshot` when the ad was UGC; portrait crop for mobile (`references/assets/slot-spec.md`). Search: the ad frame via `lexsis_campaigns.frames` (import the brand-owned original with `lexsis_asset_import.import`; a creator frame needs a rights row; use the clean original, since the exported ad usually carries baked-in text), then library `lifestyle` then `hero`, then semantic "<situation>", then merchant upload, then licensed stock for a scene with no product and nobody presented as a customer (model release on file). Nothing found: ask rule; no generation purpose is feasible (a scene with people is NEVER, and a backdrop is not editorial); fast-draft runs the headline with the first two sentences of the lead and lists the hero as missing. No-go: packshot, price or offer visuals, a generated person. View every candidate with `lexsis_assets.view` and run the fit review in `references/workflows/section-asset-workflow.md` section 1b (subject, crop, quiet zone for the copy, consistency with neighbouring slots, palette, no baked-in text or watermark) before it is used. The scene echo is judged by eye against the creative, never by filename. `lexsis_asset_library.search` with `mode: "ocr"` flags library candidates that carry baked-in text before they are viewed.
-- Island: `none`; a static `<picture>` or no image.
-- Copy: headline at most 12 words in the reader's words, never the product; the ad's promise continued with 60% token overlap (`references/copy/message-match.md`); no blacklist words (`references/anti-patterns/copy-anti-patterns.md`).
-- Decide with: `lexsis_campaigns.analyze` hook and scene; awareness stage.
-
-**`hook`**
-- Purpose: the lead paragraph; the reader thinks "this is about me" within two sentences.
-- Media: no; a text beat by design, carried by the hero above it.
-- Island: `none`.
-- Copy: `story-lead`; first person or contrarian; paragraphs at most three lines on mobile.
-- Decide with: the narrator's voice from the ad.
-
-**`problem`**
-- Purpose: problem recognition in the reader's words; a symptom checklist as self-qualification.
-- Media: yes; one `context` image of the situation without the product. Search: library `lifestyle`, then semantic, then merchant upload, then licensed stock (scene only, model release). Nothing found: ask rule; no generation purpose is feasible; the checklist runs as HTML text meanwhile. No-go: illustration of pain, red tint, competitor packaging. View every candidate with `lexsis_assets.view` and run the fit review in `references/workflows/section-asset-workflow.md` section 1b (subject, crop, quiet zone for the copy, consistency with neighbouring slots, palette, no baked-in text or watermark) before it is used.
-- Island: `none`.
-- Copy: `pas`; checklist of three to six symptoms, each one line.
-- Decide with: `reviews_search` phrasing of the pain.
-
-**`agitation`**
-- Purpose: the failed alternatives and their hidden cost.
-- Media: no new image; the beat stays short; competitor products are never shown (GN8).
-- Island: `none`.
-- Copy: at most 120 words; a transition hook into the mechanism.
-- Decide with: `reviews_search` for "tried everything" quotes (pending until confirmed).
-
-**`mechanism`** or **`discovery`**
-- Purpose: the root-cause reframe, or the moment the narrator found it.
-- Media: yes; `diagram` as authored inline SVG with numbers in HTML, `ingredient-or-material` as a real flat lay, `founder-or-team` for a real narrator, or a click-to-play narrator clip with a real poster and captions (`references/assets/video-rules.md`). Search: catalog media, then library `flat-lay` and `product-shot`, then merchant or supplier upload, then licensed stock for a raw ingredient not presented as the merchant's own sourcing. Nothing found: ask rule; generation is not feasible for ingredients, people or a raster diagram (GN3, GN11); the authored SVG carries the beat meanwhile. No-go: lab coats, stethoscopes, generated doctors. View every candidate with `lexsis_assets.view` and run the fit review in `references/workflows/section-asset-workflow.md` section 1b (subject, crop, quiet zone for the copy, consistency with neighbouring slots, palette, no baked-in text or watermark) before it is used.
-- Island: `none` for stills and SVG; `VideoPlayer` for the narrator clip, click to play; resolve variant and props from `lexsis_design.island_schema`.
-- Copy: every claim cites journal, year, n and design; the product is still unnamed.
-- Decide with: `test-data` and `expert-quote` ledger rows.
-
-**`solution`**
-- Purpose: what a real fix would need to do, before the product is named.
-- Media: no; a short criteria list carried by a subhead.
-- Island: `none`.
-- Copy: three to five criteria, one line each.
-- Decide with: the mechanism beat above.
-
-**`offer-bridge`**
-- Purpose: the product turn past the midpoint; the first, soft CTA.
-- Media: yes; the first `identity` image from catalog media, plus one `in-use` image. Search: catalog media, then library `product-shot` and `lifestyle`, then merchant upload. Nothing found: ask rule; feasible purpose `product_composite` for a `context` image over a real cut-out only, never the product itself (GN1); the turn ships as text with the CTA meanwhile and the slot stays `planned`. View every candidate with `lexsis_assets.view` and run the fit review in `references/workflows/section-asset-workflow.md` section 1b (subject, crop, quiet zone for the copy, consistency with neighbouring slots, palette, no baked-in text or watermark) before it is used.
-- Island: `none` for the identity image; the CTA is an HTML link to the single destination the plan names: the on-page `buy-box`, the PDP or a quiz.
-- Copy: `next-step` ("See why people switch", "Check availability"); the price is on the page before the first CTA to cart (`references/offers/price-presentation.md`).
-- Decide with: the merchant's choice of buy surface; offer ledger rows.
-
-**`reviews`**
-- Purpose: three specific, dated testimonials placed where scepticism appears, the first directly after the turn.
-- Media: `ugc` or `review-with-media` screenshots per quote where rights exist (`has_media: true`; library `social-proof` with a `P` row); original aspect, no beautifying edits. Nothing found: the quotes run as text; generation is never feasible (GN9). View every candidate with `lexsis_assets.view` and run the fit review in `references/workflows/section-asset-workflow.md` section 1b (subject, crop, quiet zone for the copy, consistency with neighbouring slots, palette, no baked-in text or watermark) before it is used.
-- Island: `none`; two or three dated quotes inline as HTML, never a carousel on this type (display table in `references/proof/reviews-sourcing.md`). At band B3 or higher an average plus n sits at `offer-bridge` from the API total. B0: `test-data`, `guarantee` and a named `founder-note` replace the section and the omission is recorded.
-- Copy: verbatim, dated, at most 60 words, falsifiable ("stopped waking at 3am by week two"); never "amazing product".
-- Decide with: `reviews_status` band; `reviews_search` candidates confirmed by the merchant or an active collection.
-
-**`benefits`**
-- Purpose: three outcomes now that the product is named.
-- Media: yes; one `in-use` or `detail` image with the product present, per benefit or shared across three. Search: catalog media, then library, then merchant upload. Nothing found: ask rule; feasible purpose `product_composite` for a `context` image only; merge only on the merchant's choice. View every candidate with `lexsis_assets.view` and run the fit review in `references/workflows/section-asset-workflow.md` section 1b (subject, crop, quiet zone for the copy, consistency with neighbouring slots, palette, no baked-in text or watermark) before it is used.
-- Island: `none`.
-- Copy: `fab`; at most 25 words each.
-- Decide with: the job map.
-
-**`comparison`** (conditional: a dominant incumbent the reader uses)
-- Purpose: us versus the incumbent category, outcomes with numbers, one concession row.
-- Media: one `comparison-visual` of our attribute physically; the incumbent is an inline SVG silhouette. Nothing found: ask rule; generation is not feasible (GN8); the table stands with the identity image meanwhile. View every candidate with `lexsis_assets.view` and run the fit review in `references/workflows/section-asset-workflow.md` section 1b (subject, crop, quiet zone for the copy, consistency with neighbouring slots, palette, no baked-in text or watermark) before it is used.
-- Island: `none`; a static HTML table (Tabs is deprecated).
-- Copy: four to six rows, cells at most 6 words.
-- Decide with: `test-data` rows per cell.
-
-**`qualifier`**
-- Purpose: who it is for and who it is not for.
-- Media: no; two short lists.
-- Island: `none`.
-- Copy: three items each, one line each.
-- Decide with: `reviews_search` on fit and misfit.
-
-**`buy-box`** (conditional: the merchant wants on-page purchase, after `offer-bridge`)
-- Purpose: one place to buy without leaving the article.
-- Media: one or two identity images as static `<img>`; no gallery island on this type. Nothing found: ask rule; no generation is feasible for the product. View every candidate with `lexsis_assets.view` and run the fit review in `references/workflows/section-asset-workflow.md` section 1b (subject, crop, quiet zone for the copy, consistency with neighbouring slots, palette, no baked-in text or watermark) before it is used.
-- Island: `BuyBox`, one per page; decide its form from the variant count, badges off (the article has no icon set); `VariantSwatches` only when colour variants carry images; no `ProductGallery` or `ProductHero`. `StickyBar` only after the turn, bound to the offer and appearing once the reader passes `offer-bridge`, soft label. Resolve variant and props from `lexsis_design.island_schema`; presets `buybox/compact-dark` for a single variant, `stickybar/collection-light` for the soft bar.
-- Copy: price with compare-at only on a ledger basis; guarantee beside the button; the same soft verb as the bridge (`references/offers/offer-types.md`).
-- Decide with: variant count; offer ledger rows; the sticky rule.
-
-**`faq`**
-- Purpose: the objections the story did not settle.
-- Media: no.
-- Island: `none`; native `<details>` and `<summary>` (the FAQ island is deprecated).
-- Copy: answers at most 60 words.
-- Decide with: `reviews_search` on objection topics.
-
-**`guarantee`**
-- Purpose: risk reversal beside every CTA after the turn.
-- Media: no; a certification mark only as issuer artwork with a ledger row. Any logo or mark is still opened with `lexsis_assets.view` before use.
-- Island: `none`.
-- Copy: exact terms, policy URL.
-- Decide with: the `guarantee` ledger row.
-
-**`closing-cta`**
-- Purpose: the same action repeated; price stated on the page before it; last-word quote above.
-- Media: optional reuse of the `offer-bridge` identity slot; no new job.
-- Island: `none`; a link to the single destination.
-- Copy: `next-step`; never "Buy now" or "Shop now".
-- Decide with: the last-word `review-quote` row.
-
-**`disclaimer`**
-- Purpose: advertisement statement, typical-results disclosure, structure-function wording for supplements.
-- Media: no.
-- Island: `none`.
-- Copy: the mandated wording, verbatim from the category rule.
-- Decide with: category and market from the brief.
+| Section | Purpose | Media job and source | Interactive decision | Copy constraints | Decision evidence |
+|---|---|---|---|---|---|
+| `dateline` | the "Advertisement" or "Sponsored" label, a publication-style kicker, a real named byline and a date. | no; an author portrait only as a real `founder-or-team` photo with consent, at byline size. Nothing found: the byline runs as text; generation is never feasible for people (GN3). No-go: a fabricated publication mark, a stock face. | `none`. | label first, at most one line; byline "By <real name>, <date>". | the author record from `lexsis_brand.context`; FTC, ASA and ASCI disclosure wording. |
+| `hero` | the article headline over an editorial image that echoes the ad; no product, no price, no CTA. | yes; `editorial-lifestyle` of a person in the situation or the situation itself (`context`); `ugc-screenshot` when the ad was UGC; portrait crop for mobile (`references/assets/slot-spec.md`). Search: the ad frame via `lexsis_campaigns.frames` (import the brand-owned original with `lexsis_asset_import.import`; a creator frame needs a rights row; use the clean original, since the exported ad usually carries baked-in text), then library `lifestyle` then `hero`, then semantic "<situation>", then merchant upload, then licensed stock for a scene with no product and nobody presented as a customer (model release on file). Gap: no generation purpose is feasible (a scene with people is NEVER, and a backdrop is not editorial); fast-draft runs the headline with the first two sentences of the lead and lists the hero as missing. No-go: packshot, price or offer visuals, a generated person. The scene echo is judged by eye against the creative, never by filename. `lexsis_asset_library.search` with `mode: "ocr"` flags library candidates that carry baked-in text before they are viewed. | `none`; a static `<picture>` or no image. | headline at most 12 words in the reader's words, never the product; the ad's promise continued with 60% token overlap (`references/copy/message-match.md`); no blacklist words (`references/anti-patterns/copy-anti-patterns.md`). | `lexsis_campaigns.analyze` hook and scene; awareness stage. |
+| `hook` | the lead paragraph; the reader thinks "this is about me" within two sentences. | no; a text beat by design, carried by the hero above it. | `none`. | `story-lead`; first person or contrarian; paragraphs at most three lines on mobile. | the narrator's voice from the ad. |
+| `problem` | problem recognition in the reader's words; a symptom checklist as self-qualification. | yes; one `context` image of the situation without the product. Search: library `lifestyle`, then semantic, then merchant upload, then licensed stock (scene only, model release). Gap: no generation purpose is feasible; the checklist runs as HTML text meanwhile. No-go: illustration of pain, red tint, competitor packaging. | `none`. | `pas`; checklist of three to six symptoms, each one line. | `reviews_search` phrasing of the pain. |
+| `agitation` | the failed alternatives and their hidden cost. | no new image; the beat stays short; competitor products are never shown (GN8). | `none`. | at most 120 words; a transition hook into the mechanism. | `reviews_search` for "tried everything" quotes (pending until confirmed). |
+| `mechanism` or `discovery` | the root-cause reframe, or the moment the narrator found it. | yes; `diagram` as authored inline SVG with numbers in HTML, `ingredient-or-material` as a real flat lay, `founder-or-team` for a real narrator, or a click-to-play narrator clip with a real poster and captions (`references/assets/video-rules.md`). Search: catalog media, then library `flat-lay` and `product-shot`, then merchant or supplier upload, then licensed stock for a raw ingredient not presented as the merchant's own sourcing. Gap: generation is not feasible for ingredients, people or a raster diagram (GN3, GN11); the authored SVG carries the beat meanwhile. No-go: lab coats, stethoscopes, generated doctors. | `none` for stills and SVG; `VideoPlayer` for the narrator clip, click to play | every claim cites journal, year, n and design; the product is still unnamed. | `test-data` and `expert-quote` ledger rows. |
+| `solution` | what a real fix would need to do, before the product is named. | no; a short criteria list carried by a subhead. | `none`. | three to five criteria, one line each. | the mechanism beat above. |
+| `offer-bridge` | the product turn past the midpoint; the first, soft CTA. | yes; the first `identity` image from catalog media, plus one `in-use` image. Search: catalog media, then library `product-shot` and `lifestyle`, then merchant upload. Gap: feasible purpose `product_composite` for a `context` image over a real cut-out only, never the product itself (GN1); the turn ships as text with the CTA meanwhile and the slot stays `planned`. | `none` for the identity image; the CTA is an HTML link to the single destination the plan names: the on-page `buy-box`, the PDP or a quiz. | `next-step` ("See why people switch", "Check availability"); the price is on the page before the first CTA to cart (`references/offers/price-presentation.md`). | the merchant's choice of buy surface; offer ledger rows. |
+| `reviews` | three specific, dated testimonials placed where scepticism appears, the first directly after the turn. | `ugc` or `review-with-media` screenshots per quote where rights exist (`has_media: true`; library `social-proof` with a `P` row); original aspect, no beautifying edits. Nothing found: the quotes run as text; generation is never feasible (GN9). | `none`; two or three dated quotes inline as HTML, never a carousel on this type (display table in `references/proof/reviews-sourcing.md`). At band B3 or higher an average plus n sits at `offer-bridge` from the API total. B0: `test-data`, `guarantee` and a named `founder-note` replace the section and the omission is recorded. | verbatim, dated, at most 60 words, falsifiable ("stopped waking at 3am by week two"); never "amazing product". | `reviews_status` band; `reviews_search` candidates confirmed by the merchant or an active collection. |
+| `benefits` | three outcomes now that the product is named. | yes; one `in-use` or `detail` image with the product present, per benefit or shared across three. Search: catalog media, then library, then merchant upload. Gap: feasible purpose `product_composite` for a `context` image only; merge only on the merchant's choice. | `none`. | `fab`; at most 25 words each. | the job map. |
+| `comparison` (conditional: a dominant incumbent the reader uses) | us versus the incumbent category, outcomes with numbers, one concession row. | one `comparison-visual` of our attribute physically; the incumbent is an inline SVG silhouette. Gap: generation is not feasible (GN8); the table stands with the identity image meanwhile. | `none`; a static HTML table (Tabs is deprecated). | four to six rows, cells at most 6 words. | `test-data` rows per cell. |
+| `qualifier` | who it is for and who it is not for. | no; two short lists. | `none`. | three items each, one line each. | `reviews_search` on fit and misfit. |
+| `buy-box` (conditional: the merchant wants on-page purchase, after `offer-bridge`) | one place to buy without leaving the article. | one or two identity images as static `<img>`; no gallery island on this type. Gap: no generation is feasible for the product. | `BuyBox`, one per page; decide its form from the variant count, badges off (the article has no icon set); `VariantSwatches` only when colour variants carry images; no `ProductGallery` or `ProductHero`. `StickyBar` only after the turn, bound to the offer and appearing once the reader passes `offer-bridge`, soft label. | price with compare-at only on a ledger basis; guarantee beside the button; the same soft verb as the bridge (`references/offers/offer-types.md`). | variant count; offer ledger rows; the sticky rule. |
+| `faq` | the objections the story did not settle. | no. | `none`; native `<details>` and `<summary>`. | answers at most 60 words. | `reviews_search` on objection topics. |
+| `guarantee` | risk reversal beside every CTA after the turn. | no; a certification mark only as issuer artwork with a ledger row. Any logo or mark is still opened with `lexsis_assets.view` before use. | `none`. | exact terms, policy URL. | the `guarantee` ledger row. |
+| `closing-cta` | the same action repeated; price stated on the page before it; last-word quote above. | optional reuse of the `offer-bridge` identity slot; no new job. | `none`; a link to the single destination. | `next-step`; never "Buy now" or "Shop now". | the last-word `review-quote` row. |
+| `disclaimer` | advertisement statement, typical-results disclosure, structure-function wording for supplements. | no. | `none`. | the mandated wording, verbatim from the category rule. | category and market from the brief. |
 
 ### Asset budget
+
 | Source | Usually supplies | Usually missing | Per gap |
 |---|---|---|---|
 | catalog media (N images) | `identity` for the turn, sometimes `label-or-facts-panel` | editorial `in-use`, situation `context`, a real narrator portrait | ask the merchant to upload (people and in-use are never generated); the text beats stand meanwhile and the hero stays `planned` |
@@ -187,7 +91,7 @@ Ask rule, used by every Media line below: tell the merchant what is missing (job
 | ad creatives | the hero scene and the narrator's voice | anything after the turn | import the brand-owned frame with `lexsis_asset_import.import`; a creator frame needs scoped rights |
 | generation | `product_composite` for one `context` image after the turn, `texture_fill` | product, people, results, ingredients, logos, text | never; ask the merchant to upload instead |
 
-With only an identity shot the page still ships: dateline, a text-led hero (headline plus lead), hook, problem checklist, mechanism with an authored SVG, offer-bridge around the identity image, quotes at any band above B0, guarantee, closing and disclaimer; `agitation`, `solution` and `qualifier` stay as short text beats, and the missing hero, situation and in-use images are listed with the upload offer, with `comparison` and `buy-box` leaving the page only on the merchant's decision. Generated assets: at most four per page, usually zero. Nothing is used sight unseen: every asset in this table is opened with `lexsis_assets.view` and passes the section 1b fit review before it is assigned.
+With only an identity shot the page still ships: dateline, a text-led hero (headline plus lead), hook, problem checklist, mechanism with an authored SVG, offer-bridge around the identity image, quotes at any band above B0, guarantee, closing and disclaimer; `agitation`, `solution` and `qualifier` stay as short text beats, and the missing hero, situation and in-use images are listed with the upload offer, with `comparison` and `buy-box` leaving the page only on the merchant's decision. Generated assets: at most four per page, usually zero.
 
 ## Above the fold (390px)
 
