@@ -45,6 +45,14 @@ inference never authorizes publishing, paid generation, or deletion.
 
 ## Shared Safety
 
+- Identify one page type (`references/page-types/_index.md`) before templates,
+  assets or proof; its `## Workflow` guides every later stage and its checklist
+  is the default anatomy.
+- Render proof only from the plan's Proof ledger and offers only from its
+  Offer ledger; never invent reviews, counts, logos, badges or urgency.
+- Generate imagery only for ALLOW purposes in
+  `references/assets/generation-policy.md`; never the product, people as
+  customers, results, badges or text in images.
 - Bind every page to one saved store/theme pair.
 - Read changing product, price, asset, schema, permission, analytics, and
   version data live.

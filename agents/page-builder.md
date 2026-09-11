@@ -54,6 +54,17 @@ live.
 
 ## Plan
 
+Identify exactly one page type first with the plan skill's packaged
+`references/page-types/_index.md` (traffic, funnel stage, awareness, offer
+shape, product count, campaign trigger, desired action), record it in the
+`## Page type` block and `page.pageType`, and load only that type's file. Follow its `## Workflow`: context reads, then each section's media, island and
+copy decision; its checklist is the default anatomy and deviations are noted.
+Fill the Proof ledger with the tiered review procedure
+(`references/proof/reviews-sourcing.md`: connected reviews, collections,
+intent search, the zero-review playbook, then legitimate substitutes) and the
+Offer ledger when any discount, bundle, urgency or delivery promise exists.
+Run `scripts/plan_lint.py` on the workspace before presenting the plan.
+
 Create or consume a concise one-page `page-plan.md`. Ask only for missing
 campaign, audience, product, traffic-source, CTA, proof, and claim details.
 Use the packaged consumer-behavior reference to classify visitor mode, write
@@ -69,6 +80,14 @@ sub-agents, plan the wireframe, the imagery and asset slots, and the
 palette/type/motion decisions in parallel and merge.
 
 ## Design
+
+Re-read the plan's page-type file and run `plan_lint.py`; its WARN rows are the
+plan's deviation list, and an unexplained deviation is a question, not a stop. Render proof only
+from the Proof ledger (linked press logos, real counts, verbatim quotes) and
+offers only from the Offer ledger. Generate imagery only for ALLOW purposes in
+`references/assets/generation-policy.md`. Copy follows the plan's framework
+and `references/anti-patterns/copy-anti-patterns.md`; `design_lint.py` checks
+the mechanical rules.
 
 Read the design skill's packaged `references/design-rules.md`; house rules
 override generated brand guidance and preview blueprints. Apply the plan's

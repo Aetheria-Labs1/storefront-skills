@@ -9,6 +9,7 @@ Read:
 
 - `references/evidence-led-cro.md`
 - `references/consumer-behavior-cro.md`
+- `references/authoring/css-and-styling.md` before any CSS or class change
 - `references/animation-system.md` before adding or editing motion
 
 Use the needed exact actions from

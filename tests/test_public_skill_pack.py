@@ -239,7 +239,12 @@ class PublicSkillPackTests(unittest.TestCase):
         self.assertNotIn("island_schema", text)
         self.assertIn("occasion dates", text)
         self.assertIn("shelf is empty", text)
-        self.assertIn("### Proof sources", text)
+        self.assertIn("### Proof ledger", text)
+        self.assertIn("### Offer ledger", text)
+        self.assertIn("## Identify the Page Type", text)
+        self.assertIn("plan_lint.py", text)
+        self.assertIn("lexsis_assets.view", text)
+        self.assertIn("section-asset-workflow.md", text)
         self.assertIn("Design template selection", text)
         self.assertIn("Design asset selection", text)
         self.assertNotIn("reviewsEndpoint", text)
@@ -252,6 +257,9 @@ class PublicSkillPackTests(unittest.TestCase):
         self.assertIn("publish:false", text)
         self.assertIn("design.status: pending-approval", text)
         self.assertIn("Return the hosted preview immediately as `DRAFT_CREATED`", text)
+        self.assertIn("## Page-Type Workflow", text)
+        self.assertIn("generation-policy.md", text)
+        self.assertIn("lexsis_assets.view", text)
         self.assertNotIn("page-preview.html", text)
 
     def test_generate_routes_intent_and_creates_before_ready_qa(self) -> None:
@@ -366,12 +374,12 @@ class PublicSkillPackTests(unittest.TestCase):
         self.assertFalse((SKILLS / "visual-page").exists())
         self.assertTrue((SKILLS / "design-page" / "SKILL.md").is_file())
 
-    def test_release_version_is_7_8_1(self) -> None:
+    def test_release_version_is_7_9_0(self) -> None:
         for path in (
             ROOT / ".claude-plugin" / "plugin.json",
             ROOT / "codex" / ".codex-plugin" / "plugin.json",
         ):
-            self.assertEqual("7.8.1", json.loads(path.read_text())["version"])
+            self.assertEqual("7.9.0", json.loads(path.read_text())["version"])
 
     def test_discovery_is_not_a_global_blocker(self) -> None:
         checked = [

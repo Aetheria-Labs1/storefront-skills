@@ -13,25 +13,75 @@ and background plan, and every asset slot on the page.
 Read:
 
 - `references/page-files.md`
+- `references/page-types/_index.md`, then only the matching
+  `references/page-types/<type>.md` (its `## Workflow` is the procedure to
+  follow)
+- `references/workflows/section-asset-workflow.md` (the per-section media
+  loop) and `references/workflows/island-selection-workflow.md`
+- `references/mcp-playbooks/tool-sequence-by-stage.md` and the matching row of
+  `references/mcp-playbooks/tool-sequence-by-page-type.md`
 - `references/animation-system.md` when the page may use motion
 - `references/consumer-behavior-cro.md`
 - `references/design-rules.md`
 - `references/island-presets.md`
 - `references/workflow-intent.md`
+- `references/offers/funnel-stages.md`, `references/offers/offer-ledger.md`,
+  and the matching entries of `references/offers/offer-types.md` and
+  `references/offers/campaign-calendar.md`
+- `references/proof/proof-ledger.md` and `references/proof/reviews-sourcing.md`;
+  `references/proof/press-and-media-mentions.md`,
+  `references/proof/trust-badges-certifications.md`,
+  `references/proof/ugc-rights-and-display.md`,
+  `references/proof/before-after-and-claims.md` when the page plans that kind
+  of proof
+- `references/assets/image-jobs-by-page-type.md`,
+  `references/assets/asset-sourcing-sequence.md`,
+  `references/assets/generation-policy.md`
+- `references/copy/copy-frameworks.md` and `references/copy/message-match.md`
 
 Use `lexsis_catalog.list`, `lexsis_catalog.get`,
 `lexsis_template_library.search_page_kits`,
 `lexsis_template_library.search_sections`, `lexsis_template_library.get_kit`,
 `lexsis_asset_library.search`, `lexsis_assets.view`,
-`lexsis_asset_upload.import`, `lexsis_drafts.asset_generate`,
+`lexsis_asset_import.import`, `lexsis_asset_upload.upload`,
+`lexsis_drafts.asset_generate`,
 `lexsis_workspace.credits`, `lexsis_catalog.reviews_status`,
-`lexsis_catalog.review_collections`, `lexsis_catalog.reviews`, and
-`lexsis_catalog.reviews_search`. Resolve an unfamiliar schema with exact
+`lexsis_catalog.review_collections`, `lexsis_catalog.reviews`,
+`lexsis_catalog.reviews_search`, and, for ad-driven or persona-led pages,
+`lexsis_campaigns.creatives`, `lexsis_campaigns.analyze`,
+`lexsis_campaigns.personas`, `lexsis_campaigns.match_persona`; for quiz and
+lead-capture types, `lexsis_capture.funnel_templates` and
+`lexsis_capture.funnel_template`. Resolve an unfamiliar schema with exact
 router/action discovery.
 
-Read `work/storefront/setup/setup.json`, select one saved store/theme pair, and
-read its brand design. If the selection is not saved, stop with
-`Run /setup for this store and theme first.`
+## Bind the Workspace and Open the Campaign Folder
+
+Read `work/storefront/setup/setup.json`. Select one saved workspace, store and
+theme triple: the one the user names, otherwise the saved defaults. Read that
+store's brand design and that theme's CSS. If the selection is not saved, stop
+with `Run /setup for this store and theme first.` State the workspace, store
+and theme in one line so a wrong default is visible immediately, and never mix
+files from two themes, stores or workspaces on one page.
+
+Then infer the campaign folder from the request with the table in
+`references/page-files.md` (occasion and year, named sale, product launch,
+evergreen funnel, channel test, collaboration, or `adhoc-<yyyy-mm>` when the
+request is not campaign-shaped). Reuse the folder when this page continues an
+existing campaign, including a variant or an edit; open a new one when the
+occasion, offer or product changes. Say which folder is in use.
+
+```text
+work/campaigns/<campaign-slug>/
+├── campaign.json     binding and campaign facts
+├── campaign.md       one-page brief
+├── assets/           media shared across this campaign's pages
+└── pages/<page-handle>/
+```
+
+Write `campaign.json` with the binding and the confirmed campaign facts, and
+`campaign.md` with the brief, before the page workspace. A campaign folder
+holds one workspace, store and theme binding; a second store means a second
+folder. Every page repeats the binding in its own manifest.
 
 ## Infer the Planning Mode
 
@@ -63,11 +113,74 @@ If a packaged design or preset reference is unavailable, warn once and
 continue from the saved brand, theme, and live catalog. A missing optional
 reference must not prevent a reversible plan.
 
+## Identify the Page Type
+
+Do this before any template, asset, or proof call. Walk the decision tree in
+`references/page-types/_index.md` from the brief: traffic source, funnel stage,
+awareness level, offer shape, product count, campaign trigger, desired action.
+Choose exactly one `pageType`. When two fit, the index names the tie-break;
+when the brief is silent, choose the type that assumes less of the visitor and
+say so. Then load only `references/page-types/<type>.md`.
+
+Write this block at the top of `page-plan.md` and mirror it in the manifest
+(`page.pageType`, `page.funnelStage`, `page.awareness`, `page.trafficSource`,
+`offer`, `campaign`):
+
+```markdown
+## Page type
+
+**Type.** <file name without .md>
+**Funnel stage.** tof | mof | bof | retention
+**Awareness.** unaware | problem-aware | solution-aware | product-aware | most-aware
+**Traffic.** <source>
+**Offer.** <offer-types id> or none
+**Campaign.** <campaign-calendar id> or evergreen
+**Copy framework.** <copy-frameworks id>
+**Mandatory sections omitted.** none | `<id>`: <reason>
+**Deviations from the type default.** none | <field>: <value>, <reason>
+```
+
+Then follow the type file's `## Workflow` in order:
+
+1. **Context reads.** Run its numbered tool calls first and note what they
+   return: how many catalog images exist and which image jobs they cover,
+   the variant axes and whether colour variants have their own images, price
+   and compare-at, selling plans, inventory, the review count band, theme
+   tokens and voice, what the asset library holds under each tag, and the ad
+   creative when traffic is paid. Every later decision cites one of these.
+2. **Section by section.** For each section in the type's Anatomy order,
+   decide three things and write them into the plan: the media (which image
+   job, where it comes from, or generate when the policy allows; when nothing
+   fits, tell the merchant exactly what is missing and offer upload or MCP
+   generation, and skip the section only if they choose:
+   `references/workflows/section-asset-workflow.md`), the interactive
+   component if any (name the island role and the decision inputs from the
+   context reads; the plan never resolves a schema or names props, and
+   `/design-page` reads the live catalog and schema for the variant and props:
+   `references/workflows/island-selection-workflow.md`; record the inputs and
+   a `Preset:` or one-line note), and the copy pattern and ceiling. A section that would end up as
+   a colour band, emoji row, icon tiles or a wall of text is rebuilt around
+   imagery or put to the merchant.
+3. **Asset budget.** Fill the type's asset-budget table for this product:
+   what the catalog and library supply, which jobs are missing, and per gap
+   whether to reuse, generate (with the purpose), or ask the merchant to
+   upload or approve generation. Every missing asset is listed for the
+   merchant; in fast-draft, proceed with the closest existing asset or a
+   `planned` slot and still list it. Assets carry the page; plain colour
+   does not.
+
+The `## Checklist` JSON is the default this workflow lands on. When the
+context argues for something else (a PDP with two images, a store with no
+reviews, a brand whose voice bans a section), deviate and record it under
+"Deviations from the type default". Run
+`python3 <plan-page-skill>/scripts/plan_lint.py <page-workspace>` before
+presenting the plan and treat its WARN rows as that deviation list.
+
 ## Ask Only What Is Missing
 
 Collect:
 
-1. Page or campaign type.
+1. Page type, only when the brief leaves the identified type ambiguous.
 2. Product or collection.
 3. Audience and customer problem.
 4. Traffic source.
@@ -166,10 +279,15 @@ Keep `page-plan.md` concise enough to scan in one view. Include:
 - selected template direction
 - ordered section list
 - one sentence describing each section's purpose
+- the Page type block defined above
 - the Consumer decision model block from
   `references/consumer-behavior-cro.md`
 - the Design direction, Imagery and background plan, and Asset slots blocks
   defined below
+- the Proof ledger and, when an offer exists, the Offer ledger
+- the copy framework and headline pattern from
+  `references/copy/copy-frameworks.md`, and the message-match line from
+  `references/copy/message-match.md` for ad-driven traffic
 - offers and claims that require confirmation
 
 ### Design direction (required block in page-plan.md)
@@ -244,10 +362,20 @@ exception is the bold moment named above. Sections without imagery are
 separated by spacing and a hairline, not colour.
 
 Before finalizing the imagery plan, map the existing gallery to the relevant
-jobs in `references/consumer-behavior-cro.md`: identity, detail, scale/fit,
-texture/finish, context, variation, setup/sequence, and sourced proof. Create
-slots only for decision-critical missing jobs. If paid generation would fill
-them, ask once with the exact jobs, count, aspects, and placements.
+jobs in `references/consumer-behavior-cro.md` and to the page type's
+`imagery.required_jobs` in `references/assets/image-jobs-by-page-type.md`:
+identity, detail, scale/fit, texture/finish, context, variation,
+setup/sequence, and sourced proof. Create slots for every required job the
+gallery does not cover and for decision-critical gaps. Resolve each slot with
+the ordered sequence in `references/assets/asset-sourcing-sequence.md`
+(Shopify media, asset library, merchant-supplied or brand-site capture,
+licensed stock where the policy allows, then generation). A slot may be
+planned for generation only when its purpose is on the ALLOW list in
+`references/assets/generation-policy.md`; NEVER-list jobs (the product
+itself, people shown as customers, results, logos, badges, text in images)
+stay `planned` until the merchant supplies media. If paid generation would
+fill allowed gaps, ask once with the exact jobs, count, aspects, and
+placements.
 
 ### Asset slots
 
@@ -257,13 +385,18 @@ List every slot the wireframe names, for any page type:
 | Slot | Section | Role/purpose | Aspect | Source decision | Id / URL | Status |
 |---|---|---|---|---|---|---|
 | A1 | gallery | product_media | 4:5 | shopify media | gid://…/ProductImage/… | verified |
-| A2 | proof | product_lifestyle | 3:2 | generate | | planned |
+| A2 | story | context | 3:2 | library | asset 7f2e… | verified |
+| A3 | closing-cta | hero_bg | 3:2 | generated (after credit confirmation) | | planned |
+| A4 | benefits | in-use | 3:2 | pending: merchant to upload, or approve a `product_composite` scene | | planned |
 ```
 
-`Role/purpose` uses the generation purposes where they apply (`hero_bg`,
-`product_lifestyle`, `section_bg`, `product_composite`, `texture_fill`,
-`decorative_element`) plus `product_media`, `logo`, `proof`, and `icon_set` (only
-when the Icons decision says a set must be generated). `Status` is `verified`
+`Role/purpose` uses the image job for real media (`product_media`, `context`,
+`in-use`, `logo`, `proof`, ...) and the generation purpose for generated
+media: ALLOW purposes `hero_bg`, `section_bg`, `card_bg`, `texture_fill`,
+`pattern_tile`, `decorative_element`, `product_composite`; `product_lifestyle`
+only as an ASK slot with the merchant's yes recorded; `icon_set` when the
+Icons decision says a monochrome inline SVG set must be authored
+(`references/assets/generation-policy.md`). `Status` is `verified`
 or `planned`. Ordinary interface icons come from one inline SVG set and are
 not slots; emoji are never an icon fallback.
 
@@ -279,40 +412,88 @@ skill searches only for what the user did not pick.
    `selection_order` (A1, A2, …). Confirm the mapping in one line or take a
    one-line remap. Without a picker: Storefront → Design library → Assets;
    accept filenames or URLs and look them up with `mode: "filename"`. Files
-   not yet in the library go through `lexsis_asset_upload.import` with no
-   source; the upload panel's message carries the new asset id.
-2. **Skill fills the gaps.** For every slot still unresolved, search
-   `lexsis_asset_library.search` (semantic, then tags) and the product's
-   Shopify media through `lexsis_catalog.get`. Present the table with the best
-   candidate per slot, then ask once: **I pick** (use the best match for every
-   remaining slot) or **Generate the gaps** (check `lexsis_workspace.credits`,
-   then `lexsis_drafts.asset_generate` per slot with its purpose and aspect).
-3. Verify identity-sensitive picks with `lexsis_assets.view`. Record the
-   provider and asset id for generated slots.
+   not yet in the library go through `lexsis_asset_upload.upload` with the
+   selected `workspace_id` and `theme_id`; wait for the user's uploaded-asset
+   message with the new asset id. Import supplied URLs, image base64 plus
+   `mime_type`, or conversation attachments through `lexsis_asset_import.import`
+   instead, using exactly one source. Without inline UI, ask for a URL or
+   conversation attachment and import it; never call import with no source.
+2. **Skill fills the gaps.** For every slot still unresolved, search the
+   product's Shopify media through `lexsis_catalog.get`, then
+   `lexsis_asset_library.search` (tags first, then semantic, then filename).
+   Present the table with the best candidate per slot and, for every slot
+   with no candidate, say exactly what is missing (section, job, aspect,
+   count). Then ask once: **I pick** (use the best match for every remaining
+   slot), **Upload** (the merchant supplies files through
+   `lexsis_asset_upload.upload`, or URLs/attachments through
+   `lexsis_asset_import.import`), or **Generate the gaps**
+   (only ALLOW purposes, or ASK purposes with the merchant's yes recorded;
+   check `lexsis_workspace.credits`, then `lexsis_drafts.asset_generate` per
+   slot with its purpose and aspect). Skipping a section is the merchant's
+   choice, offered alongside.
+3. View every asset before it fills a slot. `lexsis_assets.view` returns the
+   image itself; judge it against the section with the fit review in
+   `references/workflows/section-asset-workflow.md` (subject does the job,
+   crops without losing the subject, leaves a quiet area for the copy,
+   matches the neighbouring slots' lighting and styling, colours sit inside
+   the palette, no baked-in text or watermark). A filename, tag or alt text
+   is never evidence. View the candidates for one section together so the set
+   reads as one shoot. Record the provider and asset id for generated slots
+   and view those too.
 4. Write the final table into the plan and one `assets[]` entry per slot into
    the manifest. A slot the user postpones stays `planned`; `/design-page`
    confirms only those.
 
-### Proof sources
+### Proof ledger
 
-Before planning any reviews or testimonials section, call
-`lexsis_catalog.reviews_status` and `lexsis_catalog.review_collections` with
-`collection_status: "active"`. Ask question 9 with the active collections and
-their `item_count`. Write one line in the plan:
+Every proof element on the page is a row in the `## Proof ledger` block
+defined in `references/proof/proof-ledger.md`: kind, claim it supports,
+source, evidence id or URL, verification status, and the section that shows
+it. Nothing renders that is not in the ledger. Fill it with the tiered
+procedure in `references/proof/reviews-sourcing.md`:
 
-```text
-reviews → collection:<id> "<name>" (<n> items)
-        | products:<gid, …> (min rating <r>, <n> available via lexsis_catalog.reviews)
-        | none → guarantees, certifications, product evidence instead
-```
+1. `lexsis_catalog.reviews_status`, then `lexsis_catalog.review_collections`
+   with `collection_status: "active"`, then `lexsis_catalog.reviews`
+   (`rating_min`, `has_media`, `product_id`) for counts and distribution.
+2. `lexsis_catalog.reviews_search` once per top decision question to place
+   proof beside the claim it answers.
+3. Only when tiers 1 and 2 return nothing usable: the zero-review playbook
+   (public reviews on marketplaces, Google, Trustpilot, Reddit, YouTube,
+   creator content) via the host's web search and `lexsis_assets.view`. An
+   external quote enters the ledger as `external-verified` only with its
+   source URL, the merchant's written approval, verbatim text, and
+   attribution the platform's terms permit. Marketplace review text that the
+   platform forbids reusing is evidence for the merchant, never page copy.
+4. Still nothing: plan guarantees, policy facts, certifications with issuer
+   ids, test data, a founder note, or verified press instead. Never a review
+   section, never invented counts, never `SocialProofPopup`.
 
-`connected: false` with an empty library means `none`; do not plan the
-section. Every count comes from the API and is listed under "Claims to
-confirm". The plan never activates a collection. To propose a shortlist, run
-`lexsis_catalog.reviews_search` and, only when the user asks,
-`lexsis_drafts.review_collection_create` (draft); the merchant activates it in
-Storefront → Reviews → Collections. If the host returns `UNKNOWN_ACTION` for
-these actions, ask the user to pick a collection there and paste its id.
+Ask question 9 with the active collections and their `item_count`. Every
+number in the ledger comes from the API or a linked source and is repeated
+under "Claims to confirm". The plan never activates a collection; to propose
+a shortlist, run `lexsis_catalog.reviews_search` and, only when the user asks,
+`lexsis_drafts.review_collection_create` (draft). If the host returns
+`UNKNOWN_ACTION`, ask the user to pick a collection in Storefront → Reviews →
+Collections and paste its id.
+
+Press logos, "as seen in" marquees, badges, certifications, UGC, before/after
+media, expert quotes, and counts follow their own files in
+`references/proof/`. A press logo without a linked article, a badge without
+an issuer, UGC without rights, or a count without a source does not enter the
+ledger and does not appear on the page.
+
+### Offer ledger
+
+When the page carries any offer, discount, bundle price, urgency, or
+delivery promise, write the `## Offer ledger` block from
+`references/offers/offer-ledger.md`: offer type, exact terms, math shown on
+the page, compare-at basis, start and end, stock basis, exclusions, regions,
+code, stacking, and who confirmed each item. Use
+`references/offers/offer-types.md` for the anatomy changes the offer type
+requires and `references/offers/price-presentation.md` and
+`references/offers/urgency-scarcity.md` for what may be shown. A countdown or
+stock indicator is planned only when the ledger has a confirmed end date or
+live inventory read. Mirror the summary in the manifest `offer` block.
 
 Verify facts that control the page's urgency or trust before treating them as
 copy. This includes occasion dates, delivery cutoffs, prices, availability,
@@ -330,9 +511,11 @@ Do not include:
 - template search transcripts
 - QA, compilation, synchronization, or publishing state
 
-Create the page directory, `assets/`, and a compact schema-v3
-`page-manifest.json` using `references/page-files.md`, including one
-`assets[]` entry per slot and the `reviews` block. Do not create source,
+Create the page directory under `work/campaigns/<campaign-slug>/pages/`, its
+`assets/`, and a compact schema-v3 `page-manifest.json` using
+`references/page-files.md`, including `campaignSlug`, `campaignPath`, the
+workspace, store and theme ids, one `assets[]` entry per slot, and the
+`reviews` block. Add the page handle to `campaign.json` `pages[]`. Do not create source,
 preview, compile, or QA files.
 
 ## Approval
@@ -341,16 +524,24 @@ Present:
 
 ```text
 Page:
+Campaign: <campaign-slug> (<campaign type>)
+Binding: <workspace> / <store> / <theme>
+Page type: <type> · <funnel stage> · <awareness> · <traffic>
+Deviations from the type default: <none | list>
+Mandatory sections omitted:
 Goal:
 Audience:
+Offer: <type and terms | none>
+Campaign:
+Copy framework:
 Template direction:
 Design direction:
 Bold moment:
 Overrides:
 Sections:
-Asset slots: <n verified / m planned>
+Asset slots: <n verified / m planned / k blocked by generation policy>
 Planned slots (unresolved):
-Proof sources:
+Proof ledger: <n verified / m pending / k dropped>
 Consumer decision model:
 Behavioral hypothesis:
 Claims to confirm:
@@ -363,6 +554,19 @@ review the plan first or the route requires paid generation.
 
 ## Return
 
-Return the working directory, plan path, manifest path, the asset slot
-summary, inferred next route, and `PLAN_APPROVED`. The next command is
-`/design-page`, `/build`, or `/build-with-template` according to that route.
+Return the campaign path, the page working directory, plan path, manifest path,
+the workspace, store and theme in effect, the asset slot summary, the
+missing-asset list, the inferred next route, and `PLAN_APPROVED`. Name the
+route with the command it maps to:
+
+| Route | Next command | When |
+|---|---|---|
+| `direct-design` | `/design-page` | the normal source and hosted-draft review |
+| `concept-first` | `/design-page` (concept path) | the user wants to approve a mockup first |
+| `fast-build` | `/build` | fastest draft, no template supplied |
+| `fast-build` | `/build-with-template` | the user supplied a page-kit or section-template URL |
+
+Every route builds the page the same way: the type's `## Workflow`, media
+decided per section before copy, every asset viewed before use, and missing
+slots reported rather than filled with colour or copy. `fast-build` asks fewer
+questions and skips the design-approval stage; it does not skip the assets.

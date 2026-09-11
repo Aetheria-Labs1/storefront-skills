@@ -10,8 +10,16 @@ Use this skill for asset-only work. It does not require `/plan-page` or
 
 Use `lexsis_asset_library.search`, `lexsis_catalog.list`,
 `lexsis_catalog.get`, `lexsis_workspace.credits`,
-`lexsis_drafts.asset_generate`, `lexsis_asset_upload.import`, and
+`lexsis_drafts.asset_generate`, `lexsis_asset_import.import`,
+`lexsis_asset_upload.upload`, and
 `lexsis_assets.view`.
+
+Import requires exactly one source: `url`, image `data` + `mime_type`, or
+`attachments`. It never opens the upload UI. Use `lexsis_asset_upload.upload`
+with the selected `workspace_id` and `theme_id` for local-file uploads, and
+wait for the user's uploaded-asset message before using the result. If the
+host has no inline UI, ask for a URL or conversation attachment and import
+that source instead; never call import with no source.
 
 ## Choose a Mode
 

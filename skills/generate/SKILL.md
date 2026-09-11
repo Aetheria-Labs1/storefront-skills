@@ -17,6 +17,13 @@ Read:
 - `references/page-editing.md` only for an existing page
 - `references/merchant-templates.md` only when reusing a merchant template
 - `references/qa-recipe.md` for production-ready QA
+- `references/authoring/css-and-styling.md` and
+  `references/authoring/source-authoring.md` when repairing source
+- the plan's `references/page-types/<type>.md` and
+  `references/proof/proof-ledger.md` for the production gate
+- `references/anti-patterns/copy-anti-patterns.md`,
+  `references/anti-patterns/dark-patterns.md` and
+  `references/anti-patterns/mobile-anti-patterns.md` for hosted QA
 
 Use `lexsis_catalog.get`, `lexsis_design.island_schema`,
 `lexsis_pages.compile`, `lexsis_pages.edit_context`,
@@ -42,9 +49,12 @@ generation, publication, deletion, or destructive replacement.
 
 ## Inputs and Setup Reuse
 
-Use `lexsis-source.html`, `page-theme.css`, and the compact schema-v3 manifest.
-Reuse the saved store/theme binding from `work/storefront/setup/setup.json`.
-Do not call setup again when that binding is valid.
+Use `lexsis-source.html`, `page-theme.css`, and the compact schema-v3 manifest
+from the page workspace inside its campaign folder. Reuse the workspace, store
+and theme binding recorded in the manifest and `campaign.json`, resolved
+through `work/storefront/setup/setup.json`. Do not call setup again when that
+binding is valid, and never switch workspace, store or theme for an existing
+page.
 
 Refresh only volatile creation data: selected products and variants, prices,
 availability, permissions, active island schemas, and an existing page's
@@ -132,8 +142,16 @@ For `production-ready`, or when upgrading an existing `DRAFT_CREATED`:
 5. Verify typography, media, hydration, overflow, responsive geometry,
    expected Shopify variant, cart opening, quantity, subtotal, Quick Add,
    product-grid stability, thumbnails, and authored header/footer order.
-6. Write evidence and blockers to `qa-report.md`.
-7. Set `status: qa_passed` only when all blocking checks pass, then run the
+6. Run `python3 <plan-page-skill>/scripts/plan_lint.py <page-workspace>` and
+   `python3 <design-page-skill>/scripts/design_lint.py <page-workspace>`.
+   Proof and offer findings (a proof element outside the Proof ledger, an
+   offer element outside the Offer ledger, a dark-pattern hit) block; type
+   deviations and copy findings are review notes unless the plan did not
+   record them. Check the 390px first screen against the type file's
+   "Above the fold" list and every numeral in proof sections against the
+   ledger.
+7. Write evidence and blockers to `qa-report.md`.
+8. Set `status: qa_passed` only when all blocking checks pass, then run the
    validator with `--phase draft` and live remote hashes.
 
 Return `DRAFT_READY` only after synchronization and every blocking QA check
