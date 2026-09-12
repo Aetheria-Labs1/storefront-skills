@@ -10,10 +10,10 @@ https://agentskills.io) and are also exposed at `.agents/skills/` for agents
 that discover that path natively. Invoke by name, or let your agent select from
 each skill's description.
 
-The normal reviewed workflow is Setup → Plan → Design → Generate → Publish.
-Build and Build with Template provide fast unpublished-draft routes. Asset Prep
-is an optional standalone utility. The twelve public commands remain
-independently invokable; explicit skips are recorded in the task handoff.
+The normal reviewed workflow is Setup → Plan → Design → Publish. Optimize
+scores and improves an existing page with the same plan blocks. The seven
+public commands remain independently invokable; explicit skips are recorded in
+the task handoff.
 Pages are authored directly through MCP. Do not reintroduce local page
 workspaces, source/CSS artifacts, preview builds or local QA gates.
 
@@ -31,7 +31,7 @@ workspaces, source/CSS artifacts, preview builds or local QA gates.
   `storefront-engine` directory is not a public skill. The rule corpora under
   `references/page-types/` (one contract per page type with a JSON checklist),
   `proof/`, `offers/`, `assets/`, `anti-patterns/`, `copy/` and
-  `mcp-playbooks/` are loaded by `plan-page` and `design-page` as workflows (each type file's
+  `mcp-playbooks/` are loaded by `plan-page`, `design-page` and `optimize` as workflows (each type file's
   `## Workflow` plus the universal `workflows/` sub-procedures). Validation
   uses MCP compiler output and hosted review. Repository-only fixture checks
   live under `tests/support/` and are not shipped page-authoring steps. Island schemas live in

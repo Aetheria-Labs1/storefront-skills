@@ -17,8 +17,7 @@ Choose section order from the page-type contract, not from this protocol.
    and optional `scripts` inputs. `lexsis_pages.compile_artifact` retrieves
    an existing result by `compile_id` for inspection; it does not compile.
 4. Read all `validation_errors`, publish validation and missing utility
-   candidates. Repair the source rather than mutating compiled JSON. A
-   fast-draft repair budget remains bounded by `references/fast-build.md`.
+   candidates. Repair the source rather than mutating compiled JSON.
 5. Save the successful response and input hashes as compile evidence.
 
 ## Create or edit one draft
@@ -34,9 +33,9 @@ blindly. Return the hosted draft URL and exact version as `DRAFT_CREATED`.
 ## Review and release boundary
 
 A clean compile is structural evidence, not a visual pass. Hosted design
-review and production checks follow `references/qa-recipe.md`. A fast draft
-may leave review pending; production-ready output cannot claim approval
-without evidence. Publication follows `references/publishing.md` and requires
+review and commerce checks follow `references/qa-recipe.md`. `DRAFT_CREATED`
+may leave review pending; `DESIGN_APPROVED` cannot be claimed without hosted
+review evidence. Publication follows `references/publishing.md` and requires
 explicit authorization. Report the exact state and do not equate draft
 creation, approval, publication, and live HTTP verification.
 

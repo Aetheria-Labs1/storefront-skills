@@ -8,7 +8,7 @@ generation is available.
 
 - Use concept-first when the user asks for a mockup, wants to see the design
   before it is built, or explicitly asks to approve the visual direction.
-- Skip it for fast-build, template-first, or direct-draft requests.
+- Skip it for template-first or direct-draft requests.
 - When intent is genuinely unclear, offer two concise choices: generate a
   visual concept first, or continue directly to the unpublished hosted draft.
 - A concept request authorizes the workflow, not an unpriced credit charge.

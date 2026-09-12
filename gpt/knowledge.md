@@ -1,5 +1,5 @@
 <!-- GENERATED from skills/ by scripts/build-distributions.py - DO NOT EDIT.
-     storefront-skills v7.9.1; 12 skills; 50 active islands -->
+     storefront-skills v8.0.0; 7 skills; 50 active islands -->
 
 # Lexsis Storefront Skills - Knowledge Base
 
@@ -48,300 +48,6 @@ traffic merely because the user approved the test plan.
 Return the control URL and page id, plan path, variant source and preview
 paths, remote page and blueprint ids, experiment id, current state, and
 remaining activation or evaluation steps.
-
----
-
-# Skill: analyze-page
-
-> Analyze a URL, screenshot, or ad into a safe storefront brief. Use for inspiration, message-match, or existing-page diagnosis; this skill does not generate page source.
-
-# Analyze a Page or Creative
-
-Choose one mode:
-
-- **Inspiration:** extract reusable layout and interaction patterns.
-- **Own-page review:** identify design and conversion weaknesses.
-- **Message-match:** compare an ad or screenshot with the intended landing
-  page.
-
-Generic URL or screenshot analysis can use the host browser without Lexsis and
-reports `MCP status: not-required`. Any request that reads a Lexsis campaign,
-catalogue, page, asset, or stored analysis requires the normal MCP preflight.
-Use the exact actions required by the evidence:
-`lexsis_campaigns.creatives`, `lexsis_campaigns.analyze`,
-`lexsis_campaigns.frames`, `lexsis_catalog.list`, `lexsis_catalog.get`,
-`lexsis_pages.get`, `lexsis_pages.inspect`, `lexsis_pages.source`, and
-`lexsis_assets.view`. Resolve an unfamiliar schema with exact
-`router` + `action` discovery. An empty discovery match does not make the
-domain router unavailable. Report an actual failed live call and do not
-replace missing evidence with assumptions.
-
-## Capture
-
-When a URL is available, use the host browser capability to inspect desktop
-and mobile views, headings, sections, CTAs, media, and interactions. If browser
-access is unavailable, use supplied screenshots and state what could not be
-verified.
-
-For ads, use `lexsis_campaigns` analysis actions when available.
-
-## Analyze
-
-Record:
-
-- page type and audience
-- section order and visual rhythm
-- desktop/mobile behavior
-- CTA and trust placement
-- useful interaction patterns and candidate Lexsis islands
-- message-match strengths or gaps
-- accessibility or usability issues visible in the evidence
-
-Do not use unsupported benchmark percentages or generic lift claims.
-
-## Brand Safety
-
-Carry forward structure and design intent only. Exclude competitor copy,
-logos, product imagery, pricing, claims, reviews, testimonials, and protected
-brand elements.
-
-## Return
-
-Return `PAGE_ANALYSIS`:
-
-```text
-Mode: [inspiration | own-page | message-match]
-Source: [...]
-Page type: [...]
-Reusable structure: [...]
-Responsive behavior: [...]
-Conversion observations: [...]
-Candidate islands: [...]
-Avoid copying: [...]
-Evidence limits: [...]
-```
-
-Include MCP status, discovered capabilities, actions, fallbacks, and blockers
-when Lexsis was used. This can inform `/plan-page` for a new page or
-`/optimize` for an existing one.
-
----
-
-# Skill: asset-prep
-
-> Independently search, generate, import, or replace storefront media. Works from an asset brief or an existing MCP page and is not a required page-generation stage.
-
-# Prepare Assets
-
-Use this skill for asset-only work. It does not require `/plan-page` or
-`/design-page`, and other skills must not invoke it automatically.
-
-Use `lexsis_asset_library.search`, `lexsis_catalog.list`,
-`lexsis_catalog.get`, `lexsis_workspace.credits`,
-`lexsis_drafts.asset_generate`, `lexsis_asset_import.import`,
-`lexsis_asset_upload.upload`, and
-`lexsis_assets.view`.
-
-Import requires exactly one source: `url`, image `data` + `mime_type`, or
-`attachments`. It never opens the upload UI. Use `lexsis_asset_upload.upload`
-with the selected `workspace_id` and `theme_id` for local-file uploads, and
-wait for the user's uploaded-asset message before using the result. If the
-host has no inline UI, ask for a URL or conversation attachment and import
-that source instead; never call import with no source.
-
-## Choose a Mode
-
-### Standalone
-
-Accept an asset brief containing the brand/store, roles, dimensions, crops,
-style, and intended use. Search, generate, import, and verify the requested
-media. Save results under `work/storefront-assets/<brief-name>/asset-manifest.json`.
-
-### Existing Page
-
-Read the page source and compact manifest. Work only on the requested missing,
-placeholder, or replacement roles. Do not redesign unrelated sections.
-
-## Source Order
-
-For each role:
-
-1. Ask whether the user wants to pick from the library first
-   (`lexsis_asset_library.search` with `query: ""`, the `theme_id`, and
-   `mode: "tags"` for a category such as `banner` or `logo`; wait for the
-   `Design asset selection:` message). Otherwise search existing Lexsis assets.
-2. Use real Shopify product media for product identity.
-3. Ask before spending generation credits.
-4. Prefer Lexsis generation. If another image-generation tool is available,
-   offer it as an explicit provider choice.
-5. Import external-tool results into Lexsis.
-6. Inspect the final asset and verify identity-sensitive imagery.
-
-Use supported icons, SVG, or CSS for ordinary interface icons. Do not generate
-raster UI icons unless the brief explicitly requires custom artwork.
-
-## Page Updates
-
-When working on a page:
-
-- read the current page source through MCP and replace the requested asset
-- store the final binding in the page record
-- recompile once after all requested assets are updated
-- set `design.status` to `changes-pending-approval` for visible changes
-
-Do not create a second HTML source or local preview. Page source must use
-permanent Lexsis or Shopify media. Apply the source edit with version
-protection as described in
-`references/source-artifact-workflow.md`.
-
-## Asset Record
-
-Keep the machine record compact:
-
-```json
-{
-  "role": "hero",
-  "sectionId": "hero",
-  "sourceType": "lexsis",
-  "assetId": "...",
-  "url": "https://...",
-  "status": "verified"
-}
-```
-
-Shopify media uses `productId` and `mediaId`. Put crop guidance, alt-text
-intent, prompt history, and creative reasoning in the brief or plan, not the
-page record.
-
-## Return
-
-Return the final asset paths or bindings, provider used, verification result,
-and any unresolved roles.
-
----
-
-# Skill: build
-
-> Create the fastest useful unpublished Lexsis storefront draft from a prompt, optional template URL, or automatically selected page kit. Use for first versions and rapid iteration; use generate for production-ready QA.
-
-# Build a Fast Draft
-
-Create an unpublished draft without requiring the full planning and visual
-approval workflow.
-
-Read:
-
-- `references/fast-build.md`
-- `references/page-types/_index.md`, then only the matching
-  `references/page-types/<type>.md` and its `## Workflow`
-- `references/workflows/section-asset-workflow.md` and
-  `references/workflows/island-selection-workflow.md`
-- `references/authoring/css-and-styling.md` and
-  `references/authoring/source-authoring.md`
-- `references/assets/generation-policy.md` and
-  `references/proof/reviews-sourcing.md`
-- `references/animation-system.md` when the request names custom motion
-- `references/consumer-behavior-cro.md`
-- `references/workflow-intent.md`
-
-Use `lexsis_catalog.list`, `lexsis_catalog.get`,
-`lexsis_template_library.search_page_kits`,
-`lexsis_template_library.search_sections`,
-`lexsis_template_library.get_kit`, `lexsis_design.get_section`,
-`lexsis_design.islands`, `lexsis_design.island_schema`,
-`lexsis_asset_library.search`, `lexsis_brand.context`,
-`lexsis_brand.get_theme`, `lexsis_pages.compile`, and
-`lexsis_page_create.create`.
-
-Use `lexsis_workspace.credits`, `lexsis_assets.capabilities`,
-`lexsis_assets.view`, and `lexsis_drafts.asset_generate` only when existing
-media cannot satisfy a required production slot. Confirm before paid
-generation unless the user already explicitly authorized it.
-
-Infer the complete request:
-
-- A supplied template or page-kit URL is authoritative.
-- Without a template, select the best coherent page kit for `fast-draft`
-  intent.
-- If the user asks to choose among templates, show the picker and wait.
-- If the user asks for a visual mockup before source, route to
-  `/design-page`'s concept-first path instead.
-- If the user asks to publish live, route to `/publish`; this skill creates
-  with `publish:false` only.
-
-Build the page around real imagery, not around colour and copy. Identify the
-page type first, then per section decide the media before the copy: catalog
-media, then the asset library, then merchant-owned sources. Open every
-candidate with `lexsis_assets.view` and run the fit review in
-`references/workflows/section-asset-workflow.md` before using it, viewing a
-section's set together so it reads as one shoot, so the kit's sample imagery is replaced with viewed catalog or library assets. When a slot
-cannot be filled, leave it `planned` and name it in the draft summary so the
-merchant can upload the file or authorise generation; never spend generation
-credits without that yes, and never substitute a colour band, an emoji row or
-icon tiles for a missing image. Resolve islands live through
-`lexsis_design.islands` and `lexsis_design.island_schema`.
-
-Follow `references/fast-build.md`. Compile once, permit one targeted repair,
-create the draft, and return `DRAFT_CREATED` immediately. Do not run design
-critique, hosted QA, commerce QA, hash reconciliation, or full workspace
-validation before returning the preview.
-
----
-
-# Skill: build-with-template
-
-> Create an unpublished Lexsis storefront draft directly from a supplied page-kit or section-template URL. Use when the template is already chosen and visual design approval should be skipped.
-
-# Build with a Chosen Template
-
-Require a page-kit or section-template URL, slug, or id. If none is supplied,
-ask for it or route a general fast-build request to `/build`.
-
-Read:
-
-- `references/fast-build.md`
-- `references/page-types/_index.md`, then only the matching
-  `references/page-types/<type>.md` and its `## Workflow`
-- `references/workflows/section-asset-workflow.md` and
-  `references/workflows/island-selection-workflow.md`
-- `references/authoring/css-and-styling.md` and
-  `references/authoring/source-authoring.md`
-- `references/assets/generation-policy.md` and
-  `references/proof/reviews-sourcing.md`
-- `references/animation-system.md` when the template contains custom motion
-- `references/consumer-behavior-cro.md`
-- `references/workflow-intent.md`
-
-Use `lexsis_template_library.get_kit`, `lexsis_design.get_section`,
-`lexsis_catalog.get`, `lexsis_design.islands`,
-`lexsis_design.island_schema`, `lexsis_asset_library.search`,
-`lexsis_brand.context`, `lexsis_brand.get_theme`,
-`lexsis_pages.compile`, and `lexsis_page_create.create`.
-
-Use `lexsis_workspace.credits`, `lexsis_assets.capabilities`,
-`lexsis_assets.view`, and `lexsis_drafts.asset_generate` only for required
-production gaps and only after credit authorization.
-
-Build the page around real imagery, not around colour and copy. Identify the
-page type first, then per section decide the media before the copy: catalog
-media, then the asset library, then merchant-owned sources. Open every
-candidate with `lexsis_assets.view` and run the fit review in
-`references/workflows/section-asset-workflow.md` before using it, viewing a
-section's set together so it reads as one shoot, so the template's sample
-imagery is replaced with viewed catalog or library assets. When a slot cannot
-be filled, leave it `planned` and name it in the draft summary so the merchant
-can upload the file or authorise generation; never spend generation credits
-without that yes, and never substitute a colour band, an emoji row or icon
-tiles for a missing image. Re-check the template's island props against the
-current schema through `lexsis_design.island_schema` rather than trusting them.
-
-Treat the supplied template direction as authoritative. Follow
-`references/fast-build.md`, skip the visual-concept and design-approval stages,
-compile once with at most one targeted repair, create with `publish:false`, and
-return `DRAFT_CREATED`.
-
-This skill never publishes live and never upgrades the result to
-`DRAFT_READY`; use `/generate` and `/publish` for those outcomes.
 
 ---
 
@@ -403,31 +109,33 @@ publication in Lexsis.
 
 # Skill: design-page
 
-> Turn an approved one-page storefront plan into canonical Lexsis source and an unpublished hosted draft, confirming any asset slots the plan left unresolved.
+> Turn an approved page plan into canonical Lexsis source and one unpublished hosted draft, run the hosted review at 390, 768 and 1280 with commerce checks, apply later edits with version protection, and return DESIGN_APPROVED. Never publishes.
 
 # Design the Page
 
-Create the real page source, compile it, and create one unpublished hosted
-draft for review. Never publish.
+Build the page the plan specifies, compile it, create one unpublished hosted
+draft, review it on the real renderer, fix it in place, and return
+`DESIGN_APPROVED` once the user approves the reviewed version. Never publish.
 
 Read:
 
+- `references/plan-page.md` for the plan blocks, asset decision states,
+  claim gates, work-queue owners and status labels this skill consumes
 - `references/design-rules.md`
 - the plan's `references/page-types/<type>.md` (its `## Workflow` names the
-  island and asset decision per section) and
+  island and asset decision inputs per section) and
   `references/page-types/_checklist-format.md` for the vocabulary
-- `references/workflows/island-selection-workflow.md` (live schema resolution) and
-  `references/workflows/section-asset-workflow.md`
+- `references/workflows/island-selection-workflow.md` (live schema
+  resolution) and `references/workflows/section-asset-workflow.md`
 - `references/authoring/css-and-styling.md` and
   `references/authoring/source-authoring.md` before writing any class or
   section CSS
-- `references/mcp-playbooks/tool-sequence-by-stage.md` (Stage 2) and the
-  matching row of `references/mcp-playbooks/tool-sequence-by-page-type.md`
+- `references/mcp-playbooks/tool-sequence-by-stage.md` (Stages 2 and 3) and
+  the matching row of `references/mcp-playbooks/tool-sequence-by-page-type.md`
 - `references/animation-system.md` when the plan names a motion moment
 - `references/consumer-behavior-cro.md`
 - `references/island-presets.md`
 - `references/merchant-templates.md`
-- `references/workflow-intent.md`
 - `references/design-concepts.md` only when the user wants a visual concept
   before source authoring
 - `references/page-layout.md`
@@ -442,6 +150,9 @@ Read:
   `references/anti-patterns/dark-patterns.md`,
   `references/anti-patterns/cro-anti-patterns.md`,
   `references/anti-patterns/mobile-anti-patterns.md`
+- `references/qa-recipe.md` for the hosted review and
+  `references/page-editing.md` for edits to an existing page
+- `references/source-artifact-workflow.md` for direct MCP authoring
 
 Use `lexsis_brand.context`, `lexsis_brand.get_theme`,
 `lexsis_template_library.search_page_kits`,
@@ -451,90 +162,92 @@ Use `lexsis_brand.context`, `lexsis_brand.get_theme`,
 `lexsis_asset_library.search`, `lexsis_catalog.get`, `lexsis_catalog.reviews`,
 `lexsis_catalog.review_collection_items`, `lexsis_brand.navigation` (full-nav
 types only), `lexsis_assets.capabilities`, `lexsis_assets.view`,
-`lexsis_workspace.credits`,
-`lexsis_drafts.asset_generate`, `lexsis_asset_import.import`,
-`lexsis_asset_upload.upload`, and
-`lexsis_pages.compile`, and `lexsis_page_create.create`.
+`lexsis_workspace.credits`, `lexsis_drafts.asset_generate`,
+`lexsis_asset_import.import`, `lexsis_asset_upload.upload`,
+`lexsis_pages.compile`, `lexsis_page_create.create`,
+`lexsis_pages.edit_context`, `lexsis_pages.source`,
+`lexsis_pages.section_source`, `lexsis_pages.integrity`, `lexsis_pages.qa`,
+`lexsis_pages.diff`, `lexsis_drafts.page_update_section`,
+`lexsis_drafts.page_patch`, `lexsis_drafts.page_update_head`, and
+`lexsis_drafts.page_record_qa`.
 
 When the user wants one of their saved reusable sections, use
 `lexsis_template_library.list_mine` and `get_mine`. Treat its source as a
-starting section in the page, not as an inherited renderer shell.
-Resolve only unfamiliar argument schemas through exact router/action
-discovery.
+starting section in the page, not as an inherited renderer shell. Resolve
+only unfamiliar argument schemas through exact router/action discovery.
 
 ## Inputs
 
 Use the approved plan and its confirmed workspace, store and theme binding.
 Follow `references/source-artifact-workflow.md` for direct MCP authoring.
-Reuse the campaign's planning and shared/page-specific media evidence. The plan
-defines strategy, the Design direction, the Imagery and background plan, the
-asset slots and section intent; it must not define islands or implementation
-details.
+The plan defines strategy, the Design direction, the Section specification
+(the copy), the Asset slots (every media decision), the Proof and Offer
+ledgers, the Claim gate and the Work queue; it must not define islands or
+implementation details, and this skill does not reopen its decisions.
 
 Implement the plan's Consumer decision model without adding generic CRO
 modules. Preserve its visitor mode, top decision questions, selected patterns,
 gallery jobs, merchandising relationship, risk treatment, mobile context, and
 metric. Reopen a decision only when live catalog, asset, or policy evidence
-contradicts the plan.
+contradicts the plan, and record the reopening.
 
-If the user explicitly skips `/plan-page`, write a short one-page plan with
-the same blocks (including the Page type block, Proof ledger and, when an
-offer exists, the Offer ledger) and record the skip. Never run `/setup` or
-`/plan-page` automatically.
+If the user explicitly skips `/plan-page`, write the full plan with the same
+blocks (Page type, Page strategy, Consumer decision model, Design direction,
+Section specification, Asset slots, Proof ledger, Offer ledger when an offer
+exists, Claim gate, Work queue, Plan status), obtain approval, and record the
+skip. Never run `/setup` or `/plan-page` automatically.
+
+An explicit `/design-page` request authorizes one page-creation credit for the
+named page and nothing else: not paid asset generation, not a duplicate page,
+not publishing. The hosted review below always runs before `DESIGN_APPROVED`.
+
+## Plan Gate
+
+Read `## Plan status` and `## Work queue` before anything else.
+
+1. `BLOCKED - evidence required`, or `Approval: pending`: stop. Return the
+   blocking items and the open tasks; do not compose.
+2. `PLAN_COMPLETE - asset tasks pending` with `PLAN_APPROVED`: execute every
+   open `agent` task that precedes composition (bind Shopify media, generate
+   briefed slots after credit confirmation, author the icon set). Put every
+   open `user` and `merchant` task into one message and wait. Compose only
+   when no pending decision affects a section's copy or its asset.
+3. `PLAN_READY_FOR_DESIGN` with `PLAN_APPROVED`: proceed.
+4. Mark each task `done` as it completes and keep the Work queue current in
+   the task handoff.
 
 ## Page-Type Workflow
 
-Before any template fetch or HTML, read `page.pageType` from the page record and
-the matching `references/page-types/<type>.md`. Its `## Workflow` already
-names, per section, the media job and interactive decision inputs
-from the context reads; your job is to execute them. Compare the checklist
-with the plan's "Deviations from the type default":
-a deviation the plan explains is a decision, a deviation it does not mention
-is a question for the plan owner. A review section with no review data or
-urgency with no verified basis is the one case to stop and ask.
+Before any template fetch or HTML, read `page.pageType` from the page record
+and the matching `references/page-types/<type>.md`. Its `## Workflow` names,
+per section, the media job and the interactive decision inputs; the plan has
+already turned those into a Section specification entry and an asset
+decision. Compare the checklist with the plan's "Deviations from the type
+default": a deviation the plan explains is a decision, a deviation it does not
+mention is a question for the plan owner. A review section with no review data
+or urgency with no verified basis is the one case to stop and ask.
 
 For each section, in order:
 
-1. Execute the media job, acquisition, missing-slot and fit decisions through
-   `references/workflows/section-asset-workflow.md`.
+1. Resolve its asset decision through Asset Gap Confirmation below.
 2. Resolve the planned interaction through
-   `references/workflows/island-selection-workflow.md`; planning names the
-   decision, design selects the current island and schema-valid props.
-3. Execute `references/workflows/copy-workflow.md` with the type-specific
-   copy ceiling and confirmed evidence.
+   `references/workflows/island-selection-workflow.md`; the plan names the
+   behaviour and the decision inputs, design selects the current island and
+   schema-valid props.
+3. Place the plan's copy through Copy Placement below.
 
 Carry these type defaults into composition:
 
 - **Above the fold (390px).** Build the type's first screen exactly as listed;
   nothing else enters it.
-- **CTA.** Count, first position, sticky behaviour and copy pattern from the
-  checklist `cta` block. Every CTA on a single-goal type performs the same
+- **CTA.** Count, first position, sticky behaviour and copy from the plan's
+  Section specification. Every CTA on a single-goal type performs the same
   action.
 - **Nav.** `none` means logo only, not a link; `minimal` means logo plus one
   utility link; `full` means the store navigation from `lexsis_brand.navigation`.
 - **Price.** `price_above_fold` is obeyed at 390 and 1280.
 - **Proof density.** Module count inside the checklist range; kinds only from
   the ledger.
-
-## Infer the Design Mode
-
-Use `references/workflow-intent.md` and the page record evidence. A correction in
-the current request overrides the saved mode.
-
-- `fast-draft`: make reasonable reversible choices, compile a coherent page,
-  create the unpublished draft, and expose the hosted preview immediately.
-  Deeper critique is follow-up work.
-- `production-ready`: create the hosted draft first, then run the hosted
-  Design Review before marking the design approved.
-
-An explicit `/design-page` request authorizes one page-creation credit for the
-named page. It does not authorize paid asset generation, a duplicate page, or
-publishing. Ask immediately before spending asset-generation credits when
-existing library, catalog, or imported assets cannot satisfy the page.
-
-If optional design, preset, or merchant-template guidance is unavailable, warn
-once and continue from the page plan, saved brand, live schemas, and compiler.
-Missing canonical source-format or compile-contract inputs remain blocking.
 
 ## Choose the Visual Route
 
@@ -543,13 +256,10 @@ Infer this from the request rather than always presenting a gate:
 - Use the concept-first path when the user asks for a mockup, wants to approve
   the appearance before implementation, or explicitly chooses visual
   exploration.
-- Continue directly to source for fast-draft, template-first, and
-  build-the-page requests.
+- Otherwise continue directly to source and the hosted draft.
 - If the user genuinely has not indicated whether they want visual approval,
   offer two choices in one line: generate a mobile-first concept, or continue
   directly to the hosted draft.
-- A supplied template URL plus a request for the fastest draft should route to
-  `/build` or `/build-with-template`, not through this skill.
 
 For concept-first work, follow `references/design-concepts.md`. Use the
 existing Lexsis image generator, show mobile first, and return
@@ -558,17 +268,17 @@ approved unless the user requested both together. The concept is design
 evidence only: keep it out of production `assets[]` and never use its URL in
 page source.
 
-After concept approval, derive the real production asset gaps, confirm any
+After concept approval, return to the plan's Asset slots, confirm any
 remaining paid generation batch, resolve those slots, and continue with the
 ordinary Design Direction, Compose, Compile, Hosted Draft, and Approval stages.
 
 ## Design Direction Gate
 
-Before writing any HTML, read the "Design direction" block in `page plan`
-and `references/design-rules.md`. If the plan has no design
-direction, write one now (palette of four to six named hex values, type roles
-and scale, layout concept, wireframe with slot ids, icon decision, the one
-bold moment) and record it in the plan before continuing.
+Before writing any HTML, read the "Design direction" block in the plan and
+`references/design-rules.md`. If the plan has no design direction, write one
+now (palette of four to six named hex values, type roles and scale, layout
+concept, wireframe with slot ids, icon decision, the one bold moment) and
+record it in the plan before continuing.
 
 Precedence, in order: house rules (`design-rules.md`) > merchant-stated brand
 rules (`voice_md`, owner notes) > brand-kit token values > generated design.md
@@ -576,47 +286,72 @@ guidance > brand-kit preview blueprint and presets. A lower layer may narrow a
 higher one, never widen it. Token values win over prose for values; if a token
 value fails WCAG AA against its documented pairing, return
 `THEME_CONTEXT_CONFLICT` with both values. Style guidance never raises a
-conflict; it is overridden and recorded in `page plan` under "Overrides of
+conflict; it is overridden and recorded in the plan under "Overrides of
 brand design.md".
+
+## Copy Placement
+
+The plan's Section specification is the copy. Place every eyebrow, headline,
+subhead, body paragraph, label, CTA and FAQ answer verbatim, in its section.
+
+- Edit only for layout fit: a line break, one word to avoid an orphan, a
+  label that overflows at 390. Record every edit in a `## Copy edits` table
+  appended to the plan: `| Section | Field | Plan text | Placed text | Reason |`.
+- Never introduce a claim, number, price, count, quote or CTA the plan does
+  not carry. A gap in the plan's copy is a question for the plan owner, not a
+  sentence to invent.
+- Sentence case, the CTA names its action and destination, the first
+  sentence of every FAQ answer answers (`references/copy/headline-and-cta-rules.md`);
+  nothing from `references/anti-patterns/copy-anti-patterns.md`.
+
+## Claim Rendering
+
+Render only Claim gate rows gated `approved evidence available`. A row gated
+`merchant evidence required` renders its "V1 copy if not approved" text; a row
+gated `remove from V1` renders nothing. Every numeral inside a proof, trust,
+stats or press section traces to a `verified` Proof ledger or Offer ledger row.
+A claim that appears in the copy without a Claim gate row stops composition
+until the plan owner gates it.
 
 ## Asset Gap Confirmation
 
-The plan already resolved the asset slots. Read `assets[]` from the page record:
+The plan made every asset decision. Read the `## Asset slots` table and
+`assets[]` from the page record and act per decision:
 
-1. Slots with `status: verified`, including everything the user picked in
-   the plan, are final; use their ids and URLs as-is.
-2. List unresolved `planned` slots with their required job and remaining evidence.
-3. In `fast-draft`, resolve them from the existing library or Shopify media
-   using the plan and brand direction. Ask only before paid generation or when
-   the unresolved choice would materially change the campaign. In
-   `production-ready`, ask once whether to generate or pick existing media.
-4. Import externally generated media into Lexsis before production use. View
-   every asset with `lexsis_assets.view` before it enters the source and run
-   the fit review in `references/workflows/section-asset-workflow.md` against
-   the section it belongs to: subject, crop at the slot aspect, a quiet area
-   where the headline and body sit, consistency with the neighbouring slots,
-   palette, no baked-in text or watermark. Never place an asset on the page
-   from its filename, tag or search rank alone. Then set `status: verified` on
-   each resolved slot.
+| Decision | Action |
+|---|---|
+| `reuse-selected`, `shopify-product-media` (`verified`) | Final. Use the recorded ids, URLs, crop, placement and alt intent as-is. |
+| `user-selection-required` | Show the plan's `## User selection` candidates for that role (view them again with `lexsis_assets.view`), wait for the choice, set the slot `verified`. |
+| `user-upload-required` | Ask for the named file: `lexsis_asset_upload.upload` for the local-file UI (wait for the user's uploaded-asset message) or `lexsis_asset_import.import` for a URL, base64 image with `mime_type`, or attachment (exactly one source). View it, run the fit review, set `verified`. |
+| `generate-required`, `composite-required` | Read `lexsis_workspace.credits`, confirm the batch (count, purposes, cost) with the user, then call `lexsis_drafts.asset_generate` exactly per the brief `G#`: purpose, aspect, style, negatives, brand hexes, `reference_images` holding the real cut-out for a composite. View the result, run the fit review, write the `## Generation record` row (prompt, negatives, provider, asset id, metadata, visible label, approver), set `verified`. A rejected result gets one bounded repair; then the slot is reported, not filled with colour. |
+| `reference-only` | Never placed. Its replacement slot carries the section. |
+| `none-required` | The section is built without media, as the plan says. |
+
+View every asset with `lexsis_assets.view` before it enters the source and
+run the fit review in `references/workflows/section-asset-workflow.md`
+against the section it belongs to: subject, crop at the slot aspect, a quiet
+area where the headline and body sit, consistency with the neighbouring
+slots, palette, no baked-in text or watermark. Never place an asset from its
+filename, tag or search rank alone.
 
 Use Lexsis icons, supported SVG, or CSS for ordinary interface icons. When the
-plan's Icons decision names a set to generate, generate one monochrome SVG set
-(one stroke, one size) and import it. Never fall back to emoji as icons; emoji
-appear only where the plan's "Emoji in copy" line allows them, inside running
-text.
+plan's Icons decision names a set to author, author one monochrome inline SVG
+set (one stroke, one size) and import it. Never fall back to emoji as icons;
+emoji appear only where the plan's "Emoji in copy" line allows them, inside
+running text.
 
 Generation obeys `references/assets/generation-policy.md`. ALLOW purposes
 (`hero_bg`, `section_bg`, `card_bg`, `texture_fill`, `pattern_tile`,
-`decorative_element`, `product_composite` over a real cut-out) may be
-generated after confirmation; `icon_set` is a plan role meaning "author one
-monochrome inline SVG set", never a raster generation. ASK purposes need the merchant's
-explicit yes for that slot. NEVER purposes are not generated under any
-instruction short of the merchant supplying the media themselves: the
-product itself when Shopify media exists or could exist, a person presented
-as a customer, reviewer, creator or staff, before/after or result imagery,
-press logos, badges, certifications or awards, text or prices inside images,
-and competitor products. A slot whose job is on the NEVER list stays
-`planned` and the section is built without it or removed with a note.
+`decorative_element`, `product_composite` over a real cut-out) are generated
+after credit confirmation; `icon_set` means "author one monochrome inline SVG
+set", never a raster generation; ASK purposes need the merchant's quoted yes
+in the brief. NEVER purposes are not generated under any instruction short of
+the merchant supplying the media: the product itself when Shopify media exists
+or could exist, a person presented as a customer, reviewer, creator or staff,
+before/after or result imagery, press logos, badges, certifications or awards,
+text or prices inside images, and competitor products. Such a slot stays
+`planned` as `user-upload-required` and the section is built without it or
+removed with a note.
 
 Do not use local or temporary placeholder assets. When a store has no usable
 logo image, use an accessible text wordmark or plain HTML header. Do not
@@ -630,80 +365,71 @@ substitute a product image or generic logo placeholder.
    section source with `lexsis_design.get_section`, one to three ids per call,
    in kit order. Search again only when the plan has no usable template
    direction.
-3. Convert each planned section into responsive layout and copy, following the
-   wireframe, the Imagery and background plan, and the slot ids.
-   Header, Announcement, Navigation, and Footer are included here in their
-   intended source order when required.
-4. Read the compact island catalog and select only the likely interactive
-   components. Do not fetch every full schema in advance.
-   A preset label (`Preset: <island>/<intent>-<tone>`) records visual intent,
-   not a frozen prop bundle. Follow
+3. Convert each Section specification entry into responsive layout following
+   its Layout line, the wireframe, the Imagery and background plan, and the
+   slot ids. Header, Announcement, Navigation, and Footer are included here in
+   their intended source order when required.
+4. Read the compact island catalog and select only the interactive
+   components the plan's Interaction lines call for. Do not fetch every full
+   schema in advance. A `Preset:` label, if the plan carries one, records
+   visual intent, not a frozen prop bundle. Follow
    `references/workflows/island-selection-workflow.md` to resolve that intent
    against the current schema. Record the actual props, hydration and scoped
    styling, with any intentional departure in `islands[].presetOverrides`.
-5. Proof renders only from the plan's Proof ledger
-   (`references/proof/proof-ledger.md`). Review islands use the ledger's
-   `collectionId` or `productIds`, `minRating`, `pageSize` of 12 or fewer.
-   Omit `reviewsEndpoint`; the page supplies it at runtime. `averageRating`
-   and `totalReviews` only from the `lexsis_catalog.reviews` total. `none`
-   means no review island. Never `SocialProofPopup`, never a live viewer or
-   purchase count. Star glyphs appear only next to a real average and count.
-   Every press logo is an `<a>` to the ledger's article URL, monochrome, one
-   height; a logo with no URL is not rendered. Badges and certifications
-   carry the ledger's issuer text. Quotes are verbatim with the ledger's
-   attribution. Every numeral in a proof section appears in the ledger.
+5. Proof renders only from the plan's Proof ledger and the Claim Rendering
+   rule. Review islands use the ledger's `collectionId` or `productIds`,
+   `minRating`, `pageSize` of 12 or fewer. Omit the reviews endpoint prop; the
+   page supplies it at runtime. `averageRating` and `totalReviews` only from
+   the `lexsis_catalog.reviews` total. `none` means no review island. Never a
+   social-proof popup, never a live viewer or purchase count. Star glyphs
+   appear only next to a real average and count. Every press logo is an `<a>`
+   to the ledger's article URL, monochrome, one height; a logo with no URL is
+   not rendered. Badges and certifications carry the ledger's issuer text.
+   Quotes are verbatim with the ledger's attribution.
 6. Offers render from the Offer ledger following
    `references/offers/price-presentation.md`: current price first, compare-at
    struck through only with a recorded basis and a `data-source` attribute
-   naming it, savings in the merchant's currency, unit or per-day price only when accurate, shipping and tax
-   language from the store. Countdown and stock islands are bound to the
-   ledger's confirmed end date or live inventory, never a fixed number or a
-   timer that resets. Nothing in `references/anti-patterns/dark-patterns.md`
-   ships: no pre-selected paid add-ons, no confirmshaming dismiss copy, no
-   hidden recurring terms, no fake urgency.
+   naming it, savings in the merchant's currency, unit or per-day price only
+   when accurate, shipping and tax language from the store. Countdown and
+   stock islands are bound to the ledger's confirmed end date or live
+   inventory, never a fixed number or a timer that resets. Nothing in
+   `references/anti-patterns/dark-patterns.md` ships.
 7. Prepare a rough but complete source string with stable section
    delimiters from the canonical vocabulary, minimal island props, and the
    documented examples as a starting point.
-8. Write copy as design content using the plan's framework
-   (`references/copy/copy-frameworks.md`) and
-   `references/copy/headline-and-cta-rules.md`: sentence case, the CTA names
-   the action and outcome, the first sentence of every FAQ answer answers,
-   and no word or structure from
-   `references/anti-patterns/copy-anti-patterns.md`. For ad-driven traffic,
-   the hero headline and visual satisfy `references/copy/message-match.md`.
-9. Put page-wide rules in `theme_css`; keep section-specific CSS
-   beside its section. `references/authoring/css-and-styling.md` decides which
-   layer a rule belongs to: tokens and the radius and type scales in theme CSS,
-   all layout in utilities, and section CSS only for a scoped component's
-   geometry, an island's `data-part` hooks, one scoped keyframe, or a fallback.
+8. Place the copy per Copy Placement.
+9. Put page-wide rules in `theme_css`; keep section-specific CSS beside its
+   section. `references/authoring/css-and-styling.md` decides which layer a
+   rule belongs to.
 10. Use LX tokens for brand values and compile-time Tailwind utilities for
-   layout, mobile-first. There is no runtime Tailwind CDN, and a class the
-   compiler cannot generate is a blocking error, so never invent class names.
-   Author the source itself as `references/authoring/source-authoring.md`
-   describes.
+    layout, mobile-first. There is no runtime Tailwind CDN, and a class the
+    compiler cannot generate is a blocking error, so never invent class names.
+    Author the source itself as `references/authoring/source-authoring.md`
+    describes.
 11. Compare explicit `NEVER`, `must`, and `non-negotiable` rules in the saved
-   brand design with matching theme tokens. On a direct value contradiction,
-   return `THEME_CONTEXT_CONFLICT` with both values. Do not silently choose one.
+    brand design with matching theme tokens. On a direct value contradiction,
+    return `THEME_CONTEXT_CONFLICT` with both values. Do not silently choose one.
 12. Use ordinary HTML for static content and `<lx-island>` source for supported
-   interactions. Use headless mode only with complete required hooks.
+    interactions. Use headless mode only with complete required hooks.
 13. Keep island props schema-valid and use current product bindings. Real
     commerce is tested on the hosted draft.
 14. For guided merchandising, show two or three relevant choices by default,
     name the relationship, show why each item belongs, and preserve the primary
     product decision. Never use an unlabeled generic recommendation carousel.
 15. Media follows `references/assets/slot-spec.md`: every `<img>` has the
-    slot's aspect, minimum resolution, descriptive alt text (empty alt for
-    decorative), `loading="lazy"` below the fold and the hero preloaded;
-    video is click-to-play or muted loop with a poster and captions
-    (`references/assets/video-rules.md`).
+    slot's aspect, minimum resolution, descriptive alt text from the plan's
+    alt intent (empty alt for decorative), `loading="lazy"` below the fold
+    and the hero preloaded; video is click-to-play or muted loop with a poster
+    and captions (`references/assets/video-rules.md`).
 
 ## Parallel Section Generation
 
 If the runtime can spawn sub-agents, each may write one section's markup and
-scoped CSS from its plan line, wireframe box, slot ids and preset. The parent
-assembles source in plan order, owns page-wide `theme_css`, compiles
-once, and creates the draft. Sub-agents never compile, never edit shared CSS,
-and never spend credits. Without sub-agents, write the sections sequentially.
+scoped CSS from its Section specification entry, wireframe box, resolved slot
+and interaction decision. The parent assembles source in plan order, owns
+page-wide `theme_css`, compiles once, and creates the draft. Sub-agents never
+compile, never edit shared CSS, never change copy, and never spend credits.
+Without sub-agents, write the sections sequentially.
 
 ## Compile and Create the Draft
 
@@ -713,7 +439,7 @@ compiler is the authoritative compatibility check.
 1. Use `validation_errors` as the work list.
 2. Fetch a full island schema only for an island named by an error or when a
    required behavior remains unclear.
-3. Fix the source while preserving the planned composition.
+3. Fix the source while preserving the planned composition and the copy.
 4. Recompile until blocking errors are clear.
 5. Retain the exact clean response and input hashes as compile evidence.
 
@@ -725,52 +451,89 @@ Do not send source, head, CSS or scripts alongside `compile_id`; the
 mutually exclusive input modes are in `references/source-artifact-workflow.md`.
 
 If the compile ID expires, recompile the same unchanged inputs once. If the
-manifest already contains a page ID, do not spend another creation credit:
-fetch its current version and edit that draft through `/generate`.
+page record already contains a page ID, do not spend another creation credit:
+fetch its current version and edit it under Existing Page Edits.
 
 Return the hosted preview immediately as `DRAFT_CREATED`. A failed later
 review never erases or conceals the working draft.
 
 ## Hosted Design Review
 
-Required for `production-ready` and whenever the user asks to approve the
-design. It is optional follow-up for `fast-draft`.
+Always required before `DESIGN_APPROVED`. Use the hosted preview at 390px,
+768px and 1280px. Review the persisted source against the house, copy, proof
+and offer rules, then check real renderer output for fonts, media, hydration,
+overflow, clipping, hierarchy, usable responsive layout and working commerce
+(`references/qa-recipe.md`).
 
-Use the hosted preview at 390px and 1280px. Review the persisted source
-against the house, copy, proof and offer rules, then
-check real renderer output for fonts, media, hydration, overflow, clipping,
-hierarchy, and usable responsive layout. Tablet and full commerce QA remain
-owned by `/generate`.
+Design questions, one line each from the 390 and 1280 screenshots:
 
-Look at both hosted screenshots and answer each question in one line:
-   - Where does the eye land first? Is it the plan's bold moment? If not, what
-     is stealing attention?
-   - How many visually distinct horizontal bands are there between navbar and
-     footer? Must be 1, plus the named exception.
-   - Which elements would appear on any generic page of this type in this
-     vertical? Name them. Change or remove at least one.
-   - Which accessory can be removed with no loss? Remove it.
-   - Do any of the tells apply: cream page + serif + terracotta accent as the
-     only idea; identical cards; eyebrow caps; pills; arrows in CTAs; icon
-     tiles; uniform radius; scattered motion?
-   - At 390: is anything clipped, is the price above 1.5 screens, are tap
-     targets 48px?
-   - Does the 390 first screen match the type file's "Above the fold" list,
-     nothing more? Is `price_above_fold` obeyed? Is there exactly one
-     conversion goal on single-goal types?
-   - Does every proof element on screen trace to a Proof ledger row (open the
-     press links, count the stars against the ledger total)?
-   - Is any item from `references/anti-patterns/mobile-anti-patterns.md`
-     visible: stacked sticky bars over 15% of the viewport, hover-only
-     controls, text under 16px, side-by-side buttons under 48px?
+- Where does the eye land first? Is it the plan's bold moment? If not, what
+  is stealing attention?
+- How many visually distinct horizontal bands are there between navbar and
+  footer? Must be 1, plus the named exception.
+- Which elements would appear on any generic page of this type in this
+  vertical? Name them. Change or remove at least one.
+- Which accessory can be removed with no loss? Remove it.
+- Do any of the tells apply: cream page + serif + terracotta accent as the
+  only idea; identical cards; eyebrow caps; pills; arrows in CTAs; icon
+  tiles; uniform radius; scattered motion?
+- At 390: is anything clipped, is the price above 1.5 screens, are tap
+  targets 48px?
+- Does the 390 first screen match the type file's "Above the fold" list,
+  nothing more? Is `price_above_fold` obeyed? Is there exactly one
+  conversion goal on single-goal types?
+- Does every proof element on screen trace to a Proof ledger row and an
+  approved Claim gate row (open the press links, count the stars against the
+  ledger total)?
+- Does the placed copy match the Section specification, with every fit edit
+  in the `## Copy edits` table?
+- Is any item from `references/anti-patterns/mobile-anti-patterns.md`
+  visible: stacked sticky bars over 15% of the viewport, hover-only
+  controls, text under 16px, side-by-side buttons under 48px?
 
-Record results with the hosted URL and tested version. Fix source,
-compile once, update the existing draft with expected-version protection, and
-rerun only failed checks. Never create a replacement draft for a visual fix.
+Commerce checks at all three viewports:
+
+- No horizontal overflow; every image loads; the hero is a real `<img>` in
+  the initial HTML.
+- Native disclosures and interactive islands respond; the expected Shopify
+  variant enters the cart; the cart opens as a right drawer on desktop and a
+  bottom sheet on mobile; quantity and subtotal update.
+- Quick Add is anchored to media top-right; sold-out variants are disabled;
+  product grids keep titles, prices, media and availability after hydration
+  and do not blank, flicker or shift.
+- The authored header and footer appear exactly once, in source order; no
+  renderer-injected shell or duplicate navigation; no console errors.
+
+Evidence: run `lexsis_pages.integrity`, read `lexsis_pages.qa`, and save the
+supported fields with `lexsis_drafts.page_record_qa`. Record results with the
+hosted URL and tested version. Fix source under Existing Page Edits, then
+rerun only the failed checks. Never create a replacement draft for a visual
+fix.
 
 If browser automation is unavailable, return the hosted preview URL with
-`DRAFT_CREATED` and state that hosted design QA remains pending. Never mark
+`DRAFT_CREATED` and state that the hosted review remains pending. Never mark
 design approval or hydration as passed without hosted evidence.
+
+## Existing Page Edits
+
+For a page that already has an id (a review fix, a later change request, or an
+approved `/optimize` plan):
+
+1. Read `lexsis_pages.edit_context`, then `lexsis_pages.source` or
+   `lexsis_pages.section_source`. Confirm the target and current version;
+   stop on unexpected version drift and reconcile from current MCP source.
+2. Edit the source value MCP returned, keeping stable section ids. Compile
+   the changed inputs once.
+3. Write with `expected_version`: `lexsis_drafts.page_update_section` for one
+   section, `lexsis_drafts.page_patch` for several; `lexsis_drafts.page_update_head`
+   for title, description or fonts.
+4. Read back, run `lexsis_pages.diff` and `lexsis_pages.integrity`, update
+   the recorded version and hashes only after success.
+5. Rerun only the failed hosted checks. Any visible change returns the design
+   to `changes-pending-approval` until the review passes again.
+
+Details and the argument shapes are in `references/page-editing.md`. Never
+patch compiled output in place of editable source.
 
 ## Approval
 
@@ -780,16 +543,17 @@ Show:
 Hosted preview: [url]
 Draft: [page id] version [version]
 Page type: [type] ; deviations [none | list]
-Hosted review: [not requested | pending | passed]
+Plan status consumed: [PLAN_READY_FOR_DESIGN | PLAN_COMPLETE - asset tasks pending] ; PLAN_APPROVED [who, date]
+Work queue: [open tasks by owner | all done]
+Hosted review: 390/768/1280 [pending | passed | findings]
+Commerce: [passed | findings]
 Sections: [ordered list]
 Interactive components: [islands]
-Presets: [ids]
+Copy edits: [n, table appended | none]
+Claims rendered: [C# ids] ; V1 substitutes: [C# ids] ; removed: [C# ids]
 Proof rendered: [n ledger rows] ; dropped: [rows and why]
 Offer rendered: [terms | none]
-Reused assets: [slots]
-Generated assets: [slots with purposes]
-Unresolved assets: [slots, incl. blocked by generation policy]
-Copy review: [passed | findings]
+Assets: [n verified] ; generated: [slots with purposes] ; awaiting user or merchant: [slots]
 Concept: [not requested | asset ids and approval]
 ```
 
@@ -803,247 +567,206 @@ the design to `changes-pending-approval`.
 
 ## Return
 
-Return the page ID, version, compile evidence, hosted
-preview URL, sections, selected islands and presets, asset summary, and
-`DRAFT_CREATED`. After explicit hosted approval, return `DESIGN_APPROVED`.
-
----
-
-# Skill: generate
-
-> Create an unpublished Lexsis storefront draft early, then synchronize and QA it to production readiness when the user's intent calls for deeper verification.
-
-# Generate the Draft
-
-Create a remote draft directly from editable source. Draft creation is
-reversible; publishing remains a separate explicit action.
-
-Read:
-
-- `references/workflow-intent.md`
-- `references/source-and-sync.md`
-- `references/animation-system.md` when source contains or requires motion
-- `references/consumer-behavior-cro.md` when planning or design was skipped
-- `references/page-editing.md` only for an existing page
-- `references/merchant-templates.md` only when reusing a merchant template
-- `references/qa-recipe.md` for production-ready QA
-- `references/authoring/css-and-styling.md` and
-  `references/authoring/source-authoring.md` when repairing source
-- the plan's `references/page-types/<type>.md` and
-  `references/proof/proof-ledger.md` for the production gate
-- `references/anti-patterns/copy-anti-patterns.md`,
-  `references/anti-patterns/dark-patterns.md` and
-  `references/anti-patterns/mobile-anti-patterns.md` for hosted QA
-
-Use `lexsis_catalog.get`, `lexsis_design.island_schema`,
-`lexsis_pages.compile`, `lexsis_pages.edit_context`,
-`lexsis_pages.source`, `lexsis_pages.integrity`, and
-`lexsis_page_create.create`.
-
-## Infer the Outcome
-
-Infer intent from the whole request and conversation using
-`references/workflow-intent.md`; do not require a trigger phrase.
-
-- `fast-draft` is the default for reversible ambiguity and requests to create,
-  try, preview, explore, or iterate.
-- `production-ready` applies when the user asks for final polish, exhaustive
-  QA, campaign handoff, or launch preparation.
-- `publish` routes to `/publish`; this skill never infers live-release
-  approval.
-
-State the inferred mode briefly and record compact evidence in `workflow`.
-A request to create a draft authorizes one page-creation credit for the named
-page. Intent inference never authorizes a duplicate page, paid asset
-generation, publication, deletion, or destructive replacement.
-
-## Inputs and Setup Reuse
-
-Follow `references/source-artifact-workflow.md`: source and optional
-`theme_css` are direct MCP values; editable source files are not required.
-Reuse the confirmed workspace, store and theme binding in the page record
-or current MCP context. Saved setup and campaign records are useful when
-available. Do not call setup again when the binding is valid, and never switch
-workspace, store or theme for an existing page.
-
-Refresh only volatile creation data: selected products and variants, prices,
-availability, permissions, active island schemas, and an existing page's
-version. Never preserve a stale hardcoded Shopify variant ID when current
-catalog data or a dynamic product binding can resolve it.
-
-If `/plan-page` or `/design-page` was intentionally skipped, create the minimum
-missing planning/evidence record, record the skip, and continue. Use
-`references/consumer-behavior-cro.md` to record a minimum visitor mode, top
-decision questions, at most two relevant patterns, gallery gaps, and primary
-metric. Do not claim design approval that did not happen.
-
-## Draft-Creation Gate
-
-Before the first remote draft, require only:
-
-- a valid saved store/theme binding and draft-write permission
-- non-empty editable source, title and page handle; any required theme values
-- current product/variant bindings with no known invalid hardcoded variant
-- permanent assets rather than local URLs
-- custom fonts backed by full HTTPS stylesheet URLs in `head.fonts`, or an
-  intentional system-font stack
-- a clean compiler result
-
-Do not block first draft creation on critique screenshots, exhaustive hashes,
-hosted responsive QA, commerce QA, or a `DRAFT_READY` validator result.
-
-Optional design or QA guidance that cannot be read produces one warning and
-does not block the draft. Missing source-format, binding or compile-contract
-inputs remain blocking.
-
-## Compile Directly
-
-Pass the exact source, head, optional theme CSS and scripts to
-`lexsis_pages.compile`. Use summary mode; do not request or echo the full
-compiled bundle merely to inspect it. No workspace adapter, source file or
-local QA step is part of this workflow.
-
-If `remote.pageId`, `remote.lastKnownVersion`, and `remote.previewUrl` already
-exist, fetch the current edit context and reuse that draft. Do not call
-`lexsis_page_create.create` again. Compile only when inputs changed, then
-patch the existing draft with expected-version protection.
-
-When no remote draft exists, compile once from the current source values.
-Immediately pass the returned `compile_id` and creation metadata to
-`lexsis_page_create.create` with `publish:false`.
-
-If a compile ID expires before creation, recompile the same verified inputs
-once. If the client cannot reuse the ID, create with the exact source, head,
-optional theme CSS and scripts. Never send source fields alongside a
-`compile_id`. Expiry is not a reason to repeat
-planning, critique, asset search, or approval.
-
-## Return or Reuse the Reversible Draft
-
-As soon as creation succeeds, or after an existing draft is confirmed current:
-
-1. Record page ID, version, preview URL, input hashes and compile bundle hash.
-2. Set manifest `status` to `draft_created` and QA to `pending`.
-3. Confirm the returned binding, page id, version and preview URL.
-4. Surface the preview immediately as `DRAFT_CREATED`.
-
-Do not delete, replace, or conceal a working draft because later QA finds an
-issue.
-
-## Production-Ready Follow-Through
-
-After the preview exists, continue best-effort verification unless the user
-asked to stop at a first draft.
-
-For `production-ready`, or when upgrading an existing `DRAFT_CREATED`:
-
-1. Fetch persisted source, bundle, and version evidence.
-2. Reject drift between the reviewed source/bundle and persisted version;
-   reconcile from current MCP source before repairing.
-3. Review the page's imagery as one campaign, not merely as individually valid
-   assets.
-4. Run hosted QA at 390px, 768px, and 1280px.
-5. Verify typography, media, hydration, overflow, responsive geometry,
-   expected Shopify variant, cart opening, quantity, subtotal, Quick Add,
-   product-grid stability, thumbnails, and authored header/footer order.
-6. Review the type checklist, proof/offer ledgers and house rules against
-   the persisted source and hosted draft under `references/qa-recipe.md`.
-   Proof and offer findings (a proof element outside the Proof ledger, an
-   offer element outside the Offer ledger, a dark-pattern hit) block; type
-   deviations and copy findings are review notes unless the plan did not
-   record them. Check the 390px first screen against the type file's
-   "Above the fold" list and every numeral in proof sections against the
-   ledger.
-7. Record evidence and blockers with the tested page id and version.
-8. Set `status: qa_passed` only when all blocking checks pass for the same
-   live version and hashes. Read/write supported QA evidence through MCP.
-
-Return `DRAFT_READY` only after synchronization and every blocking QA check
-passes. Otherwise return the existing `DRAFT_CREATED` with specific blockers
-and the next repair action.
-
-## Later Edits
-
-Fetch edit context and stop on unexpected version drift. Change editable source
-first, compile changed inputs once, patch only changed sections with
-`expected_version`, and update synchronization state only after success.
-
-## Return
-
-Always return page ID, version, preview URL, inferred intent mode and current
-state: `DRAFT_CREATED` or `DRAFT_READY`. Include hosted QA evidence when attempted.
+Return the page ID, version, compile evidence, hosted preview URL, sections,
+selected islands, the asset summary, and `DRAFT_CREATED`. After the hosted
+review passes and the user approves the reviewed version, return
+`DESIGN_APPROVED` with the page id and version; `/publish` gates on that same
+version.
 
 ---
 
 # Skill: optimize
 
-> Diagnose and improve an existing Lexsis storefront page for a specific business outcome. Starts with a focused optimization brief before making versioned source edits.
+> Score an existing Lexsis page against the same page-type, design, proof, offer, asset and copy rules used to build pages, propose improvements as a strict optimization plan with real replacement copy and asset decisions, wait for approval, then apply the approved changes with version protection and hosted QA.
 
 # Optimize a Page
 
-Read:
+`/plan-page` and `/design-page` for a page that already exists. Read the live
+page, score it against the rules a new page is built to, write the same plan
+blocks a new page gets (final copy, an asset decision per section, a claim
+gate, a work queue), wait for approval, then apply the approved changes to the
+persisted source and review the hosted draft. Never publish.
 
-- `references/evidence-led-cro.md`
-- `references/source-artifact-workflow.md`
-- `references/consumer-behavior-cro.md`
-- `references/authoring/css-and-styling.md` before any CSS or class change
-- `references/animation-system.md` before adding or editing motion
+## References
 
-Use the needed exact actions from
-`lexsis_pages.edit_context`, `lexsis_pages.source`,
-`lexsis_pages.section_source`, `lexsis_pages.compile`,
-`lexsis_pages.integrity`, `lexsis_pages.diff`, `lexsis_analytics.page`,
-`lexsis_analytics.timeseries`, `lexsis_analytics.attribution`,
+| Reference | Read when |
+|---|---|
+| `references/plan-page.md` | always; the shared block vocabulary (Asset slots decisions, Claim gate, Work queue owners, status labels) this skill reuses |
+| `references/evidence-led-cro.md`, `references/consumer-behavior-cro.md` | ordering evidence and forming one behavioural hypothesis |
+| the matching section of `references/industry-cro.md` | when the vertical is known |
+| `references/page-types/_index.md`, then the type file | scoring the page against its type contract (Above the fold, Proof, Offer and CTA, Imagery, Copy, Never, Checklist) |
+| `references/design-rules.md` | scoring N1 to N14 and A1 to A12 |
+| `references/proof/proof-ledger.md`, `references/offers/offer-ledger.md` | reconstructing the ledgers from what the page shows |
+| `references/workflows/section-asset-workflow.md` section 2 | the fit review of every image on the page |
+| `references/copy/headline-and-cta-rules.md`, `references/anti-patterns/copy-anti-patterns.md` | scoring copy |
+| `references/anti-patterns/mobile-anti-patterns.md`, `references/anti-patterns/cro-anti-patterns.md` | scoring mobile and CRO tells |
+| `references/assets/generation-policy.md` | before proposing any generated or composited asset |
+| `references/page-editing.md`, `references/qa-recipe.md`, `references/source-artifact-workflow.md` | applying approved changes and reviewing the hosted draft |
+| `references/authoring/css-and-styling.md`, `references/animation-system.md` | before any CSS, class or motion change |
+| `references/lexsis-design-capabilities.md` | optional deeper design guidance |
+
+Use `lexsis_pages.edit_context`, `lexsis_pages.get`, `lexsis_pages.inspect`,
+`lexsis_pages.source`, `lexsis_pages.section_source`, `lexsis_pages.compile`,
+`lexsis_pages.integrity`, `lexsis_pages.diff`, `lexsis_pages.qa`,
+`lexsis_analytics.page`, `lexsis_analytics.timeseries`,
+`lexsis_analytics.attribution`, `lexsis_catalog.get`, `lexsis_catalog.reviews`,
+`lexsis_assets.view`, `lexsis_asset_library.search`,
+`lexsis_asset_import.import`, `lexsis_asset_upload.upload`,
+`lexsis_workspace.credits`, `lexsis_drafts.asset_generate`,
 `lexsis_template_library.search_page_kits`,
 `lexsis_template_library.search_sections`,
-`lexsis_drafts.page_update_section`, and `lexsis_drafts.page_patch`. Resolve
-only unfamiliar schemas through exact router/action discovery. A zero-result
-directory lookup does not make page or analytics data unavailable. If the
-actual live read fails, state that limitation; generic CRO guidance is not a
-substitute.
+`lexsis_drafts.page_update_section`, `lexsis_drafts.page_patch`, and
+`lexsis_drafts.page_record_qa`. Resolve only unfamiliar schemas through exact
+router/action discovery. A zero-result directory lookup does not make page or
+analytics data unavailable. If the actual live read fails, state that
+limitation; generic CRO guidance is not a substitute for live evidence.
 
-The full skill pack includes optional deeper design guidance at
-`references/lexsis-design-capabilities.md`. Every edit obeys
-the house rules in `references/design-rules.md`; an
-optimization never adds emoji, gradients, hover transforms, or a section
-background.
+## Confirm the Objective
 
 Start by confirming:
 
 1. Target outcome: conversion, add-to-cart, AOV, bounce, trust, mobile UX,
    speed, or SEO.
 2. Target page, audience, and traffic source.
-3. Diagnosis only or permission to edit.
+3. Diagnosis only, or permission to edit after approval.
 4. Copy, sections, SEO fields, or offers that must remain unchanged.
 
-Do not edit until the objective and scope are clear.
+Do not edit until the objective and scope are clear. Confirm the page's
+workspace, store and theme binding from saved setup or current MCP context;
+if it is missing, stop with `Run /setup for this store and theme first.` Never
+run setup automatically.
 
-Confirm the page's store/theme binding exists in
-`work/storefront/setup/setup.json`. If it is missing, stop with
-`Run /setup for this store and theme first.` Never run setup automatically.
+## Read the Live Page
 
-## Use Relevant Guidance Only
+1. `lexsis_pages.edit_context`, then `lexsis_pages.get`, `lexsis_pages.inspect`
+   and `lexsis_pages.source`: current version, section order, islands, copy,
+   media, head.
+2. `lexsis_analytics.page`, `.timeseries`, `.attribution` for the outcome
+   window: conversion, bounce, device split, drop-off by section, traffic
+   source. Analytics and observed behaviour outrank generic patterns.
+3. The host browser at 390, 768 and 1280: screenshots, first screen, sticky
+   elements, hydration, console.
+4. `lexsis_assets.view` on every image the page shows: identity, job, crop,
+   baked-in text or watermark, set consistency. A filename is never evidence.
+5. `lexsis_catalog.get` and `lexsis_catalog.reviews` for the products and
+   proof the page claims.
+6. Identify the page type from the live structure and the brief with
+   `references/page-types/_index.md`; load only that type file.
 
-Read only the matching section of `references/industry-cro.md`.
+## Score
 
-Use general guidance when no industry fits. Treat analytics and observed user
-behavior as stronger evidence than generic patterns.
+Write the scorecard first. Every row cites the rule source and the finding.
 
-## Diagnose
+```markdown
+## Scorecard
 
-1. Locate the page and read its analytics, structure, source, and current
-   remote version.
-2. Use the current MCP source as the editable baseline. Retain its version
-   with the intended change; do not create local source or QA files.
-3. Compare the remote version with the page record and stop on unexpected drift.
-4. For a structural redesign, search relevant page kits and sections and
-   compare them with the current structure. Do not force template comparison
-   for copy-only, offer-only, metadata, or minor visual changes.
-5. Classify proposed changes as keep, improve, replace, remove, or test.
-6. Use the consumer-behavior framework to identify the visitor mode, top
-   unanswered decision question, and the smallest relevant behavioral
-   hypothesis. Analytics and observed behavior override generic guidance.
-7. Present an optimization brief:
+| Area | Rule source | Result | Blocking findings | Notes |
+|---|---|---|---|---|
+| Page type contract | <type>.md checklist, Above the fold | 7/10 | price below 1.5 screens at 390 (A8) | |
+| House rules | design-rules N1-N14, A1-A12 | 11/14 | N2 band in benefits, N1 emoji in trust strip | |
+| Proof | proof-ledger per-kind table | 2 verified / 3 unledgered | "50,000 customers" has no source | |
+| Offer | offer-ledger rules 1-6 | ... | compare-at without basis (O2) | |
+| Assets | section-asset-workflow section 2 | 5 pass / 2 fail | hero carries a baked-in ad headline -> reference-only | |
+| Copy | copy-frameworks CF5, headline HC rules, copy blacklist | ... | h1 14 words; "seamless" x3 | |
+| Mobile | mobile-anti-patterns | ... | sticky bars 22% of viewport | |
+| CRO anti-patterns | cro-anti-patterns | ... | | |
+| Analytics | evidence-led-cro | CVR, bounce, device split, drop-off section | | |
+```
+
+Proof and offer findings block; type deviations and copy findings are review
+notes unless the page's own plan recorded them. Use
+`references/consumer-behavior-cro.md` to name the visitor mode, the top
+unanswered decision question, and the smallest behavioural hypothesis.
+
+## Findings by Section
+
+One entry per section, in page order, with the same copy fields
+`/plan-page` uses so the replacement text is final, not a brief.
+
+```markdown
+## Findings by section
+
+### S3. benefits - keep | improve | replace | remove | test
+
+**Finding.** three icon tiles on a tinted band; no image of the product in use
+**Evidence.** screenshot 390 and 1280; N2, N3; drop-off 38% at this section (analytics)
+**Rule.** design-rules N2, N3; <type>.md Imagery
+**Proposed change.** rebuild around one in-use image per benefit
+**Copy.** (only when copy changes)
+- Eyebrow: <text or none>
+- Headline: <text, at most 10 words, sentence case>
+- Subhead: <text, at most 20 words, or none>
+- Body: <paragraph(s), at most 45 words each>
+- Labels / bullets: <exact strings, or none>
+- CTA: "<verb + object>" -> <destination>
+**Claims in this section.** <C# ids> or none
+**Layout.** 1280: ... | 390: ...
+**Interaction.** none | <behaviour and decision inputs>; no island names or props
+**Asset.** <slot id: decision state> | none-required: <why>
+```
+
+Protect the primary-product decision and any element the user listed as
+unchanged. Do not force template comparison for copy-only, offer-only,
+metadata or minor visual changes; for a structural redesign, compare the
+current structure with relevant page kits and sections
+(`lexsis_template_library.search_page_kits`, `search_sections`).
+
+## Asset Plan
+
+Write the `## Asset slots` table exactly as `/plan-page` defines it
+(`references/plan-page.md`): one row per media slot on the proposed page with
+a decision from `reuse-selected`, `shopify-product-media`,
+`user-selection-required`, `user-upload-required`, `generate-required`,
+`composite-required`; `none-required` on a section's `Asset` line; a current
+image that fails the fit review or carries baked-in copy is `reference-only`
+with its replacement slot named.
+
+```markdown
+## Asset slots
+
+| Slot | Section | Role/purpose | Aspect | Decision | Source decision | Id / URL | Status |
+```
+
+An existing image that passes the fit review is `reuse-selected` with its
+current id. Add `## User selection` when a role has more than one fit
+candidate and `## Generation briefs` for every generate-required or
+composite-required slot, in the shapes `/plan-page` defines. Generation obeys
+`references/assets/generation-policy.md`; this skill spends no credits before
+approval.
+
+## Claim Gate
+
+Write the `## Claim gate` table exactly as `/plan-page` defines it: one row per
+claim currently on the page and per proposed claim, gated
+`approved evidence available`, `merchant evidence required` or
+`remove from V1`, with the ledger row or the V1 copy that ships without it.
+
+```markdown
+## Claim gate
+
+| # | Claim (verbatim) | Where | Gate | Evidence | V1 copy if not approved |
+```
+
+A claim on the live page with no evidence is a blocking finding: it is
+gated `remove from V1` or `merchant evidence required`, never left as is.
+
+## Work Queue
+
+Write the `## Work queue` table with the owners `/plan-page` defines (`user`,
+`agent`, `merchant`, `blocked-by-evidence`). Tasks include every approved
+change, every pending asset, every open claim, the apply step, the hosted
+review, and any `/ab-test` hand-off.
+
+```markdown
+## Work queue
+
+| # | Task | Owner | Section / slot | Unblocks | Status |
+```
+
+## Approval
+
+Present the Scorecard, Findings by section, Asset slots, Claim gate, Work
+queue, the protected elements, and the measurement:
 
 ```text
 Outcome:
@@ -1051,25 +774,46 @@ Evidence:
 Main friction:
 Visitor mode:
 Behavioral hypothesis:
-Proposed sections:
+Scorecard: <blocking findings n / notes m>
+Changes: <keep k / improve i / replace r / remove d / test t>
+Asset slots: <n verified / m planned> ; decisions: <counts per state>
+Claim gate: <n approved / m merchant evidence required / k removed>
+Work queue: <n open: u user / a agent / m merchant / b blocked>
 Protected elements:
 Expected measurement:
 Experiment recommended: yes/no
+Status: OPTIMIZATION_PLAN_READY | BLOCKED - evidence required
 ```
 
-Obtain approval before making material changes.
+Return `OPTIMIZATION_PLAN_READY`, or `BLOCKED - evidence required` when any
+open task is `blocked-by-evidence`. Wait for explicit approval; record
+`PLAN_APPROVED <who> <date>` when granted. Nothing is edited before that.
 
 ## Apply Approved Changes
 
-Modify editable source. Validate and compile it with any page-wide
-`theme_css`, compare section hashes, and patch only changed sections with
-`expected_version`. Review visible changes on the updated unpublished hosted
-draft; never require a local preview before the patch. Update the operation
-record only after the remote write succeeds. Run `diff`, `integrity`,
-responsive checks, and affected commerce checks.
+Run `/design-page`'s Existing Page Edits and Hosted Design Review procedures:
 
-Never edit compiled output in place of source. Preserve the URL and SEO fields
-unless the user approved changing them.
+1. `lexsis_pages.edit_context`, then `lexsis_pages.source` or
+   `lexsis_pages.section_source`; stop on unexpected version drift.
+2. Resolve the approved asset decisions first: `lexsis_asset_library.search`
+   and `lexsis_assets.view` for reuse, `lexsis_asset_upload.upload` or
+   `lexsis_asset_import.import` for supplied files, `lexsis_workspace.credits`
+   then `lexsis_drafts.asset_generate` per brief after the user confirms the
+   batch. View every asset before it enters the source.
+3. Edit the source MCP returned, place the approved copy verbatim, compile
+   the changed inputs once with any page-wide `theme_css`.
+4. Write with `expected_version`: `lexsis_drafts.page_update_section` for one
+   section, `lexsis_drafts.page_patch` for several.
+5. `lexsis_pages.diff` and `lexsis_pages.integrity`; update recorded version
+   and hashes only after success.
+6. Hosted review at 390, 768 and 1280 with the commerce checks in
+   `references/qa-recipe.md`; save evidence with `lexsis_drafts.page_record_qa`.
+   Fix in place with another versioned patch; never a replacement page.
+
+Preserve the URL and SEO fields unless the user approved changing them. Never
+edit compiled output in place of source. Return `DESIGN_APPROVED` for the new
+version once the hosted review passes and the user approves it; `/publish`
+gates on that version.
 
 ## Experiment Handoff
 
@@ -1079,66 +823,62 @@ as proven.
 
 ## Return
 
-Return the approved objective, evidence, changed sections, page version,
-verification results, template comparison when applicable, MCP evidence, and
-whether an experiment is recommended.
+Return the approved objective, the scorecard totals, changed sections, page
+version, verification results, MCP evidence, whether an experiment is
+recommended, and the state: `OPTIMIZATION_PLAN_READY` or `DESIGN_APPROVED`.
 
 ---
 
 # Skill: plan-page
 
-> Turn campaign and product requirements into a concise one-page storefront plan with a design direction, wireframe, imagery plan and resolved asset slots. Use before page design; this skill does not choose islands or implementation details.
+> Produce the complete, execution-ready specification for one storefront page: strategy, final section copy, a resolved asset decision for every section, claim and proof gates, an ordered work queue with owners, and a plan status. Waits for explicit approval before design. Does not choose islands or implementation.
 
 # Plan a Page
 
-Produce a concise strategy, design direction and section blueprint that can be
-reviewed quickly. The plan owns every visual decision that `/design-page` will
-execute: hierarchy, wireframe, palette, type, the one bold moment, the imagery
-and background plan, and every asset slot on the page.
+The plan is the entire blueprint of the page. `/design-page` builds from it
+without reopening strategy, writing copy, or deciding what image goes where.
+A plan that says "explain benefits", "show product imagery" or "TBD" is not a
+plan; write the customer-facing copy and name the exact asset instead.
 
-Read:
+One speed: every plan is complete, every plan waits for explicit approval.
+This skill spends no credits; it reads `lexsis_workspace.credits` only to
+estimate a generation brief. The plan must not define islands, schemas or
+props; it records the behaviour a section needs and the decision inputs, and
+`/design-page` resolves the current island against the live catalog.
 
-- `references/page-files.md`
-- `references/page-types/_index.md`, then only the matching
-  `references/page-types/<type>.md` (its `## Workflow` is the procedure to
-  follow)
-- `references/workflows/section-asset-workflow.md` (the per-section media
-  loop) and `references/workflows/island-selection-workflow.md`
-- `references/mcp-playbooks/tool-sequence-by-stage.md` and the matching row of
-  `references/mcp-playbooks/tool-sequence-by-page-type.md`
-- `references/animation-system.md` when the page may use motion
-- `references/consumer-behavior-cro.md`
-- `references/design-rules.md`
-- `references/island-presets.md`
-- `references/workflow-intent.md`
-- `references/offers/funnel-stages.md`, `references/offers/offer-ledger.md`,
-  and the matching entries of `references/offers/offer-types.md` and
-  `references/offers/campaign-calendar.md`
-- `references/proof/proof-ledger.md` and `references/proof/reviews-sourcing.md`;
-  `references/proof/press-and-media-mentions.md`,
-  `references/proof/trust-badges-certifications.md`,
-  `references/proof/ugc-rights-and-display.md`,
-  `references/proof/before-after-and-claims.md` when the page plans that kind
-  of proof
-- `references/assets/image-jobs-by-page-type.md`,
-  `references/assets/asset-sourcing-sequence.md`,
-  `references/assets/generation-policy.md`
-- `references/copy/copy-frameworks.md` and `references/copy/message-match.md`
+## References
 
-Use `lexsis_catalog.list`, `lexsis_catalog.get`,
-`lexsis_template_library.search_page_kits`,
+Read a row only when its trigger applies. Everything else you need is in this
+file.
+
+| Reference | Read when |
+|---|---|
+| `references/page-types/_index.md`, then only the matching `references/page-types/<type>.md` | always; the type file's `## Workflow` supplies the context reads, the per-section inputs and the asset budget |
+| `references/consumer-behavior-cro.md` | writing the Consumer decision model |
+| `references/copy/copy-frameworks.md`, `references/copy/headline-and-cta-rules.md` | choosing the framework and writing section copy |
+| `references/copy/message-match.md` | ad or paid-search traffic |
+| `references/anti-patterns/copy-anti-patterns.md` | checking the finished copy |
+| `references/design-rules.md` | the Design direction block (A1 fields, N2 background, N7 overlays) |
+| `references/assets/generation-policy.md` sections 1, 3 and 4 | any slot that may be generated or composited (ALLOW / ASK / NEVER) |
+| `references/workflows/section-asset-workflow.md` section 2 | the fit review before an asset enters a slot |
+| `references/proof/proof-ledger.md`, `references/proof/reviews-sourcing.md` | the Proof ledger |
+| `references/proof/press-and-media-mentions.md`, `references/proof/trust-badges-certifications.md`, `references/proof/ugc-rights-and-display.md`, `references/proof/before-after-and-claims.md` | only when the page plans that kind of proof |
+| `references/offers/offer-ledger.md` | any discount, bundle price, urgency or delivery promise |
+| `references/workflow-intent.md` | deciding how many optional questions to ask; it never skips approval |
+
+Use `lexsis_catalog.list`, `lexsis_catalog.get`, `lexsis_brand.context`,
+`lexsis_brand.brand_kit`, `lexsis_template_library.search_page_kits`,
 `lexsis_template_library.search_sections`, `lexsis_template_library.get_kit`,
 `lexsis_asset_library.search`, `lexsis_assets.view`,
 `lexsis_asset_import.import`, `lexsis_asset_upload.upload`,
-`lexsis_drafts.asset_generate`,
 `lexsis_workspace.credits`, `lexsis_catalog.reviews_status`,
 `lexsis_catalog.review_collections`, `lexsis_catalog.reviews`,
 `lexsis_catalog.reviews_search`, and, for ad-driven or persona-led pages,
 `lexsis_campaigns.creatives`, `lexsis_campaigns.analyze`,
-`lexsis_campaigns.personas`, `lexsis_campaigns.match_persona`; for quiz and
-lead-capture types, `lexsis_capture.funnel_templates` and
-`lexsis_capture.funnel_template`. Resolve an unfamiliar schema with exact
-router/action discovery.
+`lexsis_campaigns.frames`, `lexsis_campaigns.personas`,
+`lexsis_campaigns.match_persona`; for quiz and lead-capture types,
+`lexsis_capture.funnel_templates` and `lexsis_capture.funnel_template`.
+Resolve an unfamiliar schema with exact router/action discovery.
 
 ## Bind the Workspace and Campaign
 
@@ -1147,39 +887,9 @@ MCP context. Resolve an ambiguous selection before proceeding and state the
 chosen binding in one line. Never mix stores or themes on one page.
 
 Group this page with its campaign purpose, confirmed dates, offer and
-audience. Reuse the existing campaign evidence for variants and edits.
-Keep the plan and compact decision record in the task handoff according to
-`references/page-files.md`; do not create campaign folders or page files.
-
-## Infer the Planning Mode
-
-Use `references/workflow-intent.md` to infer `fast-draft` or
-`production-ready` from the whole request and conversation. Record compact
-intent evidence in `workflow`.
-
-For `fast-draft`, fill reasonable campaign, template, asset, and review
-specifics from the saved brand, live catalog, and user context. Ask only when a
-missing choice would materially change the campaign or spend credits. Do not
-require plan approval before handing the reversible first version to
-`/design-page` or `/generate`.
-
-For `production-ready`, collect and confirm the choices that affect final
-handoff quality.
-
-Choose the next route from intent:
-
-- `concept-first` when the user wants to see or approve a mockup before source;
-- `direct-design` for the normal source and hosted-draft review;
-- `fast-build` when the user supplies a template direction and asks for the
-  fastest first draft.
-
-Record the route in `page plan`. Do not force every user to choose among all
-three. Paid visual-concept generation is confirmed in `/design-page`;
-`fast-build` hands off to `/build` or `/build-with-template`.
-
-If a packaged design or preset reference is unavailable, warn once and
-continue from the saved brand, theme, and live catalog. A missing optional
-reference must not prevent a reversible plan.
+audience. Reuse existing campaign evidence for variants and edits. Keep the
+plan and the compact page record in the task handoff; do not create campaign
+folders or page files.
 
 ## Identify the Page Type
 
@@ -1190,7 +900,7 @@ Choose exactly one `pageType`. When two fit, the index names the tie-break;
 when the brief is silent, choose the type that assumes less of the visitor and
 say so. Then load only `references/page-types/<type>.md`.
 
-Write this block at the top of `page plan` and mirror it in the page record
+Write this block at the top of the plan and mirror it in the page record
 (`page.pageType`, `page.funnelStage`, `page.awareness`, `page.trafficSource`,
 `offer`, `campaign`):
 
@@ -1217,25 +927,14 @@ Then follow the type file's `## Workflow` in order:
    tokens and voice, what the asset library holds under each tag, and the ad
    creative when traffic is paid. Every later decision cites one of these.
 2. **Section by section.** For each section in the type's Anatomy order,
-   decide three things and write them into the plan: the media (which image
-   job, where it comes from, or generate when the policy allows; when nothing
-   fits, tell the merchant exactly what is missing and offer upload or MCP
-   generation, and skip the section only if they choose:
-   `references/workflows/section-asset-workflow.md`), the interactive
-   component if any (name the island role and the decision inputs from the
-   context reads; the plan never resolves a schema or names props, and
-   `/design-page` reads the live catalog and schema for the variant and props:
-   `references/workflows/island-selection-workflow.md`; record the inputs and
-   a `Preset:` or one-line note), and the copy pattern and ceiling. A section that would end up as
-   a colour band, emoji row, icon tiles or a wall of text is rebuilt around
-   imagery or put to the merchant.
+   its row in `### Section by section` gives the media job, the interaction
+   decision inputs and the copy constraints. Those rows feed the Section
+   specification and the Asset slots below; the plan writes the actual copy
+   and the actual asset decision, not the row.
 3. **Asset budget.** Fill the type's asset-budget table for this product:
    what the catalog and library supply, which jobs are missing, and per gap
-   whether to reuse, generate (with the purpose), or ask the merchant to
-   upload or approve generation. Every missing asset is listed for the
-   merchant; in fast-draft, proceed with the shared fallback or a
-   `planned` slot and still list it. Assets carry the page; plain colour
-   does not.
+   which decision state applies. Assets carry the page; plain colour does
+   not.
 
 The `## Checklist` JSON is the default this workflow lands on. When the
 context argues for something else (a PDP with two images, a store with no
@@ -1245,37 +944,36 @@ the plan; explain every deviation without treating it as an automatic failure.
 
 ## Ask Only What Is Missing
 
-Collect:
+Collect, only when the brief and the live store do not already answer:
 
-1. Page type, only when the brief leaves the identified type ambiguous.
-2. Product or collection.
+1. Page type, when the identified type is ambiguous.
+2. Product or collection, and the default variant.
 3. Audience and customer problem.
-4. Traffic source.
-5. Primary conversion goal and CTA.
+4. Traffic source and the creative, when paid.
+5. Primary conversion goal and CTA destination.
 6. Required proof, offer, claim, or section constraints.
 
 Ask no more than three questions at once. Read current products, variants,
-prices, availability, media, and reviews from Lexsis. Questions are
-conditional, not a fixed stage gate. Use
+prices, availability, media, and reviews from Lexsis before asking. Use
 `references/consumer-behavior-cro.md` to inspect likely shopper uncertainty
-before asking. Do not ask about custom imagery until the existing gallery has
-been mapped to its relevant decision jobs and a specific gap is visible.
+before asking. Do not ask about custom imagery until the existing gallery and
+library have been mapped to their jobs and a specific gap is visible.
 
-In `production-ready` mode, or when the user clearly wants to choose the
-creative direction, offer these together. In `fast-draft`, choose them unless
-the user already expressed a preference:
+`references/workflow-intent.md` decides only how many of the optional
+questions below to ask: a user who delegates specifics gets the skill's
+choice for 7 and 9; a user preparing a campaign hand-off is offered all three.
+Neither reading skips the approval at the end.
 
-7. Templates: user-selected kit/sections or skill-selected direction.
-8. Assets: user-selected library assets or skill-selected existing assets.
-9. Reviews: which review collection should the page use (list the active ones
-   with their counts), product reviews, or none?
+7. Template: user-selected kit or sections, or skill-selected direction.
+8. Assets: the role-by-role choice in `## User selection` (always offered
+   when a role has more than one fit candidate).
+9. Reviews: which active review collection the page uses, product reviews,
+   or none.
 
 ## Choose a Direction
 
-For `production-ready`, ask first and search second. The catalog is small
-(about 30 page kits, about 200 section templates, only a few kits per page
-type); a person scans it faster than a query ranks it. For `fast-draft`, search
-and choose a coherent direction unless the user already selected one.
+The catalog is small (about 30 page kits, about 200 section templates, a few
+kits per page type); a person scans it faster than a query ranks it.
 
 **User picks (question 7).** Call `lexsis_template_library.search_page_kits`
 with `query: ""`, the `page_type`, `industry` and `mood` filters, and
@@ -1285,86 +983,110 @@ If no kit fits, browse `search_sections` with `query: ""` for the section that
 matters most. Without a picker, give the public gallery
 `https://storefront.trylexsis.com/templates?view=kits&page_type=<type>&industry=<vertical>&mood=<mood>`
 and accept a pasted kit URL, template URL, slug, or id. Resolve kit slugs and
-URLs with `lexsis_template_library.get_kit`; pass template URLs on unchanged,
-`/design-page` resolves them.
+URLs with `lexsis_template_library.get_kit`; pass template URLs on unchanged.
 
-**Skill searches (user declined).** Search page kits using the page type,
+**Skill picks (user declined).** Search page kits using the page type,
 objective, industry, and mood. If no kit fits, inspect the returned status
-before deciding why:
+before deciding why: a successful response with zero results means that
+shelf is empty, so continue with section search or a custom direction; a
+failed request is a tool error, so report it. Present at most three
+candidates, one line each, and ask the user to confirm one or decline all.
 
-- A successful catalog response with zero results means that shelf is empty.
-  Continue with section search or a custom direction; do not make an unrelated
-  control call merely to prove the service works.
-- A failed request is a tool error, not an empty shelf. Report it and use only
-  an explicitly documented fallback.
-
-Search sections for useful structural references when no page kit fits.
-Present at most three candidates, one line each, and ask the user to confirm
-one or decline all.
-
-Record only the selected kit or section IDs in the page record (`template.mode`
-is `page-kit`, `sections`, or `custom`); put the short selection rationale in
-the plan. Custom composition names the evaluated ids and why none fit.
-
-Template selection at this stage is directional. `/design-page` owns fetching
-source, adapting layouts, selecting islands, and resolving schemas.
-The plan must not define islands.
-
-A preset id from `references/island-presets.md` is a
-design-intent token, not implementation, and may be named per section as
-`Preset: <island>/<intent>-<tone>`. At most one preset per island role; every
-preset's tone must match the tone named in the Design direction block or be
-listed as an explicit exception. Header and footer presets are chosen in the
-Design direction block, not per section.
+Record only the selected kit or section ids in the page record
+(`template.mode` is `page-kit`, `sections`, or `custom`) and the one-line
+rationale in the plan. Template selection is directional: `/design-page` owns
+fetching source, adapting layouts, selecting islands, and resolving schemas.
 
 ## Parallel Planning
 
 If the runtime can spawn sub-agents, fan out three read-only lanes and merge
 their output; otherwise run the same three blocks sequentially in this order.
 
-1. Consumer decision model, hierarchy and wireframe: primary visitor mode,
-   top decision questions, at most three behavioral patterns, section order,
-   buy-box position, media share, and the ASCII wireframe at 1280 and 390 with
-   a slot id on every media box.
-2. Imagery, background plan, asset slots and proof sources: search the asset
-   library and catalog media only for slots the user did not pick; read
-   `lexsis_catalog.reviews_status` and `lexsis_catalog.review_collections`;
-   propose the treatment per imagery section.
-3. Palette, type, motion and icon decisions from the saved brand design and
-   theme tokens, with the overrides list.
+1. Strategy, Consumer decision model, Design direction and wireframe.
+2. Section specification (final copy per section) and the Claim gate.
+3. Asset slots, User selection candidates, Generation briefs, Proof ledger and
+   Offer ledger.
 
-Each lane returns only its block. The parent merges them into `page plan`,
-runs the generic-default check, resolves conflicts by the house rules, and asks
-only unresolved questions required by the inferred mode. Lanes never write
-files or spend credits.
+Each lane returns only its blocks. The parent merges them, runs the
+generic-default check, resolves conflicts by the house rules, computes the Work
+queue and Plan status, and asks only the questions still open. Lanes never
+write files or spend credits.
 
-## Write a One-Page Plan
+## The Plan
 
-Keep `page plan` concise enough to scan in one view. Include:
+Write these blocks, in this order, every time:
 
-- objective, audience, traffic source, product, and primary CTA
-- selected template direction
-- ordered section list
-- one sentence describing each section's purpose
-- the Page type block defined above
-- the Consumer decision model block from
-  `references/consumer-behavior-cro.md`
-- the Design direction, Imagery and background plan, and Asset slots blocks
-  defined below
-- the Proof ledger and, when an offer exists, the Offer ledger
-- the copy framework and headline pattern from
-  `references/copy/copy-frameworks.md`, and the message-match line from
-  `references/copy/message-match.md` for ad-driven traffic
-- offers and claims that require confirmation
+1. `## Page type` (above)
+2. `## Page strategy`
+3. `## Consumer decision model`
+4. `## Design direction` (includes the Imagery and background plan)
+5. `## Section specification`
+6. `## Asset slots`
+7. `## User selection` (only when a role has more than one fit candidate)
+8. `## Generation briefs` (only when a slot is generate-required or composite-required)
+9. `## Generation record` (header only; `/design-page` fills it after generation)
+10. `## Proof ledger`
+11. `## Offer ledger` (only when an offer exists)
+12. `## Message match` (only for ad or paid-search traffic)
+13. `## Claim gate`
+14. `## Work queue`
+15. `## Plan status`
 
-### Design direction (required block in page plan)
+Every block is present; `none` is an answer, `TBD` is not. A plan missing a
+block, or carrying a placeholder where copy or an asset decision belongs, is
+not presented for approval.
 
-Write this block before the section list. Read the saved brand design, the
-theme tokens and `references/design-rules.md` first. Fill
-every field; "none" is an answer, "TBD" is not. Then run the generic-default
-check at the end and revise anything it catches.
+### Page strategy
 
-Template to copy into `page plan`:
+```markdown
+## Page strategy
+
+**Landing-page type.** <pageType>
+**Funnel stage / awareness.** <tof | mof | bof | retention> / <unaware | problem-aware | solution-aware | product-aware | most-aware>
+**Traffic / ad source.** <meta | google | tiktok | email | organic | ...>; creative <id or none>
+**Campaign goal.** <one measurable action: add to cart | purchase | lead | waitlist | quiz start>
+**Offer and purchase model.** <offer-types id or none>; <one-time | subscription | pre-order | bundle>; terms in the Offer ledger
+**Product and default variant.** <title> gid://shopify/Product/<id>; default variant gid://shopify/ProductVariant/<id> (<option values>); price <currency amount>
+**Visual direction.** One sentence: the mood, the bold moment, the media treatment (detail in Design direction).
+**Copy framework.** <copy-frameworks id>; secondaries: <section: id, ...> or none
+**Headline pattern.** <the headline formula for this awareness level>; 4U score <useful>/<urgent>/<unique>/<ultra-specific> = <total>
+**Message match.** <one line: ad promise, ad noun phrase, CTA verb the page repeats> or `not ad traffic`
+**Section order.** 1 <id> ; 2 <id> ; 3 <id> ; ... (canonical ids; header, announcement, footer and sticky-cta listed where they sit)
+```
+
+Rules: one primary framework from the type checklist's `copy_framework` list,
+matched to the awareness level (`references/copy/copy-frameworks.md` CF1 and
+CF2); the headline formula and the 4U score come from
+`references/copy/headline-and-cta-rules.md` (ship at 12 or more, rewrite under
+8); for ad traffic the message-match line follows
+`references/copy/message-match.md`. Section ids come from the canonical
+vocabulary in the type file; the order is the type's Anatomy order unless a
+recorded deviation says otherwise.
+
+### Consumer decision model
+
+Copy the block from `references/consumer-behavior-cro.md` into the plan and
+fill every line:
+
+```markdown
+## Consumer decision model
+
+**Primary visitor mode.** confirm | compare | explore | complete | replenish
+**Top decision questions.** Three shopper questions this page must answer.
+**Selected behavioral patterns.** At most three, each with observed evidence.
+**First decision area.** Facts, proof, and action visible before deeper detail.
+**Gallery jobs.** covered; missing; asset slots created for missing jobs.
+**Guided merchandising.** relationship name, reason, 2-3 products or none.
+**Risk and trust.** sourced proof/policy placed beside the relevant decision.
+**Mobile context.** what remains visible or is repeated during long scroll.
+**Hypothesis and metric.** one primary behavior change and measurement.
+```
+
+### Design direction
+
+Read the saved brand design, the theme tokens and `references/design-rules.md`
+first. Fill every field; "none" is an answer, "TBD" is not. Then run the
+generic-default check and revise anything it catches.
 
 ````markdown
 ## Design direction
@@ -1418,7 +1140,7 @@ imagery, the way every strong commerce page is built: a full-bleed hero photo
 or banner, inset product media, lifestyle photography, proof artefacts,
 editorial image grids. Never from tinted section bands.
 
-Write one line per imagery section:
+Write one line per imagery section at the end of the Design direction block:
 
 ```text
 <section> U+2192 <slot ids> U+2192 <treatment: full-bleed | inset | grid | background image with legibility overlay>
@@ -1426,98 +1148,191 @@ Write one line per imagery section:
 
 Every imagery section maps to at least one slot. The single full-bleed
 exception is the bold moment named above. Sections without imagery are
-separated by spacing and a hairline, not colour.
+separated by spacing and a hairline, not colour. Map the existing gallery to
+the type's required image jobs (identity, detail, scale, texture, in-use,
+context, variation, sequence, sourced proof) and create a slot for every
+required job the gallery does not cover; the decision for each slot is made in
+Asset slots below.
 
-Before finalizing the imagery plan, map the existing gallery to the relevant
-jobs in `references/consumer-behavior-cro.md` and to the page type's
-`imagery.required_jobs` in `references/assets/image-jobs-by-page-type.md`:
-identity, detail, scale/fit, texture/finish, context, variation,
-setup/sequence, and sourced proof. Create slots for every required job the
-gallery does not cover and for decision-critical gaps. Resolve each slot with
-the ordered sequence in `references/assets/asset-sourcing-sequence.md`
-(Shopify media, asset library, merchant-supplied or brand-site capture,
-licensed stock where the policy allows, then generation). A slot may be
-planned for generation only when its purpose is on the ALLOW list in
-`references/assets/generation-policy.md`; NEVER-list jobs (the product
-itself, people shown as customers, results, logos, badges, text in images)
-stay `planned` until the merchant supplies media. If paid generation would
-fill allowed gaps, ask once with the exact jobs, count, aspects, and
-placements.
+### Section specification
+
+One entry per section, in Section order. The copy is the final customer-facing
+text `/design-page` will place; it is not a brief for someone else to write.
+
+```markdown
+## Section specification
+
+### S1. hero - <purpose in one line>
+
+**Copy.**
+- Eyebrow: <text or none>
+- Headline: <text, at most 10 words, sentence case>
+- Subhead: <text, at most 20 words, or none>
+- Body: <paragraph(s), at most 45 words each>
+- Labels / bullets: <exact strings, or none>
+- CTA: "<verb + object [+ outcome or price]>" -> <#buy-box | URL | cart action>
+- FAQ (faq sections only): Q: <question> / A: <answer whose first sentence is the answer>
+**Claims in this section.** <C# ids from the Claim gate> or none
+**Layout.** 1280: <media share, column order, buy-box position> | 390: <stack order, what stays above the fold>
+**Interaction.** none | <behaviour the shopper needs and the decision inputs: variant count, review band, page length>; no island names, schemas or props
+**Asset.** <slot id: decision state> | none-required: <why this section carries no image>
+```
+
+Rules for the copy:
+
+- Final text only. A bracket, "TBD", "lorem", or an instruction such as
+  "explain benefits" fails the plan.
+- Ceilings: h1 at most 10 words, subhead at most 20, paragraph at most 45,
+  FAQ answer at most 60 (`references/copy/copy-frameworks.md` CF5 and the
+  type file's tighter ceilings where given). Sentence case throughout; the
+  CTA names the action and its destination; the first sentence of every FAQ
+  answer is the answer.
+- Every number, quote, count, price, badge or timeframe in the copy is a
+  Claim gate row backed by a `P#` or `O#` ledger row. An unresolved number is
+  deleted with its sentence, never estimated.
+- For ad traffic the h1 keeps at least 60 percent token overlap with the ad
+  headline and the CTA verb equals the ad's (`references/copy/message-match.md`).
+- Check the finished copy against `references/anti-patterns/copy-anti-patterns.md`;
+  nothing from that list ships.
+- A section that would end up as a colour band, an emoji row, icon tiles or a
+  wall of text is rebuilt around imagery or put to the merchant.
 
 ### Asset slots
 
-List every slot the wireframe names, for any page type:
+List every slot the wireframe names. Every section has exactly one asset
+decision: a slot row here, or `none-required` with its reason on the
+section's `Asset` line.
 
 ```markdown
-| Slot | Section | Role/purpose | Aspect | Source decision | Id / URL | Status |
-|---|---|---|---|---|---|---|
-| A1 | gallery | product_media | 4:5 | shopify media | gid://.../ProductImage/... | verified |
-| A2 | story | context | 3:2 | library | asset 7f2e... | verified |
-| A3 | closing-cta | hero_bg | 3:2 | generated (after credit confirmation) | | planned |
-| A4 | benefits | in-use | 3:2 | pending: merchant to upload, or approve a `product_composite` scene | | planned |
+## Asset slots
+
+| Slot | Section | Role/purpose | Aspect | Decision | Source decision | Id / URL | Status |
+|---|---|---|---|---|---|---|---|
+| A1 | buy-box | product_media (identity) | 1:1 | shopify-product-media | shopify media, viewed | gid://shopify/Product/1 / gid://shopify/MediaImage/123 | verified |
+| A2 | story | context | 3:2 | reuse-selected | library, viewed; crop: centre-right; placement: inset left; alt intent: kitchen counter with the jar | asset 7f2e... | verified |
+| A3 | hero | hero_bg | 16:9 + 4:5 | generate-required | generated (hero_bg, library: none); brief G1 | | planned |
+| A4 | benefits | context | 1:1 + 4:5 | composite-required | generated (product_composite over A1, library: none); brief G2 | | planned |
+| A5 | reviews | proof (ugc, ledger P5) | 1:1 | user-selection-required | 4 library candidates in User selection, role 3 | | planned |
+| A6 | how-it-works | sequence | 3:2 | user-upload-required | merchant-upload: three step photos of the routine, same light, product legible | | planned |
+
+Reference-only creatives: <asset or creative id> - <why it cannot be placed: baked-in headline / badge / price / claim> -> replaced by slot <A#>.
 ```
 
-`Role/purpose` uses the image job for real media (`product_media`, `context`,
-`in-use`, `logo`, `proof`, ...) and the generation purpose for generated
-media: ALLOW purposes `hero_bg`, `section_bg`, `card_bg`, `texture_fill`,
-`pattern_tile`, `decorative_element`, `product_composite`; `product_lifestyle`
-only as an ASK slot with the merchant's yes recorded; `icon_set` when the
-Icons decision says a monochrome inline SVG set must be authored
-(`references/assets/generation-policy.md`). `Status` is `verified`
-or `planned`. Ordinary interface icons come from one inline SVG set and are
-not slots; emoji are never an icon fallback.
+Decision states, exactly one per section:
 
-Resolve every slot before approval. The user picks first (question 8); the
-skill searches only for what the user did not pick.
+| Decision | Meaning | Status | Page record `assets[]` |
+|---|---|---|---|
+| `none-required` | The section carries no image; say why (native disclosure, factual table, text-only per the type). Appears on the section's `Asset` line only, never as a slot row. | n/a | none |
+| `reuse-selected` | An existing library asset, viewed and fit-reviewed; crop, placement and alt-text intent written in Source decision. | `verified` | `decision`, `sourceType: lexsis`, `assetId`, `url` |
+| `shopify-product-media` | The exact product or variant media item; placement written. | `verified` | `decision`, `sourceType: shopify`, `productId`, `mediaId`, `url` |
+| `user-selection-required` | Two or more fit-reviewed library candidates suit this role; they are listed under `## User selection` and the plan waits for the choice. | `planned` | `decision`, `sourceType: pending` |
+| `user-upload-required` | No suitable media exists and the job may not be generated (the product itself, people as customers, results, logos, badges, text in images); name the exact source file needed. | `planned` | `decision`, `sourceType: pending` |
+| `generate-required` | An ALLOW purpose, or an ASK purpose with the merchant's yes quoted; brief `G#` written below. | `planned` until `/design-page` generates | `decision`, `sourceType: pending`, `role` = purpose, `askApproved: true` for ASK |
+| `composite-required` | A `product_composite`: the real product media (named slot) plus a generated or editorial layer, each defined in brief `G#`. | `planned` | as above plus `referenceSlot` |
+| `reference-only` | A baked ad creative or any image carrying copy, badges, claims or product text that cannot be safely cropped. Never a slot source; listed under the table with the slot that replaces it. | none | not in `assets[]` |
 
-1. **User picks.** Call `lexsis_asset_library.search` once per slot group
-   (`query: ""`, `kind: "image"` or `"svg"` for the logo, `mode: "tags"` with
-   `banner`, `lifestyle`, `social-proof`, `logo`, `product-shot` or `hero` when
-   the group is clear, `theme_id` from `setup.json` (required), `limit: 48`).
-   The asset picker multi-selects across pages; wait for the
-   `Design asset selection:` message and map its `assets[]` to slot ids in
-   `selection_order` (A1, A2, ...). Confirm the mapping in one line or take a
-   one-line remap. Without a picker: Storefront U+2192 Design library U+2192 Assets;
-   accept filenames or URLs and look them up with `mode: "filename"`. Files
-   not yet in the library go through `lexsis_asset_upload.upload` with the
-   selected `workspace_id` and `theme_id`; wait for the user's uploaded-asset
-   message with the new asset id. Import supplied URLs, image base64 plus
-   `mime_type`, or conversation attachments through `lexsis_asset_import.import`
-   instead, using exactly one source. Without inline UI, ask for a URL or
-   conversation attachment and import it; never call import with no source.
-2. **Skill fills the gaps.** For every slot still unresolved, search the
-   product's Shopify media through `lexsis_catalog.get`, then
-   `lexsis_asset_library.search` (tags first, then semantic, then filename).
-   Present the table with the best candidate per slot and, for every slot
-   with no candidate, say exactly what is missing (section, job, aspect,
-   count). Then ask once: **I pick** (use the best match for every remaining
-   slot), **Upload** (the merchant supplies files through
-   `lexsis_asset_upload.upload`, or URLs/attachments through
-   `lexsis_asset_import.import`), or **Generate the gaps**
-   (only ALLOW purposes, or ASK purposes with the merchant's yes recorded;
-   check `lexsis_workspace.credits`, then `lexsis_drafts.asset_generate` per
-   slot with its purpose and aspect). Skipping a section is the merchant's
-   choice, offered alongside.
-3. View every asset before it fills a slot. `lexsis_assets.view` returns the
-   image itself; judge it against the section with the fit review in
-   `references/workflows/section-asset-workflow.md` (subject does the job,
-   crops without losing the subject, leaves a quiet area for the copy,
-   matches the neighbouring slots' lighting and styling, colours sit inside
-   the palette, no baked-in text or watermark). A filename, tag or alt text
-   is never evidence. View the candidates for one section together so the set
-   reads as one shoot. Record the provider and asset id for generated slots
-   and view those too.
-4. Write the final table into the plan and one `assets[]` entry per slot into
-   the page record. A slot the user postpones stays `planned`; `/design-page`
-   confirms only those.
+`Status` stays `verified` or `planned`: `verified` only with `reuse-selected`
+or `shopify-product-media`; `planned` only with the four pending states.
+`Role/purpose` is the image job for real media (`product_media`, `context`,
+`in-use`, `proof`, ...) and the generation purpose for generated media
+(`hero_bg`, `section_bg`, `card_bg`, `texture_fill`, `pattern_tile`,
+`decorative_element`, `product_composite`; `product_lifestyle` only as ASK).
+`Source decision` uses one of: `shopify media`, `library <asset id>`,
+`merchant-upload (owner: merchant, <date>)`, `supplier (licence: <ref>)`,
+`stock (licence: <id>)`, `generated (<purpose>, library: none)`; append
+`viewed` once the asset has been seen. Ordinary interface icons come from one
+inline SVG set and are not slots; emoji are never an icon fallback.
+
+Resolve every slot to a decision before approval, in this order:
+
+1. **Inventory.** Map the catalog media from `lexsis_catalog.get` and the
+   library (`lexsis_asset_library.search` with `theme_id`, `mode: "tags"`
+   using `hero`, `lifestyle`, `product-shot`, `social-proof`, `logo`, then a
+   semantic query per missing job) to the jobs the type requires. Run a
+   `mode: "ocr"` search to flag candidates with baked-in text before viewing
+   them.
+2. **View.** Nothing enters a slot from a filename, tag or search rank.
+   `lexsis_assets.view` returns the image itself; judge it in its section
+   with the fit review in `references/workflows/section-asset-workflow.md`
+   section 2: the subject does the job, it crops to the slot aspect without
+   losing the subject, it leaves a quiet area where the headline and body
+   sit, it matches the neighbouring slots' lighting and styling, its colours
+   sit inside the palette, and it carries no baked-in text or watermark. View
+   a section's candidates together so the set reads as one set of photographs.
+   A creative that fails only on baked-in copy is `reference-only`.
+3. **Decide.** One fit candidate: `reuse-selected` or `shopify-product-media`.
+   Two or more: `user-selection-required`, listed by role below. None, and
+   the job is on the generation NEVER list: `user-upload-required` with the
+   exact file described. None, and the purpose is ALLOW (or ASK with a yes):
+   `generate-required` or `composite-required` with a brief. No image needed:
+   `none-required` with the reason.
+4. **Offer the choice by role.** Present `## User selection` and wait. Never
+   make the user choose among irrelevant assets; never assume a selection
+   when the visual decision materially affects the page (the hero, the
+   formula or detail visual, the proof visual, the closing visual).
+
+```markdown
+## User selection
+
+Choose one asset per role. Only roles with more than one fit-reviewed candidate are listed; a single fit is already reuse-selected.
+
+| Role | Section / slot | Candidates (asset id - one-line description - fit note) | Why the choice matters |
+|---|---|---|---|
+| 1 hero editorial visual | hero / A3 | 8c1f... - jar on linen, quiet left third - crops to 4:5 ; 2d9a... - overhead flat lay - no quiet area at 390 | sets the bold moment and the message match with the ad |
+| 2 formula / detail visual | ingredients / A4 | ... | shows the mechanism the copy claims |
+| 3 social-proof / results visual | reviews / A5 | ... | must carry a proof-ledger row |
+| 4 closing CTA visual | closing-cta / A7 | ... | reuse of A1 is the default if none |
+
+Reply with the role number and asset id, or "agent picks" per role.
+```
+
+Picker mechanics: one `lexsis_asset_library.search` per role group
+(`query: ""`, `kind: "image"` or `"svg"` for the logo, `mode: "tags"`,
+`theme_id` from setup, `limit: 48`). When the host shows the asset picker,
+wait for the `Design asset selection:` message and map its `assets[]` to the
+roles in `selection_order`; confirm the mapping in one line. Without a
+picker, accept asset ids, filenames (`mode: "filename"`) or URLs. Files not
+yet in the library go through `lexsis_asset_upload.upload` with the selected
+`workspace_id` and `theme_id` (wait for the user's uploaded-asset message) or,
+for a URL, image base64 with `mime_type`, or a conversation attachment,
+through `lexsis_asset_import.import` with exactly one source. View every
+uploaded or imported asset before it fills a slot.
+
+Every `generate-required` or `composite-required` slot has a brief:
+
+```markdown
+## Generation briefs
+
+### G1 - slot A3, hero, hero_bg (ALLOW)
+**Aspect and crops.** landscape 1536x1024 for 1280; portrait 1024x1536 for 390; focal point centre-left, quiet right third for the h1
+**Subject and composition.** unbleached linen surface, one ceramic bowl at the left edge, empty right two thirds
+**Wardrobe.** none (no people)
+**Palette.** brand hexes #F5F0E6 #1F1D24 #B8654A; nothing outside the Design direction palette
+**Lighting and mood.** soft north window light, late morning, calm
+**Exclusions.** text, letters, logos, badges, prices, packaging, fake product, UI, hands, people, watermarks
+**Composite.** none | real product media <A1 mediaId> composited untouched on top (product_composite)
+**Alt-text intent.** decorative: alt="" aria-hidden | composite: "<product> on a linen surface (generated scene)"
+**Estimated credits.** <n> per image x <images> (balance <b> from lexsis_workspace.credits)
+**Approval.** ALLOW - credits confirmed in /design-page before the call | ASK - "<merchant's words>" <name> <date> | pending merchant yes (Work queue T#)
+```
+
+Brief rules: purposes, aspects and the ALLOW / ASK / NEVER lists come from
+`references/assets/generation-policy.md`; a NEVER job (the product itself,
+people presented as customers or staff, results, logos, badges, text in
+images) is never briefed and becomes `user-upload-required`; at most four
+generated slots per page; an ASK approval quotes the merchant's words and
+date, and plan approval alone never counts as ASK approval. After generation
+`/design-page` writes the `## Generation record` row (prompt, negatives,
+provider, asset id, metadata, label) and flips the slot to `verified`.
 
 ### Proof ledger
 
 Every proof element on the page is a row in the `## Proof ledger` block
-defined in `references/proof/proof-ledger.md`: kind, claim it supports,
-source, evidence id or URL, verification status, and the section that shows
-it. Nothing renders that is not in the ledger. Fill it with the tiered
-procedure in `references/proof/reviews-sourcing.md`:
+defined in `references/proof/proof-ledger.md`: kind, the exact claim it
+supports, source, evidence id or URL, how and when verified, the section that
+shows it, and `verified | pending | dropped`. Nothing renders that is not in
+the ledger. Fill it with the tiered procedure in
+`references/proof/reviews-sourcing.md`:
 
 1. `lexsis_catalog.reviews_status`, then `lexsis_catalog.review_collections`
    with `collection_status: "active"`, then `lexsis_catalog.reviews`
@@ -1525,22 +1340,20 @@ procedure in `references/proof/reviews-sourcing.md`:
 2. `lexsis_catalog.reviews_search` once per top decision question to place
    proof beside the claim it answers.
 3. Only when tiers 1 and 2 return nothing usable: the zero-review playbook
-   (public reviews on marketplaces, Google, Trustpilot, Reddit, YouTube,
-   creator content) via the host's web search and `lexsis_assets.view`. An
-   external quote enters the ledger as `external-verified` only with its
-   source URL, the merchant's written approval, verbatim text, and
-   attribution the platform's terms permit. Marketplace review text that the
-   platform forbids reusing is evidence for the merchant, never page copy.
-4. Still nothing: plan guarantees, policy facts, certifications with issuer
-   ids, test data, a founder note, or verified press instead. Never a review
-   section, never invented counts, never `SocialProofPopup`.
+   (public reviews, Google, Trustpilot, Reddit, YouTube, creator content) via
+   the host's web search and `lexsis_assets.view`. An external quote enters
+   the ledger as `external-verified` only with its source URL, the merchant's
+   written approval, verbatim text, and attribution the platform permits.
+4. Still nothing: guarantees, policy facts, certifications with issuer ids,
+   test data, a founder note, or verified press instead. Never a review
+   section, never invented counts, never a social-proof popup.
 
 Ask question 9 with the active collections and their `item_count`. Every
-number in the ledger comes from the API or a linked source and is repeated
-under "Claims to confirm". The plan never activates a collection; to propose
-a shortlist, run `lexsis_catalog.reviews_search` and, only when the user asks,
+number in the ledger comes from the API or a linked source and appears as a
+Claim gate row. The plan never activates a collection; to propose a shortlist,
+run `lexsis_catalog.reviews_search` and, only when the user asks,
 `lexsis_drafts.review_collection_create` (draft). If the host returns
-`UNKNOWN_ACTION`, ask the user to pick a collection in Storefront U+2192 Reviews U+2192
+`UNKNOWN_ACTION`, ask the user to pick a collection in Storefront > Reviews >
 Collections and paste its id.
 
 Press logos, "as seen in" marquees, badges, certifications, UGC, before/after
@@ -1551,24 +1364,107 @@ ledger and does not appear on the page.
 
 ### Offer ledger
 
-When the page carries any offer, discount, bundle price, urgency, or
-delivery promise, write the `## Offer ledger` block from
-`references/offers/offer-ledger.md`: offer type, exact terms, math shown on
-the page, compare-at basis, start and end, stock basis, exclusions, regions,
-code, stacking, and who confirmed each item. Use
-`references/offers/offer-types.md` for the anatomy changes the offer type
-requires and `references/offers/price-presentation.md` and
-`references/offers/urgency-scarcity.md` for what may be shown. A countdown or
-stock indicator is planned only when the ledger has a confirmed end date or
-live inventory read. Mirror the summary in the page record `offer` block.
+When the page carries any offer, discount, bundle price, urgency, or delivery
+promise, write the `## Offer ledger` block from
+`references/offers/offer-ledger.md`: offer type, exact terms, the math shown
+on the page, compare-at basis, start and end, stock basis, exclusions,
+regions, code, stacking, and who confirmed each item. A countdown or stock
+indicator is planned only when the ledger has a confirmed end date or a live
+inventory read. Mirror the summary in the page record `offer` block. Each
+item the ledger file lists under "Claims to confirm before design" becomes an
+Offer ledger row or a Claim gate row; do not keep a separate list.
 
 Verify facts that control the page's urgency or trust before treating them as
-copy. This includes occasion dates, delivery cutoffs, prices, availability,
-medical or performance claims, certifications, endorsements, and legal or
-safety language. Use an authoritative current source where one exists. Mark an
-unverified item as unresolved in the plan instead of guessing it.
+copy: occasion dates, delivery cutoffs, prices, availability, medical or
+performance claims, certifications, endorsements, and legal or safety
+language. Use an authoritative current source where one exists. An unverified
+item is a `merchant evidence required` Claim gate row, not a guess.
 
-Do not include:
+### Claim gate
+
+One row per claim in the ad creative and per claim in the proposed copy.
+
+```markdown
+## Claim gate
+
+| # | Claim (verbatim) | Where | Gate | Evidence | V1 copy if not approved |
+|---|---|---|---|---|---|
+| C1 | "4.8 stars from 212 reviews" | ad + hero | approved evidence available | P1 (verified) | - |
+| C2 | "Dermatologist tested" | ad + trust-bar | merchant evidence required | test report with lab, date, n -> P8 pending | "Fragrance-free, patch-test recommended" |
+| C3 | "Visible results in 14 days" | ad | remove from V1 | no study, no customer data | not on the page; the ad needs a rewrite |
+```
+
+Gates:
+
+- `approved evidence available`: a `verified` `P#` or `O#` row whose Section
+  column is this section. The claim ships.
+- `merchant evidence required`: the evidence exists somewhere the agent
+  cannot reach. Write the V1 copy that ships without the claim, and add a
+  `merchant`-owned Work queue task naming the document.
+- `remove from V1`: no evidence and no path to it. Delete the sentence, never
+  soften it.
+
+Clinical badges, before/after imagery, ratings, review counts, result
+timelines and efficacy claims never appear without an evidence source
+assigned to that exact section. An ad claim the page cannot carry is reported
+as a message-match risk, not quietly dropped.
+
+### Work queue
+
+End every plan with the ordered checklist the next workflow executes.
+
+```markdown
+## Work queue
+
+| # | Task | Owner | Section / slot | Unblocks | Status |
+|---|---|---|---|---|---|
+| T1 | Supply the dermatologist test report (lab, date, n) | merchant | trust-bar / C2 | C2 -> approved | open |
+| T2 | Choose the hero editorial visual (User selection role 1) | user | hero / A3 | A3 -> reuse-selected | open |
+| T3 | Upload three routine step photos, same light, product legible | user | how-it-works / A6 | A6 -> verified | open |
+| T4 | Generate G1 at 16:9 and 4:5 after credit confirmation | agent | hero / A3 | A3 -> verified | open |
+| T5 | Bind Shopify media gid://.../123 to the purchase section | agent | buy-box / A1 | - | done |
+| T6 | Confirm shipping and returns copy against the policy page | merchant | shipping-returns / O7, O13 | O7, O13 -> verified | open |
+| T7 | Build the page from the approved copy and selected assets | agent | all | DRAFT_CREATED | open |
+| T8 | Verify 1280 and 390 crops for every slot | agent | all slots | hosted review | open |
+| T9 | Run claim, asset and CTA QA at 390, 768 and 1280 | agent | all | DESIGN_APPROVED | open |
+```
+
+Owners:
+
+- `user`: the person in this conversation (a choice, an upload, an answer).
+- `agent`: `/design-page` executes it without asking.
+- `merchant`: someone outside the conversation supplies a document, an
+  approval or a fact.
+- `blocked-by-evidence`: no owner can act until evidence exists; the page has
+  no V1 without it.
+
+Every plan carries at least: build the page, verify the crops, run claim,
+asset and CTA QA; plus one task per open claim, per pending slot, and per
+unconfirmed offer item.
+
+### Plan status
+
+```markdown
+## Plan status
+
+**Plan status.** PLAN_READY_FOR_DESIGN | PLAN_COMPLETE - asset tasks pending | BLOCKED - evidence required
+**Blocking items.** none | <C#, A#, O#, S# with one line each>
+**Approval.** pending | PLAN_APPROVED <who> <date>
+```
+
+Compute it from the Work queue: `BLOCKED - evidence required` when any open
+task is `blocked-by-evidence`; otherwise `PLAN_COMPLETE - asset tasks pending`
+when any open task is owned by `user` or `merchant`; otherwise
+`PLAN_READY_FOR_DESIGN`.
+
+The plan is not ready while any section has missing final copy, an
+unresolved `Asset` line, a `planned` slot without a decision state, a Claim
+gate row without a gate, a CTA without a destination, or an unchosen product
+or variant. `PLAN_APPROVED` is written only after the user's explicit
+approval in this conversation, and never while the status is
+`BLOCKED - evidence required`.
+
+## Do Not Include
 
 - island names or schemas
 - island props or hydration modes
@@ -1578,13 +1474,13 @@ Do not include:
 - template search transcripts
 - QA, compilation, synchronization, or publishing state
 
-Record the confirmed binding, ordered sections, asset decisions, reviews,
-offer evidence and unresolved questions in the task handoff. No per-page
+Record the confirmed binding, section order, asset decisions, reviews, offer
+evidence, claim gates and open tasks in the task handoff. No per-page
 manifest, source, theme, compile or QA files are created.
 
 ## Approval
 
-Present:
+Present the plan, then this summary:
 
 ```text
 Page:
@@ -1595,51 +1491,42 @@ Deviations from the type default: <none | list>
 Mandatory sections omitted:
 Goal:
 Audience:
+Product / default variant:
 Offer: <type and terms | none>
-Campaign:
-Copy framework:
+Copy framework / headline pattern:
 Template direction:
 Design direction:
 Bold moment:
 Overrides:
-Sections:
-Asset slots: <n verified / m planned / k blocked by generation policy>
-Planned slots (unresolved):
+Sections: <n, in order>
+Asset slots: <n verified / m planned> ; decisions: <counts per state>
+User selection: <roles awaiting a choice | none>
+Generation briefs: <G# ids and estimated credits | none>
 Proof ledger: <n verified / m pending / k dropped>
-Consumer decision model:
-Behavioral hypothesis:
-Claims to confirm:
-Next route: <concept-first | direct-design | fast-build>
+Claim gate: <n approved / m merchant evidence required / k removed>
+Work queue: <n open: u user / a agent / m merchant / b blocked>
+Plan status: <PLAN_READY_FOR_DESIGN | PLAN_COMPLETE - asset tasks pending | BLOCKED - evidence required>
 ```
 
-For `production-ready`, wait for approval. For `fast-draft`, present the
-summary and continue to the inferred reversible route unless the user asked to
-review the plan first or the route requires paid generation.
+Wait for explicit approval. Answer questions, take remaps and edits, and
+re-present. Record `PLAN_APPROVED <who> <date>` in the Plan status block only
+when the user approves and the status is not `BLOCKED - evidence required`.
+A blocked plan is returned with its blocking items; the user decides whether
+to obtain the evidence or remove the dependent sections.
 
 ## Return
 
-Return the plan and campaign summary, workspace/store/theme binding, asset
-slot summary, the
-missing-asset list, the inferred next route, and `PLAN_APPROVED`. Name the
-route with the command it maps to:
-
-| Route | Next command | When |
-|---|---|---|
-| `direct-design` | `/design-page` | the normal source and hosted-draft review |
-| `concept-first` | `/design-page` (concept path) | the user wants to approve a mockup first |
-| `fast-build` | `/build` | fastest draft, no template supplied |
-| `fast-build` | `/build-with-template` | the user supplied a page-kit or section-template URL |
-
-Every route builds the page the same way: the type's `## Workflow`, media
-decided per section before copy, every asset viewed before use, and missing
-slots reported rather than filled with colour or copy. `fast-build` asks fewer
-questions and skips the design-approval stage; it does not skip the assets.
+Return the plan, the binding, the status label, the Work queue, and
+`PLAN_APPROVED` when it was granted. The next command is always
+`/design-page`; it reads the Plan status and the Work queue first, executes
+the agent-owned tasks, asks for the user- and merchant-owned ones, and builds
+the page from the approved copy and the selected assets.
 
 ---
 
 # Skill: publish
 
-> Publish a synchronized and QA-passed Lexsis storefront draft. Use only when the user explicitly asks to release a specific page version.
+> Publish a Lexsis storefront draft version that carries DESIGN_APPROVED from /design-page or /optimize. Use only when the user explicitly asks to release a specific page version.
 
 # Publish a Page
 
@@ -1648,7 +1535,7 @@ Publishing is a separate, explicit action. Do not rebuild the page here.
 Read `references/workflow-intent.md`. Intent inference may distinguish a draft
 request from a live-release request, but it never substitutes for explicit
 approval naming the page and version. A request to preview, create, finish,
-review, or make a page production-ready is not publication approval.
+review, or approve a design is not publication approval.
 
 Use `lexsis_pages.edit_context`, `lexsis_pages.integrity`,
 `lexsis_pages.source`, `lexsis_workspace.get`, and
@@ -1667,9 +1554,9 @@ authorize or substitute for a successful live publish.
    draft and recorded baseline.
 4. Read `lexsis_pages` action `edit_context`.
 5. Confirm the remote version equals `remote.lastKnownVersion`.
-6. Confirm responsive, approved-versus-current hosted visual review, commerce, copy,
-   claims, assets, and integrity checks passed against that same version and
-   reviewed bundle.
+6. Confirm `DESIGN_APPROVED` was recorded by `/design-page` or `/optimize` for
+   this same page version and reviewed bundle, with hosted QA at 390, 768 and
+   1280 and commerce, copy, claims, assets and integrity checks passed.
 7. Re-read integrity and source/bundle evidence through MCP. Missing or stale
    evidence blocks release; no local file or validator substitutes for it.
 8. Confirm the store has the required entitlement.
@@ -2202,7 +2089,7 @@ guidance and brand-kit preview blueprints. Record every override in
 `page plan` under "Overrides of brand design.md".
 
 Loaded by `/plan-page` (Design direction block), `/design-page` (Design Direction
-Gate and hosted review), `/generate` (Production Gate) and `/optimize`.
+Gate and hosted review) and `/optimize` (Scorecard).
 Review the persisted MCP source and hosted draft. No local QA script or
 page-file workflow is required.
 
@@ -2367,8 +2254,7 @@ Choose section order from the page-type contract, not from this protocol.
    and optional `scripts` inputs. `lexsis_pages.compile_artifact` retrieves
    an existing result by `compile_id` for inspection; it does not compile.
 4. Read all `validation_errors`, publish validation and missing utility
-   candidates. Repair the source rather than mutating compiled JSON. A
-   fast-draft repair budget remains bounded by `references/fast-build.md`.
+   candidates. Repair the source rather than mutating compiled JSON.
 5. Save the successful response and input hashes as compile evidence.
 
 ## Create or edit one draft
@@ -2384,9 +2270,9 @@ blindly. Return the hosted draft URL and exact version as `DRAFT_CREATED`.
 ## Review and release boundary
 
 A clean compile is structural evidence, not a visual pass. Hosted design
-review and production checks follow `references/qa-recipe.md`. A fast draft
-may leave review pending; production-ready output cannot claim approval
-without evidence. Publication follows `references/publishing.md` and requires
+review and commerce checks follow `references/qa-recipe.md`. `DRAFT_CREATED`
+may leave review pending; `DESIGN_APPROVED` cannot be claimed without hosted
+review evidence. Publication follows `references/publishing.md` and requires
 explicit authorization. Report the exact state and do not equate draft
 creation, approval, publication, and live HTTP verification.
 
@@ -2449,37 +2335,34 @@ Use one owning command at a time.
 /setup
   U+2192 /plan-page
   U+2192 /design-page
-  U+2192 /generate
   U+2192 /publish
 ```
 
 - Setup is normally run once and refreshed only for changed stores/themes.
-- Plan defines a concise campaign and section strategy without islands.
-- Design selects islands, resolves page assets, compiles source, and creates
-  one unpublished hosted draft.
-- Generate reuses that draft when present, then owns synchronization and
-  production-ready hosted QA.
-- Publish is a separate explicit release.
+- Plan produces the complete page specification: strategy, final section
+  copy, an asset decision for every section, claim gate, work queue and plan
+  status, without islands. It waits for explicit approval.
+- Design builds the approved plan: selects islands, resolves the plan's asset
+  decisions, compiles source, creates one unpublished hosted draft, runs
+  hosted QA at 390, 768 and 1280 with commerce checks, applies later edits
+  with version protection, and returns `DESIGN_APPROVED`.
+- Publish is a separate explicit release that gates on `DESIGN_APPROVED` for
+  the same version.
 
 Commands do not silently invoke one another. When a user intentionally starts
 later, recover the minimum missing decision evidence and record the skipped command.
 
-Infer `fast-draft`, `production-ready`, or `publish` from the user's complete
-request and current conversation. Reversible ambiguity defaults to
-`fast-draft`; consequential ambiguity still requires clarification. Intent
-inference never authorizes publishing, paid generation, or deletion.
+Infer question depth and publish intent from the user's complete request and
+current conversation. Approval before design and before publish is never
+inferred. Intent inference never authorizes publishing, paid generation, or
+deletion.
 
 ## Optional Routes
 
-- Use `/analyze-page` before planning when a URL, screenshot, or ad matters.
-- Use `/asset-prep` independently for standalone or replacement asset work.
 - Use `/design-page` concept-first when the user wants a mobile-first mockup
   approved before source authoring.
-- Use `/build` for the fastest unpublished draft from a prompt or an
-  automatically selected page kit.
-- Use `/build-with-template` when the user already supplied the page-kit or
-  section-template URL.
-- Use `/optimize` for an existing page and a specific outcome.
+- Use `/optimize` for an existing page and a specific outcome: it scores the
+  page, proposes a plan with the same blocks, and applies approved changes.
 - Use `/ab-test` to inspect a live Lexsis URL, build controlled variants, and
   create or evaluate an experiment.
 - Use `/cart` for cart profile configuration.
@@ -2502,7 +2385,6 @@ inference never authorizes publishing, paid generation, or deletion.
 - Keep production changes in source-based MCP operations and stop on version drift.
 - Create drafts with `publish:false`.
 - Keep concept images out of production source and asset slots.
-- Limit fast-build compilation to one initial attempt and one targeted repair.
 - Publish only after current QA and explicit approval.
 
 ---
@@ -2654,8 +2536,8 @@ Add this compact block to `page plan`:
 ```
 
 `/design-page` implements this block without reopening settled choices.
-`/build` creates the minimum version from available evidence. `/optimize` and
-`/ab-test` use it to form one controlled, measurable hypothesis.
+`/optimize` and `/ab-test` use it to form one controlled, measurable
+hypothesis.
 
 ## Guardrails
 
@@ -2774,6 +2656,8 @@ visible changes return to design approval. No page publication is implied.
 
 # Hosted draft verification
 
+Run by `/design-page` (Hosted Design Review) and `/optimize` Apply.
+
 ## Evidence gate
 
 Follow `references/source-artifact-workflow.md`. There are no local QA steps,
@@ -2887,6 +2771,8 @@ Choose the type through `references/page-types/_index.md`, execute `references/w
 ---
 
 # Storefront Page Editing
+
+Run by `/design-page` (Existing Page Edits) and `/optimize` Apply.
 
 Edit existing pages through canonical editable source and section-level remote
 operations. Read `source-artifact-workflow.md` first.
@@ -3072,36 +2958,30 @@ Use `references/workflows/_how-to-read.md` for the plan-to-design handoff and `r
 
 # Public Storefront Workflow
 
-The customer-facing pack has twelve commands. Five form the normal page
+The customer-facing pack has seven commands. Four form the normal page
 journey:
 
 ```text
 /setup
   U+2192 /plan-page
   U+2192 /design-page
-  U+2192 /generate
   U+2192 /publish
 ```
 
 | Command | Owns | Main output |
 |---|---|---|
 | `setup` | Saved store and theme design context | `setup.json` and design files |
-| `plan-page` | One-page campaign and section strategy | approved `page plan` |
-| `design-page` | Assets, islands, source, compile, and hosted design review | `DRAFT_CREATED` or `DESIGN_APPROVED` |
-| `generate` | Draft creation when needed, then synchronization and hosted QA | `DRAFT_CREATED` or `DRAFT_READY` |
+| `plan-page` | The complete page specification: final section copy, an asset decision per section, claim gate, work queue and plan status | approved `page plan` (`PLAN_APPROVED`) |
+| `design-page` | Plan gate, assets, islands, source, compile, one hosted draft, hosted QA at 390, 768 and 1280, later edits | `DRAFT_CREATED`, then `DESIGN_APPROVED` after hosted QA |
 | `publish` | Explicit live release | published version |
 
-Seven optional commands support the workflow:
+Three optional commands support the workflow:
 
 | Command | Owns |
 |---|---|
-| `analyze-page` | URL, screenshot, ad, or own-page analysis |
-| `asset-prep` | Independent asset search, generation, import, or replacement |
-| `optimize` | Outcome-led existing-page improvement |
+| `optimize` | Score an existing page, propose a strict optimization plan, apply approved changes |
 | `ab-test` | URL-first controlled variants and experiment evaluation |
 | `cart` | Cart profile inspection, assignment, and editing |
-| `build` | Fast unpublished draft from a prompt or selected/automatic page kit |
-| `build-with-template` | Fast unpublished draft from an explicit template URL |
 
 ## Rules
 
@@ -3112,12 +2992,12 @@ Seven optional commands support the workflow:
 4. Every page binds one saved store/theme pair.
 5. Persisted MCP source and version are the edit baseline.
 6. Draft creation is not publishing approval.
-7. Infer fast-draft versus production-ready intent from the whole request;
-   reversible ambiguity defaults to fast-draft.
+7. Infer only question depth and publish-versus-draft intent from the whole
+   request; the plan is always approved before design.
 8. A visual concept is optional evidence inside `design-page`, not production
    page media.
-9. Design and fast-build routes create `DRAFT_CREATED`; `generate` reuses that
-   draft and owns upgrading it to `DRAFT_READY`.
+9. Design creates `DRAFT_CREATED`, runs hosted QA and edits, and owns
+   `DESIGN_APPROVED`; `publish` gates on it for the same version.
 
 ---
 
@@ -3302,8 +3182,8 @@ Examples:
   the searches and rejection reason.
 - One island lacks safe preview data: static fallback is allowed for that
   island during visual review.
-- Island schema or production compilation fails: do not mark the page
-  production-ready.
+- Island schema or production compilation fails: do not record
+  `DESIGN_APPROVED` for the page.
 
 ## Result Evidence
 
@@ -3537,8 +3417,8 @@ draft. That hosted renderer is the only interactive preview.
 - Shoppable video, galleries, accordions, and similar islands are reviewed in
   the same runtime merchants will receive.
 - Do not build a local renderer shell or record local hydration evidence.
-- `/design-page` inspects 390px and 1280px when approval is requested.
-- `/generate` adds 768px, synchronization evidence, and full commerce QA.
+- `/design-page` inspects 390px, 768px and 1280px with commerce checks before
+  `DESIGN_APPROVED`.
 
 ## Asset Roles
 
@@ -3583,7 +3463,7 @@ current design.
 Every storefront page is one of the thirty types below. `/plan-page` picks
 exactly one before it searches templates, assets or proof, records it in the
 `## Page type` block and in `page.pageType`, and then loads only that type's
-file. `/design-page`, `/build` and `/generate` re-read the same file. Each
+file. `/design-page` and `/optimize` re-read the same file. Each
 type file follows `references/page-types/_checklist-format.md` and ends with
 a JSON checklist shared by the workflow and repository contract tests.
 
@@ -3855,7 +3735,7 @@ The traffic file fixes tone and message match. House rules
 
 Every file in `references/page-types/` (except `_index.md` and this file)
 describes one page type in the same shape so that `/plan-page`, `/design-page`,
-`/build` and repository contract tests can read it the same way. The
+`/optimize` and repository contract tests can read it the same way. The
 heart of each file is its `## Workflow`: the ordered thinking the model follows
 for that type, section by section, with the asset decision, the island
 decision and the tool call that settles each. The `## Checklist` JSON is the
@@ -4342,8 +4222,8 @@ RS20. Autoplay video reviews muted only; sound on tap; captions present. LAW WCA
 Every trust element a page shows (a star, a count, a quote, a logo, a badge,
 a photo of a customer, a "clinically tested" line) is a row in the plan's
 `## Proof ledger` before design begins. `/design-page` renders only ledger
-rows; `/generate` fails production QA on any proof element that is not in the
-ledger; `/optimize` may add proof only by adding a row first. This file
+rows and fails hosted QA on any proof element not in the ledger; `/optimize`
+may add proof only by adding a row first. This file
 defines the block, the verification each kind needs, and the display rules.
 Sourcing procedures live in `references/proof/reviews-sourcing.md` and the
 sibling files.
@@ -5405,9 +5285,11 @@ Order matters: identify the type before searching anything.
 | 19b | `lexsis_capture.form_schemas`, then `.submissions` for an existing form | R | field shapes; whether a live form already collects what the page needs (PII is redacted) | lead-capture, giveaway, wholesale, waitlist |
 | 20 | `lexsis_drafts.review_collection_create` | W | draft shortlist for the merchant to activate | only when asked |
 
-Output: `page plan` with Page type, Design direction, Consumer decision
-model, Proof ledger, Offer ledger, Imagery plan, Asset slots; compact
-`page record`. Review the type checklist before approval.
+Output: `page plan` with Page type, Page strategy, Design direction, Consumer
+decision model, Section specification, Asset slots with decisions, Proof
+ledger, Offer ledger, Claim gate, Work queue, Plan status; compact
+`page record`. Review the type checklist before approval; the plan waits for
+explicit approval before design.
 
 ## Stage 2: Design
 
@@ -5425,13 +5307,13 @@ model, Proof ledger, Offer ledger, Imagery plan, Asset slots; compact
 | 10 | `lexsis_workspace.credits` then `lexsis_drafts.asset_generate` | W $ | remaining ALLOW-list gaps | ask first |
 | 11 | `lexsis_pages.compile` | R | validation_errors as the work list | loop until clean |
 | 12 | `lexsis_page_create.create` (`publish: false`) | W | one hosted draft | once per page; reuse `remote.pageId` after |
-| 13 | host browser at 390 and 1280 | local | hosted design review | production-ready only |
+| 13 | host browser at 390, 768 and 1280 | local | hosted design review and commerce checks | always before `DESIGN_APPROVED` |
 | 14 | `lexsis_drafts.page_update_section` / `.page_patch` (`expected_version`) | W | fix review findings | never a second draft |
 
 Output: persisted page id/version, hosted preview and compile evidence;
 `DRAFT_CREATED`, later `DESIGN_APPROVED`. No local page files are created.
 
-## Stage 3: Generate (sync + QA)
+## Stage 3: Hosted QA and edits (inside `/design-page` and `/optimize`)
 
 | # | Call | Type | Purpose |
 |---|---|---|---|
@@ -5446,7 +5328,7 @@ Output: persisted page id/version, hosted preview and compile evidence;
 | 9 | `lexsis_capture.get_funnel`, `.validate_funnel`, `.preview_funnel`; `lexsis_drafts.funnel_update` | R/W | a funnel draft's steps read back, validated, previewed and adjusted before review |
 | 10 | `lexsis_support.search_docs` | R | only when a Lexsis behaviour is unclear |
 
-Output: `DRAFT_READY`.
+Output: `DESIGN_APPROVED` for the reviewed page version.
 
 ## Stage 4: Publish and after
 
@@ -5517,7 +5399,7 @@ execute those decisions, never relax their requirements.
 3. Execute each section's type-specific row through the four procedures
    below. Read each procedure once, then apply it to every relevant section.
 4. Reconcile the asset budget and evidence, then inspect compiler results and
-   perform hosted review for the requested draft or production-ready mode.
+   perform the hosted review at 390, 768 and 1280 before `DESIGN_APPROVED`.
 
 ## Four procedures
 

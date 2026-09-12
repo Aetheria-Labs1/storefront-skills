@@ -1,5 +1,7 @@
 # Hosted draft verification
 
+Run by `/design-page` (Hosted Design Review) and `/optimize` Apply.
+
 ## Evidence gate
 
 Follow `references/source-artifact-workflow.md`. There are no local QA steps,

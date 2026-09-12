@@ -52,9 +52,11 @@ Order matters: identify the type before searching anything.
 | 19b | `lexsis_capture.form_schemas`, then `.submissions` for an existing form | R | field shapes; whether a live form already collects what the page needs (PII is redacted) | lead-capture, giveaway, wholesale, waitlist |
 | 20 | `lexsis_drafts.review_collection_create` | W | draft shortlist for the merchant to activate | only when asked |
 
-Output: `page plan` with Page type, Design direction, Consumer decision
-model, Proof ledger, Offer ledger, Imagery plan, Asset slots; compact
-`page record`. Review the type checklist before approval.
+Output: `page plan` with Page type, Page strategy, Design direction, Consumer
+decision model, Section specification, Asset slots with decisions, Proof
+ledger, Offer ledger, Claim gate, Work queue, Plan status; compact
+`page record`. Review the type checklist before approval; the plan waits for
+explicit approval before design.
 
 ## Stage 2: Design
 
@@ -72,13 +74,13 @@ model, Proof ledger, Offer ledger, Imagery plan, Asset slots; compact
 | 10 | `lexsis_workspace.credits` then `lexsis_drafts.asset_generate` | W $ | remaining ALLOW-list gaps | ask first |
 | 11 | `lexsis_pages.compile` | R | validation_errors as the work list | loop until clean |
 | 12 | `lexsis_page_create.create` (`publish: false`) | W | one hosted draft | once per page; reuse `remote.pageId` after |
-| 13 | host browser at 390 and 1280 | local | hosted design review | production-ready only |
+| 13 | host browser at 390, 768 and 1280 | local | hosted design review and commerce checks | always before `DESIGN_APPROVED` |
 | 14 | `lexsis_drafts.page_update_section` / `.page_patch` (`expected_version`) | W | fix review findings | never a second draft |
 
 Output: persisted page id/version, hosted preview and compile evidence;
 `DRAFT_CREATED`, later `DESIGN_APPROVED`. No local page files are created.
 
-## Stage 3: Generate (sync + QA)
+## Stage 3: Hosted QA and edits (inside `/design-page` and `/optimize`)
 
 | # | Call | Type | Purpose |
 |---|---|---|---|
@@ -93,7 +95,7 @@ Output: persisted page id/version, hosted preview and compile evidence;
 | 9 | `lexsis_capture.get_funnel`, `.validate_funnel`, `.preview_funnel`; `lexsis_drafts.funnel_update` | R/W | a funnel draft's steps read back, validated, previewed and adjusted before review |
 | 10 | `lexsis_support.search_docs` | R | only when a Lexsis behaviour is unclear |
 
-Output: `DRAFT_READY`.
+Output: `DESIGN_APPROVED` for the reviewed page version.
 
 ## Stage 4: Publish and after
 

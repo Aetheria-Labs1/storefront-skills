@@ -54,7 +54,7 @@ codex plugin marketplace add Aetheria-Labs1/storefront-skills --ref main
 codex plugin add lexsis-storefront-skills@lexsis-storefront
 ```
 
-Or zero-install: clone the repo anywhere inside your project — Codex discovers `.agents/skills/` automatically. Invoke with `$skill-name` (`$generate`, `$cart`) or let Codex select from your request. Complete the `lexsis-ai` OAuth prompt when Codex requests MCP access.
+Or zero-install: clone the repo anywhere inside your project — Codex discovers `.agents/skills/` automatically. Invoke with `$skill-name` (`$design-page`, `$cart`) or let Codex select from your request. Complete the `lexsis-ai` OAuth prompt when Codex requests MCP access.
 
 ## Install (Cursor)
 
@@ -69,7 +69,7 @@ Both files are **generated** from the canonical skills by `scripts/build-distrib
 
 ## What's Included
 
-- **12 focused storefront commands** — five reviewed-workflow commands and seven optional or fast-path operations
+- **7 focused storefront commands** — four reviewed-workflow commands and three optional operations
 - **2 agents** (cro-analyzer, page-builder) for Claude Code
 - Shared CRO, vertical, traffic-source, workflow, and island references under `skills/storefront-engine/references/`, including the house `design-rules.md` and `island-presets.md`
 - **Page-type contracts** (`references/page-types/`): 30 ecommerce page types
@@ -95,7 +95,7 @@ Both files are **generated** from the canonical skills by `scripts/build-distrib
 - A consumer-behavior CRO framework that turns shopper uncertainty, gallery
   gaps, compatibility, solution completion, trust, and mobile context into
   page-specific hypotheses instead of generic conversion modules
-- **47 active islands** plus 8 deprecated compatibility contracts under
+- **50 active islands** plus 8 deprecated compatibility contracts under
   `skills/storefront-engine/references/islands/`
 - Vertical expertise: beauty, supplements, fashion, food, luxury, home
 - Traffic-source patterns: Meta, Google, TikTok
@@ -107,15 +107,10 @@ Invoke as `/name` (Claude Code) or `$name` (Codex); most also trigger automatica
 | Skill | What it does |
 |-------|--------------|
 | `setup` | Save reusable brand and theme context for one or more stores |
-| `plan-page` | Produce a one-page plan at the depth implied by the user's intent |
-| `design-page` | Build source, compile it, and create one unpublished hosted draft |
-| `build` | Create the fastest unpublished draft from a prompt or automatically selected template |
-| `build-with-template` | Create an unpublished draft directly from a supplied template URL |
-| `asset-prep` | Independently search, generate, import, or replace media |
-| `generate` | Create an unpublished draft early, then synchronize and QA it to production readiness |
-| `publish` | Release a synchronized draft only after explicit approval |
-| `analyze-page` | Analyze a URL, screenshot, ad, or existing page |
-| `optimize` | Improve an existing page for a chosen business outcome |
+| `plan-page` | Produce the complete page specification: copy, asset decisions, claim gate, work queue, status; waits for approval |
+| `design-page` | Build the approved plan, create one unpublished hosted draft, run hosted QA at 390/768/1280, apply edits, return `DESIGN_APPROVED` |
+| `publish` | Release a `DESIGN_APPROVED` draft version only after explicit approval |
+| `optimize` | Score an existing page, propose a strict optimization plan, apply approved changes |
 | `ab-test` | Analyze a Lexsis page URL, build verified challengers, and create or evaluate a draft A/B test |
 | `cart` | Inspect, assign, and edit cart profiles |
 
@@ -133,48 +128,39 @@ The normal page workflow is:
 /setup
   → /plan-page
   → /design-page
-  → /generate
   → /publish (separate approval)
-```
-
-The fast unpublished-draft routes are:
-
-```text
-/build <prompt or optional template URL>
-/build-with-template <template URL> <prompt>
 ```
 
 | Step | Output |
 |------|--------|
 | `/setup` | Saved store brand reference and theme CSS, indexed by store and theme |
-| `/plan-page` | Intent-aware plan with design direction, wireframe, imagery plan, and asset slots |
-| `/design-page` | Canonical source, islands, and `DRAFT_CREATED` hosted preview |
-| `/build` | `DRAFT_CREATED` with planning and visual approval recorded as skipped |
-| `/build-with-template` | `DRAFT_CREATED` from the supplied template direction |
-| `/generate` | `DRAFT_CREATED` preview first; `DRAFT_READY` after synchronization and hosted QA |
-| `/publish` | Explicit release of the reviewed page version |
+| `/plan-page` | Complete page specification (`PLAN_READY_FOR_DESIGN`, `PLAN_COMPLETE - asset tasks pending` or `BLOCKED - evidence required`); `PLAN_APPROVED` after explicit approval |
+| `/design-page` | Canonical source, islands and `DRAFT_CREATED` hosted preview; `DESIGN_APPROVED` after hosted QA at 390/768/1280 |
+| `/publish` | Explicit release of the `DESIGN_APPROVED` page version |
 
 When several saved stores or themes are available, every page records the
 selected `storeId` and `themeId`; it never silently switches themes. Commands
 remain independently invokable, and explicitly skipped steps are recorded in
 the task handoff.
 
-`design-page` can first generate a mobile-first visual concept with the
-existing Lexsis image tools when the user wants to approve the look. Concept
-images remain non-production evidence. It then inventories existing assets,
-asks once before generating missing media, authors readable `<lx-island>`
-source, compiles it, and creates one unpublished hosted draft. Source and
-optional theme CSS go directly to MCP; there are no per-page source files,
-compile artifacts, local preview builds or local QA steps. The hosted
-renderer is the only interactive preview. `/generate` reuses that draft for
-tablet, synchronization, and commerce QA.
+`plan-page` returns the whole specification of the page: final section copy,
+an asset decision for every section, a claim gate, a work queue with owners and
+a plan status. It spends no credits and always waits for explicit approval.
+`design-page` runs a Plan Gate on that status, can first generate a
+mobile-first visual concept when the user wants to approve the look (concept
+images remain non-production evidence), resolves each asset slot by its
+decision, places the plan's copy, authors readable `<lx-island>` source,
+compiles it, and creates one unpublished hosted draft. Source and optional
+theme CSS go directly to MCP; there are no per-page source files, compile
+artifacts, local preview builds or local QA steps. The hosted renderer is the
+only interactive preview. `design-page` then runs hosted QA at 390, 768 and
+1280 with commerce checks, applies later edits with `expected_version`, and
+returns `DESIGN_APPROVED`.
 
-The workflow infers `fast-draft` versus `production-ready` from the complete
-request and conversation rather than requiring a trigger phrase. Reversible
-ambiguity defaults to an early unpublished draft. Publishing, paid generation,
-deletion, and destructive changes retain explicit authorization boundaries.
-Fast build limits compilation to one initial attempt and one targeted repair;
-full QA and synchronization remain an explicit `/generate` upgrade.
+The workflow infers only question depth and publish-versus-draft intent from
+the request; plan approval before design and publishing approval are never
+inferred. Publishing, paid generation, deletion, and destructive changes retain
+explicit authorization boundaries.
 
 ## MCP Server
 
@@ -184,7 +170,7 @@ full QA and synchronization remain an explicit `/generate` upgrade.
 
 ## External MCPs (Optional)
 
-`design-page` or standalone `asset-prep` can use these when installed — none required:
+`design-page` can use these when installed — none required:
 
 | MCP | Adds |
 |-----|------|

@@ -51,7 +51,7 @@ clicked; for search it means the query and the ad text.
 5. Fill the scorecard (section 4) in `page plan`. Any BLOCK row marked "no" stops the plan until the merchant confirms the ad change or the page change. Write the one-line summary:
    `**Message match.** h1 mirrors "<ad headline>" (overlap 0.8); offer 15% first order auto-applied; variant gid://.../456 in hero and buy box; CTA "Get 15% off my first order"; persona "night-shift nurses" in subhead; tone UGC.`
 6. `/design-page` re-reads the page record before writing the hero and runs the section 6 scripts after compile.
-7. For an ad claim that cannot be substantiated from the ledger (MM8): the page does not repeat it, the plan flags it under "Claims to confirm", and the merchant is told the ad itself needs the evidence or a rewrite.
+7. For an ad claim that cannot be substantiated from the ledger (MM8): the page does not repeat it, the plan flags it under the Claim gate, and the merchant is told the ad itself needs the evidence or a rewrite.
 
 ## 4. Scorecard
 

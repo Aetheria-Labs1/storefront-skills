@@ -19,15 +19,10 @@ EXPECTED_PUBLIC_SKILLS = {
     "setup",
     "plan-page",
     "design-page",
-    "asset-prep",
-    "generate",
-    "publish",
-    "analyze-page",
     "optimize",
-    "ab-test",
+    "publish",
     "cart",
-    "build",
-    "build-with-template",
+    "ab-test",
 }
 
 
@@ -180,7 +175,16 @@ class PublicSkillPackTests(unittest.TestCase):
             (references / "plan-page.md").read_text(encoding="utf-8"),
         )
         plan = (SKILLS / "plan-page" / "SKILL.md").read_text(encoding="utf-8")
-        for block in ("## Design direction", "### Imagery and background plan", "### Asset slots", "## Parallel Planning"):
+        for block in (
+            "## Design direction",
+            "### Imagery and background plan",
+            "### Asset slots",
+            "## Parallel Planning",
+            "## Section specification",
+            "## Claim gate",
+            "## Work queue",
+            "## Plan status",
+        ):
             self.assertIn(block, plan)
         self.assertIn("Consumer decision model", plan)
         design = (SKILLS / "design-page" / "SKILL.md").read_text(encoding="utf-8")
@@ -189,6 +193,9 @@ class PublicSkillPackTests(unittest.TestCase):
             "## Hosted Design Review",
             "## Asset Gap Confirmation",
             "hosted URL and tested version",
+            "## Plan Gate",
+            "## Copy Placement",
+            "## Existing Page Edits",
         ):
             self.assertIn(block, design)
 
@@ -214,9 +221,6 @@ class PublicSkillPackTests(unittest.TestCase):
         for skill_name in (
             "plan-page",
             "design-page",
-            "build",
-            "build-with-template",
-            "generate",
             "optimize",
             "ab-test",
         ):
@@ -248,6 +252,25 @@ class PublicSkillPackTests(unittest.TestCase):
         self.assertIn("Design template selection", text)
         self.assertIn("Design asset selection", text)
         self.assertNotIn("reviewsEndpoint", text)
+        for phrase in (
+            "reuse-selected",
+            "shopify-product-media",
+            "user-selection-required",
+            "user-upload-required",
+            "generate-required",
+            "composite-required",
+            "none-required",
+            "reference-only",
+            "PLAN_READY_FOR_DESIGN",
+            "PLAN_COMPLETE - asset tasks pending",
+            "BLOCKED - evidence required",
+            "blocked-by-evidence",
+            "## Generation briefs",
+            "## User selection",
+        ):
+            self.assertIn(phrase, text, phrase)
+        for retired in ("fast-draft", "fast-build", "`/build`", "DRAFT_READY"):
+            self.assertNotIn(retired, text, retired)
 
     def test_design_page_compiles_and_creates_the_hosted_draft(self) -> None:
         text = (SKILLS / "design-page" / "SKILL.md").read_text(encoding="utf-8")
@@ -261,20 +284,55 @@ class PublicSkillPackTests(unittest.TestCase):
         self.assertIn("generation-policy.md", text)
         self.assertIn("lexsis_assets.view", text)
         self.assertNotIn("page-preview.html", text)
+        for phrase in (
+            "## Plan Gate",
+            "DESIGN_APPROVED",
+            "768",
+            "Quick Add",
+            "lexsis_drafts.page_record_qa",
+            "expected_version",
+        ):
+            self.assertIn(phrase, text, phrase)
+        for retired in ("DRAFT_READY", "`/generate`", "fast-draft"):
+            self.assertNotIn(retired, text, retired)
 
-    def test_generate_routes_intent_and_creates_before_ready_qa(self) -> None:
-        text = (SKILLS / "generate" / "SKILL.md").read_text(encoding="utf-8")
-        self.assertIn("Infer intent from the whole request and conversation", text)
-        self.assertIn("fast-draft", text)
-        self.assertIn("production-ready", text)
-        self.assertLess(
-            text.index("lexsis_page_create.create"),
-            text.index("Production-Ready Follow-Through"),
-        )
-        self.assertIn("DRAFT_CREATED", text)
-        self.assertIn("DRAFT_READY", text)
-        self.assertIn("No workspace adapter", text)
-        self.assertIn("Do not call\n`lexsis_page_create.create` again", text)
+    def test_optimize_scores_plans_and_applies(self) -> None:
+        text = (SKILLS / "optimize" / "SKILL.md").read_text(encoding="utf-8")
+        for phrase in (
+            "## Scorecard",
+            "## Findings by section",
+            "## Asset slots",
+            "## Claim gate",
+            "## Work queue",
+            "OPTIMIZATION_PLAN_READY",
+            "DESIGN_APPROVED",
+            "expected_version",
+            "lexsis_assets.view",
+            "references/plan-page.md",
+            "lexsis_analytics.page",
+        ):
+            self.assertIn(phrase, text, phrase)
+
+    def test_publish_gates_on_design_approved(self) -> None:
+        publish = (SKILLS / "publish" / "SKILL.md").read_text(encoding="utf-8")
+        self.assertIn("DESIGN_APPROVED", publish)
+        for path in [
+            *SKILLS.glob("*/SKILL.md"),
+            *PLUGIN_AGENTS.glob("*.md"),
+            ROOT / "README.md",
+            ROOT / "AGENTS.md",
+        ]:
+            text = path.read_text(encoding="utf-8")
+            for retired in (
+                "DRAFT_READY",
+                "`/generate`",
+                "`/build`",
+                "`/build-with-template`",
+                "`/analyze-page`",
+                "`/asset-prep`",
+                "fast-build",
+            ):
+                self.assertNotIn(retired, text, (path, retired))
 
     def test_design_page_supports_optional_existing_tool_concepts(self) -> None:
         text = (SKILLS / "design-page" / "SKILL.md").read_text(encoding="utf-8")
@@ -287,24 +345,6 @@ class PublicSkillPackTests(unittest.TestCase):
         self.assertIn("lexsis_drafts` action `asset_generate", reference)
         self.assertIn("lexsis_assets` action `view", reference)
         self.assertIn("never page media", reference)
-
-    def test_fast_build_commands_are_bounded_draft_only_workflows(self) -> None:
-        for name in ("build", "build-with-template"):
-            text = (SKILLS / name / "SKILL.md").read_text(encoding="utf-8")
-            self.assertIn("publish:false", text)
-            self.assertIn("DRAFT_CREATED", text)
-            self.assertIn("one targeted repair", text)
-            self.assertIn("references/fast-build.md", text)
-
-        reference = (
-            SKILLS / "storefront-engine" / "references" / "fast-build.md"
-        ).read_text(encoding="utf-8")
-        self.assertLess(
-            reference.index("lexsis_page_create"),
-            reference.index("## After the First Draft"),
-        )
-        self.assertIn("workflow.skippedSkills", reference)
-        self.assertIn("Do not run repeated repair loops", reference)
 
     def test_ab_test_is_url_first_local_first_and_draft_only(self) -> None:
         text = (SKILLS / "ab-test" / "SKILL.md").read_text(encoding="utf-8")
@@ -322,7 +362,7 @@ class PublicSkillPackTests(unittest.TestCase):
         self.assertFalse((SKILLS / "experiment").exists())
 
     def test_public_skills_ship_no_local_page_qa_tooling(self) -> None:
-        for skill in ("generate", "design-page", "plan-page"):
+        for skill in ("design-page", "plan-page", "optimize"):
             self.assertEqual(list((SKILLS / skill / "scripts").glob("*.py")), [])
         for path in [*SKILLS.glob("*/SKILL.md"), *PLUGIN_AGENTS.glob("*.md")]:
             content = path.read_text()
@@ -337,12 +377,12 @@ class PublicSkillPackTests(unittest.TestCase):
         self.assertFalse((SKILLS / "visual-page").exists())
         self.assertTrue((SKILLS / "design-page" / "SKILL.md").is_file())
 
-    def test_release_version_is_7_9_0(self) -> None:
+    def test_release_version_is_8_0_0(self) -> None:
         for path in (
             ROOT / ".claude-plugin" / "plugin.json",
             ROOT / "codex" / ".codex-plugin" / "plugin.json",
         ):
-            self.assertEqual("7.9.1", json.loads(path.read_text())["version"])
+            self.assertEqual("8.0.0", json.loads(path.read_text())["version"])
 
     def test_discovery_is_not_a_global_blocker(self) -> None:
         checked = [

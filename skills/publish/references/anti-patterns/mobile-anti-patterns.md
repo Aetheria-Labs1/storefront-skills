@@ -2,7 +2,7 @@
 
 Failures that appear only, or mostly, on a phone. `/design-page` runs these
 in the hosted review at 390 x 844 (canonical) and spot-checks 320, 375 and
-430 wide; `/generate` repeats them in production QA. Baymard's mobile
+430 wide; `/optimize` repeats them when scoring an existing page. Baymard's mobile
 research (20,000+ hours of mobile-only testing) frames three root
 constraints: slow, error-prone touch typing; loss of page overview (the
 keyboard takes about half of a portrait viewport); and no hover state.

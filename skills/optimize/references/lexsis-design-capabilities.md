@@ -123,8 +123,8 @@ draft. That hosted renderer is the only interactive preview.
 - Shoppable video, galleries, accordions, and similar islands are reviewed in
   the same runtime merchants will receive.
 - Do not build a local renderer shell or record local hydration evidence.
-- `/design-page` inspects 390px and 1280px when approval is requested.
-- `/generate` adds 768px, synchronization evidence, and full commerce QA.
+- `/design-page` inspects 390px, 768px and 1280px with commerce checks before
+  `DESIGN_APPROVED`.
 
 ## Asset Roles
 

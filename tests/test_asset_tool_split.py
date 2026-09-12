@@ -31,13 +31,12 @@ class AssetToolSplitTests(unittest.TestCase):
     def test_asset_workflows_expose_import_and_upload_separately(self) -> None:
         documents = [
             SKILLS / name / "SKILL.md"
-            for name in ("asset-prep", "plan-page", "design-page")
+            for name in ("plan-page", "design-page", "optimize")
         ]
         documents.extend(
             REFERENCES / name
             for name in (
                 "asset-prep.md",
-                "fast-build.md",
                 "lexsis-mcp-contract.md",
                 "assets/asset-sourcing-sequence.md",
                 "workflows/section-asset-workflow.md",

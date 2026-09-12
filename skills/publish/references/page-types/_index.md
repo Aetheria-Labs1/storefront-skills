@@ -3,7 +3,7 @@
 Every storefront page is one of the thirty types below. `/plan-page` picks
 exactly one before it searches templates, assets or proof, records it in the
 `## Page type` block and in `page.pageType`, and then loads only that type's
-file. `/design-page`, `/build` and `/generate` re-read the same file. Each
+file. `/design-page` and `/optimize` re-read the same file. Each
 type file follows `references/page-types/_checklist-format.md` and ends with
 a JSON checklist shared by the workflow and repository contract tests.
 

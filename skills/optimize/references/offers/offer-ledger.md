@@ -3,8 +3,8 @@
 Any price other than the current list price, any discount, bundle saving,
 gift, free shipping promise, delivery date, countdown, stock statement or
 subscription term is a row in the plan's `## Offer ledger` before design.
-`/design-page` renders offers only from ledger rows; `/generate` fails
-production QA on an unledgered offer element; a countdown or stock indicator
+`/design-page` renders offers only from ledger rows and fails hosted QA on
+an unledgered offer element; a countdown or stock indicator
 without a verified row is removed. Types and legality live in
 `references/offers/offer-types.md`, `references/offers/price-presentation.md`
 and `references/offers/urgency-scarcity.md`.
@@ -46,7 +46,7 @@ Columns:
   computation, merchant document).
 - **Confirmed**: source and date. Prices and availability come from
   `lexsis_catalog.get` on the planning day and are re-read in
-  `/design-page` and `/generate`.
+  `/design-page` before compose and in hosted QA.
 - **Status**: `verified`, `pending` (not rendered), ` - ` (not applicable).
 
 ## Rules the ledger enforces

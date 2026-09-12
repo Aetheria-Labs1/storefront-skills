@@ -107,35 +107,56 @@ class PageTypeCorpusTests(unittest.TestCase):
                 first.append(sid)
         with tempfile.TemporaryDirectory() as tmp:
             w = Path(tmp)
-            plan = "\n".join(
-                [
-                    "# Plan", "## Page type", "**Type.** ad-landing-page",
-                    "**Mandatory sections omitted.** none",
-                    "## Design direction", "## Consumer decision model",
-                    "## Proof ledger", "## Offer ledger", "## Asset slots",
-                ]
-            )
-            (w / "page-plan.md").write_text(plan, encoding="utf-8")
+            plan_lines = [
+                "# Plan", "## Page type", "**Type.** ad-landing-page",
+                "**Mandatory sections omitted.** none",
+                "## Page strategy", "## Consumer decision model", "## Design direction",
+                "## Section specification",
+                "## Asset slots",
+                "| Slot | Section | Role/purpose | Aspect | Decision | Source decision | Id / URL | Status |",
+                "|---|---|---|---|---|---|---|---|",
+                "| A1 | hero | hero_bg | 16:9 | generate-required | generated (hero_bg, library: none) | | planned |",
+                "## Proof ledger", "## Offer ledger", "## Claim gate",
+                "## Work queue",
+                "| # | Task | Owner | Section / slot | Unblocks | Status |",
+                "|---|---|---|---|---|---|",
+                "| T1 | Build the page | agent | all | DRAFT_CREATED | open |",
+                "## Plan status",
+                "**Plan status.** PLAN_READY_FOR_DESIGN",
+                "**Approval.** pending",
+            ]
+            (w / "page-plan.md").write_text("\n".join(plan_lines), encoding="utf-8")
             manifest = {
                 "page": {"pageType": "ad-landing-page"},
                 "sections": first,
                 "offer": {"type": "first-order"},
                 "reviews": {"source": "collection", "available": 12},
-                "assets": [{"slotId": "A1", "role": "hero_bg", "generated": True}],
+                "assets": [{
+                    "slotId": "A1", "role": "hero_bg", "generated": True,
+                    "decision": "generate-required", "status": "planned",
+                }],
             }
             (w / "page-manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
             ok = subprocess.run([sys.executable, str(LINT), str(w)], capture_output=True, text=True)
             self.assertEqual(ok.returncode, 0, ok.stdout)
+            self.assertNotRegex(ok.stdout, r"T1[12] .*WARN")
 
             manifest["sections"] = first[1:] + list(data["forbidden_sections"][:1])
             manifest["assets"][0]["role"] = "product_media"
+            manifest["assets"][0]["decision"] = "vibes"
             (w / "page-manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+            (w / "page-plan.md").write_text(
+                "\n".join(plan_lines).replace("| T1 | Build the page | agent |", "| T1 | Build the page | merchant |"),
+                encoding="utf-8",
+            )
             advisory = subprocess.run([sys.executable, str(LINT), str(w)], capture_output=True, text=True)
             self.assertEqual(advisory.returncode, 0, "advisory mode never blocks")
             self.assertIn("WARN", advisory.stdout)
             bad = subprocess.run([sys.executable, str(LINT), "--strict", str(w)], capture_output=True, text=True)
             self.assertEqual(bad.returncode, 1, bad.stdout)
             self.assertIn("T2 mandatory sections", bad.stdout)
+            self.assertRegex(bad.stdout, r"T11 .*WARN +A1:vibes")
+            self.assertRegex(bad.stdout, r"T12 .*WARN +expected PLAN_COMPLETE - asset tasks pending, plan says PLAN_READY_FOR_DESIGN")
 
 
 if __name__ == "__main__":

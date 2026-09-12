@@ -24,8 +24,8 @@ with `lexsis_pages` action `find`. Confirm the match with `get`,
 `edit_context`, and `source`. For a custom domain or root route that does not
 map cleanly to one page, compare the observed title and content with the
 candidate pages and ask the user only when more than one remains plausible.
-Stop if the URL is not an editable Lexsis page; external inspiration belongs
-to `/analyze-page`.
+Stop if the URL is not an editable Lexsis page; for external inspiration,
+inspect the URL in the host browser.
 
 ## Define One Hypothesis
 

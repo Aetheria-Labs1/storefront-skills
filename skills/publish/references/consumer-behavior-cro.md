@@ -139,8 +139,8 @@ Add this compact block to `page plan`:
 ```
 
 `/design-page` implements this block without reopening settled choices.
-`/build` creates the minimum version from available evidence. `/optimize` and
-`/ab-test` use it to form one controlled, measurable hypothesis.
+`/optimize` and `/ab-test` use it to form one controlled, measurable
+hypothesis.
 
 ## Guardrails
 

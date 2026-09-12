@@ -179,8 +179,8 @@ Examples:
   the searches and rejection reason.
 - One island lacks safe preview data: static fallback is allowed for that
   island during visual review.
-- Island schema or production compilation fails: do not mark the page
-  production-ready.
+- Island schema or production compilation fails: do not record
+  `DESIGN_APPROVED` for the page.
 
 ## Result Evidence
 

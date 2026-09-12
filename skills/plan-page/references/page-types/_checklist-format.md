@@ -2,7 +2,7 @@
 
 Every file in `references/page-types/` (except `_index.md` and this file)
 describes one page type in the same shape so that `/plan-page`, `/design-page`,
-`/build` and repository contract tests can read it the same way. The
+`/optimize` and repository contract tests can read it the same way. The
 heart of each file is its `## Workflow`: the ordered thinking the model follows
 for that type, section by section, with the asset decision, the island
 decision and the tool call that settles each. The `## Checklist` JSON is the

@@ -15,11 +15,18 @@ mechanical rules from _checklist-format.md:
   T4 section count within min..max
   T5 nav rule (header present only when nav != none)
   T6 sticky-cta present when cta.sticky == required, absent when forbidden
-  T7 plan has the required blocks: Page type, Design direction, Consumer
-     decision model, Proof ledger, Asset slots; Offer ledger when an offer exists
+  T7 plan has the required blocks: Page type, Page strategy, Design direction,
+     Consumer decision model, Section specification, Proof ledger, Asset slots,
+     Claim gate, Work queue, Plan status; Offer ledger when an offer exists
   T8 every generated asset slot uses an ALLOW purpose, or an ASK purpose with askApproved: true
   T9 reviews section planned only when manifest.reviews.available > 0
   T10 countdown / stock-indicator sections only when the offer ledger verifies them
+  T11 asset decisions valid: every assets[] decision and every "## Asset slots"
+      row decision is one of the six slot states; status "verified" pairs only
+      with reuse-selected / shopify-product-media, "planned" only with the rest
+  T12 plan status matches work queue: "## Work queue" rows carry a known owner;
+      the "**Plan status.**" label equals the one computed from open tasks
+      (blocked-by-evidence > user/merchant > ready); no PLAN_APPROVED while blocked
 
 Advisory by default: prints WARN rows and exits 0 so the plan owner decides.
 Pass --strict to exit 1 on any WARN. References default to the plan-page
@@ -42,11 +49,25 @@ ALLOW_PURPOSES = {
 ASK_PURPOSES = {"product_lifestyle"}  # allowed only with "askApproved": true
 REQUIRED_BLOCKS = [
     "## Page type",
+    "## Page strategy",
     "## Design direction",
     "## Consumer decision model",
+    "## Section specification",
     "## Proof ledger",
     "## Asset slots",
+    "## Claim gate",
+    "## Work queue",
+    "## Plan status",
 ]
+ASSET_DECISIONS = {
+    "reuse-selected", "shopify-product-media", "user-selection-required",
+    "user-upload-required", "generate-required", "composite-required",
+}
+VERIFIED_DECISIONS = {"reuse-selected", "shopify-product-media"}
+OWNERS = {"user", "agent", "merchant", "blocked-by-evidence"}
+STATUS_BLOCKED = "BLOCKED - evidence required"
+STATUS_PENDING = "PLAN_COMPLETE - asset tasks pending"
+STATUS_READY = "PLAN_READY_FOR_DESIGN"
 
 
 def references_dir(cli: str | None) -> pathlib.Path:
@@ -75,6 +96,18 @@ def matches(section_id: str, canonical: str) -> bool:
 def any_present(entry, sections: list[str]) -> bool:
     options = entry if isinstance(entry, list) else [entry]
     return any(matches(s, o) for s in sections for o in options)
+
+
+def table_rows(plan: str, heading: str, id_prefix: str) -> list[list[str]]:
+    """Cells of every `| <id_prefix>N | ...` row under a level-2 heading."""
+    block = re.search(rf"(?ms)^{re.escape(heading)}[^\n]*\n(.*?)(?=^## |\Z)", plan)
+    if not block:
+        return []
+    rows = []
+    for line in block.group(1).splitlines():
+        if re.match(rf"^\| {id_prefix}\d+ \|", line):
+            rows.append([c.strip() for c in line.strip().strip("|").split("|")])
+    return rows
 
 
 def main() -> int:
@@ -180,6 +213,49 @@ def main() -> int:
     urgency_sections = [s for s in sections if matches(s, "countdown") or matches(s, "stock-indicator")]
     urgency_ok = not urgency_sections or bool(offer.get("endsAt") or offer.get("stockVerified"))
     results.append(("T10 urgency verified", urgency_ok, ", ".join(urgency_sections) or "none"))
+
+    bad_decisions = []
+    for a in manifest.get("assets", []):
+        if "decision" not in a:
+            continue
+        decision, status = a.get("decision"), a.get("status")
+        if decision not in ASSET_DECISIONS:
+            bad_decisions.append(f"{a.get('slotId')}:{decision}")
+        elif status == "verified" and decision not in VERIFIED_DECISIONS:
+            bad_decisions.append(f"{a.get('slotId')}:{decision}/verified")
+        elif status == "planned" and decision in VERIFIED_DECISIONS:
+            bad_decisions.append(f"{a.get('slotId')}:{decision}/planned")
+    for cells in table_rows(plan, "## Asset slots", "A"):
+        decision = cells[4] if len(cells) > 4 else ""
+        if decision not in ASSET_DECISIONS:
+            bad_decisions.append(f"{cells[0]}:{decision or 'missing'}")
+    results.append(("T11 asset decisions valid", not bad_decisions, ", ".join(bad_decisions) or "ok"))
+
+    queue = table_rows(plan, "## Work queue", "T")
+    if not queue:
+        results.append(("T12 plan status matches work queue", True, "no work queue"))
+    else:
+        issues = []
+        unknown = sorted({c[2] for c in queue if len(c) > 2 and c[2] not in OWNERS})
+        if unknown:
+            issues.append("unknown owner: " + ", ".join(unknown))
+        open_owners = {c[2] for c in queue if len(c) > 5 and c[5].lower() == "open"}
+        if "blocked-by-evidence" in open_owners:
+            expected = STATUS_BLOCKED
+        elif open_owners & {"user", "merchant"}:
+            expected = STATUS_PENDING
+        else:
+            expected = STATUS_READY
+        status_line = re.search(r"\*\*Plan status\.\*\*\s*(.+)", plan)
+        stated = status_line.group(1).strip() if status_line else ""
+        if not stated:
+            issues.append(f"**Plan status.** line missing (expected {expected})")
+        elif stated != expected:
+            issues.append(f"expected {expected}, plan says {stated}")
+        approval = re.search(r"\*\*Approval\.\*\*\s*(.+)", plan)
+        if approval and "PLAN_APPROVED" in approval.group(1) and expected == STATUS_BLOCKED:
+            issues.append("PLAN_APPROVED while blocked")
+        results.append(("T12 plan status matches work queue", not issues, "; ".join(issues) or expected))
 
     warns = 0
     print(f"{'check':42} result  detail")
