@@ -3,8 +3,8 @@
 Every trust element a page shows (a star, a count, a quote, a logo, a badge,
 a photo of a customer, a "clinically tested" line) is a row in the plan's
 `## Proof ledger` before design begins. `/design-page` renders only ledger
-rows; `/generate` fails production QA on any proof element that is not in the
-ledger; `/optimize` may add proof only by adding a row first. This file
+rows and fails hosted QA on any proof element not in the ledger; `/optimize`
+may add proof only by adding a row first. This file
 defines the block, the verification each kind needs, and the display rules.
 Sourcing procedures live in `references/proof/reviews-sourcing.md` and the
 sibling files.

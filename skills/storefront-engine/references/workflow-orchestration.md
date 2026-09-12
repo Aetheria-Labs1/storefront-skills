@@ -8,37 +8,34 @@ Use one owning command at a time.
 /setup
   U+2192 /plan-page
   U+2192 /design-page
-  U+2192 /generate
   U+2192 /publish
 ```
 
 - Setup is normally run once and refreshed only for changed stores/themes.
-- Plan defines a concise campaign and section strategy without islands.
-- Design selects islands, resolves page assets, compiles source, and creates
-  one unpublished hosted draft.
-- Generate reuses that draft when present, then owns synchronization and
-  production-ready hosted QA.
-- Publish is a separate explicit release.
+- Plan produces the complete page specification: strategy, final section
+  copy, an asset decision for every section, claim gate, work queue and plan
+  status, without islands. It waits for explicit approval.
+- Design builds the approved plan: selects islands, resolves the plan's asset
+  decisions, compiles source, creates one unpublished hosted draft, runs
+  hosted QA at 390, 768 and 1280 with commerce checks, applies later edits
+  with version protection, and returns `DESIGN_APPROVED`.
+- Publish is a separate explicit release that gates on `DESIGN_APPROVED` for
+  the same version.
 
 Commands do not silently invoke one another. When a user intentionally starts
 later, recover the minimum missing decision evidence and record the skipped command.
 
-Infer `fast-draft`, `production-ready`, or `publish` from the user's complete
-request and current conversation. Reversible ambiguity defaults to
-`fast-draft`; consequential ambiguity still requires clarification. Intent
-inference never authorizes publishing, paid generation, or deletion.
+Infer question depth and publish intent from the user's complete request and
+current conversation. Approval before design and before publish is never
+inferred. Intent inference never authorizes publishing, paid generation, or
+deletion.
 
 ## Optional Routes
 
-- Use `/analyze-page` before planning when a URL, screenshot, or ad matters.
-- Use `/asset-prep` independently for standalone or replacement asset work.
 - Use `/design-page` concept-first when the user wants a mobile-first mockup
   approved before source authoring.
-- Use `/build` for the fastest unpublished draft from a prompt or an
-  automatically selected page kit.
-- Use `/build-with-template` when the user already supplied the page-kit or
-  section-template URL.
-- Use `/optimize` for an existing page and a specific outcome.
+- Use `/optimize` for an existing page and a specific outcome: it scores the
+  page, proposes a plan with the same blocks, and applies approved changes.
 - Use `/ab-test` to inspect a live Lexsis URL, build controlled variants, and
   create or evaluate an experiment.
 - Use `/cart` for cart profile configuration.
@@ -61,5 +58,4 @@ inference never authorizes publishing, paid generation, or deletion.
 - Keep production changes in source-based MCP operations and stop on version drift.
 - Create drafts with `publish:false`.
 - Keep concept images out of production source and asset slots.
-- Limit fast-build compilation to one initial attempt and one targeted repair.
 - Publish only after current QA and explicit approval.

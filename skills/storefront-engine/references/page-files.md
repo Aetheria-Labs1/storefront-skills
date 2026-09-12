@@ -30,9 +30,11 @@ share campaign facts, not an assumed permission to publish or spend credits.
   its ledger follows `references/offers/offer-ledger.md`.
 - `reviews`: verified source, collection/product ids, available count and
   rights/provenance; its ledger follows `references/proof/proof-ledger.md`.
-- `assets`: slot id, job, section id, final permanent URL and asset/media id,
-  source, rights basis and verified/planned status. Source eligibility,
-  generation records and approval belong to `references/assets/`.
+- `assets`: slot id, job, section id, decision (`reuse-selected`,
+  `shopify-product-media`, `user-selection-required`, `user-upload-required`,
+  `generate-required`, `composite-required`), final permanent URL and
+  asset/media id, source, rights basis and verified/planned status. Source
+  eligibility, generation records and approval belong to `references/assets/`.
 - `workflow`: intent, explicit skipped stages and remaining approval/QA work.
 
 Do not conflate a pending slot, an available library candidate and a verified
@@ -43,7 +45,6 @@ planning evidence rather than a second set of machine-only defaults.
 
 Planning records the type, design direction, section jobs, ledgers and gaps.
 Design resolves current interactive schemas, authors source through MCP,
-creates one unpublished draft and returns `DRAFT_CREATED`.
-Generation reuses that draft and upgrades it to `DRAFT_READY` only after
-matching persisted-version evidence and hosted QA. Publication is separate.
+creates one unpublished draft and returns `DRAFT_CREATED`, then
+`DESIGN_APPROVED` after hosted QA and edits. Publication is separate.
 Keep the last returned page id, version and preview URL available throughout.

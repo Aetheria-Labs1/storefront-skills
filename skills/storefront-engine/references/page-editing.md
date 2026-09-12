@@ -1,5 +1,7 @@
 # Storefront Page Editing
 
+Run by `/design-page` (Existing Page Edits) and `/optimize` Apply.
+
 Edit existing pages through canonical editable source and section-level remote
 operations. Read `source-artifact-workflow.md` first.
 

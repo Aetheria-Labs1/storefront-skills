@@ -13,7 +13,7 @@ execute those decisions, never relax their requirements.
 3. Execute each section's type-specific row through the four procedures
    below. Read each procedure once, then apply it to every relevant section.
 4. Reconcile the asset budget and evidence, then inspect compiler results and
-   perform hosted review for the requested draft or production-ready mode.
+   perform the hosted review at 390, 768 and 1280 before `DESIGN_APPROVED`.
 
 ## Four procedures
 

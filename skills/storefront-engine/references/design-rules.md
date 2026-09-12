@@ -5,7 +5,7 @@ guidance and brand-kit preview blueprints. Record every override in
 `page plan` under "Overrides of brand design.md".
 
 Loaded by `/plan-page` (Design direction block), `/design-page` (Design Direction
-Gate and hosted review), `/generate` (Production Gate) and `/optimize`.
+Gate and hosted review) and `/optimize` (Scorecard).
 Review the persisted MCP source and hosted draft. No local QA script or
 page-file workflow is required.
 

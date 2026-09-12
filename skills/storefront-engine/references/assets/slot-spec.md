@@ -3,8 +3,8 @@
 Technical and content specification per asset slot role: aspect, minimum
 source resolution, weight budget, format, loading rule, content rules,
 allowed source types and alt-text template. `/design-page` applies it to every
-`<img>`, `<picture>` and `<video>` it writes; `/generate` fails production QA
-on a hero that violates SS1. Job coverage is in
+`<img>`, `<picture>` and `<video>` it writes; `/design-page` hosted QA fails
+a hero that violates SS1. Job coverage is in
 `references/assets/image-jobs-by-page-type.md`, sourcing in
 `references/assets/asset-sourcing-sequence.md`, generation limits in
 `references/assets/generation-policy.md`, video in

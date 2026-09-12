@@ -4,7 +4,7 @@ Every numeral in a proof, trust, stats or press section is a ledger row
 (`references/proof/proof-ledger.md` display rule 10; `design-rules.md` N11).
 This file gives the source query, phrasing, rounding and as-of rule for each
 kind of number, and the pre-render numeral checklist `/design-page` and
-`/generate` run. Rule tags: LAW, RESEARCH ([H] [M] [L]), OPERATOR,
+`/optimize` run. Rule tags: LAW, RESEARCH ([H] [M] [L]), OPERATOR,
 HEURISTIC. Live urgency numbers (stock, viewers, recent buys) are governed by
 `references/offers/urgency-scarcity.md` and `references/anti-patterns/dark-patterns.md`;
 this file only states what they may never be.

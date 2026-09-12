@@ -1,6 +1,6 @@
 ---
 name: publish
-description: Publish a synchronized and QA-passed Lexsis storefront draft. Use only when the user explicitly asks to release a specific page version.
+description: Publish a Lexsis storefront draft version that carries DESIGN_APPROVED from /design-page or /optimize. Use only when the user explicitly asks to release a specific page version.
 ---
 
 # Publish a Page
@@ -10,7 +10,7 @@ Publishing is a separate, explicit action. Do not rebuild the page here.
 Read `references/workflow-intent.md`. Intent inference may distinguish a draft
 request from a live-release request, but it never substitutes for explicit
 approval naming the page and version. A request to preview, create, finish,
-review, or make a page production-ready is not publication approval.
+review, or approve a design is not publication approval.
 
 Use `lexsis_pages.edit_context`, `lexsis_pages.integrity`,
 `lexsis_pages.source`, `lexsis_workspace.get`, and
@@ -29,9 +29,9 @@ authorize or substitute for a successful live publish.
    draft and recorded baseline.
 4. Read `lexsis_pages` action `edit_context`.
 5. Confirm the remote version equals `remote.lastKnownVersion`.
-6. Confirm responsive, approved-versus-current hosted visual review, commerce, copy,
-   claims, assets, and integrity checks passed against that same version and
-   reviewed bundle.
+6. Confirm `DESIGN_APPROVED` was recorded by `/design-page` or `/optimize` for
+   this same page version and reviewed bundle, with hosted QA at 390, 768 and
+   1280 and commerce, copy, claims, assets and integrity checks passed.
 7. Re-read integrity and source/bundle evidence through MCP. Missing or stale
    evidence blocks release; no local file or validator substitutes for it.
 8. Confirm the store has the required entitlement.

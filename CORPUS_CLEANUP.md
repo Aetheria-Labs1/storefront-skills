@@ -81,7 +81,7 @@ consumer links without retaining a second implementation.
 | design-enrichment.md | Shrink | assets/generation-policy.md |
 | design-rules.md | Keep | Highest documentation authority; no semantic weakening |
 | extract-template.md | Keep | Capture and reusable-source extraction |
-| fast-build.md | Keep | Bounded draft-only workflow |
+| fast-build.md | Removed in 8.0.0 | superseded by /plan-page approval and /design-page hosted QA |
 | generate-bundle-page.md | Shrink | page-types/bundle-kit.md |
 | generate-collection.md | Shrink | page-types/collection-landing.md |
 | generate-editorial.md | Shrink | page-types/advertorial.md and brand-story-founder.md |
