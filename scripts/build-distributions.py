@@ -192,6 +192,39 @@ GPT_REFERENCE_ALLOWLIST = [
     "authoring/css-and-styling",
 ]
 
+PLAIN_SCALAR_HAZARD = re.compile(r"^([A-Za-z][A-Za-z0-9_-]*): (\S.*)$")
+
+
+def unsafe_frontmatter_scalars(path: Path) -> list[str]:
+    """Frontmatter values a strict YAML parser rejects.
+
+    The skills CLI parses SKILL.md frontmatter with a real YAML parser. An
+    unquoted plain scalar may not contain ": " or " #": the parser raises
+    "Nested mappings are not allowed in compact mappings" and the skill is
+    dropped from discovery, so the published skill silently disappears.
+    Quote the value or rephrase it.
+    """
+    match = re.match(r"^---\n(.*?)\n---\n", path.read_text(), re.S)
+    if not match:
+        return []
+    problems = []
+    for line in match.group(1).split("\n"):
+        found = PLAIN_SCALAR_HAZARD.match(line)
+        if not found:
+            continue
+        key, value = found.groups()
+        if value[0] in "\"'|>[{&*!":  # quoted, block or flow scalar: parser-safe
+            continue
+        for hazard in (": ", " #"):
+            if hazard in value:
+                problems.append(
+                    f"{path.parent.name}: frontmatter {key!r} is an unquoted scalar "
+                    f"containing {hazard!r}; strict YAML parsers reject it and the "
+                    "skills CLI drops the skill. Quote the value or rephrase."
+                )
+    return problems
+
+
 def parse_frontmatter(path: Path) -> tuple[dict, str]:
     text = path.read_text()
     m = re.match(r"^---\n(.*?)\n---\n(.*)$", text, re.S)
@@ -345,6 +378,7 @@ def validate() -> list[str]:
             errors.append(f"{skill_dir.name}: empty description")
         elif len(desc) > 500:
             errors.append(f"{skill_dir.name}: description {len(desc)} chars > 500 (Codex cap)")
+        errors.extend(unsafe_frontmatter_scalars(sk))
         for tool in RETIRED_TOOLS:
             if tool in body:
                 errors.append(f"{skill_dir.name}: references retired tool {tool}")

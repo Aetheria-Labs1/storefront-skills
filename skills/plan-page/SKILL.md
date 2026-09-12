@@ -1,6 +1,6 @@
 ---
 name: plan-page
-description: Produce the complete, execution-ready specification for one storefront page: strategy, final section copy, a resolved asset decision for every section, claim and proof gates, an ordered work queue with owners, and a plan status. Waits for explicit approval before design. Does not choose islands or implementation.
+description: Produce the complete, execution-ready specification for one storefront page, covering strategy, final section copy, a resolved asset decision for every section, claim and proof gates, an ordered work queue with owners, and a plan status. Waits for explicit approval before design. Does not choose islands or implementation.
 ---
 
 # Plan a Page

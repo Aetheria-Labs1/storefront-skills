@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import importlib.util
 import json
 import re
 import subprocess
@@ -377,12 +378,31 @@ class PublicSkillPackTests(unittest.TestCase):
         self.assertFalse((SKILLS / "visual-page").exists())
         self.assertTrue((SKILLS / "design-page" / "SKILL.md").is_file())
 
-    def test_release_version_is_8_0_0(self) -> None:
+    def test_skill_frontmatter_survives_a_strict_yaml_parser(self) -> None:
+        """The skills CLI drops any SKILL.md whose frontmatter fails YAML parsing."""
+        hazard = re.compile(r"^([A-Za-z][A-Za-z0-9_-]*): (\S.*)$")
+        for path in [*SKILLS.glob("*/SKILL.md"), *PLUGIN_AGENTS.glob("*.md")]:
+            front = re.match(r"^---\n(.*?)\n---\n", path.read_text(encoding="utf-8"), re.S)
+            self.assertIsNotNone(front, path)
+            for line in front.group(1).split("\n"):
+                found = hazard.match(line)
+                if not found or found.group(2)[0] in "\"'|>[{&*!":
+                    continue
+                for unsafe in (": ", " #"):
+                    self.assertNotIn(unsafe, found.group(2), (path, found.group(1)))
+        if importlib.util.find_spec("yaml"):
+            import yaml
+
+            for path in [*SKILLS.glob("*/SKILL.md"), *PLUGIN_AGENTS.glob("*.md")]:
+                front = re.match(r"^---\n(.*?)\n---\n", path.read_text(encoding="utf-8"), re.S)
+                yaml.safe_load(front.group(1))
+
+    def test_release_version_is_8_0_1(self) -> None:
         for path in (
             ROOT / ".claude-plugin" / "plugin.json",
             ROOT / "codex" / ".codex-plugin" / "plugin.json",
         ):
-            self.assertEqual("8.0.0", json.loads(path.read_text())["version"])
+            self.assertEqual("8.0.1", json.loads(path.read_text())["version"])
 
     def test_discovery_is_not_a_global_blocker(self) -> None:
         checked = [

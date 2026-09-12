@@ -1,5 +1,5 @@
 <!-- GENERATED from skills/ by scripts/build-distributions.py - DO NOT EDIT.
-     storefront-skills v8.0.0; 7 skills; 50 active islands -->
+     storefront-skills v8.0.1; 7 skills; 50 active islands -->
 
 # Lexsis Storefront Skills - Knowledge Base
 
@@ -831,7 +831,7 @@ recommended, and the state: `OPTIMIZATION_PLAN_READY` or `DESIGN_APPROVED`.
 
 # Skill: plan-page
 
-> Produce the complete, execution-ready specification for one storefront page: strategy, final section copy, a resolved asset decision for every section, claim and proof gates, an ordered work queue with owners, and a plan status. Waits for explicit approval before design. Does not choose islands or implementation.
+> Produce the complete, execution-ready specification for one storefront page, covering strategy, final section copy, a resolved asset decision for every section, claim and proof gates, an ordered work queue with owners, and a plan status. Waits for explicit approval before design. Does not choose islands or implementation.
 
 # Plan a Page
 
