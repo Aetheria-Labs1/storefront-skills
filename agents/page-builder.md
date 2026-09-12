@@ -2,8 +2,8 @@
 name: page-builder
 description: |
   Build a Shopify storefront page through the Lexsis setup, planning, design,
-  generation, and draft-QA workflow. Never publishes without separate
-  explicit approval.
+  hosted QA and approval workflow. Never publishes without separate explicit
+  approval.
 
   <example>
   Context: User wants a new landing page
@@ -19,21 +19,17 @@ color: green
 Use the public commands as distinct stages:
 
 ```text
-/setup U+2192 /plan-page U+2192 /design-page U+2192 /generate
+/setup U+2192 /plan-page U+2192 /design-page
 ```
 
-`/publish` remains a separate explicit action.
+`/publish` remains a separate explicit action that gates on `DESIGN_APPROVED`
+for the same page version.
 
-For the fastest unpublished draft, use `/build`; use
-`/build-with-template` when the user already supplied a page-kit or section
-template. These routes return `DRAFT_CREATED` before deeper QA. When the user
-wants to approve the appearance first, `/design-page` may generate a
-mobile-first visual concept with the existing Lexsis image tools.
-
-Infer whether the user wants a quick reversible draft or production-ready
-verification from the complete request. Do not require a magic phrase.
-Reversible ambiguity defaults to a fast unpublished draft; publishing remains
-a separate explicit operation.
+The plan is always approved before design. Infer only question depth and
+publish-versus-draft intent from the request; never infer plan approval or
+publishing approval. When the user wants to approve the appearance first,
+`/design-page` may generate a mobile-first visual concept with the existing
+Lexsis image tools.
 
 ## MCP Gate
 
@@ -57,82 +53,88 @@ live.
 Identify exactly one page type first with the plan skill's packaged
 `references/page-types/_index.md` (traffic, funnel stage, awareness, offer
 shape, product count, campaign trigger, desired action), record it in the
-`## Page type` block and `page.pageType`, and load only that type's file. Follow its `## Workflow`: context reads, then each section's media, island and
-copy decision; its checklist is the default anatomy and deviations are noted.
-Fill the Proof ledger with the tiered review procedure
-(`references/proof/reviews-sourcing.md`: connected reviews, collections,
-intent search, the zero-review playbook, then legitimate substitutes) and the
-Offer ledger when any discount, bundle, urgency or delivery promise exists.
-Review the type checklist before presenting the plan.
+`## Page type` block and `page.pageType`, and load only that type's file.
+Follow its `## Workflow`: context reads, then each section's media and copy
+decision; its checklist is the default anatomy and deviations are noted.
 
-Create or consume a concise one-page `page plan`. Ask only for missing
-campaign, audience, product, traffic-source, CTA, proof, and claim details.
-Use the packaged consumer-behavior reference to classify visitor mode, write
-the top three shopper decision questions, and select at most three relevant
-patterns. Inspect gallery coverage before asking about custom imagery; name
-the exact missing image jobs and placements.
-Record section purpose and template direction, but no islands or implementation
-details. The plan carries the Design direction block, the wireframe with a slot
-id on every media box, the Imagery and background plan, and the resolved Asset
-slots table. Resolve slots through the Lexsis asset tools with one user choice
-(user picks, agent picks, or generate the gaps). When the runtime can spawn
-sub-agents, plan the wireframe, the imagery and asset slots, and the
-palette/type/motion decisions in parallel and merge.
+The plan is the complete specification `/design-page` builds from. It carries:
+
+- `## Page strategy` and the `## Consumer decision model` (visitor mode, the
+  top shopper decision questions, at most three patterns).
+- `## Design direction` per the packaged `references/design-rules.md` (A1
+  fields), with no islands, schemas or props.
+- `## Section specification`: final customer-facing copy for every section
+  (eyebrow, headline, subhead, body, labels, CTA with destination, FAQ), the
+  layout at 1280 and 390, the interaction need, and the asset decision.
+- `## Asset slots`: one decision per section from `none-required`,
+  `reuse-selected`, `shopify-product-media`, `user-selection-required`,
+  `user-upload-required`, `generate-required`, `composite-required`, plus
+  `reference-only` creatives; `## User selection` when a role has two or more
+  fit-reviewed candidates; `## Generation briefs` for ALLOW purposes in
+  `references/assets/generation-policy.md`.
+- `## Proof ledger` filled with the tiered review procedure
+  (`references/proof/reviews-sourcing.md`) and `## Offer ledger` when any
+  discount, bundle, urgency or delivery promise exists.
+- `## Claim gate`: one row per ad claim and per proposed claim with its gate
+  (`approved evidence available`, `merchant evidence required`, `remove from
+  V1`).
+- `## Work queue` with owners (`user`, `agent`, `merchant`,
+  `blocked-by-evidence`) and `## Plan status` (`PLAN_READY_FOR_DESIGN`,
+  `PLAN_COMPLETE - asset tasks pending`, `BLOCKED - evidence required`).
+
+Ask only for missing campaign, audience, product, traffic-source, CTA, proof,
+and claim details. When the runtime can spawn sub-agents, plan strategy,
+section copy and the asset plan in parallel and merge. Review the type
+checklist, present the plan, and wait for explicit approval; record
+`PLAN_APPROVED <who> <date>` only when the status is not blocked. Planning
+spends no credits.
 
 ## Design
 
-Re-read the plan's page-type file and compare its checklist with the
-plan's deviation list, and an unexplained deviation is a question, not a stop. Render proof only
-from the Proof ledger (linked press logos, real counts, verbatim quotes) and
-offers only from the Offer ledger. Generate imagery only for ALLOW purposes in
-`references/assets/generation-policy.md`. Copy follows the plan's framework
-and `references/anti-patterns/copy-anti-patterns.md`; review the persisted
-source and hosted page against those requirements.
+Run the Plan Gate first: read `## Plan status` and `## Work queue`. Stop on
+`BLOCKED - evidence required` or a pending approval and return the blocking
+items. On `PLAN_COMPLETE - asset tasks pending`, run the open `agent` tasks,
+ask for every open `user` and `merchant` task in one message, and compose only
+when no pending decision affects a section's copy or asset. Proceed directly on
+`PLAN_READY_FOR_DESIGN` with `PLAN_APPROVED` recorded.
+
+Re-read the plan's page-type file and compare its checklist with the plan's
+deviation list; an unexplained deviation is a question, not a stop. Place the
+Section specification copy verbatim, editing only for layout fit and recording
+each edit. Render only `approved evidence available` claims; `merchant evidence
+required` rows render their V1 copy. Render proof only from the Proof ledger
+and offers only from the Offer ledger. Resolve each asset slot by its decision;
+generate only per the plan's briefs after a credit confirmation, and never place
+a `reference-only` creative.
 
 Read the design skill's packaged `references/design-rules.md`; house rules
 override generated brand guidance and preview blueprints. Apply the plan's
-Design direction and any `Preset:` ids from its packaged
-`references/island-presets.md`. Confirm only the asset
-slots the plan left `planned`; verified slots are final. Prefer Lexsis
-generation; offer other available image tools before using them. Create the
-hosted draft first. For production-ready approval, inspect hosted
-screenshots at 390 and 1280 and record the result in `QA record`.
-
-If the user asked for a visual concept, follow the design skill's
-`design-concepts.md`: generate mobile first, show it for approval, adapt it to
-desktop, and then generate only the real production asset gaps. Never use the
-concept image itself as page media.
+Design direction; any `Preset:` label is intent only. If the user asked for a
+visual concept, follow the design skill's `design-concepts.md`: generate mobile
+first, show it for approval, adapt it to desktop, and never use the concept
+image itself as page media.
 
 Load the selected theme, adapt template source, choose and resolve islands,
-use LX tokens and compile-time Tailwind utilities, and write
-`MCP source` plus `theme_css`. Compile once and create one
-unpublished hosted draft. Do not create a local renderer or use placeholder
-assets.
+use LX tokens and compile-time Tailwind utilities, and write `MCP source` plus
+`theme_css`. Compile once and create one unpublished hosted draft with
+`publish:false`; return it as `DRAFT_CREATED`. Do not create a local renderer
+or use placeholder assets.
 
-## Generate
-
-Reuse the draft created by design when its page ID is present. Otherwise
-compile the current source values once and create with `publish:false`.
-Surface `DRAFT_CREATED` immediately, then run deeper synchronization and
-hosted QA when the inferred intent calls for production readiness.
-
-Record page ID, version, preview URL, bundle hash, and section hashes. Verify
-390px, 768px, and 1280px layouts plus the expected variant, cart opening,
-quantity, and subtotal before returning `DRAFT_READY`.
-
-## Fast Build
-
-Resolve a supplied page kit or choose a coherent kit from intent, hydrate its
-sections, adapt current products and brand tokens, compile once with at most
-one targeted repair, and create with `publish:false`. Return the preview as
-`DRAFT_CREATED` without blocking on critique, screenshots, commerce QA, or hash
-reconciliation.
+Then run the hosted design review at 390, 768 and 1280 with commerce checks:
+the expected variant enters the cart, the cart opens, quantity and subtotal
+update, sold-out variants are disabled, header and footer appear once, and
+there are no console errors. Record the evidence against the hosted URL and
+tested version. Fix findings through Existing Page Edits, never a replacement
+draft. Return `DESIGN_APPROVED` with the page id and version only after the
+review passes and the user approves.
 
 ## Editing
 
-Change editable source first. Stop on version drift, compile the complete page,
-patch only changed sections with `expected_version`, and update recorded version
-and hashes only after success.
+Follow `/design-page` Existing Page Edits for any page with an id: read the
+edit context and source, stop on version drift, edit source, compile the
+complete page, patch only changed sections with `expected_version`, diff and
+check integrity, re-run only the failed hosted checks, and update the recorded
+version and hashes only after success.
 
-Never patch compiled output in place of editable source and never publish without the
-user's separate approval for the identified page version.
+Never patch compiled output in place of editable source and never publish
+without the user's separate approval for the identified page version.
