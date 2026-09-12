@@ -1,0 +1,99 @@
+{
+  "contract_version": 2,
+  "name": "CartRewardProgress",
+  "category": "commerce",
+  "capabilities": [],
+  "usage_hint": "Cumulative cart reward milestones with automatic gift reconciliation.",
+  "when_to_use": "Inside DrawerShell above CartLines when a cart profile defines rewards.",
+  "when_not_to_use": "",
+  "defaultHydrate": "immediate",
+  "combine_with": [
+    "DrawerShell",
+    "CartLines",
+    "CartCoupons",
+    "CartSummary"
+  ],
+  "anti_patterns": [],
+  "props": {
+    "rewards": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "shape": {
+          "id": "string",
+          "threshold": "number",
+          "type": "'free_gift' | 'fixed_price_product' | 'discount' | 'free_shipping'",
+          "title": "string",
+          "reveal": "?'always' | 'on_unlock'",
+          "product_variant_id": "?string",
+          "product_title": "?string",
+          "product_image": "?string",
+          "original_price": "?string",
+          "value": "?number",
+          "value_type": "?'percentage' | 'fixed'",
+          "discount_code": "?string",
+          "icon": "?string",
+          "enabled": "?boolean | boolean"
+        }
+      },
+      "shape": {
+        "id": "string",
+        "threshold": "number",
+        "type": "'free_gift' | 'fixed_price_product' | 'discount' | 'free_shipping'",
+        "title": "string",
+        "reveal": "?'always' | 'on_unlock'",
+        "product_variant_id": "?string",
+        "product_title": "?string",
+        "product_image": "?string",
+        "original_price": "?string",
+        "value": "?number",
+        "value_type": "?'percentage' | 'fixed'",
+        "discount_code": "?string",
+        "icon": "?string",
+        "enabled": "?boolean | boolean"
+      },
+      "required": false
+    },
+    "currency": {
+      "type": "string",
+      "required": false
+    },
+    "reconcile": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    }
+  },
+  "variants": null,
+  "css_vars": [
+    "--lx-accent-color",
+    "--lx-bg-surface",
+    "--lx-border-color",
+    "--lx-error-color",
+    "--lx-reward-color",
+    "--lx-reward-track",
+    "--lx-text-color",
+    "--lx-text-muted"
+  ],
+  "parts": [
+    "bar",
+    "message",
+    "milestone",
+    "milestones",
+    "root"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate"
+    ],
+    "headless": {
+      "supported": false
+    }
+  }
+}

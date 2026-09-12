@@ -1,0 +1,57 @@
+{
+  "contract_version": 2,
+  "name": "CartCoupons",
+  "category": "commerce",
+  "capabilities": [],
+  "usage_hint": "Merchant-curated coupon summary and accessible coupon drawer.",
+  "when_to_use": "Inside DrawerShell before CartSummary or checkout.",
+  "when_not_to_use": "",
+  "defaultHydrate": "immediate",
+  "combine_with": [
+    "CartRewardProgress",
+    "CartSummary",
+    "CartCheckoutButton"
+  ],
+  "anti_patterns": [],
+  "props": {
+    "title": {
+      "type": "string",
+      "required": false,
+      "default": "Coupons"
+    }
+  },
+  "variants": null,
+  "css_vars": [
+    "--lx-accent-color",
+    "--lx-bg-surface",
+    "--lx-border-color",
+    "--lx-coupon-border",
+    "--lx-coupon-card-tint",
+    "--lx-coupon-color",
+    "--lx-coupon-footer-bg",
+    "--lx-coupon-savings-bg",
+    "--lx-error-color",
+    "--lx-surface-alt",
+    "--lx-text-color",
+    "--lx-text-muted"
+  ],
+  "parts": [
+    "root",
+    "savings",
+    "summary"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate"
+    ],
+    "headless": {
+      "supported": false
+    }
+  }
+}

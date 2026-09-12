@@ -1,0 +1,172 @@
+{
+  "contract_version": 2,
+  "name": "BundleConfigurator",
+  "category": "commerce",
+  "capabilities": [
+    {
+      "name": "product:resolve"
+    },
+    {
+      "name": "cart:add"
+    },
+    {
+      "name": "cart:open"
+    }
+  ],
+  "usage_hint": "Build-your-own-box selector with exact item limits, repeat quantities, live pricing, and Shopify bundle-transform confirmation.",
+  "when_to_use": "Use for mix-and-match boxes where shoppers choose products or flavors and receive an enforced bundle price.",
+  "when_not_to_use": "Use BundleBuilder for a fixed frequently-bought-together offer without slot rules.",
+  "defaultHydrate": "immediate",
+  "combine_with": [
+    "DrawerShell",
+    "CartLines",
+    "CartSummary",
+    "CartCheckoutButton"
+  ],
+  "anti_patterns": [
+    "Publishing a discounted bundle without a configured Shopify Cart Transform",
+    "Mixing currencies in one bundle",
+    "Allowing unavailable variants to fill required slots"
+  ],
+  "props": {
+    "productIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "required": false
+    },
+    "products": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "required": false,
+      "default": "[]"
+    },
+    "bundle": {
+      "type": "object",
+      "shape": {
+        "handle": "string",
+        "parentVariantId": "string",
+        "title": "?string"
+      },
+      "required": true
+    },
+    "minItems": {
+      "type": "number",
+      "required": true
+    },
+    "maxItems": {
+      "type": "number",
+      "required": true
+    },
+    "productMaxQuantity": {
+      "type": "number",
+      "required": false
+    },
+    "discountTiers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "shape": {
+          "minItems": "number",
+          "type": "'percentage' | 'fixed_total' | 'fixed_discount'",
+          "value": "number",
+          "label": "?string"
+        }
+      },
+      "shape": {
+        "minItems": "number",
+        "type": "'percentage' | 'fixed_total' | 'fixed_discount'",
+        "value": "number",
+        "label": "?string"
+      },
+      "required": true
+    },
+    "layout": {
+      "type": "enum",
+      "values": [
+        "grid",
+        "split",
+        "steps"
+      ],
+      "required": false,
+      "default": "grid"
+    },
+    "allowRepeats": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
+    "showProgress": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
+    "showSummary": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
+    "ctaText": {
+      "type": "string",
+      "required": false,
+      "default": "Add Bundle to Cart"
+    },
+    "requireTransformConfirmation": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    }
+  },
+  "variants": [
+    "grid",
+    "split",
+    "steps"
+  ],
+  "css_vars": [
+    "--lx-accent-color",
+    "--lx-bg-color",
+    "--lx-bg-surface",
+    "--lx-border-color",
+    "--lx-text-color",
+    "--lx-text-muted"
+  ],
+  "parts": [
+    "add",
+    "clear",
+    "count",
+    "cta",
+    "empty",
+    "error",
+    "instruction",
+    "product-card",
+    "product-image",
+    "product-title",
+    "products",
+    "progress",
+    "quantity-badge",
+    "root",
+    "slots",
+    "subtotal",
+    "summary",
+    "summary-title",
+    "total",
+    "variant-select"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate"
+    ],
+    "headless": {
+      "supported": false
+    }
+  }
+}
