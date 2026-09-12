@@ -1,7 +1,7 @@
 # Section asset workflow
 
-This is the single execution procedure for sourcing, missing-slot handling,
-and visual fit. Type files provide jobs, tags, crops and budgets; policy
+This is the single `/plan-assets` execution procedure for sourcing,
+missing-slot handling, and visual fit. Type files provide jobs, tags, crops and budgets; policy
 lives in `references/assets/asset-sourcing-sequence.md`,
 `references/assets/generation-policy.md`, `references/assets/slot-spec.md`,
 `references/assets/video-rules.md` and the relevant proof ledger.
@@ -25,11 +25,9 @@ lives in `references/assets/asset-sourcing-sequence.md`,
    matters. Offer **upload**, **generate** only where that policy permits it,
    or **skip/merge** with an explanation of what the page loses. Group gaps
    into one useful message, not a question for each section.
-7. A fast draft may use the closest existing asset that honestly performs a
-   suitable job, or leave the slot `planned`. Record all unresolved slots in
-   the plan and draft summary. Do not silently remove a required section.
-   Production readiness requires resolution of its required slots; an
-   explicit type deviation still needs a reason and appropriate evidence.
+7. A required production slot remains unresolved until a verified source is
+   bound. Do not silently remove a required section or substitute a
+   placeholder. A section adjustment returns to `/plan-page`.
 8. Skip or merge a section only on the merchant's decision. A generation ban
    is not permission to invent media, substitute irrelevant stock, or hide
    the missing job behind a decorative band.
@@ -59,7 +57,8 @@ replaces inspection. Keep the selected workspace and theme binding explicit.
 
 ## 2. View and fit review
 
-Nothing is used sight unseen. Open each candidate with `lexsis_assets.view`;
+Nothing is used sight unseen. Do not accept the closest existing asset merely
+because it is available. Open each candidate with `lexsis_assets.view`;
 if the host cannot display it, inspect the returned permanent URL with the
 available image viewer. Judge the asset **in its intended section**:
 
@@ -83,9 +82,9 @@ rejected generation returns to the policy's bounded repair/fallback route.
 The type's budget records supplied jobs, missing jobs and type-specific
 alternatives. It does not redefine source permissions. Assign each slot a
 source decision, rights basis, final asset or Shopify media id, and status.
-Use the workspace record defined in `references/page-files.md`; generation
+Use the binding and production tables defined by `/plan-assets`; generation
 records follow the generation-policy owner. Mark rejected or unresolved jobs
-accurately even when a different verified image allows a reversible draft.
+accurately.
 
 Example merchant message: "The kit has a packaging image but no image of
 all included items. Supply one overhead kit photo, or choose to omit the

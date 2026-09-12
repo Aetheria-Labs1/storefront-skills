@@ -14,7 +14,7 @@ the answer and that the catalog, brand, campaign and analytics cannot supply.
 
 | Input | Values | Where it usually comes from |
 |---|---|---|
-| Traffic source | meta, tiktok, google-search, google-shopping, email, sms, organic, direct, influencer, affiliate, retargeting, marketplace | brief, `lexsis_campaigns.creatives`, analytics |
+| Traffic source | meta, tiktok, google-search, google-shopping, email, sms, organic, direct, influencer, affiliate, retargeting, marketplace | brief, supplied creative, analytics |
 | Funnel stage | tof (cold), mof (warm), bof (hot), retention (owned) | traffic + whether the visitor has seen the product |
 | Awareness (Schwartz) | unaware, problem-aware, solution-aware, product-aware, most-aware | traffic + ad creative + audience description |
 | Desired action | buy now, add to cart, start quiz, join waitlist, subscribe, capture email, read then buy, browse, refer, reorder | brief |

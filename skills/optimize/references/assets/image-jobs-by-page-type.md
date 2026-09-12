@@ -321,7 +321,7 @@ Rationale: feed and marketplace rules require the real product https://support.g
 
 IJ4. Show the same SKU, variant and angle family in the hero as in the ad creative that sends the traffic. RESEARCH, OPERATOR.
 Rationale: 98% of paid ads have poor message match https://unbounce.com/conversion-glossary/definition/message-match/ ; same photo, not the same type of product https://cxl.com/blog/give-your-advertising-roi-a-serious-boost-by-maintaining-scent/ .
-Check: yes/no in `page plan` message-match line after comparing the `lexsis_campaigns.creatives` frame and the hero slot with `lexsis_assets.view`.
+Check: yes/no in `page plan` message-match line after comparing the supplied creative frame and the hero slot by eye.
 
 IJ5. Provide one `scale` image wherever the matrix marks it `R`; a hand, body, room or known object. RESEARCH.
 Rationale: 42% of users try to judge size from images https://baymard.com/blog/current-state-ecommerce-product-page-ux .

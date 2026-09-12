@@ -87,9 +87,8 @@ to 15 s for loops (secondary source) https://www.mbadv.agency/meta-ads/meta-ads-
 
 ## 6. Poster and thumbnail rules
 
-1. A real frame from the video, chosen by viewing frames
-   (`lexsis_campaigns.frames` for imported video where available), never the
-   auto-selected first or black frame.
+1. A real frame from the supplied video, chosen by viewing candidate frames,
+   never the auto-selected first or black frame.
 2. Shows the product and, where present, a face or hands; the same subject
    the video opens with, so the click is not a bait.
 3. Meets the `hero-video-poster` or `ugc-tile-vertical` row in

@@ -19,6 +19,8 @@ PLUGIN_AGENTS = ROOT / "agents"
 EXPECTED_PUBLIC_SKILLS = {
     "setup",
     "plan-page",
+    "visualize-page",
+    "plan-assets",
     "design-page",
     "optimize",
     "publish",
@@ -162,7 +164,6 @@ class PublicSkillPackTests(unittest.TestCase):
             "conversion-psychology",
             "visual-craft",
             "premium-patterns",
-            "plan-page",
             "generation-protocol",
         ):
             text = (references / f"{name}.md").read_text(encoding="utf-8")
@@ -177,26 +178,32 @@ class PublicSkillPackTests(unittest.TestCase):
         )
         plan = (SKILLS / "plan-page" / "SKILL.md").read_text(encoding="utf-8")
         for block in (
-            "## Design direction",
-            "### Imagery and background plan",
-            "### Asset slots",
-            "## Parallel Planning",
-            "## Section specification",
-            "## Claim gate",
-            "## Work queue",
-            "## Plan status",
+            "## 1. Establish the Brief",
+            "## 3. Identify One Page Type",
+            "## 5. Finalize Copy, Proof, and Layout",
+            "## 6. Define Production Asset Requirements",
+            "## 7. Choose Template Direction",
+            "## 8. Produce and Approve the Plan",
         ):
             self.assertIn(block, plan)
-        self.assertIn("Consumer decision model", plan)
+        contract = (references / "plan-page.md").read_text(encoding="utf-8")
+        for block in (
+            "## Consumer decision model",
+            "## Section specification",
+            "## Claim gate",
+            "## Asset requirements",
+            "## Plan status",
+        ):
+            self.assertIn(block, contract)
         design = (SKILLS / "design-page" / "SKILL.md").read_text(encoding="utf-8")
         for block in (
-            "## Design Direction Gate",
-            "## Hosted Design Review",
-            "## Asset Gap Confirmation",
-            "hosted URL and tested version",
-            "## Plan Gate",
-            "## Copy Placement",
-            "## Existing Page Edits",
+            "## 1. Enforce the Handoff",
+            "## 3. Resolve the Implementation",
+            "## 4. Compile Early",
+            "## 5. Create or Update One Draft",
+            "## 6. Run Hosted Review",
+            "PLAN_APPROVED",
+            "ASSETS_READY",
         ):
             self.assertIn(block, design)
 
@@ -219,12 +226,7 @@ class PublicSkillPackTests(unittest.TestCase):
         ):
             self.assertIn(phrase, text)
 
-        for skill_name in (
-            "plan-page",
-            "design-page",
-            "optimize",
-            "ab-test",
-        ):
+        for skill_name in ("optimize", "ab-test"):
             skill = (SKILLS / skill_name / "SKILL.md").read_text(encoding="utf-8")
             self.assertIn("references/consumer-behavior-cro.md", skill, skill_name)
             self.assertTrue(
@@ -236,65 +238,193 @@ class PublicSkillPackTests(unittest.TestCase):
                 ).is_file(),
                 skill_name,
             )
+        planning_rules = (
+            SKILLS
+            / "storefront-engine"
+            / "references"
+            / "planning-rules.md"
+        ).read_text(encoding="utf-8")
+        for phrase in (
+            "Classify the primary visitor mode",
+            "three to five questions",
+            "Use at most three behavioural patterns",
+            "Do not add carousels",
+        ):
+            self.assertIn(phrase, planning_rules)
 
     def test_plan_page_does_not_choose_islands(self) -> None:
         text = (SKILLS / "plan-page" / "SKILL.md").read_text(encoding="utf-8")
-        self.assertIn("must not define islands", text)
-        self.assertNotIn("required islands", text.lower())
+        self.assertIn("Do not choose\nislands", text)
         self.assertNotIn("island_schema", text)
-        self.assertIn("occasion dates", text)
+        self.assertIn("There is no fixed question limit", text)
+        self.assertIn("Sections are decided before templates", text)
         self.assertIn("shelf is empty", text)
-        self.assertIn("### Proof ledger", text)
-        self.assertIn("### Offer ledger", text)
-        self.assertIn("## Identify the Page Type", text)
         self.assertIn("Review the checklist", text)
-        self.assertIn("lexsis_assets.view", text)
-        self.assertIn("section-asset-workflow.md", text)
-        self.assertIn("Design template selection", text)
-        self.assertIn("Design asset selection", text)
+        self.assertIn("lexsis_template_library.search_page_kits", text)
+        self.assertIn("lexsis_capture.funnel_templates", text)
+        self.assertIn("PLAN_READY_FOR_APPROVAL", text)
+        self.assertIn("PLAN_APPROVED", text)
         self.assertNotIn("reviewsEndpoint", text)
-        for phrase in (
-            "reuse-selected",
-            "shopify-product-media",
-            "user-selection-required",
-            "user-upload-required",
-            "generate-required",
-            "composite-required",
-            "none-required",
-            "reference-only",
-            "PLAN_READY_FOR_DESIGN",
-            "PLAN_COMPLETE - asset tasks pending",
-            "BLOCKED - evidence required",
-            "blocked-by-evidence",
-            "## Generation briefs",
-            "## User selection",
+        for action in (
+            "lexsis_asset_library.search",
+            "lexsis_assets.view",
+            "lexsis_asset_import.import",
+            "lexsis_asset_upload.upload",
+            "lexsis_workspace.credits",
+            "lexsis_drafts.asset_generate",
         ):
-            self.assertIn(phrase, text, phrase)
+            self.assertNotIn(action, text, action)
         for retired in ("fast-draft", "fast-build", "`/build`", "DRAFT_READY"):
             self.assertNotIn(retired, text, retired)
 
+    def test_visualize_page_is_optional_and_concept_only(self) -> None:
+        text = (SKILLS / "visualize-page" / "SKILL.md").read_text(encoding="utf-8")
+        for phrase in (
+            "PLAN_APPROVED",
+            "concept-only",
+            "VISUAL_DIRECTION_IN_REVIEW",
+            "VISUAL_DIRECTION_APPROVED",
+            "VISUAL_DIRECTION_SKIPPED",
+            "Regenerate only rejected frames",
+            "Do not assume a particular external tool exists",
+            "Generate the 390 mobile concept first for every frame",
+            "Mobile is the canonical",
+            "infer the 768/1280 treatment",
+            "generate a larger-screen concept image only when the user asks",
+            "## Responsive asset implications",
+            "Mobile aspect and target",
+            "Larger-screen aspect and target",
+        ):
+            self.assertIn(phrase, text, phrase)
+        self.assertIn("URLs are never placed in the page", text)
+        self.assertNotIn("Generate desktop concepts first", text)
+
+    def test_plan_assets_owns_asset_execution(self) -> None:
+        text = (SKILLS / "plan-assets" / "SKILL.md").read_text(encoding="utf-8")
+        for phrase in (
+            "lexsis_catalog.get",
+            "lexsis_asset_library.search",
+            "lexsis_assets.view",
+            "lexsis_assets.capabilities",
+            "lexsis_asset_import.import",
+            "lexsis_asset_upload.upload",
+            "lexsis_workspace.credits",
+            "lexsis_drafts.asset_generate",
+            "Search and visual inspection always precede generation",
+            "ASSETS_READY",
+            "ASSETS_PENDING_USER",
+            "ASSETS_BLOCKED",
+            "verified official source or merchant upload",
+            "## 2. Resolve Mobile Before Larger Screens",
+            "mobile asset first",
+            "Full-width mobile imagery",
+            "target at least 1600px wide and prefer 1920px",
+            "Design Library link",
+            "do not treat opening the dashboard as a completed selection",
+        ):
+            self.assertIn(phrase, text, phrase)
+        self.assertIn(
+            "https://app.trylexsis.com/workspaces/<workspace-id>/storefront/design-library?theme=<theme-id>&tab=assets",
+            text,
+        )
+        for example_id in (
+            "829550b2-bd37-411b-9949-ff57a4fce18b",
+            "831f51ce-481b-492b-923e-2d6e361cf7f5",
+        ):
+            self.assertNotIn(example_id, text)
+
+    def test_asset_requirements_are_mobile_first_and_size_specific(self) -> None:
+        plan = (
+            SKILLS
+            / "storefront-engine"
+            / "references"
+            / "plan-page.md"
+        ).read_text(encoding="utf-8")
+        for phrase in (
+            "Mobile aspect/crop/pixels",
+            "Larger-screen aspect/crop/pixels",
+            "1080x1350",
+            "1800x1200",
+            "1080x1920",
+            "1920x1080",
+            "same master, art-directed crops",
+        ):
+            self.assertIn(phrase, plan, phrase)
+
+    def test_new_asset_workflow_is_provider_neutral(self) -> None:
+        paths = (
+            SKILLS / "visualize-page" / "SKILL.md",
+            SKILLS / "plan-assets" / "SKILL.md",
+            SKILLS / "storefront-engine" / "references" / "asset-prep.md",
+            ROOT / "README.md",
+        )
+        for path in paths:
+            text = path.read_text(encoding="utf-8").lower()
+            for provider in ("higgsfield", "openart"):
+                self.assertNotIn(provider, text, path)
+
+    def test_setup_builds_structured_store_context(self) -> None:
+        text = (SKILLS / "setup" / "SKILL.md").read_text(encoding="utf-8")
+        for phrase in (
+            "work/storefront/",
+            "setup.md",
+            "brand.md",
+            "design.md",
+            "products.md",
+            "persona.md",
+            "rules.md",
+            "themes/<theme-id>.css",
+            "Page through `lexsis_catalog.list` until no next cursor remains",
+            "Preserve stable persona ids",
+            "evidence-supported inference",
+            "Always write\n`setup.md` last",
+            "design.md` always binds to the store's default working theme",
+            "Use available web search or browser research",
+            "ask the user",
+            "source URL or source action and the access/refresh date",
+            "record the item as an open question",
+        ):
+            self.assertIn(phrase, text, phrase)
+        for removed_action in (
+            "lexsis_campaigns.creatives",
+            "lexsis_campaigns.personas",
+            "get_ad_creatives",
+            "list_personas",
+        ):
+            self.assertNotIn(removed_action, text, removed_action)
+
     def test_design_page_compiles_and_creates_the_hosted_draft(self) -> None:
         text = (SKILLS / "design-page" / "SKILL.md").read_text(encoding="utf-8")
-        self.assertIn("Compile the rough complete source", text)
+        self.assertIn("Compile the complete rough source", text)
         self.assertIn("validation_errors", text)
         self.assertIn("lexsis_page_create.create", text)
         self.assertIn("publish:false", text)
         self.assertIn("design.status: pending-approval", text)
-        self.assertIn("Return the hosted preview immediately as `DRAFT_CREATED`", text)
-        self.assertIn("## Page-Type Workflow", text)
-        self.assertIn("generation-policy.md", text)
-        self.assertIn("lexsis_assets.view", text)
+        self.assertIn("Return the hosted preview immediately", text)
+        self.assertIn("references/design-authoring.md", text)
+        self.assertIn("references/hosted-design-review.md", text)
         self.assertNotIn("page-preview.html", text)
         for phrase in (
-            "## Plan Gate",
+            "PLAN_APPROVED",
+            "ASSETS_READY",
             "DESIGN_APPROVED",
             "768",
-            "Quick Add",
             "lexsis_drafts.page_record_qa",
             "expected_version",
         ):
             self.assertIn(phrase, text, phrase)
-        for retired in ("DRAFT_READY", "`/generate`", "fast-draft"):
+        for retired in (
+            "DRAFT_READY",
+            "`/generate`",
+            "fast-draft",
+            "lexsis_asset_library.search",
+            "lexsis_asset_import.import",
+            "lexsis_asset_upload.upload",
+            "lexsis_drafts.asset_generate",
+            "CONCEPT_READY",
+            "PLAN_READY_FOR_DESIGN",
+            "PLAN_COMPLETE - asset tasks pending",
+        ):
             self.assertNotIn(retired, text, retired)
 
     def test_optimize_scores_plans_and_applies(self) -> None:
@@ -335,18 +465,6 @@ class PublicSkillPackTests(unittest.TestCase):
             ):
                 self.assertNotIn(retired, text, (path, retired))
 
-    def test_design_page_supports_optional_existing_tool_concepts(self) -> None:
-        text = (SKILLS / "design-page" / "SKILL.md").read_text(encoding="utf-8")
-        self.assertIn("## Choose the Visual Route", text)
-        self.assertIn("CONCEPT_READY", text)
-        self.assertIn("references/design-concepts.md", text)
-        reference = (
-            SKILLS / "storefront-engine" / "references" / "design-concepts.md"
-        ).read_text(encoding="utf-8")
-        self.assertIn("lexsis_drafts` action `asset_generate", reference)
-        self.assertIn("lexsis_assets` action `view", reference)
-        self.assertIn("never page media", reference)
-
     def test_ab_test_is_url_first_local_first_and_draft_only(self) -> None:
         text = (SKILLS / "ab-test" / "SKILL.md").read_text(encoding="utf-8")
         self.assertIn("supplied URL", text)
@@ -363,7 +481,13 @@ class PublicSkillPackTests(unittest.TestCase):
         self.assertFalse((SKILLS / "experiment").exists())
 
     def test_public_skills_ship_no_local_page_qa_tooling(self) -> None:
-        for skill in ("design-page", "plan-page", "optimize"):
+        for skill in (
+            "design-page",
+            "plan-page",
+            "visualize-page",
+            "plan-assets",
+            "optimize",
+        ):
             self.assertEqual(list((SKILLS / skill / "scripts").glob("*.py")), [])
         for path in [*SKILLS.glob("*/SKILL.md"), *PLUGIN_AGENTS.glob("*.md")]:
             content = path.read_text()
@@ -374,9 +498,9 @@ class PublicSkillPackTests(unittest.TestCase):
         self.assertIn("expected_version", source)
         self.assertIn("only preview", source)
 
-    def test_visual_page_was_replaced(self) -> None:
+    def test_visualize_page_replaces_the_old_visual_page_name(self) -> None:
         self.assertFalse((SKILLS / "visual-page").exists())
-        self.assertTrue((SKILLS / "design-page" / "SKILL.md").is_file())
+        self.assertTrue((SKILLS / "visualize-page" / "SKILL.md").is_file())
 
     def test_skill_frontmatter_survives_a_strict_yaml_parser(self) -> None:
         """The skills CLI drops any SKILL.md whose frontmatter fails YAML parsing."""
@@ -397,12 +521,12 @@ class PublicSkillPackTests(unittest.TestCase):
                 front = re.match(r"^---\n(.*?)\n---\n", path.read_text(encoding="utf-8"), re.S)
                 yaml.safe_load(front.group(1))
 
-    def test_release_version_is_8_0_1(self) -> None:
+    def test_release_version_is_8_0_2(self) -> None:
         for path in (
             ROOT / ".claude-plugin" / "plugin.json",
             ROOT / "codex" / ".codex-plugin" / "plugin.json",
         ):
-            self.assertEqual("8.0.1", json.loads(path.read_text())["version"])
+            self.assertEqual("8.0.2", json.loads(path.read_text())["version"])
 
     def test_discovery_is_not_a_global_blocker(self) -> None:
         checked = [

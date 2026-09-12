@@ -1,7 +1,7 @@
 interface:
   display_name: "Set Up Storefront"
-  short_description: "Save reusable store and theme design settings."
-  default_prompt: "Use $setup to save the Lexsis stores and themes I want to work with."
+  short_description: "Build reusable brand, product, persona, rules, design, and theme context."
+  default_prompt: "Use $setup to build or refresh the structured Lexsis store context I want later page skills to reuse."
 dependencies:
   tools:
     - type: "mcp"

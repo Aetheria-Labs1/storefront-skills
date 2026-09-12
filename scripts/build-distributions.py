@@ -40,42 +40,17 @@ LEGACY_CLAUDE_PLUGIN_ROOT = ROOT / "plugins" / "lexsis-storefront-skills"
 SHARED_RESOURCE_DIRS = {"storefront-engine"}
 SKILL_SHARED_REFERENCES = {
     "plan-page": {
-        "animation-system.md",
-        "page-files.md",
-        "consumer-behavior-cro.md",
-        "design-rules.md",
-        "island-presets.md",
-        "workflow-intent.md",
-        "page-types/",
-        "workflows/",
-        "authoring/",
-        "proof/",
-        "offers/",
-        "assets/",
-        "copy/",
-        "mcp-playbooks/",
+        "plan-page.md",
+        "page-type-guide.md",
+        "planning-rules.md",
+    },
+    "visualize-page": set(),
+    "plan-assets": {
+        "asset-prep.md",
     },
     "design-page": {
-        "page-layout.md",
-        "animation-system.md",
-        "page-files.md",
-        "consumer-behavior-cro.md",
-        "design-concepts.md",
-        "design-rules.md",
-        "island-presets.md",
-        "merchant-templates.md",
-        "workflow-intent.md",
-        "page-types/",
-        "workflows/",
-        "authoring/",
-        "proof/",
-        "offers/",
-        "assets/",
-        "anti-patterns/",
-        "copy/",
-        "mcp-playbooks/",
-        "qa-recipe.md",
-        "page-editing.md",
+        "design-authoring.md",
+        "hosted-design-review.md",
     },
     "ab-test": {
         "animation-system.md",
@@ -495,15 +470,15 @@ edit, and optimize AI-built Shopify storefront pages using the Lexsis AI MCP
 (https://mcp.trylexsis.com/mcp).
 
 Use the normal workflow when building a reviewed page:
-setup -> plan-page -> design-page -> publish.
-plan-page returns a complete specification (final section copy, an asset
-decision for every section, claim gate, work queue, plan status) and waits for
-explicit approval. design-page builds it, creates one unpublished hosted draft,
-runs hosted QA at 390, 768 and 1280 with commerce checks, applies later edits
-with expected_version, and returns DESIGN_APPROVED. optimize scores an existing
-page against the same rules, proposes a plan with the same blocks, and applies
-approved changes. design-page may generate a mobile-first visual concept before
-source when the user wants to approve the look.
+setup -> plan-page -> optional visualize-page -> plan-assets -> design-page -> publish.
+plan-page returns the complete specification with final copy and production
+asset requirements. visualize-page optionally produces iterative concept
+frames. plan-assets searches, produces, persists and verifies production media
+until ASSETS_READY. design-page builds the approved plan from those verified
+bindings, creates one unpublished hosted draft, runs hosted QA at 390, 768 and
+1280 with commerce checks, applies later edits with expected_version, and
+returns DESIGN_APPROVED. optimize scores an existing page against the same
+rules, proposes a plan, and applies approved changes.
 Each command remains independently invokable, and explicit skips are recorded.
 Infer only question depth and publish-versus-draft intent from the request;
 plan approval before design and live publishing always require explicit

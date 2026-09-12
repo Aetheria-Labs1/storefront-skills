@@ -6,10 +6,10 @@ page contract owns anatomy.
 
 ## Extract the clicked promise
 
-1. Resolve the bound workspace, store and product. Read
-   `lexsis_campaigns.creatives` and the selected creative's `analyze` result.
-   Use `frames` for video inspection and `match_persona` when a real audience
-   decision needs it.
+1. Resolve the bound workspace, store and product. Read the exact campaign
+   message and creative supplied by the merchant. For video, inspect the real
+   source and select the frame the page must echo. Reconcile the audience with
+   the selected `persona.md` entry.
 2. Record the product/variant, hook, claimed outcome, awareness, scene, offer,
    CTA and destination. Separate verified product claims from ad language
    that still needs evidence.

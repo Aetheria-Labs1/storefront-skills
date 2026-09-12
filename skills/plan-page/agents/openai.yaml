@@ -1,7 +1,7 @@
 interface:
   display_name: "Plan Storefront Page"
-  short_description: "Produce the complete page specification and wait for approval."
-  default_prompt: "Use $plan-page to produce the complete specification for this page: final section copy, an asset decision per section, claim gate, work queue and plan status, then wait for my approval."
+  short_description: "Finalize page strategy, sections, copy, proof, and asset requirements."
+  default_prompt: "Use $plan-page to create an approval-ready storefront page specification with final copy, responsive sections, proof, and production asset requirements."
 dependencies:
   tools:
     - type: "mcp"

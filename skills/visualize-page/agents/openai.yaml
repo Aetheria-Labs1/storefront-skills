@@ -1,0 +1,11 @@
+interface:
+  display_name: "Visualize Storefront Page"
+  short_description: "Create mobile-first concept frames from an approved plan."
+  default_prompt: "Use $visualize-page to turn my approved page plan into mobile-first concept frames, then infer or generate larger-screen treatments from the approved mobile direction."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "lexsis-ai"
+      description: "Lexsis AI storefront MCP server"
+      transport: "streamable_http"
+      url: "https://mcp.trylexsis.com/mcp"

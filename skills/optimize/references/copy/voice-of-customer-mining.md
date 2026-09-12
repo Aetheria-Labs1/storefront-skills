@@ -23,8 +23,8 @@ Severity BLOCK, FAIL, WARN. Tag LAW, RESEARCH, OPERATOR, HEURISTIC.
 | The merchant's reviews, by intent | `lexsis_catalog.reviews_search` with `query` set to a decision question or claim | Semantically ranked verbatim reviews for that question | one call per decision question, always first |
 | The merchant's reviews, by keyword | `lexsis_catalog.reviews` with `q` free text plus `rating_min`, `has_media`, `product_id` | Exact-phrase hits, low-star hits, media reviews | objections, complaints, competitor mentions |
 | Review status and collections | `lexsis_catalog.reviews_status`, `lexsis_catalog.review_collections` | Counts, distribution, active collections | before any mining; decides tier |
-| Personas | `lexsis_campaigns.personas`, `lexsis_campaigns.match_persona` | Persona vocabulary, pains, rewritten headline and CTA | ad-driven and persona-led pages |
-| Ad comments and creative text | `lexsis_campaigns.creatives`, `.analyze` | The words the ad already uses; objections in comments when supplied | message match (`references/copy/message-match.md`) |
+| Personas | selected `persona.md` entry or merchant-supplied audience description | Persona vocabulary, pains, market, behaviour, and decision context | persona-led pages |
+| Ad comments and creative text | merchant-supplied campaign material | The words the ad already uses; objections in comments when supplied | message match (`references/copy/message-match.md`) |
 | Brand voice | `lexsis_brand.brand_kit` `voice_md`, `banned_phrases` | Register, we-say/we-don't-say pairs, forbidden words | reconciliation, section 7 |
 | Support and merchant notes | merchant-supplied tickets, chat logs, returns reasons | Objections the reviews do not show | when the merchant supplies them |
 | External public reviews (zero-review stores only) | host web search, marketplaces, Reddit, YouTube, per `references/proof/reviews-sourcing.md` | Category language and objections | evidence for wording only; never quoted without an `external-verified-quote` ledger row |
@@ -40,7 +40,7 @@ Check: worksheet section A has one block per question with the review ids.
 VC3 (WARN, OPERATOR). Run `lexsis_catalog.reviews` with `q` for objection words ("too", "but", "wish", "smell", "sticky", "size", "return", "expensive", "didn't", competitor names) and with `rating_min: 1` capped at 3 stars to read the complaints. Keep 5 to 10 lines.
 Check: worksheet section B has at least five lines from reviews rated 3 stars or below when such reviews exist.
 
-VC4 (WARN, OPERATOR). Pull `lexsis_campaigns.personas` (and `match_persona` for the live creative) and copy the persona's vocabulary list and pain statements into the worksheet.
+VC4 (WARN, OPERATOR). Read the selected `persona.md` entry and any merchant-supplied audience description. Copy its market, vocabulary, pain statements, behaviours, objections, and decision context into the worksheet.
 Check: worksheet section C present when personas exist.
 
 VC5 (FAIL, OPERATOR). Read `voice_md` and `banned_phrases` before writing. Copy the register adjectives and the we-say/we-don't-say pairs into the worksheet.
@@ -107,8 +107,8 @@ Decision questions: 1. <q> 2. <q> 3. <q> 4. How fast do I get it 5. What if it d
 ## B. Objections and low-star lines (reviews q=..., rating <= 3)
 | Review id | Rating | Verbatim line | Tags |
 
-## C. Persona vocabulary (lexsis_campaigns.personas / match_persona)
-Persona: <name>. Words they use: ... Pains: ... Rewritten headline suggestion: ...
+## C. Persona vocabulary
+Persona id and name: ... Market: ... Words they use: ... Pains: ... Behaviours: ... Objections: ...
 
 ## D. Brand voice (voice_md, banned_phrases)
 Register: ... We say / we don't say: ... Banned: ...

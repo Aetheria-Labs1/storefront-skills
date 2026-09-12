@@ -69,7 +69,7 @@ Both files are **generated** from the canonical skills by `scripts/build-distrib
 
 ## What's Included
 
-- **7 focused storefront commands** — four reviewed-workflow commands and three optional operations
+- **9 focused storefront commands** — six reviewed-workflow commands and three independent operations
 - **2 agents** (cro-analyzer, page-builder) for Claude Code
 - Shared CRO, vertical, traffic-source, workflow, and island references under `skills/storefront-engine/references/`, including the house `design-rules.md` and `island-presets.md`
 - **Page-type contracts** (`references/page-types/`): 30 ecommerce page types
@@ -86,9 +86,9 @@ Both files are **generated** from the canonical skills by `scripts/build-distrib
   calendar, funnel stages, an ALLOW / ASK / NEVER image-generation policy,
   slot specs, a dark-pattern catalogue with regulator text, a lintable AI-slop
   copy blacklist, copy frameworks and a message-match scorecard
-- **Workflows** (`references/workflows/`): the assets-first per-section loop
-  (catalog media, library by tag, merchant sources, generation, then tell the
-  merchant and offer upload or generation) and how to pick and configure
+- **Workflows** (`references/workflows/`): the `/plan-assets` per-section loop
+  (catalog media, library search, merchant sources, then permitted production)
+  and how to pick and configure
   islands live through `lexsis_design.islands` and `island_schema`
 - **MCP playbooks** (`references/mcp-playbooks/`): the exact `router.action`
   sequence per stage and per page type
@@ -106,9 +106,11 @@ Invoke as `/name` (Claude Code) or `$name` (Codex); most also trigger automatica
 
 | Skill | What it does |
 |-------|--------------|
-| `setup` | Save reusable brand and theme context for one or more stores |
-| `plan-page` | Produce the complete page specification: copy, asset decisions, claim gate, work queue, status; waits for approval |
-| `design-page` | Build the approved plan, create one unpublished hosted draft, run hosted QA at 390/768/1280, apply edits, return `DESIGN_APPROVED` |
+| `setup` | Save structured brand, design, product, persona, rules, and theme context |
+| `plan-page` | Finalize strategy, sections, responsive layout, copy, proof, offers, claims, template direction, and asset requirements |
+| `visualize-page` | Create mobile-first concept frames, then infer or generate larger-screen treatments |
+| `plan-assets` | Resolve mobile assets first, then produce and verify their larger-screen variants |
+| `design-page` | Implement `PLAN_APPROVED` with `ASSETS_READY`, create one unpublished hosted draft, run hosted QA at 390/768/1280, apply edits, return `DESIGN_APPROVED` |
 | `publish` | Release a `DESIGN_APPROVED` draft version only after explicit approval |
 | `optimize` | Score an existing page, propose a strict optimization plan, apply approved changes |
 | `ab-test` | Analyze a Lexsis page URL, build verified challengers, and create or evaluate a draft A/B test |
@@ -127,15 +129,19 @@ The normal page workflow is:
 ```text
 /setup
   → /plan-page
+  → /visualize-page (optional)
+  → /plan-assets
   → /design-page
   → /publish (separate approval)
 ```
 
 | Step | Output |
 |------|--------|
-| `/setup` | Saved store brand reference and theme CSS, indexed by store and theme |
-| `/plan-page` | Complete page specification (`PLAN_READY_FOR_DESIGN`, `PLAN_COMPLETE - asset tasks pending` or `BLOCKED - evidence required`); `PLAN_APPROVED` after explicit approval |
-| `/design-page` | Canonical source, islands and `DRAFT_CREATED` hosted preview; `DESIGN_APPROVED` after hosted QA at 390/768/1280 |
+| `/setup` | Structured store context indexed by workspace, store, and theme |
+| `/plan-page` | Complete page specification; `PLAN_APPROVED` after explicit approval |
+| `/visualize-page` | Optional mobile-first concept frames and responsive implications; `VISUAL_DIRECTION_APPROVED` or skipped |
+| `/plan-assets` | Mobile-first permanent bindings plus larger-screen outputs; `ASSETS_READY`, pending, or blocked |
+| `/design-page` | Canonical source and islands from approved inputs; `DRAFT_CREATED`, then `DESIGN_APPROVED` after hosted QA at 390/768/1280 |
 | `/publish` | Explicit release of the `DESIGN_APPROVED` page version |
 
 When several saved stores or themes are available, every page records the
@@ -143,19 +149,14 @@ selected `storeId` and `themeId`; it never silently switches themes. Commands
 remain independently invokable, and explicitly skipped steps are recorded in
 the task handoff.
 
-`plan-page` returns the whole specification of the page: final section copy,
-an asset decision for every section, a claim gate, a work queue with owners and
-a plan status. It spends no credits and always waits for explicit approval.
-`design-page` runs a Plan Gate on that status, can first generate a
-mobile-first visual concept when the user wants to approve the look (concept
-images remain non-production evidence), resolves each asset slot by its
-decision, places the plan's copy, authors readable `<lx-island>` source,
-compiles it, and creates one unpublished hosted draft. Source and optional
-theme CSS go directly to MCP; there are no per-page source files, compile
-artifacts, local preview builds or local QA steps. The hosted renderer is the
-only interactive preview. `design-page` then runs hosted QA at 390, 768 and
-1280 with commerce checks, applies later edits with `expected_version`, and
-returns `DESIGN_APPROVED`.
+`plan-page` finalizes the page narrative, customer-facing copy, proof and
+offer decisions, responsive layout, template direction, and production asset
+requirements. `visualize-page` is an optional concept-review loop.
+`plan-assets` searches real product and library media first, manages choices
+and uploads, discovers available production capabilities dynamically, imports
+external output, and returns permanent verified bindings. `design-page`
+places the approved copy and assets, authors readable `<lx-island>` source,
+compiles it, creates one unpublished hosted draft, and runs hosted QA.
 
 The workflow infers only question depth and publish-versus-draft intent from
 the request; plan approval before design and publishing approval are never
@@ -168,16 +169,11 @@ explicit authorization boundaries.
   complete browser OAuth when prompted. User API keys and manually configured
   `Authorization` headers are not supported.
 
-## External MCPs (Optional)
+## Optional Capabilities
 
-`design-page` can use these when installed — none required:
-
-| MCP | Adds |
-|-----|------|
-| **Playwright** | Visual QA, screenshots, CRO audit |
-| **Exa** | Image research, mood boards, competitor screenshots |
-| **HiggsField** | AI video generation for hero sections |
-| **OpenArt** | Specialized AI illustration |
+Visual concepts and asset production dynamically inspect the tools installed
+in the current client. No external provider is required or assumed; Lexsis
+capabilities remain available as the fallback.
 
 ## Repo Structure
 
@@ -185,6 +181,8 @@ explicit authorization boundaries.
 storefront-skills/
 ├── skills/                          ← CANONICAL public Agent Skills
 │   ├── design-page/                 ← source composition + hosted draft workflow
+│   ├── plan-assets/                 ← production asset resolution
+│   ├── visualize-page/              ← optional concept workflow
 │   └── storefront-engine/           ← shared resources, not a public command
 │       └── references/              ← workflow guidance + island schemas
 ├── .claude-plugin/                  ← marketplace + Claude plugin manifests

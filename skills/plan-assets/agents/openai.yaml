@@ -1,0 +1,11 @@
+interface:
+  display_name: "Plan Assets"
+  short_description: "Resolve mobile-first production assets and responsive variants."
+  default_prompt: "Use $plan-assets to resolve, produce, persist, and verify mobile-first production assets, then derive or create their larger-screen variants."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "lexsis-ai"
+      description: "Lexsis AI storefront MCP server"
+      transport: "streamable_http"
+      url: "https://mcp.trylexsis.com/mcp"

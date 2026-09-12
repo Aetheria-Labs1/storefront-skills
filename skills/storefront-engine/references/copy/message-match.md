@@ -33,7 +33,7 @@ clicked; for search it means the query and the ad text.
 | MM3 | Product and variant | The hero shows the SKU and variant (colour, flavour, size, pack) from the creative; the buy box defaults to it; the cart receives it. Sold-out variants are labelled, never swapped (DP11). | BLOCK | LAW |
 | MM4 | Angle | The mechanism, claim or hook the ad leads with is the first claim on the page, in the h1 or subhead. A page that switches from the ad's "no aluminium" angle to "smells great" fails. | FAIL | RESEARCH |
 | MM5 | Persona | The audience the ad addresses ("new mums", "runners over 40", "oily skin") is named in the h1, subhead or qualifier within the first screen at 390. | FAIL | OPERATOR |
-| MM6 | Tone | Register matches: UGC or creator ad gets a UGC-led hero and first-person copy; clinical ad gets a clinical hero; conversational ad gets conversational copy. Recorded from `lexsis_campaigns.analyze` `tone`. | WARN | OPERATOR |
+| MM6 | Tone | Register matches: UGC or creator ad gets a UGC-led hero and first-person copy; clinical ad gets a clinical hero; conversational ad gets conversational copy. Record the tone from the supplied campaign material. | WARN | OPERATOR |
 | MM7 | CTA verb | The primary CTA's first word equals the ad's CTA verb (Google: mirror the call to action). "Shop" in the ad and "Add" on the page is a mismatch; use the checklist pattern in the ad too, or match the page to it. | FAIL | RESEARCH |
 | MM8 | No new claims above the fold | Every claim in the first screen at 390 is either in the ad or a verified ledger row. Nothing the visitor did not click for appears before the fold. | BLOCK | LAW |
 | MM9 | Awareness | Cold social ads land on `advertorial`, `listicle`, `ad-landing-page`, `ugc-creator-collab` or `video-sales-page`; retargeting and brand search land on `pdp`, `pdp-hybrid-landing`, `offer-page` or `retargeting-warm`. Never send a most-aware click to an educational page or a cold click to a buy box with no premise. | FAIL | RESEARCH |
@@ -44,9 +44,9 @@ clicked; for search it means the query and the ad text.
 
 ## 3. Procedure
 
-1. Pull the creative: `lexsis_campaigns.creatives` for the campaign, or accept the ad image, video frame and primary text from the merchant.
-2. `lexsis_campaigns.analyze({ creative_id })` returns headline, claims, colours, CTA, tone and persona. Without the tool, view the creative and write the same seven fields by hand.
-3. `lexsis_campaigns.match_persona({ creative_id })` returns the persona vocabulary and a rewritten headline, subhead and CTA. Use its vocabulary in the h1 and qualifier; keep every claim inside the ledger.
+1. Ask for the exact ad image or video frame, primary text, headline, CTA, and offer when they are not already supplied in the request.
+2. View the supplied material and record its headline, claims, colours, CTA, tone, persona, product, variant, and scene.
+3. Reconcile its audience language with the approved `persona.md` entry or merchant-supplied audience description. Keep every claim inside the ledger.
 4. Record in `page record` under `campaign`: `adHeadline`, `adOffer`, `adVariantId`, `adAngle`, `adClaims[]`, `adCta`, `persona`, `tone`, `creativeAssetId`.
 5. Fill the scorecard (section 4) in `page plan`. Any BLOCK row marked "no" stops the plan until the merchant confirms the ad change or the page change. Write the one-line summary:
    `**Message match.** h1 mirrors "<ad headline>" (overlap 0.8); offer 15% first order auto-applied; variant gid://.../456 in hero and buy box; CTA "Get 15% off my first order"; persona "night-shift nurses" in subhead; tone UGC.`

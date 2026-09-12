@@ -6,7 +6,7 @@ duplication, credit approval, variant review and experiment lifecycle.
 
 ## Define the difference
 
-Read `lexsis_campaigns.personas`, the owned base page's source/edit context
+Read the selected `persona.md` entry, the owned base page's source/edit context
 and relevant analytics. Confirm the target audience, decision friction,
 protected elements, primary metric and exact changes. Treat persona labels
 as hypotheses, not proof about individual visitors.

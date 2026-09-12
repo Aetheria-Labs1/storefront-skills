@@ -1,9 +1,8 @@
 # Asset sourcing sequence
 
-The ordered algorithm `/plan-page` runs for every asset slot, the checks at
-each step, how the result is recorded, the single asset question, and what
-happens when the merchant postpones a slot. `/design-page` runs the same
-sequence for slots the plan left `planned`. Tool mechanics (arguments,
+The ordered algorithm `/plan-assets` runs for every asset slot, the checks at
+each step, how the result is recorded, the grouped asset question, and what
+happens when the merchant postpones a slot. Tool mechanics (arguments,
 picker behaviour, import flow) are in `references/asset-prep.md` and
 `references/design-assets.md`; this file is the policy above them. Jobs come
 from `references/assets/image-jobs-by-page-type.md`, technical thresholds from
@@ -27,7 +26,7 @@ for slot in plan.asset_slots:
   4. SUPPLIER OR MANUFACTURER   lexsis_asset_import.import after a written licence check
   5. LICENSED STOCK             backdrop, context or raw-material roles only; import
   6. GENERATION                 references/assets/generation-policy.md (ALLOW auto after credit confirmation; ASK after merchant yes; NEVER blocked)
-  else: slot stays planned; visible "asset needed" note in the draft; no placeholder
+  else: slot remains unresolved; no placeholder
 ```
 
 Steps 3 to 6 run only for the jobs their row in section 7 of
@@ -59,9 +58,8 @@ sources remain under Rules and Sources below.
 
 ## 4. Recording the result
 
-Plan (`page plan`, "## Asset slots"). Columns are fixed by
-`skills/plan-page/SKILL.md`; put the job and the rights basis inside
-Role/purpose and Source decision:
+Asset handoff (`## Asset bindings`). Put the job and rights basis in the
+binding and production records:
 
 ```markdown
 | Slot | Section | Role/purpose | Aspect | Source decision | Id / URL | Status |
@@ -73,20 +71,9 @@ Role/purpose and Source decision:
 | A5 | benefits | product_media (in-use) | 3:2 | pending: no in-use media; NEVER for generation | | planned |
 ```
 
-Manifest (`page record`, `assets[]`, schema in
-`skills/plan-page/references/page-files.md`). One entry per slot; the page record
-holds ids and status only, never prompts, licences or reasoning:
-
-```json
-{ "slotId": "A1", "role": "product_media", "sectionId": "gallery", "sourceType": "shopify", "productId": "gid://shopify/Product/1", "mediaId": "gid://shopify/MediaImage/123", "url": "https://cdn.shopify.com/...", "status": "verified" }
-{ "slotId": "A3", "role": "hero_bg", "sectionId": "hero", "sourceType": "lexsis", "assetId": "2d9a...", "url": "https://cdn.trylexsis.com/...", "status": "verified", "generated": true, "provider": "lexsis" }
-{ "slotId": "A5", "role": "product_lifestyle", "sectionId": "benefits", "sourceType": "pending", "status": "planned" }
-```
-
-Merchant uploads, supplier files and stock all become `sourceType: lexsis`
-after import; the origin step survives only in the plan's Source decision.
-Licence ids, consent references and prompts live in the plan, never in the
-manifest.
+Merchant uploads, supplier files, stock and external outputs receive a
+permanent Lexsis id after import. The origin, licence, consent and operation
+history remain in the asset production record.
 
 ## 5. Acquisition and unresolved slots
 
@@ -123,8 +110,8 @@ Check: view all slots of one section together; near-identical pairs count is 0 (
 
 AS8. Use the grouped unresolved-slot handling in `references/workflows/section-asset-workflow.md` section 1. OPERATOR.
 
-AS9. Follow the shared asset workflow for postponed slots; never ship a placeholder. OPERATOR.
-Rationale: `/design-page` forbids local or temporary placeholder assets.
+AS9. Follow the shared asset workflow for postponed slots; never mark
+`ASSETS_READY` with a placeholder. OPERATOR.
 
 AS10. Accept an asset only after the slot-spec resolution and aspect checks; art-direct the mobile hero instead of scaling the desktop crop. RESEARCH.
 Rationale: scaled-down landscape heroes shrink the product and push the CTA below the fold https://www.nngroup.com/articles/big-pictures-small-screens/ ; https://developer.mozilla.org/en-US/docs/Web/HTML/Guides/Responsive_images .

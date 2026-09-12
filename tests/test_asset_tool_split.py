@@ -31,7 +31,7 @@ class AssetToolSplitTests(unittest.TestCase):
     def test_asset_workflows_expose_import_and_upload_separately(self) -> None:
         documents = [
             SKILLS / name / "SKILL.md"
-            for name in ("plan-page", "design-page", "optimize")
+            for name in ("plan-assets", "optimize")
         ]
         documents.extend(
             REFERENCES / name
@@ -49,6 +49,33 @@ class AssetToolSplitTests(unittest.TestCase):
                 self.assertIn("lexsis_asset_import", text)
                 self.assertIn("lexsis_asset_upload", text)
 
+    def test_plan_page_defers_asset_execution(self) -> None:
+        text = (SKILLS / "plan-page" / "SKILL.md").read_text(encoding="utf-8")
+        for action in (
+            "lexsis_asset_library.search",
+            "lexsis_assets.view",
+            "lexsis_asset_import.import",
+            "lexsis_asset_upload.upload",
+            "lexsis_workspace.credits",
+            "lexsis_drafts.asset_generate",
+        ):
+            self.assertNotIn(action, text, action)
+        self.assertIn("leave sourcing and production to", text)
+
+    def test_design_page_consumes_verified_bindings_only(self) -> None:
+        text = (SKILLS / "design-page" / "SKILL.md").read_text(encoding="utf-8")
+        self.assertIn("ASSETS_READY", text)
+        for action in (
+            "lexsis_asset_library.search",
+            "lexsis_assets.view",
+            "lexsis_assets.capabilities",
+            "lexsis_asset_import.import",
+            "lexsis_asset_upload.upload",
+            "lexsis_workspace.credits",
+            "lexsis_drafts.asset_generate",
+        ):
+            self.assertNotIn(action, text, action)
+
     def test_import_and_upload_contract_is_explicit(self) -> None:
         text = (REFERENCES / "lexsis-mcp-contract.md").read_text(encoding="utf-8")
         for phrase in (
@@ -65,7 +92,7 @@ class AssetToolSplitTests(unittest.TestCase):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, text)
 
-    def test_page_type_upload_offers_use_the_shared_asset_workflow(self) -> None:
+    def test_page_types_delegate_asset_execution_to_plan_assets(self) -> None:
         page_types = REFERENCES / "page-types"
         for path in page_types.glob("*.md"):
             if path.name.startswith("_"):
@@ -75,8 +102,8 @@ class AssetToolSplitTests(unittest.TestCase):
                     "references/workflows/_how-to-read.md", path.read_text(encoding="utf-8")
                 )
         workflow = (REFERENCES / "workflows" / "_how-to-read.md").read_text(encoding="utf-8")
-        self.assertIn("references/workflows/section-asset-workflow.md", workflow)
-        assets = (REFERENCES / "workflows" / "section-asset-workflow.md").read_text(encoding="utf-8")
+        self.assertIn("`/plan-assets` later resolves those jobs", workflow)
+        assets = (SKILLS / "plan-assets" / "SKILL.md").read_text(encoding="utf-8")
         self.assertIn("lexsis_asset_upload.upload", assets)
         self.assertIn("lexsis_asset_import.import", assets)
 

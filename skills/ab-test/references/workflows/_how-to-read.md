@@ -10,17 +10,17 @@ execute those decisions, never relax their requirements.
 1. Select one contract through `references/page-types/_index.md`.
 2. Read its context requirements and checklist. Keep the required headings
    and JSON contract; record deviations with their reasons.
-3. Execute each section's type-specific row through the four procedures
-   below. Read each procedure once, then apply it to every relevant section.
-4. Reconcile the asset budget and evidence, then inspect compiler results and
-   perform the hosted review at 390, 768 and 1280 before `DESIGN_APPROVED`.
+3. During planning, turn each section row into final copy, layout intent,
+   proof decisions, interaction intent, and production asset requirements.
+4. `/plan-assets` later resolves those jobs through the asset workflow;
+   `/design-page` selects implementation schemas and performs hosted review.
 
 ## Four procedures
 
 | Procedure | Single home | Type-specific inputs |
 |---|---|---|
-| Asset acquisition and missing-slot handling | `references/workflows/section-asset-workflow.md` section 1 | Job, source/tag, crop, required count and legitimate fallback |
-| View and section fit | `references/workflows/section-asset-workflow.md` section 2 | Product/variant, composition, adjacent slots and intended crop |
+| Asset acquisition and missing-slot handling | owned by `/plan-assets` | Job, source/tag, crop, required count and legitimate fallback |
+| View and section fit | owned by `/plan-assets` | Product/variant, composition, adjacent slots and intended crop |
 | Interactive selection | `references/workflows/island-selection-workflow.md` | Candidate family and the decision that requires behavior |
 | Copy execution | `references/workflows/copy-workflow.md` | Message, evidence, specific ceilings and CTA destination |
 
@@ -30,12 +30,11 @@ image. Static facts, native disclosures and tables remain legitimate content.
 
 ## Planning and design responsibilities
 
-`/plan-page` resolves context and asset jobs, records functional intent and
-visual direction, and names deviations. It does not choose schema props or
-force an island. `/design-page` executes the interactive-selection procedure
-against the current catalog and schemas, then compiles the source. Reopen a
-planned decision only when new evidence or a contract conflict requires it.
-A saved preset label is descriptive intent, not a prop bundle to paste.
+`/plan-page` resolves context and asset requirements, records functional
+intent and visual direction, and names deviations. `/plan-assets` resolves
+production media. `/design-page` executes the interactive-selection procedure
+against current schemas, then compiles the source. Reopen a planned decision
+only when new evidence or a contract conflict requires it.
 
 ## Evidence and handoff
 

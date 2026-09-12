@@ -141,7 +141,7 @@ FS8. Retargeting pages skip education, open with proof, lead with objections, fr
 Check: `pageType: retargeting-warm` implies section order matches the table above and `offer.type` is not `first-order`.
 
 FS9. Cold social pages match the ad's message in the first screen and hold price until after the mechanism. HEURISTIC and OPERATOR.
-Check: the plan's "Message match" line names the creative id from `lexsis_campaigns.creatives`; price-presentation PP19 check passes.
+Check: the plan's "Message match" line identifies the supplied creative or campaign message; price-presentation PP19 check passes.
 
 FS10. Search pages answer first and never use `advertorial`, `listicle` or `video-sales-page`; "best" and "top N" queries land on `seo-buyers-guide`. HEURISTIC.
 Check: `trafficSource` in {`google-search`, `google-shopping`} implies `pageType` not in {`advertorial`, `listicle`, `video-sales-page`}; `pageType: seo-buyers-guide` implies `trafficSource` in {`google-search`, `organic`}.
