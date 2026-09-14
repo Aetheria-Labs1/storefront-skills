@@ -9,14 +9,13 @@
   "defaultHydrate": "immediate",
   "combine_with": [
     "BuyBox",
-    "BuyBox or ProceedToCart",
-    "ProductPrice",
-    "ProceedToCart"
+    "ProceedToCart",
+    "ProductPrice"
   ],
   "anti_patterns": [
     "Setting estimatedDays without considering weekends/holidays (inaccurate dates)",
     "Using cutoffHour in timezone that doesn't match customer location (shows wrong countdown)",
-    "Showing countdown after cutoff passes (it returns null \u2014 no message, looks broken)"
+    "Showing countdown after cutoff passes (it returns null — no message, looks broken)"
   ],
   "props": {
     "estimatedDays": {

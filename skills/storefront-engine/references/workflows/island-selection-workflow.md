@@ -72,13 +72,12 @@ Use only live schema parts/CSS variables, scoped by section id.
 
 | Retired component name | Current implementation |
 |---|---|
-| FAQ | Native `details` and `summary` |
 | Tabs | Native radio controls with labels or disclosures |
 | Marquee | Static linked logo/list markup; no ticker by default |
 | StatCards | Static semantic figures with sourced values |
 | BackToTop | Native anchor to a stable page id |
 | Carousel | Native scroll snap or a justified active specialist |
-| CartDrawer | Cart V2 through `head.use_cart_v2` |
+| CartDrawer | Default profile-driven Cart V2 |
 | Countdown | CountdownTimer, only after ledger and live-schema checks |
 
 Retained schema files for older pages are compatibility artifacts. They do

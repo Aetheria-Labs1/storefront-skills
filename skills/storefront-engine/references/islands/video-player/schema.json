@@ -5,16 +5,17 @@
   "capabilities": [],
   "usage_hint": "Responsive video player with controls, autoplay, loop. Supports direct video files and YouTube/Vimeo embeds.",
   "when_to_use": "For product demos, how-to videos, brand stories. Auto-detects YouTube/Vimeo URLs and renders iframe embed. For direct videos shows custom controls (play/pause, progress, mute). Poster image for thumbnail.",
-  "when_not_to_use": "For background ambient video use HTML5 video tag directly. For short animated clips consider GIF or CSS animations. When video isn't core to conversion.",
+  "when_not_to_use": "For background ambient video use HeroMedia. For short animated clips use a native media island rather than raw video markup. When video isn't core to conversion.",
   "defaultHydrate": "immediate",
   "combine_with": [
-    "ProductGallery or a native product image",
+    "ProductGallery",
+    "MediaCarousel",
     "Hero sections",
     "ProductDescription"
   ],
   "anti_patterns": [
     "Autoplaying unmuted video (violates accessibility and most browsers block it)",
-    "Using large uncompressed video files (>5MB \u2014 slows page load)",
+    "Using large uncompressed video files (>5MB — slows page load)",
     "Not providing poster image (shows blank frame until video loads)"
   ],
   "props": {
@@ -29,7 +30,7 @@
         "provider": "?'cloudflare_stream' | 'cloudflare_cdn' | 'external'",
         "sources": "array<{url: string, type: 'application/x-mpegURL' | 'application/vnd.apple.mpegurl' | 'application/dash+xml' | 'video/mp4' | 'video/webm' | 'video/ogg', width: ?number, height: ?number, bitrate: ?number}>",
         "poster": "string",
-        "preview": "?{url: string, type: 'video/mp4' | 'image/gif' | 'image/webp', poster: ?object}",
+        "preview": "?{url: string, type: 'video/mp4' | 'image/gif' | 'image/webp', poster: ?string}",
         "captionsUrl": "?string"
       },
       "required": false
@@ -92,6 +93,9 @@
     "--lx-media-carousel-duration",
     "--lx-media-carousel-ease",
     "--lx-media-carousel-fit",
+    "--lx-media-carousel-focus-color",
+    "--lx-media-carousel-focus-offset",
+    "--lx-media-carousel-focus-width",
     "--lx-media-carousel-placeholder",
     "--lx-media-carousel-radius",
     "--lx-shoppable-button-radius",

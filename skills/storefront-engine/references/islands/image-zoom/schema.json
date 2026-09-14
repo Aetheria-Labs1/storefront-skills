@@ -8,14 +8,13 @@
   "when_not_to_use": "For images that don't benefit from zoom (graphics, text, low-res photos). When image is already cropped to show detail. For galleries with many images (use lightbox instead).",
   "defaultHydrate": "immediate",
   "combine_with": [
-    "ProductGallery or a native product image",
-    "VariantSelector",
-    "ProductGallery"
+    "ProductGallery or MediaCarousel",
+    "VariantSelector"
   ],
   "anti_patterns": [
     "Using low-resolution images (zoom reveals pixelation instead of detail)",
     "Setting zoomLevel too high (>3x causes slow rendering on mobile)",
-    "Using trigger=\"hover\" on touch-only pages (hover doesn't work \u2014 use \"click\")"
+    "Using trigger=\"hover\" on touch-only pages (hover doesn't work — use \"click\")"
   ],
   "props": {
     "src": {

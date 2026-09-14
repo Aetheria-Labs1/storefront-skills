@@ -13,7 +13,7 @@
     "Footer"
   ],
   "anti_patterns": [
-    "Setting speed too fast (<3000ms) \u2014 users can't read messages",
+    "Setting speed too fast (<3000ms) — users can't read messages",
     "Using dismissible without sticky (dismissal resets on navigation when not sticky)",
     "Putting multiple AnnouncementBar instances on one page (confusing + redundant)"
   ],

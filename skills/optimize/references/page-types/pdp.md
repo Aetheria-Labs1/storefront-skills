@@ -162,7 +162,7 @@ copy procedures; this table supplies their inputs, not another policy.
 | asset library | `product-shot` cut-outs, `lifestyle` in-use, `flat-lay` kits, `social-proof` UGC with rights | on-body scale, sequence frames, a label photo at 1600 px | ask the merchant to upload; UGC waits for a `P` row |
 | generation | backdrops, textures, composites only (`hero_bg`, `section_bg`, `card_bg`, `texture_fill`, `pattern_tile`, `decorative_element`, `product_composite`) | product, people, results, logos, text, anything in the gallery or a proof section | never |
 
-Minimal assets (one or two catalog images): a stacked gallery or a single image with zoom, the buy box, an HTML spec table, reviews by band, a native FAQ, and `planned` slots for scale and in-use listed in the plan and draft summary; benefits fold into facts beside the one real image, and how-it-works and ugc-grid wait, each as the agreed alternative. Generated assets on a PDP: usually zero, at most one ASK backdrop below the fold, never more than the house cap of four.
+Minimal assets (one or two catalog images): a stacked gallery or a single image with zoom, the buy box, an HTML spec table, reviews by band, the accessible `FAQ` island, and `planned` slots for scale and in-use listed in the plan and draft summary; benefits fold into facts beside the one real image, and how-it-works and ugc-grid wait, each as the agreed alternative. Generated assets on a PDP: usually zero, at most one ASK backdrop below the fold, never more than the house cap of four.
 
 ## Above the fold (390px)
 

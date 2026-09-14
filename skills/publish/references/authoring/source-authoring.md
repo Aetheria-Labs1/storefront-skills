@@ -41,9 +41,10 @@ Supported headless behavior is different from fallback content: fetch the
 current required hooks, preserve their state contract, and test the result.
 Navigation hydration hooks likewise come from the selected live schema.
 
-Cart behavior comes from `head.use_cart_v2` and the published cart profile,
-not an authored cart section. Required singleton roles and linked purchase
-state are resolved in the island-selection owner.
+Cart V2 is enabled by default. Cart behavior comes from the effective
+published profile, not a head flag or authored cart section. Required
+singleton roles and linked purchase state are resolved in the island-selection
+owner.
 
 ## Native content
 

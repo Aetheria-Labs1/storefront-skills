@@ -4,7 +4,7 @@
   "category": "navigation",
   "capabilities": [],
   "usage_hint": "Site-wide footer with links, logo, newsletter signup, social icons, and copyright. Always placed at bottom of page.",
-  "when_to_use": "Every page needs a footer. Supports multiple layouts (simple, columns, centered, editorialGrid, newsletterSplit) and both hydration mode (custom HTML with data-lx-footer tags) and legacy mode (React-rendered). Hydration mode's newsletter form captures automatically \u2014 no endpoint to configure.",
+  "when_to_use": "Every page needs a footer. Supports multiple layouts (simple, columns, centered, editorialGrid, newsletterSplit) and both hydration mode (custom HTML with data-lx-footer tags) and legacy mode (React-rendered). Hydration mode's newsletter form captures automatically — no endpoint to configure.",
   "when_not_to_use": "For minimal page templates without site-wide footer (rare). For mid-page newsletter blocks use a dedicated newsletter island.",
   "defaultHydrate": "immediate",
   "combine_with": [
@@ -13,7 +13,7 @@
     "native top anchor"
   ],
   "anti_patterns": [
-    "Using multiple Footer instances on one page \u2014 there should be one site-wide footer",
+    "Using multiple Footer instances on one page — there should be one site-wide footer",
     "Hardcoding current year instead of using data-lx-footer=\"year\" (hydration) or letting the component auto-fill it",
     "Duplicating social links in both Footer and separate social bar (pick one location)"
   ],

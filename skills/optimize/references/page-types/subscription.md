@@ -135,7 +135,7 @@ copy procedures; this table supplies their inputs, not another policy.
 | asset library | `lifestyle` routine scenes, `flat-lay` deliveries, `social-proof` with rights | portal screenshots (only present when the merchant imported them), tenure UGC | ask the merchant to upload; label imports as screenshots |
 | generation | backdrops, textures, a single-product composite only | the delivery contents, the portal, people, results, logos, text | never |
 
-Minimal assets (one identity image): packshot hero with the context slot `planned`, the plan selector, an SVG how-it-works flow, savings math, tenure quotes or static cards by band, guarantee, native FAQ; benefits and features wait on the merchant, and every missing asset is listed in the plan and draft summary. Generated assets: zero or one composite for the hero context, never more than the house cap of four.
+Minimal assets (one identity image): packshot hero with the context slot `planned`, the plan selector, an SVG how-it-works flow, savings math, tenure quotes or static cards by band, guarantee, and the accessible `FAQ` island; benefits and features wait on the merchant, and every missing asset is listed in the plan and draft summary. Generated assets: zero or one composite for the hero context, never more than the house cap of four.
 
 ## Above the fold (390px)
 

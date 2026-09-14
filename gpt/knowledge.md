@@ -1,5 +1,5 @@
 <!-- GENERATED from skills/ by scripts/build-distributions.py - DO NOT EDIT.
-     storefront-skills v8.0.2; 9 skills; 50 active islands -->
+     storefront-skills v8.0.2; 9 skills; 51 active islands -->
 
 # Lexsis Storefront Skills - Knowledge Base
 
@@ -5493,13 +5493,12 @@ Use only live schema parts/CSS variables, scoped by section id.
 
 | Retired component name | Current implementation |
 |---|---|
-| FAQ | Native `details` and `summary` |
 | Tabs | Native radio controls with labels or disclosures |
 | Marquee | Static linked logo/list markup; no ticker by default |
 | StatCards | Static semantic figures with sourced values |
 | BackToTop | Native anchor to a stable page id |
 | Carousel | Native scroll snap or a justified active specialist |
-| CartDrawer | Cart V2 through `head.use_cart_v2` |
+| CartDrawer | Default profile-driven Cart V2 |
 | Countdown | CountdownTimer, only after ledger and live-schema checks |
 
 Retained schema files for older pages are compatibility artifacts. They do
@@ -5580,9 +5579,10 @@ Supported headless behavior is different from fallback content: fetch the
 current required hooks, preserve their state contract, and test the result.
 Navigation hydration hooks likewise come from the selected live schema.
 
-Cart behavior comes from `head.use_cart_v2` and the published cart profile,
-not an authored cart section. Required singleton roles and linked purchase
-state are resolved in the island-selection owner.
+Cart V2 is enabled by default. Cart behavior comes from the effective
+published profile, not a head flag or authored cart section. Required
+singleton roles and linked purchase state are resolved in the island-selection
+owner.
 
 ## Native content
 

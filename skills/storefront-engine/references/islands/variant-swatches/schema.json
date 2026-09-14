@@ -30,7 +30,9 @@
           "compareAtPrice": "?string",
           "available": "boolean",
           "image": "?string",
-          "images": "?array<{url: object, alt: ?object}>",
+          "mediaId": "?string",
+          "mediaIds": "?array<string>",
+          "images": "?array<{id: ?string, url: string, alt: ?string, variantId: ?string, variantIds: ?array<string>}>",
           "color": "?string",
           "badge": "?string"
         }
@@ -42,7 +44,9 @@
         "compareAtPrice": "?string",
         "available": "boolean",
         "image": "?string",
-        "images": "?array<{url: string, alt: ?object}>",
+        "mediaId": "?string",
+        "mediaIds": "?array<string>",
+        "images": "?array<{id: ?string, url: string, alt: ?string, variantId: ?string, variantIds: ?array<string>}>",
         "color": "?string",
         "badge": "?string"
       },
@@ -61,7 +65,7 @@
           "image": "?string",
           "color": "?string",
           "badge": "?string",
-          "available": "?boolean | boolean"
+          "available": "?boolean"
         }
       },
       "shape": {
@@ -69,7 +73,7 @@
         "image": "?string",
         "color": "?string",
         "badge": "?string",
-        "available": "?boolean | boolean"
+        "available": "?boolean"
       },
       "required": false
     },

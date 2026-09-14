@@ -11,16 +11,18 @@
     }
   ],
   "deprecated": true,
-  "replacement": "Cart V2 via head.use_cart_v2",
+  "replacement": "Default profile-driven Cart V2",
   "deprecation_reason": "CartDrawer is retained only for legacy pages; new pages must use the Cart V2 profile.",
-  "usage_hint": "Compatibility contract for existing pages. Do not author this retired island in new source.",
-  "when_to_use": "Inspect an existing page only; use the replacement in workflows/island-selection-workflow.md for new source.",
-  "when_not_to_use": "Do not use for new page authoring.",
+  "usage_hint": "DEPRECATED (Cart V1). Cart V2 is enabled by default and the renderer injects the effective profile automatically. CartDrawer remains only for existing legacy pages during migration.",
+  "when_to_use": "NEVER on new pages. Only keep CartDrawer while migrating an existing legacy page that already contains it.",
+  "when_not_to_use": "Any new page. Any page using the default profile-driven Cart V2 runtime.",
   "defaultHydrate": "idle",
-  "combine_with": [],
+  "combine_with": [
+    "Legacy pages only. New pages use a published effective Cart V2 profile without an authored cart section or enable flag."
+  ],
   "anti_patterns": [
-    "Using CartDrawer on a new page: deprecated \u2014 Cart V2 (use_cart_v2: true) is the default cart",
-    "Adding CartDrawer to a use_cart_v2 page: dual cart surfaces, publish validation fails",
+    "Using CartDrawer on a new page: deprecated — profile-driven Cart V2 is already the default",
+    "Adding CartDrawer beside the effective Cart V2 profile: dual cart surfaces, publish validation fails",
     "Multiple CartDrawer instances: creates state conflicts"
   ],
   "props": {

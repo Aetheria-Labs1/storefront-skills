@@ -15,7 +15,7 @@
     "EmailCapture",
     "ReviewCarousel",
     "BuyBox (quick-view)",
-    "native details and summary",
+    "FAQ",
     "native size table"
   ],
   "anti_patterns": [
@@ -66,10 +66,10 @@
     "size": {
       "type": "enum",
       "values": [
-        "full",
         "sm",
         "md",
         "lg",
+        "full",
         "xl"
       ],
       "required": false,

@@ -10,7 +10,7 @@
   "combine_with": [
     "static verified policy facts",
     "BuyBox",
-    "native details and summary",
+    "FAQ",
     "StickyBar"
   ],
   "anti_patterns": [
@@ -18,7 +18,7 @@
     "Setting pageSize > 20 (too many DOM nodes; keep 5-10 for initial load)",
     "Passing reviews without id field when helpfulEndpoint is set (votes need review identity)",
     "Using variant=\"stamped\" without demographics data (sidebar renders empty; use \"minimal\" instead)",
-    "Writing reviewsEndpoint with a placeholder page id \u2014 omit it, the page supplies the endpoint at runtime",
+    "Writing reviewsEndpoint with a placeholder page id — omit it, the page supplies the endpoint at runtime",
     "averageRating/totalReviews not taken from the reviews API total"
   ],
   "props": {
@@ -33,12 +33,12 @@
           "title": "?string",
           "body": "string",
           "date": "?string",
-          "verified": "?boolean | boolean",
-          "featured": "?boolean | boolean",
+          "verified": "?boolean",
+          "featured": "?boolean",
           "avatar": "?string",
-          "demographics": "?array<{label: object, value: object}>",
+          "demographics": "?array<{label: string, value: string}>",
           "improvements": "?array<string>",
-          "media": "?array<{type: object, urls: object, thumbnail: ?object, alt: ?object}>",
+          "media": "?array<{type: 'image' | 'video', urls: array<string>, thumbnail: ?string, alt: ?string}>",
           "helpful_count": "?number",
           "unhelpful_count": "?number"
         }
@@ -50,12 +50,12 @@
         "title": "?string",
         "body": "string",
         "date": "?string",
-        "verified": "?boolean | boolean",
-        "featured": "?boolean | boolean",
+        "verified": "?boolean",
+        "featured": "?boolean",
         "avatar": "?string",
         "demographics": "?array<{label: string, value: string}>",
         "improvements": "?array<string>",
-        "media": "?array<{type: 'image' | 'video', urls: array<object>, thumbnail: ?object, alt: ?object}>",
+        "media": "?array<{type: 'image' | 'video', urls: array<string>, thumbnail: ?string, alt: ?string}>",
         "helpful_count": "?number",
         "unhelpful_count": "?number"
       },

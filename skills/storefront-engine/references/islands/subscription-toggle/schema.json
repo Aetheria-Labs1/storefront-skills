@@ -8,18 +8,17 @@
     }
   ],
   "usage_hint": "Subscribe-and-save toggle that switches between one-time purchase and subscription pricing. Emits subscription:changed events to BuyBox.",
-  "when_to_use": "On product pages with subscription selling plans. Auto-emits state changes so BuyBox/BuyBox or ProceedToCart islands can update checkout behavior. Shows discount, frequency options, and benefits list.",
+  "when_to_use": "On product pages with subscription selling plans. Auto-emits state changes so BuyBox can update checkout behavior. Shows discount, frequency options, and benefits list.",
   "when_not_to_use": "For products without subscription options. For simple quantity selectors use BuyBox quantity field. For tiered pricing use QuantityBreaks instead.",
   "defaultHydrate": "immediate",
   "combine_with": [
     "BuyBox",
-    "BuyBox or ProceedToCart",
-    "ProductPrice (all listen for subscription:changed events)"
+    "ProductPrice (both listen for subscription:changed events)"
   ],
   "anti_patterns": [
-    "Not providing valid Shopify selling plan IDs \u2014 checkout will fail",
+    "Not providing valid Shopify selling plan IDs — checkout will fail",
     "Listing benefits that don't match actual subscription terms (misleading)",
-    "Using alongside QuantityBreaks (they conflict \u2014 choose one pricing model)"
+    "Using alongside QuantityBreaks (they conflict — choose one pricing model)"
   ],
   "props": {
     "oneTimePrice": {

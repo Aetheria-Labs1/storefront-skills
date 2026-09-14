@@ -16,19 +16,19 @@
       "name": "overlay"
     }
   ],
-  "usage_hint": "Sticky bottom CTA for either a bound product add-to-cart or a collection/campaign destination.",
+  "usage_hint": "Sticky bottom CTA with optional variant dropdown and quantity controls. Match syncKey with BuyBox for two-way purchase synchronization, or use a collection/campaign destination.",
   "when_to_use": "Use below the fold to re-surface a PDP add-to-cart or keep a collection-level shopping CTA available.",
   "when_not_to_use": "Not for initial purchase UI (use BuyBox or QuickAdd). Not if the primary CTA remains visible in the layout.",
   "defaultHydrate": "immediate",
   "combine_with": [
-    "BuyBox (StickyBar appears AFTER scrolling past BuyBox)",
-    "Cart V2 via head.use_cart_v2",
-    "ProductGallery or ProductHero (provides context above the fold)"
+    "BuyBox (use the same syncKey)",
+    "the renderer-managed effective Cart V2 profile",
+    "ProductGallery or ProductHero"
   ],
   "anti_patterns": [
     "Using a product StickyBar without a primary purchase interface",
     "Omitting showAfter or misconfiguring it: bar may appear too early or not at all",
-    "Missing CartDrawer: users get no cart feedback after clicking the sticky bar CTA"
+    "Publishing purchase controls without an effective Cart V2 profile"
   ],
   "props": {
     "product": {
@@ -38,7 +38,8 @@
         "price": "string",
         "compareAtPrice": "?string",
         "image": "?string",
-        "variantId": "string"
+        "variantId": "string",
+        "variants": "?array<{id: string, title: string, price: string, available: boolean, image: ?string, compareAtPrice: ?string}>"
       },
       "required": false
     },
@@ -56,6 +57,20 @@
       "type": "string",
       "required": false,
       "default": "Add to Cart"
+    },
+    "showVariantSelector": {
+      "type": "boolean",
+      "required": false,
+      "default": "false"
+    },
+    "showQuantitySelector": {
+      "type": "boolean",
+      "required": false,
+      "default": "false"
+    },
+    "syncKey": {
+      "type": "string",
+      "required": false
     },
     "showAfter": {
       "type": "union",
@@ -90,12 +105,19 @@
   ],
   "parts": [
     "bar",
+    "change-options",
     "cta",
+    "error",
     "product-image",
     "product-info",
     "product-price",
     "product-title",
-    "root"
+    "quantity",
+    "quantity-decrement",
+    "quantity-increment",
+    "quantity-input",
+    "root",
+    "variant-selector"
   ],
   "authoring": {
     "format": "source-html",

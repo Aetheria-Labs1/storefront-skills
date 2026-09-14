@@ -40,6 +40,45 @@
       "type": "boolean",
       "required": false,
       "default": "false"
+    },
+    "paymentProviders": {
+      "type": "array",
+      "items": {
+        "type": "enum",
+        "values": [
+          "visa",
+          "mastercard",
+          "amex",
+          "discover",
+          "diners",
+          "jcb",
+          "paypal",
+          "apple_pay",
+          "google_pay",
+          "shop_pay",
+          "klarna",
+          "afterpay",
+          "affirm",
+          "stripe",
+          "cashapp",
+          "upi",
+          "phonepe",
+          "razorpay",
+          "paytm",
+          "zip"
+        ]
+      },
+      "required": false,
+      "default": "[]"
+    },
+    "paymentPlacement": {
+      "type": "enum",
+      "values": [
+        "inside_checkout",
+        "below_checkout"
+      ],
+      "required": false,
+      "default": "below_checkout"
     }
   },
   "variants": [
@@ -48,12 +87,19 @@
   ],
   "css_vars": [
     "--lx-accent-color",
+    "--lx-text-color",
     "--lx-text-muted"
   ],
   "parts": [
+    "button",
     "cta",
+    "icons-row",
+    "payment-logos",
+    "provider-fallback",
+    "provider-logo",
     "root",
-    "secondary-cta"
+    "secondary-cta",
+    "text"
   ],
   "authoring": {
     "format": "source-html",

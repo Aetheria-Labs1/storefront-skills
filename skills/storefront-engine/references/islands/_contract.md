@@ -23,8 +23,8 @@ An island supplies behavior inside authored source. Select it through
 
 The page-type contract determines placement and singleton roles. Purchase,
 variant and subscription state belongs to the selected commerce island,
-not a second custom click handler. Cart V2 is enabled through
-`head.use_cart_v2`; it is not an authored cart section.
+not a second custom click handler. Cart V2 is enabled by default; it is not a
+head flag or an authored cart section.
 
 Use the live schema to discover supported parts and CSS variables. A selector
 must start with the owning section id; never paste a page-global part

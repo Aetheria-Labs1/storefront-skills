@@ -9,11 +9,11 @@
   "defaultHydrate": "immediate",
   "combine_with": [
     "ProductDescription",
-    "native disclosures or CSS tabs",
-    "ProductGallery or a native product image"
+    "FAQ or native disclosures",
+    "ProductGallery or MediaCarousel"
   ],
   "anti_patterns": [
-    "Using editorial layout for >6 ingredients (too long \u2014 use grid/list for many items)",
+    "Using editorial layout for >6 ingredients (too long — use grid/list for many items)",
     "Not providing descriptions (ingredient names alone don't educate customers)",
     "Listing inactive/filler ingredients prominently (focus on hero active ingredients)"
   ],
@@ -45,8 +45,8 @@
       "type": "enum",
       "values": [
         "grid",
-        "list",
-        "editorial"
+        "editorial",
+        "list"
       ],
       "required": false,
       "default": "grid"
@@ -69,8 +69,8 @@
   },
   "variants": [
     "grid",
-    "list",
-    "editorial"
+    "editorial",
+    "list"
   ],
   "css_vars": [
     "--lx-accent-color",

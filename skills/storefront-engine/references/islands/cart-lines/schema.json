@@ -21,8 +21,28 @@
         "compact",
         "full"
       ],
-      "required": false,
-      "default": "compact"
+      "required": false
+    },
+    "size": {
+      "type": "enum",
+      "values": [
+        "sm",
+        "md",
+        "lg"
+      ],
+      "required": false
+    },
+    "imageAspect": {
+      "type": "enum",
+      "values": [
+        "square",
+        "portrait"
+      ],
+      "required": false
+    },
+    "dividers": {
+      "type": "boolean",
+      "required": false
     },
     "showQuantity": {
       "type": "boolean",
@@ -141,7 +161,9 @@
     "--lx-bg-surface",
     "--lx-border-color",
     "--lx-error-color",
+    "--lx-gift-color",
     "--lx-surface-alt",
+    "--lx-surface-color",
     "--lx-text-color",
     "--lx-text-muted"
   ],
@@ -153,16 +175,20 @@
     "heading",
     "item",
     "item-image",
+    "item-image-wrap",
     "item-info",
     "item-price",
     "item-title",
     "item-variant",
+    "line-group",
     "purchase-option",
     "qty-controls",
     "qty-decrease",
     "qty-increase",
     "qty-value",
     "remove-btn",
+    "reward-badge",
+    "reward-qty",
     "root"
   ],
   "authoring": {

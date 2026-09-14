@@ -25,6 +25,11 @@
           "type": "'free_gift' | 'fixed_price_product' | 'discount' | 'free_shipping'",
           "title": "string",
           "reveal": "?'always' | 'on_unlock'",
+          "product_id": "?string",
+          "product_handle": "?string",
+          "variant_selection": "?'all' | 'selected'",
+          "product_variant_ids": "?array<string>",
+          "product_variants": "?array<{id: string, title: string, price: string, image: ?string, available: ?boolean}>",
           "product_variant_id": "?string",
           "product_title": "?string",
           "product_image": "?string",
@@ -33,7 +38,7 @@
           "value_type": "?'percentage' | 'fixed'",
           "discount_code": "?string",
           "icon": "?string",
-          "enabled": "?boolean | boolean"
+          "enabled": "?boolean"
         }
       },
       "shape": {
@@ -42,6 +47,11 @@
         "type": "'free_gift' | 'fixed_price_product' | 'discount' | 'free_shipping'",
         "title": "string",
         "reveal": "?'always' | 'on_unlock'",
+        "product_id": "?string",
+        "product_handle": "?string",
+        "variant_selection": "?'all' | 'selected'",
+        "product_variant_ids": "?array<string>",
+        "product_variants": "?array<{id: string, title: string, price: string, image: ?string, available: ?boolean}>",
         "product_variant_id": "?string",
         "product_title": "?string",
         "product_image": "?string",
@@ -50,7 +60,7 @@
         "value_type": "?'percentage' | 'fixed'",
         "discount_code": "?string",
         "icon": "?string",
-        "enabled": "?boolean | boolean"
+        "enabled": "?boolean"
       },
       "required": false
     },

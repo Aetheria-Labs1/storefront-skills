@@ -30,7 +30,7 @@
   "defaultHydrate": "visible",
   "combine_with": [
     "Navbar",
-    "Cart V2 via head.use_cart_v2",
+    "the renderer-managed effective Cart V2 profile",
     "AnnouncementBar"
   ],
   "anti_patterns": [
@@ -60,10 +60,10 @@
           "subtitle": "?string",
           "badge": "?string",
           "productUrl": "?string",
-          "price": "?string | {amount: object, currencyCode: object}",
-          "compareAtPrice": "?unknown | string | {amount: object, currencyCode: object}",
-          "availableForSale": "?boolean | boolean",
-          "available": "?boolean | boolean",
+          "price": "?string | {amount: string, currencyCode: string}",
+          "compareAtPrice": "?unknown | string | {amount: string, currencyCode: string}",
+          "availableForSale": "?boolean",
+          "available": "?boolean",
           "media": "?array<object | object>",
           "options": "?array<object | object>",
           "variants": "?array<object | object>",
@@ -82,8 +82,8 @@
         "productUrl": "?string",
         "price": "?string | {amount: string, currencyCode: string}",
         "compareAtPrice": "?unknown | string | {amount: string, currencyCode: string}",
-        "availableForSale": "?boolean | boolean",
-        "available": "?boolean | boolean",
+        "availableForSale": "?boolean",
+        "available": "?boolean",
         "media": "?array<object | object>",
         "options": "?array<object | object>",
         "variants": "?array<object | object>",
@@ -114,6 +114,26 @@
       ],
       "required": false,
       "default": "fullBleed"
+    },
+    "density": {
+      "type": "enum",
+      "values": [
+        "compact",
+        "balanced",
+        "editorial"
+      ],
+      "required": false,
+      "default": "balanced"
+    },
+    "mobileDensity": {
+      "type": "enum",
+      "values": [
+        "compact",
+        "balanced",
+        "editorial"
+      ],
+      "required": false,
+      "default": "compact"
     },
     "activation": {
       "type": "enum",
@@ -174,11 +194,12 @@
         {
           "type": "object",
           "shape": {
-            "enabled": "?boolean | boolean",
+            "enabled": "?boolean",
             "placement": "?'media-top-right' | 'details-after' | 'custom'",
             "label": "?string",
-            "openCartOnAdd": "?boolean | boolean",
-            "picker": "?{desktop: ?object, mobile: ?object, title: ?object, closeOnAdd: ?object}"
+            "triggerContent": "?string",
+            "openCartOnAdd": "?boolean",
+            "picker": "?{desktop: ?'drawer-right', mobile: ?'bottom-sheet', title: ?string, closeOnAdd: ?boolean}"
           }
         }
       ],
@@ -368,6 +389,9 @@
     "--lx-media-carousel-duration",
     "--lx-media-carousel-ease",
     "--lx-media-carousel-fit",
+    "--lx-media-carousel-focus-color",
+    "--lx-media-carousel-focus-offset",
+    "--lx-media-carousel-focus-width",
     "--lx-media-carousel-placeholder",
     "--lx-media-carousel-radius",
     "--lx-muted-color",
@@ -458,17 +482,28 @@
     "product-link",
     "quick-add",
     "quick-add-backdrop",
+    "quick-add-body",
     "quick-add-close",
     "quick-add-drag-handle",
+    "quick-add-eyebrow",
+    "quick-add-footer",
+    "quick-add-header",
     "quick-add-image",
     "quick-add-option",
     "quick-add-option-group",
+    "quick-add-option-label",
+    "quick-add-option-values",
+    "quick-add-options",
     "quick-add-panel",
     "quick-add-price",
+    "quick-add-product",
+    "quick-add-product-copy",
+    "quick-add-product-title",
     "quick-add-selected-variant",
     "quick-add-sheet",
     "quick-add-status",
     "quick-add-submit",
+    "quick-add-title",
     "quick-add-variant",
     "quick-add-variant-list",
     "root",

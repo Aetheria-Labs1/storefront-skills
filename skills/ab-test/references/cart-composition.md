@@ -4,16 +4,9 @@ A cart profile is a renderer-managed surface backed by a published profile.
 
 ## Page contract
 
-A commerce page declares:
-
-```json
-{
-  "head": {
-    "title": "...",
-    "use_cart_v2": true
-  }
-}
-```
+Cart V2 is enabled by default for every storefront. New source omits the
+deprecated `use_cart_v2` compatibility field. Existing `true` values remain
+valid; `false` fails validation because Cart V2 cannot be disabled.
 
 The page must not contain `CartDrawer`, `DrawerShell`, or cart child islands.
 The renderer resolves and injects the cart after the page sections.
@@ -81,7 +74,7 @@ page sections or page metadata.
 
 | Anti-pattern | Correct behavior |
 |---|---|
-| Inline `DrawerShell` on a cart-profile page | Set `use_cart_v2` and configure a profile |
+| Inline `DrawerShell` on a storefront page | Remove it and configure the effective profile |
 | Cart selected through title or SEO metadata | Use a page assignment |
 | Agent publishes a draft automatically | Merchant reviews and publishes in the app |
 | Fabricated products or selling plans | Use real store catalog data |

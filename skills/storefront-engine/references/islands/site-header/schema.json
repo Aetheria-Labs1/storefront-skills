@@ -12,14 +12,14 @@
   "when_not_to_use": "If you only need navigation without announcement, use Navbar alone. If announcement should scroll away while nav stays sticky, use separate AnnouncementBar + Navbar.",
   "defaultHydrate": "immediate",
   "combine_with": [
-    "Cart V2 via head.use_cart_v2",
+    "The renderer-managed effective Cart V2 profile",
     "Footer",
     "native top anchor"
   ],
   "anti_patterns": [
-    "Using SiteHeader AND Navbar on the same page \u2014 they duplicate functionality",
-    "Multiple SiteHeader instances \u2014 there should be one site-wide header",
-    "Setting announcement messages that are too long (causes mobile overflow \u2014 keep under 60 chars)"
+    "Using SiteHeader AND Navbar on the same page — they duplicate functionality",
+    "Multiple SiteHeader instances — there should be one site-wide header",
+    "Setting announcement messages that are too long (causes mobile overflow — keep under 60 chars)"
   ],
   "props": {
     "announcement": {
@@ -29,7 +29,7 @@
         "speed": "?number",
         "backgroundColor": "?string",
         "textColor": "?string",
-        "dismissible": "?boolean | boolean",
+        "dismissible": "?boolean",
         "link": "?string"
       },
       "required": false
@@ -40,10 +40,10 @@
         "logo": "{src: ?string, text: ?string, alt: ?string, url: ?string}",
         "links": "array<{label: string, url: string, children: ?array<{}>}>",
         "cartCount": "?number",
-        "transparent": "?boolean | boolean",
-        "style": "?{bgColor: ?object, textColor: ?object, accentColor: ?object, logoHeight: ?object, height: ?object, borderBottom: ?object, fontFamily: ?object, fontSize: ?object, fontWeight: ?object, padding: ?object, maxWidth: ?object, dropdownBg: ?object, dropdownTextColor: ?object, mobileBg: ?object, mobileTextColor: ?object}",
+        "transparent": "?boolean",
+        "style": "?{bgColor: ?string, textColor: ?string, accentColor: ?string, logoHeight: ?string, height: ?string, borderBottom: ?string, fontFamily: ?string, fontSize: ?string, fontWeight: ?string, padding: ?string, maxWidth: ?string, dropdownBg: ?string, dropdownTextColor: ?string, mobileBg: ?string, mobileTextColor: ?string}",
         "cta": "?{label: string, url: string}",
-        "hideCart": "?boolean | boolean"
+        "hideCart": "?boolean"
       },
       "required": false
     },

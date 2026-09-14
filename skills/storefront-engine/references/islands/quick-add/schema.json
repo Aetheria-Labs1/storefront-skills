@@ -18,7 +18,7 @@
   "when_not_to_use": "Not for the main PDP purchase form (use BuyBox) or products requiring quantity, subscriptions, or complex personalization.",
   "defaultHydrate": "interaction",
   "combine_with": [
-    "Cart V2 or Cart V2 via head.use_cart_v2"
+    "The renderer-managed effective Cart V2 profile"
   ],
   "anti_patterns": [
     "Hardcoding a variant ID for a multi-variant product",
@@ -30,7 +30,7 @@
       "type": "object",
       "shape": {
         "image": "?string",
-        "variants": "?array<{id: string, title: string, price: object | object, available: ?object | object, availableForSale: ?object | object, selectedOptions: ?object, image: ?object | object | object}>",
+        "variants": "?array<{id: string, title: string, price: string | object, available: ?boolean, availableForSale: ?boolean, selectedOptions: ?array<{}>, image: ?object | string | object}>",
         "id": "?string",
         "productId": "?string",
         "shopifyProductId": "?string",
@@ -42,8 +42,8 @@
         "productUrl": "?string",
         "price": "?string | {amount: string, currencyCode: string}",
         "compareAtPrice": "?unknown | string | {amount: string, currencyCode: string}",
-        "availableForSale": "?boolean | boolean",
-        "available": "?boolean | boolean",
+        "availableForSale": "?boolean",
+        "available": "?boolean",
         "media": "?array<object | object>",
         "options": "?array<object | object>",
         "variantId": "?string"
@@ -81,18 +81,19 @@
         "desktop": "?'drawer-right'",
         "mobile": "?'bottom-sheet'",
         "title": "?string",
-        "closeOnAdd": "?boolean | boolean"
+        "closeOnAdd": "?boolean"
       },
       "required": false
     },
     "config": {
       "type": "object",
       "shape": {
-        "enabled": "?boolean | boolean",
+        "enabled": "?boolean",
         "placement": "?'media-top-right' | 'details-after' | 'custom'",
         "label": "?string",
-        "openCartOnAdd": "?boolean | boolean",
-        "picker": "?{desktop: ?'drawer-right', mobile: ?'bottom-sheet', title: ?object, closeOnAdd: ?object | object}"
+        "triggerContent": "?string",
+        "openCartOnAdd": "?boolean",
+        "picker": "?{desktop: ?'drawer-right', mobile: ?'bottom-sheet', title: ?string, closeOnAdd: ?boolean}"
       },
       "required": false
     },
@@ -147,17 +148,28 @@
   ],
   "parts": [
     "quick-add-backdrop",
+    "quick-add-body",
     "quick-add-close",
     "quick-add-drag-handle",
+    "quick-add-eyebrow",
+    "quick-add-footer",
+    "quick-add-header",
     "quick-add-image",
     "quick-add-option",
     "quick-add-option-group",
+    "quick-add-option-label",
+    "quick-add-option-values",
+    "quick-add-options",
     "quick-add-panel",
     "quick-add-price",
+    "quick-add-product",
+    "quick-add-product-copy",
+    "quick-add-product-title",
     "quick-add-selected-variant",
     "quick-add-sheet",
     "quick-add-status",
     "quick-add-submit",
+    "quick-add-title",
     "quick-add-variant",
     "quick-add-variant-list",
     "root"

@@ -36,6 +36,8 @@
     "--lx-text-muted"
   ],
   "parts": [
+    "coupon-view",
+    "panel",
     "root",
     "savings",
     "summary"

@@ -15,10 +15,10 @@
   "anti_patterns": [
     "Passing more than 12 reviews in static mode (carousel becomes too long; pre-filter to top reviews by rating/helpfulness)",
     "Using minimal variant with long review bodies (text doesn't truncate well; use grid or default instead)",
-    "Setting interval below 3000ms (users can't read reviews; keep it \u22654000ms)",
+    "Setting interval below 3000ms (users can't read reviews; keep it ≥4000ms)",
     "Mixing verified and unverified reviews without the verified flag (damages trust; always mark verified purchases)",
     "Using both reviews[] and reviewsEndpoint (reviews[] takes priority; pick one mode)",
-    "Writing reviewsEndpoint with a placeholder page id \u2014 omit it, the page supplies the endpoint at runtime"
+    "Writing reviewsEndpoint with a placeholder page id — omit it, the page supplies the endpoint at runtime"
   ],
   "props": {
     "reviews": {
@@ -32,10 +32,10 @@
           "title": "?string",
           "body": "string",
           "date": "?string",
-          "verified": "?boolean | boolean",
+          "verified": "?boolean",
           "avatar": "?string",
           "helpful_count": "?number",
-          "media": "?array<{type: object, urls: object, thumbnail: ?object, alt: ?object}>"
+          "media": "?array<{type: 'image' | 'video', urls: array<string>, thumbnail: ?string, alt: ?string}>"
         }
       },
       "shape": {
@@ -45,10 +45,10 @@
         "title": "?string",
         "body": "string",
         "date": "?string",
-        "verified": "?boolean | boolean",
+        "verified": "?boolean",
         "avatar": "?string",
         "helpful_count": "?number",
-        "media": "?array<{type: 'image' | 'video', urls: array<object>, thumbnail: ?object, alt: ?object}>"
+        "media": "?array<{type: 'image' | 'video', urls: array<string>, thumbnail: ?string, alt: ?string}>"
       },
       "required": false
     },
@@ -102,20 +102,20 @@
     "variant": {
       "type": "enum",
       "values": [
+        "grid",
         "default",
         "compact",
-        "minimal",
-        "grid"
+        "minimal"
       ],
       "required": false,
       "default": "default"
     }
   },
   "variants": [
+    "grid",
     "default",
     "compact",
-    "minimal",
-    "grid"
+    "minimal"
   ],
   "css_vars": [
     "--lx-accent-color",

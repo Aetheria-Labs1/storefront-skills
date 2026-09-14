@@ -8,20 +8,20 @@
   "when_not_to_use": "Not for PDP (BuyBox handles variant selection). Not for headless coordination only (use data-behavior=\"variant-select\"). Not when you need full product gallery image switching (use ProductGallery).",
   "defaultHydrate": "immediate",
   "combine_with": [
-    "QuickAdd (add-to-cart after selection)",
-    "MediaCarousel (switch images on variant change)",
-    "Cart V2 via head.use_cart_v2"
+    "BuyBox",
+    "ProductGallery or ProductHero",
+    "and the renderer-managed Cart V2 profile for purchase feedback"
   ],
   "anti_patterns": [
     "Using without data-scope when multiple VariantSelectors on page (events will collide)",
-    "Using render:\"swatches\" for non-color options (confusing UX \u2014 use \"buttons\" for sizes)",
+    "Using render:\"swatches\" for non-color options (confusing UX — use \"buttons\" for sizes)",
     "Providing variants without options array (selector won't know axis names)"
   ],
   "props": {
     "product": {
       "type": "object",
       "shape": {
-        "variants": "array<{id: string, title: string, price: string, compareAtPrice: ?string, available: boolean, image: ?string, images: ?array<{}>, options: object}>",
+        "variants": "array<{id: string, title: string, price: string, compareAtPrice: ?string, available: boolean, image: ?string, mediaId: ?string, mediaIds: ?array<string>, images: ?array<{}>, options: object}>",
         "options": "array<{name: string, values: array<string>}>"
       },
       "required": true

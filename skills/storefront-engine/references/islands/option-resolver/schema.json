@@ -8,20 +8,20 @@
     }
   ],
   "usage_hint": "Invisible resolver that listens for option:changed events and emits variant:changed with matched variant data (price, image, availability).",
-  "when_to_use": "On product pages with multiple options (size, color, etc.). Place alongside VariantSelector islands. This island has no UI \u2014 it's pure logic that coordinates option selections into a resolved variant.",
+  "when_to_use": "On product pages with multiple options (size, color, etc.). Place alongside VariantSelector islands. This island has no UI — it's pure logic that coordinates option selections into a resolved variant.",
   "when_not_to_use": "For single-variant products (no options). When BuyBox already handles variant resolution internally. Don't use multiple OptionResolvers on one page.",
   "defaultHydrate": "immediate",
   "combine_with": [
     "VariantSelector",
     "BuyBox",
     "ProductPrice",
-    "ProductGallery or a native product image",
+    "ProductGallery or ProductHero",
     "InventoryIndicator (all listen for variant:changed)"
   ],
   "anti_patterns": [
-    "Providing incomplete variant data (missing selectedOptions) \u2014 resolver can't match",
+    "Providing incomplete variant data (missing selectedOptions) — resolver can't match",
     "Using without VariantSelector islands to emit option:changed (nothing will trigger it)",
-    "Expecting OptionResolver to validate inventory \u2014 it only matches, use InventoryIndicator for stock checks"
+    "Expecting OptionResolver to validate inventory — it only matches, use InventoryIndicator for stock checks"
   ],
   "props": {
     "variants": {
@@ -35,7 +35,7 @@
           "compareAtPrice": "?string",
           "available": "boolean",
           "image": "?string",
-          "images": "?array<{url: object, alt: ?object}>"
+          "images": "?array<{url: string, alt: ?string}>"
         }
       },
       "shape": {
@@ -45,7 +45,7 @@
         "compareAtPrice": "?string",
         "available": "boolean",
         "image": "?string",
-        "images": "?array<{url: string, alt: ?object}>"
+        "images": "?array<{url: string, alt: ?string}>"
       },
       "required": true
     },

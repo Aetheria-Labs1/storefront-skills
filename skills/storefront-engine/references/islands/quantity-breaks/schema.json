@@ -13,22 +13,23 @@
       "name": "cart:open"
     }
   ],
-  "usage_hint": "Tiered bulk pricing selector \u2014 list rows, image pack cards, column tiles, or compact quantity pills. Buy more, save more UI pattern with optional add-to-cart or pure-selector mode feeding PlanSelector/BuyBox.",
+  "usage_hint": "Tiered bulk pricing selector — list rows, image pack cards, column tiles, or compact quantity pills. Buy more, save more UI pattern with optional add-to-cart or pure-selector mode feeding PlanSelector/BuyBox. Prices are display labels; use promotionRef with a cart-profile quantity promotion when repeated units need a Shopify discount. Use syncKey to share the selected tier across duplicate selectors.",
   "when_to_use": "For products with volume discounts (1/3/6-pack, 30/60/90-day supplies, wholesale bundles). Each tier shows quantity, price, per-unit cost, and optional savings, badge, and imagery. Use variant \"cards\" for image pack cards, \"columns\" for supply-duration tiles, \"pills\" for compact \"how many?\" selectors, or \"list\" for classic rows. Set emitEvents plus showCta:false to use it as a pure selector that re-prices a PlanSelector/BuyBox via the tiers:changed event.",
   "when_not_to_use": "For subscription pricing UI use PlanSelector or SubscriptionToggle. For simple quantity selectors use BuyBox. When you want separate quantity input + add button (this island combines them).",
   "defaultHydrate": "immediate",
   "combine_with": [
     "PlanSelector",
     "BuyBox",
-    "ProductGallery or a native product image",
+    "ProductGallery or ProductHero",
     "InventoryIndicator",
-    "Cart V2 via head.use_cart_v2"
+    "the renderer-managed effective Cart V2 profile"
   ],
   "anti_patterns": [
-    "Using with showCta:true alongside BuyBox on the same page (they both add to cart \u2014 set showCta:false and let BuyBox own the CTA)",
+    "Using with showCta:true alongside BuyBox on the same page (they both add to cart — set showCta:false and let BuyBox own the CTA)",
     "Setting tier quantities that exceed available inventory without checking stock first",
-    "Listing tiers in non-ascending order (confusing \u2014 always show smallest to largest quantity)",
-    "Styling selection state via inline overrides (target [data-part=\"tier\"][data-selected=\"true\"] in CSS instead)"
+    "Listing tiers in non-ascending order (confusing — always show smallest to largest quantity)",
+    "Styling selection state via inline overrides (target [data-part=\"tier\"][data-selected=\"true\"] in CSS instead)",
+    "Showing a discounted total for repeated units without promotionRef and a matching Shopify promotion"
   ],
   "props": {
     "tiers": {
@@ -50,7 +51,8 @@
           "subscribeCompareAt": "?string",
           "subscribePerUnit": "?string",
           "cadence": "?string",
-          "variantId": "?string"
+          "variantId": "?string",
+          "promotionRef": "?string"
         }
       },
       "shape": {
@@ -68,7 +70,8 @@
         "subscribeCompareAt": "?string",
         "subscribePerUnit": "?string",
         "cadence": "?string",
-        "variantId": "?string"
+        "variantId": "?string",
+        "promotionRef": "?string"
       },
       "required": true
     },
@@ -105,6 +108,10 @@
       "type": "number",
       "required": false,
       "default": "0"
+    },
+    "syncKey": {
+      "type": "string",
+      "required": false
     }
   },
   "variants": [
@@ -125,6 +132,7 @@
   "parts": [
     "cta",
     "root",
+    "sync-error",
     "tier",
     "tier-badge",
     "tier-body",

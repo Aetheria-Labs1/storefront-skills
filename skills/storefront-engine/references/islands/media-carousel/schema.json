@@ -30,6 +30,8 @@
             "type": "object",
             "shape": {
               "id": "?string",
+              "variantId": "?string",
+              "variantIds": "?array<string>",
               "type": "string",
               "src": "string",
               "alt": "?string",
@@ -45,10 +47,12 @@
             "type": "object",
             "shape": {
               "id": "?string",
+              "variantId": "?string",
+              "variantIds": "?array<string>",
               "type": "string",
               "alt": "?string",
               "poster": "string",
-              "sources": "array<{type: ?object, url: object, width: ?object, height: ?object, bitrate: ?object}>",
+              "sources": "array<{type: ?'application/x-mpegURL' | 'application/vnd.apple.mpegurl' | 'application/dash+xml' | 'video/mp4' | 'video/webm' | 'video/ogg', url: string, width: ?number, height: ?number, bitrate: ?number}>",
               "preview": "?object",
               "captionsUrl": "?string",
               "assetId": "?string",
@@ -61,6 +65,8 @@
             "type": "object",
             "shape": {
               "id": "?string",
+              "variantId": "?string",
+              "variantIds": "?array<string>",
               "type": "?'image' | 'video'",
               "src": "?string",
               "url": "?string",
@@ -130,37 +136,48 @@
       "required": false,
       "default": "1200"
     },
+    "navigation": {
+      "type": "enum",
+      "values": [
+        "none",
+        "arrows",
+        "floatingArrows"
+      ],
+      "required": false
+    },
     "showArrows": {
       "type": "boolean",
       "required": false,
-      "default": "false",
       "deprecated": true,
+      "description": "Use arrows.",
+      "default": "false",
       "aliasFor": "arrows",
       "precedence": "`arrows` takes precedence when both props are supplied."
     },
     "showDots": {
       "type": "boolean",
       "required": false,
-      "default": "true",
       "deprecated": true,
+      "description": "Use dots.",
+      "default": "true",
       "aliasFor": "dots",
       "precedence": "`dots` takes precedence when both props are supplied."
     },
     "arrows": {
       "type": "enum",
       "values": [
+        "always",
         "hover",
-        "never",
-        "always"
+        "never"
       ],
       "required": false
     },
     "dots": {
       "type": "enum",
       "values": [
+        "always",
         "hover",
-        "never",
-        "always"
+        "never"
       ],
       "required": false
     },
@@ -221,9 +238,9 @@
     "videoControls": {
       "type": "enum",
       "values": [
+        "always",
         "hover",
-        "never",
-        "always"
+        "never"
       ],
       "required": false,
       "default": "never"
@@ -291,6 +308,9 @@
     "--lx-media-carousel-duration",
     "--lx-media-carousel-ease",
     "--lx-media-carousel-fit",
+    "--lx-media-carousel-focus-color",
+    "--lx-media-carousel-focus-offset",
+    "--lx-media-carousel-focus-width",
     "--lx-media-carousel-placeholder",
     "--lx-media-carousel-radius",
     "--lx-shoppable-button-radius",

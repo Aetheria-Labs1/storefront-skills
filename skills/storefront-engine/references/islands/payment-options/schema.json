@@ -15,7 +15,7 @@
   ],
   "anti_patterns": [
     "Listing providers that aren't actually enabled at checkout (misleading, causes cart abandonment)",
-    "Using inline variant with >3 providers (too crowded \u2014 use expandable)",
+    "Using inline variant with >3 providers (too crowded — use expandable)",
     "Setting installments to anything other than 4 (most BNPL = 4 equal payments)"
   ],
   "props": {
@@ -49,6 +49,9 @@
           "stripe",
           "cashapp",
           "upi",
+          "phonepe",
+          "razorpay",
+          "paytm",
           "zip"
         ]
       },

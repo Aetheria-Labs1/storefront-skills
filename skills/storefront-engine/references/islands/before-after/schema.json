@@ -5,17 +5,17 @@
   "capabilities": [],
   "usage_hint": "Before/after image comparison slider with draggable divider. Supports horizontal and vertical orientation.",
   "when_to_use": "For product transformations (skincare, makeup, home improvement, photo editing tools). User drags divider to reveal before/after images. Supports optional labels.",
-  "when_not_to_use": "For simple image galleries use ProductGallery or a native product image carousel. When images don't align perfectly (different crops/angles look broken). For video comparisons use side-by-side videos instead.",
+  "when_not_to_use": "For simple image galleries use ProductGallery or MediaCarousel. When images don't align perfectly (different crops/angles look broken). For video comparisons use side-by-side videos instead.",
   "defaultHydrate": "immediate",
   "combine_with": [
-    "ProductGallery or a native product image",
+    "ProductGallery or MediaCarousel",
     "ProductDescription",
     "Testimonials",
     "Hero sections"
   ],
   "anti_patterns": [
     "Using images with different aspect ratios (causes misalignment)",
-    "Setting initialPosition to extreme (0 or 100) \u2014 users don't realize it's interactive",
+    "Setting initialPosition to extreme (0 or 100) — users don't realize it's interactive",
     "Using low-resolution images (pixelation ruins credibility of before/after claim)"
   ],
   "props": {

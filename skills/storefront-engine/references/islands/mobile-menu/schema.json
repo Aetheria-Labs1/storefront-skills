@@ -16,9 +16,9 @@
     "Footer"
   ],
   "anti_patterns": [
-    "Mounting MobileMenu without controlling isOpen state from parent \u2014 it defaults to open, so you must unmount when closed",
-    "Using MobileMenu alongside Navbar's built-in mobile panel (data-lx-nav=\"mobile-panel\") \u2014 they conflict",
-    "Passing deeply nested link structures (>2 levels) \u2014 mobile menu only supports parent + children, not grandchildren"
+    "Mounting MobileMenu without controlling isOpen state from parent — it defaults to open, so you must unmount when closed",
+    "Using MobileMenu alongside Navbar's built-in mobile panel (data-lx-nav=\"mobile-panel\") — they conflict",
+    "Passing deeply nested link structures (>2 levels) — mobile menu only supports parent + children, not grandchildren"
   ],
   "props": {
     "links": {
@@ -28,13 +28,13 @@
         "shape": {
           "label": "string",
           "url": "string",
-          "children": "?array<{label: object, url: object, children: ?object}>"
+          "children": "?array<{label: string, url: string, children: ?array<{}>}>"
         }
       },
       "shape": {
         "label": "string",
         "url": "string",
-        "children": "?array<{label: string, url: string, children: ?object}>"
+        "children": "?array<{label: string, url: string, children: ?array<{}>}>"
       },
       "required": true
     },

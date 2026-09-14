@@ -13,17 +13,19 @@
       "name": "cart:open"
     }
   ],
-  "usage_hint": "Full-featured product purchase interface with variant selection, quantity picker, and add-to-cart functionality. Primary CTA for PDP layouts.",
+  "usage_hint": "Primary PDP purchase interface with variants and quantity. Set syncKey to link a StickyBar with the same key and variant catalog, including headless mode. External selectors use matching data-scope with listenForEvents:true.",
   "when_to_use": "Use on product detail pages where customers need to select options and add items to cart. Supports variants, subscription plans, out-of-stock notify-me, and animated feedback.",
   "when_not_to_use": "Not for collection pages (use QuickAdd instead). Not for sticky follow-up CTAs (use StickyBar). Not for lightweight inline add-to-cart (use QuickAdd).",
   "defaultHydrate": "immediate",
   "combine_with": [
-    "Cart V2 via head.use_cart_v2",
-    "ProductGallery or ProductHero (visual context)",
-    "VariantSwatches (when listenForEvents:true + showVariantSelector:false)"
+    "The effective Cart V2 profile (renderer-managed)",
+    "ProductGallery or ProductHero",
+    "VariantSwatches (matching data-scope with listenForEvents:true + showVariantSelector:false)",
+    "StickyBar (matching syncKey)"
   ],
   "anti_patterns": [
-    "Omitting CartDrawer: without it, users don't see cart confirmation feedback or access the cart",
+    "Authoring CartDrawer or DrawerShell in page source: the renderer injects the effective Cart V2 profile",
+    "Publishing purchase controls without an effective Cart V2 profile",
     "Using showVariantSelector:true with VariantSwatches: duplicates variant UI (set showVariantSelector:false, listenForEvents:true on BuyBox when using VariantSwatches)",
     "Variant=\"compact\" with multiple variants: loses variant selector, breaking multi-variant products",
     "Setting animate:false then relying on success feedback: removes visual confirmation animations"
@@ -35,7 +37,9 @@
         "title": "string",
         "price": "string",
         "compareAtPrice": "?string",
-        "variants": "array<{id: string, title: string, price: string, available: boolean}>"
+        "image": "?string",
+        "variantId": "?string",
+        "variants": "array<{id: string, title: string, price: string, available: boolean, image: ?string, compareAtPrice: ?string}>"
       },
       "required": true
     },
@@ -43,8 +47,36 @@
       "type": "string",
       "required": false
     },
+    "loadingText": {
+      "type": "string",
+      "required": false
+    },
+    "addedText": {
+      "type": "string",
+      "required": false
+    },
+    "loadingIndicator": {
+      "type": "enum",
+      "values": [
+        "spinner",
+        "none"
+      ],
+      "required": false
+    },
+    "successIndicator": {
+      "type": "enum",
+      "values": [
+        "none",
+        "check"
+      ],
+      "required": false
+    },
     "listenForEvents": {
       "type": "boolean",
+      "required": false
+    },
+    "syncKey": {
+      "type": "string",
       "required": false
     },
     "showVariantSelector": {
@@ -104,6 +136,8 @@
   ],
   "parts": [
     "cta",
+    "cta-state",
+    "error",
     "notify",
     "qty",
     "qty-btn",
@@ -134,7 +168,11 @@
         "qty-inc",
         "qty-dec",
         "stock",
-        "error"
+        "error",
+        "add-label",
+        "add-idle",
+        "add-loading",
+        "add-added"
       ]
     }
   }

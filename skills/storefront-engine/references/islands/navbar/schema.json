@@ -12,14 +12,14 @@
   "when_not_to_use": "For announcement-only headers use AnnouncementBar. For combined announcement + nav use SiteHeader. For page-specific navigation use MobileMenu (standalone mobile sheet).",
   "defaultHydrate": "immediate",
   "combine_with": [
-    "Cart V2 via head.use_cart_v2",
+    "The renderer-managed effective Cart V2 profile",
     "Footer",
     "AnnouncementBar",
     "native top anchor"
   ],
   "anti_patterns": [
-    "Using both SiteHeader and Navbar on the same page \u2014 SiteHeader already includes Navbar functionality",
-    "Placing Navbar inside a section wrapper \u2014 it should be a direct page child for sticky positioning to work",
+    "Using both SiteHeader and Navbar on the same page — SiteHeader already includes Navbar functionality",
+    "Placing Navbar inside a section wrapper — it should be a direct page child for sticky positioning to work",
     "Hard-coding cart count instead of omitting it (the island subscribes to real cart state automatically)"
   ],
   "props": {
@@ -68,13 +68,13 @@
         "shape": {
           "label": "string",
           "url": "string",
-          "children": "?array<{label: object, url: object, children: ?object}>"
+          "children": "?array<{label: string, url: string, children: ?array<{}>}>"
         }
       },
       "shape": {
         "label": "string",
         "url": "string",
-        "children": "?array<{label: string, url: string, children: ?object}>"
+        "children": "?array<{label: string, url: string, children: ?array<{}>}>"
       },
       "required": true
     },

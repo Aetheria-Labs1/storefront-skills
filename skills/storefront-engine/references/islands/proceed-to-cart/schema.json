@@ -11,11 +11,11 @@
     }
   ],
   "usage_hint": "Full-page CTA button that navigates to /cart or /checkout. Buy Now mode adds item + redirects; Proceed to Checkout mode is a direct link.",
-  "when_to_use": "For prominent checkout CTAs on product pages (Buy Now) or as cart page footer button (Proceed to Checkout). Unlike CartDrawer which slides out, this navigates to a full page. Supports variant:changed event listening.",
-  "when_not_to_use": "For add-to-cart without redirect use BuyBox or BuyBox or ProceedToCart. For slide-out cart use CartDrawer. When you want users to stay on page after adding.",
+  "when_to_use": "For prominent checkout CTAs on product pages (Buy Now) or as a cart page footer button (Proceed to Checkout). This navigates to a full page instead of opening the default Cart V2 drawer. Supports variant:changed event listening.",
+  "when_not_to_use": "For add-to-cart without redirect use BuyBox. When you want users to stay on page after adding, rely on the effective Cart V2 profile for drawer feedback.",
   "defaultHydrate": "immediate",
   "combine_with": [
-    "ProductGallery or a native product image",
+    "ProductGallery or ProductHero",
     "VariantSelector",
     "OptionResolver",
     "SubscriptionToggle"

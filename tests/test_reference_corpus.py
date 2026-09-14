@@ -205,7 +205,7 @@ class ReferenceCorpusTests(unittest.TestCase):
             self.assertIsNone(banned.search(path.read_text()), path)
         forbidden = re.compile(
             r"\b(?:TrustBadgeBar|CompareTable|ComparisonTable|PDPInfoCards|ProductGrid|"
-            r"FilterBar|NewsletterSignup|SectionHeading|CartDrawer|FAQ|StatCards|Marquee|Tabs|"
+            r"FilterBar|NewsletterSignup|SectionHeading|CartDrawer|StatCards|Marquee|Tabs|"
             r"EditorialProductGrid|ProductImage|AddToCart|ExitIntent|BackToTop|Carousel|Countdown)\b"
         )
         for path in (REFERENCES / "islands").glob("*/schema.json"):

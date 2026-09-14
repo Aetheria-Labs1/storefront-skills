@@ -38,7 +38,7 @@
         "type": "object",
         "shape": {
           "id": "string",
-          "media": "?{assetId: ?object, provider: ?object, sources: object, poster: object, preview: ?object, captionsUrl: ?object}",
+          "media": "?{assetId: ?string, provider: ?'cloudflare_stream' | 'cloudflare_cdn' | 'external', sources: array<{}>, poster: string, preview: ?object, captionsUrl: ?string}",
           "src": "?string",
           "poster": "?string",
           "captionsSrc": "?string",
@@ -46,15 +46,15 @@
           "title": "?string",
           "caption": "?string",
           "badge": "?string",
-          "creator": "?{name: object, handle: ?object, avatar: ?object, verified: ?object}",
-          "metrics": "?{views: ?object, likes: ?object, comments: ?object}",
-          "testimonial": "?{author: object, productLabel: ?object, rating: ?object, verified: ?object}",
-          "products": "array<{productId: string, variantId: ?object, label: ?object, ctaLabel: ?object, title: ?object, price: ?object, compareAtPrice: ?object, image: ?object, available: ?object | object, productUrl: ?object, variants: ?object}>"
+          "creator": "?{name: string, handle: ?string, avatar: ?string, verified: ?boolean}",
+          "metrics": "?{views: ?number, likes: ?number, comments: ?number}",
+          "testimonial": "?{author: string, productLabel: ?string, rating: ?number, verified: ?boolean}",
+          "products": "array<{productId: string, variantId: ?string, label: ?string, ctaLabel: ?string, title: ?string, price: ?string, compareAtPrice: ?string, image: ?string, available: ?boolean, productUrl: ?string, variants: ?array<{}>}>"
         }
       },
       "shape": {
         "id": "string",
-        "media": "?{assetId: ?object, provider: ?'cloudflare_stream' | 'cloudflare_cdn' | 'external', sources: array<{}>, poster: string, preview: ?object, captionsUrl: ?object}",
+        "media": "?{assetId: ?string, provider: ?'cloudflare_stream' | 'cloudflare_cdn' | 'external', sources: array<{}>, poster: string, preview: ?object, captionsUrl: ?string}",
         "src": "?string",
         "poster": "?string",
         "captionsSrc": "?string",
@@ -62,10 +62,10 @@
         "title": "?string",
         "caption": "?string",
         "badge": "?string",
-        "creator": "?{name: string, handle: ?object, avatar: ?object, verified: ?object | object}",
-        "metrics": "?{views: ?object, likes: ?object, comments: ?object}",
-        "testimonial": "?{author: string, productLabel: ?object, rating: ?object, verified: ?object | object}",
-        "products": "array<{productId: string, variantId: ?string, label: ?string, ctaLabel: ?string, title: ?string, price: ?string, compareAtPrice: ?string, image: ?string, available: ?boolean | boolean, productUrl: ?string, variants: ?array<{}>}>"
+        "creator": "?{name: string, handle: ?string, avatar: ?string, verified: ?boolean}",
+        "metrics": "?{views: ?number, likes: ?number, comments: ?number}",
+        "testimonial": "?{author: string, productLabel: ?string, rating: ?number, verified: ?boolean}",
+        "products": "array<{productId: string, variantId: ?string, label: ?string, ctaLabel: ?string, title: ?string, price: ?string, compareAtPrice: ?string, image: ?string, available: ?boolean, productUrl: ?string, variants: ?array<{}>}>"
       },
       "required": true
     },
@@ -165,9 +165,9 @@
     "controlsVisibility": {
       "type": "enum",
       "values": [
+        "always",
         "hover",
-        "never",
-        "always"
+        "never"
       ],
       "required": false
     },
@@ -222,8 +222,8 @@
     "previewMode": {
       "type": "enum",
       "values": [
-        "hover",
         "always",
+        "hover",
         "poster"
       ],
       "required": false

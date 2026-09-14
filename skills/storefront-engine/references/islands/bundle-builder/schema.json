@@ -15,11 +15,11 @@
   "when_not_to_use": "Not for single-product add-to-cart (use BuyBox or QuickAdd). Not for general product grids (use ProductCarousel). Not for cross-sells without bundle context (use ProductCarousel).",
   "defaultHydrate": "immediate",
   "combine_with": [
-    "Cart V2 via head.use_cart_v2",
+    "The renderer-managed effective Cart V2 profile",
     "BuyBox (common on PDP pages)"
   ],
   "anti_patterns": [
-    "Omitting CartDrawer: users get no cart confirmation feedback after clicking \"Add All\"",
+    "Using without an effective Cart V2 profile: cart mutation can succeed without visible drawer feedback",
     "Using without a discount: reduces incentive; bundle builders work best with visible savings",
     "Mixing incompatible products: bundle should make logical sense (e.g., phone + case + charger, not random items)",
     "Using layout:\"stacked\" with 5+ recommendations: becomes very tall; use horizontal layout or limit items"
@@ -30,10 +30,10 @@
       "shape": {
         "id": "string",
         "title": "string",
-        "price": "string | {amount: object | object, currency_code: string}",
+        "price": "string | {amount: string | number, currency_code: string}",
         "image": "string",
         "handle": "?string",
-        "selected": "?boolean | boolean"
+        "selected": "?boolean"
       },
       "required": false
     },
@@ -44,19 +44,19 @@
         "shape": {
           "id": "string",
           "title": "string",
-          "price": "string | {amount: object, currency_code: object}",
+          "price": "string | {amount: string | number, currency_code: string}",
           "image": "string",
           "handle": "?string",
-          "selected": "?boolean | boolean"
+          "selected": "?boolean"
         }
       },
       "shape": {
         "id": "string",
         "title": "string",
-        "price": "string | {amount: object | object, currency_code: string}",
+        "price": "string | {amount: string | number, currency_code: string}",
         "image": "string",
         "handle": "?string",
-        "selected": "?boolean | boolean"
+        "selected": "?boolean"
       },
       "required": false,
       "default": "[]"
@@ -68,19 +68,19 @@
         "shape": {
           "id": "string",
           "title": "string",
-          "price": "string | {amount: object, currency_code: object}",
+          "price": "string | {amount: string | number, currency_code: string}",
           "image": "string",
           "handle": "?string",
-          "selected": "?boolean | boolean"
+          "selected": "?boolean"
         }
       },
       "shape": {
         "id": "string",
         "title": "string",
-        "price": "string | {amount: object | object, currency_code: string}",
+        "price": "string | {amount: string | number, currency_code: string}",
         "image": "string",
         "handle": "?string",
-        "selected": "?boolean | boolean"
+        "selected": "?boolean"
       },
       "required": false
     },

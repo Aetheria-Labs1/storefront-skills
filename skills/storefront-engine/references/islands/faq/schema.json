@@ -3,20 +3,19 @@
   "name": "FAQ",
   "category": "content",
   "capabilities": [],
-  "deprecated": true,
-  "replacement": "native <details>/<summary> markup",
-  "deprecation_reason": "Generic accordion behavior does not require an island and can be authored with accessible native HTML.",
-  "usage_hint": "Compatibility contract for existing pages. Do not author this retired island in new source.",
-  "when_to_use": "Inspect an existing page only; use the replacement in workflows/island-selection-workflow.md for new source.",
-  "when_not_to_use": "Do not use for new page authoring.",
+  "usage_hint": "Accessible FAQ/Accordion island with single-open or multiple-open behavior, initial state, keyboard navigation, reduced-motion support, configurable icons, and stable styling parts.",
+  "when_to_use": "Use for product questions, shipping, returns, sizing, care, or policy disclosures that benefit from progressive disclosure.",
+  "when_not_to_use": "Do not hide critical purchase terms that should remain visible. For one short answer, use normal HTML instead.",
   "defaultHydrate": "immediate",
-  "combine_with": [],
+  "combine_with": [
+    "BuyBox",
+    "ProductGallery",
+    "ReviewList"
+  ],
   "anti_patterns": [
-    "More than 15 items (overwhelming; split into categories or dedicated FAQ page)",
-    "Very long answers (200+ words; breaks accordion UX; summarize or link to full article)",
-    "Using as a substitute for clear product descriptions (FAQ should supplement, not replace core info)",
-    "Generic questions that apply to all products mixed with product-specific ones (separate site-wide FAQ from PDP-specific)",
-    "Opening all items by default (defeats accordion purpose; let users expand what they need)"
+    "Opening every long answer by default",
+    "Putting interactive forms or nested accordions inside answers",
+    "Using vague questions that do not help a purchase decision"
   ],
   "props": {
     "items": {
@@ -24,13 +23,17 @@
       "items": {
         "type": "object",
         "shape": {
+          "id": "?string",
           "question": "string",
-          "answer": "string"
+          "answer": "string",
+          "initiallyOpen": "?boolean"
         }
       },
       "shape": {
+        "id": "?string",
         "question": "string",
-        "answer": "string"
+        "answer": "string",
+        "initiallyOpen": "?boolean"
       },
       "required": true
     },
@@ -42,6 +45,33 @@
       ],
       "required": false,
       "default": "default"
+    },
+    "mode": {
+      "type": "enum",
+      "values": [
+        "single",
+        "multiple"
+      ],
+      "required": false,
+      "default": "single"
+    },
+    "initiallyOpen": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "required": false,
+      "default": "[]"
+    },
+    "icon": {
+      "type": "enum",
+      "values": [
+        "none",
+        "plus",
+        "chevron"
+      ],
+      "required": false,
+      "default": "plus"
     }
   },
   "variants": [
@@ -49,14 +79,17 @@
     "compact"
   ],
   "css_vars": [
+    "--lx-accent-color",
     "--lx-text-color"
   ],
   "parts": [
     "answer",
+    "content",
     "icon",
     "item",
     "question",
-    "root"
+    "root",
+    "summary"
   ],
   "authoring": {
     "format": "source-html",
