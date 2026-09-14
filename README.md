@@ -95,7 +95,7 @@ Both files are **generated** from the canonical skills by `scripts/build-distrib
 - A consumer-behavior CRO framework that turns shopper uncertainty, gallery
   gaps, compatibility, solution completion, trust, and mobile context into
   page-specific hypotheses instead of generic conversion modules
-- **50 active islands** plus 8 deprecated compatibility contracts under
+- **51 active islands** plus 7 deprecated compatibility contracts under
   `skills/storefront-engine/references/islands/`
 - Vertical expertise: beauty, supplements, fashion, food, luxury, home
 - Traffic-source patterns: Meta, Google, TikTok
