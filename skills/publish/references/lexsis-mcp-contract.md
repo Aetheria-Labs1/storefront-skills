@@ -113,13 +113,20 @@ build:
 - `lexsis_pages` action `compile_artifact` retrieves a short-lived compiled
   bundle by `compile_id`. Draft creation consumes `compile_id` directly, so
   fetch the artifact only to inspect a compile result. Never fetch it merely to
-  read the page back.
+  read the page back. Compilation does not create a hosted preview or persist a
+  production bundle. Production `local_preview_url` and `bundle_path` values
+  are null until the artifact is attached to a draft.
 - `lexsis_drafts` action `page_attach_bundle` attaches an existing successful
   compile artifact to the current version without creating a new one. Use it
   only to recover a page whose source was stored but whose bundle attachment
   failed, with `expected_version`.
 - `lexsis_pages` action `qa` reads the stored QA record for a page;
   `lexsis_drafts` action `page_record_qa` writes it.
+
+Persisted draft bundles are immutable exact-byte objects in shared storage.
+Use the returned `/v/{slug}?preview=1` URL for hosted review. `/bundle/{hash}`
+is a local development and parity-test route and must never be reported as a
+production preview.
 
 ## Reporting a Defect
 
