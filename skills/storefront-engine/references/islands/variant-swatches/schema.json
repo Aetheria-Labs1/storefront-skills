@@ -108,7 +108,10 @@
   "variants": null,
   "css_vars": [
     "--lx-accent-color",
-    "--lx-text-color"
+    "--lx-text-color",
+    "--lx-variant-swatches-columns",
+    "--lx-variant-swatches-desktop-min-size",
+    "--lx-variant-swatches-mobile-size"
   ],
   "parts": [
     "badge",
