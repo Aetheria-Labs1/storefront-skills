@@ -58,7 +58,8 @@ instructions to render images at those CSS dimensions.
 
 | Operation | Use |
 |---|---|
-| `lexsis_asset_library.search` | Search existing assets by theme, role, tags, semantics, filename, OCR, or similarity |
+| `lexsis_asset_library.search` | Search existing assets by theme, role, tags, semantics, filename, OCR, or similarity; inspect read-only query and result evidence without waiting |
+| `lexsis_asset_select.select` | Open the interactive existing-asset picker when the user should choose; wait for the selection message |
 | `lexsis_assets.view` | Inspect a candidate or output |
 | `lexsis_asset_import.import` | Import exactly one supplied source: URL, image data with MIME type, or conversation attachments |
 | `lexsis_asset_upload.upload` | Open the local image/video upload UI |

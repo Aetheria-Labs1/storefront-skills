@@ -23,7 +23,18 @@ MCP dependency metadata and an `.mcp.json` entry describe configuration. They
 do not prove that the server or its tools are available in the current
 session.
 
-## Asset Import and Upload
+## Asset Search, Selection, Import, and Upload
+
+`lexsis_asset_library.search` searches existing library assets and shows the
+query, filters, result count, pagination state, and read-only previews. It does
+not select assets and never requires waiting for user input. Continue the
+workflow after reading the result evidence.
+
+`lexsis_asset_select.select` opens the interactive existing-asset picker with
+the same search arguments. Call it only when the user should choose among
+candidates, then wait for the user's selection message containing the selected
+asset names, IDs, and original URLs. It can be called directly; a prior search
+is recommended for agent reasoning but is not a technical prerequisite.
 
 `lexsis_asset_import.import` requires exactly one source: `url`, image
 `data` + `mime_type`, or a non-empty `attachments` array of conversation
@@ -38,8 +49,8 @@ Opening the panel is not evidence that an asset was uploaded.
 
 If the host has no inline UI, ask for a URL or conversation attachment and
 use `lexsis_asset_import.import` with that source instead. Do not repeatedly
-open an unsupported upload panel. `lexsis_asset_library.search` selects
-existing library assets; it is not a local-file upload action.
+open an unsupported upload panel. Asset search and selection operate on
+existing library assets; neither is a local-file upload action.
 
 ## Managed Motion Compilation
 

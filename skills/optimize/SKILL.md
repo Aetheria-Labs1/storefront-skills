@@ -35,6 +35,7 @@ Use `lexsis_pages.edit_context`, `lexsis_pages.get`, `lexsis_pages.inspect`,
 `lexsis_analytics.page`, `lexsis_analytics.timeseries`,
 `lexsis_analytics.attribution`, `lexsis_catalog.get`, `lexsis_catalog.reviews`,
 `lexsis_assets.view`, `lexsis_asset_library.search`,
+`lexsis_asset_select.select`,
 `lexsis_asset_import.import`, `lexsis_asset_upload.upload`,
 `lexsis_workspace.credits`, `lexsis_drafts.asset_generate`,
 `lexsis_template_library.search_page_kits`,
@@ -220,7 +221,8 @@ Run `/design-page`'s Existing Page Edits and Hosted Design Review procedures:
 1. `lexsis_pages.edit_context`, then `lexsis_pages.source` or
    `lexsis_pages.section_source`; stop on unexpected version drift.
 2. Resolve the approved asset decisions first: `lexsis_asset_library.search`
-   and `lexsis_assets.view` for reuse, `lexsis_asset_upload.upload` or
+   and `lexsis_assets.view` for reuse, `lexsis_asset_select.select` when the
+   user must choose among reviewed candidates, `lexsis_asset_upload.upload` or
    `lexsis_asset_import.import` for supplied files, `lexsis_workspace.credits`
    then `lexsis_drafts.asset_generate` per brief after the user confirms the
    batch. View every asset before it enters the source.

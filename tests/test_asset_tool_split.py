@@ -79,6 +79,11 @@ class AssetToolSplitTests(unittest.TestCase):
     def test_import_and_upload_contract_is_explicit(self) -> None:
         text = (REFERENCES / "lexsis-mcp-contract.md").read_text(encoding="utf-8")
         for phrase in (
+            "lexsis_asset_library.search",
+            "not select assets",
+            "never requires waiting",
+            "lexsis_asset_select.select",
+            "wait for the user's selection message",
             "lexsis_asset_import.import",
             "requires exactly one source",
             "`url`",

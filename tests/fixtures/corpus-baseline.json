@@ -652,6 +652,9 @@
     "lexsis_asset_library": [
       "search"
     ],
+    "lexsis_asset_select": [
+      "select"
+    ],
     "lexsis_asset_import": [
       "import"
     ],

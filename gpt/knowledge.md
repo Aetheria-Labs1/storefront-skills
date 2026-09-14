@@ -323,6 +323,7 @@ Use `lexsis_pages.edit_context`, `lexsis_pages.get`, `lexsis_pages.inspect`,
 `lexsis_analytics.page`, `lexsis_analytics.timeseries`,
 `lexsis_analytics.attribution`, `lexsis_catalog.get`, `lexsis_catalog.reviews`,
 `lexsis_assets.view`, `lexsis_asset_library.search`,
+`lexsis_asset_select.select`,
 `lexsis_asset_import.import`, `lexsis_asset_upload.upload`,
 `lexsis_workspace.credits`, `lexsis_drafts.asset_generate`,
 `lexsis_template_library.search_page_kits`,
@@ -508,7 +509,8 @@ Run `/design-page`'s Existing Page Edits and Hosted Design Review procedures:
 1. `lexsis_pages.edit_context`, then `lexsis_pages.source` or
    `lexsis_pages.section_source`; stop on unexpected version drift.
 2. Resolve the approved asset decisions first: `lexsis_asset_library.search`
-   and `lexsis_assets.view` for reuse, `lexsis_asset_upload.upload` or
+   and `lexsis_assets.view` for reuse, `lexsis_asset_select.select` when the
+   user must choose among reviewed candidates, `lexsis_asset_upload.upload` or
    `lexsis_asset_import.import` for supplied files, `lexsis_workspace.credits`
    then `lexsis_drafts.asset_generate` per brief after the user confirms the
    batch. View every asset before it enters the source.
@@ -566,6 +568,7 @@ Use exact Lexsis actions:
 
 - `lexsis_catalog.get`;
 - `lexsis_asset_library.search`;
+- `lexsis_asset_select.select`;
 - `lexsis_assets.view` and `lexsis_assets.capabilities`;
 - `lexsis_asset_import.import`;
 - `lexsis_asset_upload.upload`;
@@ -630,8 +633,8 @@ For every asset requirement:
    slots, rights, watermarks, and baked-in text.
 5. Bind one clear fit.
 6. When several candidates materially change the direction:
-   - use the client's selector UI when available and wait for the user's
-     selection;
+   - call `lexsis_asset_select.select` with the relevant search terms and
+     filters, then wait for the user's selection message;
    - when the user wants to choose in the Lexsis dashboard, construct:
      `https://app.trylexsis.com/workspaces/<workspace-id>/storefront/design-library?theme=<theme-id>&tab=assets`
      using the exact bound workspace and theme ids, present it as a clickable
@@ -2451,7 +2454,8 @@ instructions to render images at those CSS dimensions.
 
 | Operation | Use |
 |---|---|
-| `lexsis_asset_library.search` | Search existing assets by theme, role, tags, semantics, filename, OCR, or similarity |
+| `lexsis_asset_library.search` | Search existing assets by theme, role, tags, semantics, filename, OCR, or similarity; inspect read-only query and result evidence without waiting |
+| `lexsis_asset_select.select` | Open the interactive existing-asset picker when the user should choose; wait for the selection message |
 | `lexsis_assets.view` | Inspect a candidate or output |
 | `lexsis_asset_import.import` | Import exactly one supplied source: URL, image data with MIME type, or conversation attachments |
 | `lexsis_asset_upload.upload` | Open the local image/video upload UI |
@@ -2930,7 +2934,18 @@ MCP dependency metadata and an `.mcp.json` entry describe configuration. They
 do not prove that the server or its tools are available in the current
 session.
 
-## Asset Import and Upload
+## Asset Search, Selection, Import, and Upload
+
+`lexsis_asset_library.search` searches existing library assets and shows the
+query, filters, result count, pagination state, and read-only previews. It does
+not select assets and never requires waiting for user input. Continue the
+workflow after reading the result evidence.
+
+`lexsis_asset_select.select` opens the interactive existing-asset picker with
+the same search arguments. Call it only when the user should choose among
+candidates, then wait for the user's selection message containing the selected
+asset names, IDs, and original URLs. It can be called directly; a prior search
+is recommended for agent reasoning but is not a technical prerequisite.
 
 `lexsis_asset_import.import` requires exactly one source: `url`, image
 `data` + `mime_type`, or a non-empty `attachments` array of conversation
@@ -2945,8 +2960,8 @@ Opening the panel is not evidence that an asset was uploaded.
 
 If the host has no inline UI, ask for a URL or conversation attachment and
 use `lexsis_asset_import.import` with that source instead. Do not repeatedly
-open an unsupported upload panel. `lexsis_asset_library.search` selects
-existing library assets; it is not a local-file upload action.
+open an unsupported upload panel. Asset search and selection operate on
+existing library assets; neither is a local-file upload action.
 
 ## Managed Motion Compilation
 
@@ -5197,14 +5212,15 @@ Run for every requirement:
 | Order | Calls | Purpose | Gate |
 |---|---|---|---|
 | 1 | `lexsis_catalog.get` | exact real product/variant media | always |
-| 2 | `lexsis_asset_library.search` | existing library candidates | always |
+| 2 | `lexsis_asset_library.search` | read-only existing-library candidates and search evidence | always; do not wait |
 | 3 | `lexsis_assets.view` | crop, identity, fit, rights review | every candidate |
-| 4 | `lexsis_asset_upload.upload` or `lexsis_asset_import.import` | merchant/external source | wait for completion |
-| 5 | discover client capabilities; `lexsis_assets.capabilities` as fallback | choose production operation | missing eligible slot |
-| 6 | `lexsis_workspace.credits` | known Lexsis cost | before paid generation |
-| 7 | `lexsis_drafts.asset_generate` | approved fallback production | W $ |
-| 8 | `lexsis_asset_import.import` | persist external output | before binding |
-| 9 | `lexsis_assets.view` | final verification | every produced asset |
+| 4 | `lexsis_asset_select.select` | user choice among fit-reviewed library candidates | only when user choice is needed; wait |
+| 5 | `lexsis_asset_upload.upload` or `lexsis_asset_import.import` | merchant/external source | wait for completion |
+| 6 | discover client capabilities; `lexsis_assets.capabilities` as fallback | choose production operation | missing eligible slot |
+| 7 | `lexsis_workspace.credits` | known Lexsis cost | before paid generation |
+| 8 | `lexsis_drafts.asset_generate` | approved fallback production | W $ |
+| 9 | `lexsis_asset_import.import` | persist external output | before binding |
+| 10 | `lexsis_assets.view` | final verification | every produced asset |
 
 Output: permanent slot bindings and `ASSETS_READY`,
 `ASSETS_PENDING_USER`, or `ASSETS_BLOCKED`.
@@ -5246,7 +5262,7 @@ Output: `DRAFT_CREATED`, then `DESIGN_APPROVED`.
 # MCP router/action inventory
 
 Derived from the `CONSOLIDATED_ROUTERS` declaration in the sibling MCP
-service on 2026-09-11: 18 routers, 92 actions. Re-derive this inventory when
+service on 2026-09-14: 19 routers, 93 actions. Re-derive this inventory when
 that source changes. This lists operation names, not arguments or island
 props; resolve an unfamiliar action schema before calling it.
 
@@ -5255,6 +5271,7 @@ props; resolve an unfamiliar action schema before calling it.
 | `lexsis_workspace` | `lexsis_workspace.list`, `lexsis_workspace.get`, `lexsis_workspace.stores`, `lexsis_workspace.credits` |
 | `lexsis_assets` | `lexsis_assets.capabilities`, `lexsis_assets.view` |
 | `lexsis_asset_library` | `lexsis_asset_library.search` |
+| `lexsis_asset_select` | `lexsis_asset_select.select` |
 | `lexsis_asset_import` | `lexsis_asset_import.import` |
 | `lexsis_asset_upload` | `lexsis_asset_upload.upload` |
 | `lexsis_campaigns` | `lexsis_campaigns.creatives`, `lexsis_campaigns.analyze`, `lexsis_campaigns.frames`, `lexsis_campaigns.personas`, `lexsis_campaigns.match_persona` |
@@ -5362,9 +5379,14 @@ lives in `references/assets/asset-sourcing-sequence.md`,
 
 ### Import, upload and selection
 
-- `lexsis_asset_library.search` selects existing assets. With an empty query,
-  wait for the `Design asset selection:` message when inline selection UI is
-  available; map its selection order to the named slots.
+- `lexsis_asset_library.search` returns read-only search evidence: the terms
+  and filters used, matching assets, result count, and pagination state. Do not
+  wait after search.
+- `lexsis_asset_select.select` opens the interactive picker when the merchant
+  should choose among fit-reviewed candidates. Pass the relevant search terms
+  and filters, wait for the user's selection message, and map its order to the
+  named slots. It may be called directly, although searching first is the
+  normal agent workflow.
 - `lexsis_asset_import.import` persists an available URL, image base64 with
   MIME type, or conversation attachments. Supply exactly one source.
 - `lexsis_asset_upload.upload` opens the local-file UI. Scope it to the

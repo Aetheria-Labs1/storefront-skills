@@ -32,6 +32,9 @@ for slot in plan.asset_slots:
 Steps 3 to 6 run only for the jobs their row in section 7 of
 `image-jobs-by-page-type.md` allows. An identity-bound job (product, variant,
 included items, label, packaging, founder, UGC, result) ends at step 4.
+Search is read-only and does not pause the workflow. After candidates pass the
+fit review, call `lexsis_asset_select.select` only when the user should make
+the final choice; wait only for that selection call.
 
 ## 2. Step details
 

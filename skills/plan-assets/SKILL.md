@@ -24,6 +24,7 @@ Use exact Lexsis actions:
 
 - `lexsis_catalog.get`;
 - `lexsis_asset_library.search`;
+- `lexsis_asset_select.select`;
 - `lexsis_assets.view` and `lexsis_assets.capabilities`;
 - `lexsis_asset_import.import`;
 - `lexsis_asset_upload.upload`;
@@ -88,8 +89,8 @@ For every asset requirement:
    slots, rights, watermarks, and baked-in text.
 5. Bind one clear fit.
 6. When several candidates materially change the direction:
-   - use the client's selector UI when available and wait for the user's
-     selection;
+   - call `lexsis_asset_select.select` with the relevant search terms and
+     filters, then wait for the user's selection message;
    - when the user wants to choose in the Lexsis dashboard, construct:
      `https://app.trylexsis.com/workspaces/<workspace-id>/storefront/design-library?theme=<theme-id>&tab=assets`
      using the exact bound workspace and theme ids, present it as a clickable

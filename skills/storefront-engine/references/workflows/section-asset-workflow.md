@@ -34,9 +34,14 @@ lives in `references/assets/asset-sourcing-sequence.md`,
 
 ### Import, upload and selection
 
-- `lexsis_asset_library.search` selects existing assets. With an empty query,
-  wait for the `Design asset selection:` message when inline selection UI is
-  available; map its selection order to the named slots.
+- `lexsis_asset_library.search` returns read-only search evidence: the terms
+  and filters used, matching assets, result count, and pagination state. Do not
+  wait after search.
+- `lexsis_asset_select.select` opens the interactive picker when the merchant
+  should choose among fit-reviewed candidates. Pass the relevant search terms
+  and filters, wait for the user's selection message, and map its order to the
+  named slots. It may be called directly, although searching first is the
+  normal agent workflow.
 - `lexsis_asset_import.import` persists an available URL, image base64 with
   MIME type, or conversation attachments. Supply exactly one source.
 - `lexsis_asset_upload.upload` opens the local-file UI. Scope it to the

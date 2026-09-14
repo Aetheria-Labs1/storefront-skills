@@ -53,14 +53,15 @@ Run for every requirement:
 | Order | Calls | Purpose | Gate |
 |---|---|---|---|
 | 1 | `lexsis_catalog.get` | exact real product/variant media | always |
-| 2 | `lexsis_asset_library.search` | existing library candidates | always |
+| 2 | `lexsis_asset_library.search` | read-only existing-library candidates and search evidence | always; do not wait |
 | 3 | `lexsis_assets.view` | crop, identity, fit, rights review | every candidate |
-| 4 | `lexsis_asset_upload.upload` or `lexsis_asset_import.import` | merchant/external source | wait for completion |
-| 5 | discover client capabilities; `lexsis_assets.capabilities` as fallback | choose production operation | missing eligible slot |
-| 6 | `lexsis_workspace.credits` | known Lexsis cost | before paid generation |
-| 7 | `lexsis_drafts.asset_generate` | approved fallback production | W $ |
-| 8 | `lexsis_asset_import.import` | persist external output | before binding |
-| 9 | `lexsis_assets.view` | final verification | every produced asset |
+| 4 | `lexsis_asset_select.select` | user choice among fit-reviewed library candidates | only when user choice is needed; wait |
+| 5 | `lexsis_asset_upload.upload` or `lexsis_asset_import.import` | merchant/external source | wait for completion |
+| 6 | discover client capabilities; `lexsis_assets.capabilities` as fallback | choose production operation | missing eligible slot |
+| 7 | `lexsis_workspace.credits` | known Lexsis cost | before paid generation |
+| 8 | `lexsis_drafts.asset_generate` | approved fallback production | W $ |
+| 9 | `lexsis_asset_import.import` | persist external output | before binding |
+| 10 | `lexsis_assets.view` | final verification | every produced asset |
 
 Output: permanent slot bindings and `ASSETS_READY`,
 `ASSETS_PENDING_USER`, or `ASSETS_BLOCKED`.
