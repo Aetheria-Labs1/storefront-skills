@@ -120,10 +120,12 @@
     "--lx-border-color",
     "--lx-surface-alt",
     "--lx-surface-color",
-    "--lx-text-color"
+    "--lx-text-color",
+    "--lx-text-muted"
   ],
   "parts": [
     "add-button",
+    "fallback",
     "heading",
     "item",
     "item-image",

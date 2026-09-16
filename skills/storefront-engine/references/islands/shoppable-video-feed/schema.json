@@ -124,9 +124,9 @@
       "type": "enum",
       "values": [
         "card",
+        "hidden",
         "auto",
         "button",
-        "hidden",
         "chip"
       ],
       "required": false

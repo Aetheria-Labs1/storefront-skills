@@ -55,9 +55,9 @@
     "position": {
       "type": "enum",
       "values": [
+        "center",
         "fullscreen",
         "right",
-        "center",
         "bottom"
       ],
       "required": false,

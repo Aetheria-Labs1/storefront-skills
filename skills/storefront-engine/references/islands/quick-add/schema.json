@@ -54,8 +54,8 @@
       "type": "enum",
       "values": [
         "minimal",
-        "button",
         "icon",
+        "button",
         "custom-trigger"
       ],
       "required": false,

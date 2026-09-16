@@ -54,18 +54,18 @@
     "variant": {
       "type": "enum",
       "values": [
+        "text",
         "badge",
-        "bar",
-        "text"
+        "bar"
       ],
       "required": false,
       "default": "badge"
     }
   },
   "variants": [
+    "text",
     "badge",
-    "bar",
-    "text"
+    "bar"
   ],
   "css_vars": [
     "--lx-inventory-low-color",

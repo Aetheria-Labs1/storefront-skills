@@ -68,10 +68,20 @@
       "values": [
         "inline",
         "expandable",
-        "icons_only"
+        "icons_only",
+        "icons_with_labels"
       ],
       "required": false,
       "default": "inline"
+    },
+    "alignment": {
+      "type": "enum",
+      "values": [
+        "left",
+        "center"
+      ],
+      "required": false,
+      "default": "center"
     },
     "listenForEvents": {
       "type": "boolean",
@@ -92,14 +102,17 @@
   "variants": [
     "inline",
     "expandable",
-    "icons_only"
+    "icons_only",
+    "icons_with_labels"
   ],
   "css_vars": [
-    "--lx-text-color"
+    "--lx-text-color",
+    "--lx-text-muted"
   ],
   "parts": [
     "button",
     "icons-row",
+    "provider",
     "provider-fallback",
     "provider-logo",
     "root",

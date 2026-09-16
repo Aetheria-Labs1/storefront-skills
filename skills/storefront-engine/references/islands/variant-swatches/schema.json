@@ -80,8 +80,8 @@
     "type": {
       "type": "enum",
       "values": [
-        "image",
         "text",
+        "image",
         "color",
         "size_grid"
       ],

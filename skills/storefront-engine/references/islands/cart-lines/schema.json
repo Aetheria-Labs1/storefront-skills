@@ -128,26 +128,47 @@
       "type": "string",
       "required": false
     },
-    "__previewProducts": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "shape": {
-          "id": "string",
-          "handle": "string",
-          "title": "string",
-          "price": "string",
-          "image": "?string",
-          "variantId": "?string"
-        }
-      },
+    "quantityStyle": {
+      "type": "enum",
+      "values": [
+        "select",
+        "stepper",
+        "split_buttons"
+      ],
+      "required": false,
+      "default": "stepper"
+    },
+    "removeStyle": {
+      "type": "enum",
+      "values": [
+        "icon",
+        "text"
+      ],
+      "required": false,
+      "default": "icon"
+    },
+    "salePriceStyle": {
+      "type": "enum",
+      "values": [
+        "stacked",
+        "inline"
+      ],
+      "required": false,
+      "default": "inline"
+    },
+    "showDiscountPercent": {
+      "type": "boolean",
+      "required": false,
+      "default": "false"
+    },
+    "freeGift": {
+      "type": "object",
       "shape": {
-        "id": "string",
-        "handle": "string",
-        "title": "string",
-        "price": "string",
-        "image": "?string",
-        "variantId": "?string"
+        "variant": "?'standard_line' | 'highlighted_line' | 'gift_card'",
+        "badgeText": "?string",
+        "icon": "?string",
+        "showOriginalPrice": "?boolean",
+        "lockQuantity": "?boolean"
       },
       "required": false
     }
@@ -160,8 +181,10 @@
     "--lx-accent-color",
     "--lx-bg-surface",
     "--lx-border-color",
+    "--lx-cart-radius",
     "--lx-error-color",
     "--lx-gift-color",
+    "--lx-reward-color",
     "--lx-surface-alt",
     "--lx-surface-color",
     "--lx-text-color",
@@ -172,6 +195,8 @@
     "empty",
     "empty-cta",
     "empty-message",
+    "fallback",
+    "free-gift-label",
     "heading",
     "item",
     "item-image",

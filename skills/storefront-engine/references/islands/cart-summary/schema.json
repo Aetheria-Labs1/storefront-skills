@@ -32,11 +32,27 @@
     "currency": {
       "type": "string",
       "required": false
+    },
+    "variant": {
+      "type": "enum",
+      "values": [
+        "compact",
+        "standard",
+        "boxed"
+      ],
+      "required": false,
+      "default": "standard"
     }
   },
-  "variants": null,
+  "variants": [
+    "compact",
+    "standard",
+    "boxed"
+  ],
   "css_vars": [
     "--lx-border-color",
+    "--lx-cart-radius",
+    "--lx-surface-alt",
     "--lx-text-color",
     "--lx-text-muted"
   ],

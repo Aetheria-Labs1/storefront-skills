@@ -72,9 +72,51 @@
       "type": "boolean",
       "required": false,
       "default": "true"
+    },
+    "variant": {
+      "type": "enum",
+      "values": [
+        "cards",
+        "rail",
+        "compact_bar"
+      ],
+      "required": false,
+      "default": "rail"
+    },
+    "messageAlignment": {
+      "type": "enum",
+      "values": [
+        "left",
+        "center"
+      ],
+      "required": false,
+      "default": "center"
+    },
+    "showThresholdLabels": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
+    "showRewardLabels": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
+    "connectorStyle": {
+      "type": "enum",
+      "values": [
+        "line",
+        "segmented"
+      ],
+      "required": false,
+      "default": "line"
     }
   },
-  "variants": null,
+  "variants": [
+    "cards",
+    "rail",
+    "compact_bar"
+  ],
   "css_vars": [
     "--lx-accent-color",
     "--lx-bg-surface",
@@ -82,6 +124,7 @@
     "--lx-error-color",
     "--lx-reward-color",
     "--lx-reward-track",
+    "--lx-surface-alt",
     "--lx-text-color",
     "--lx-text-muted"
   ],

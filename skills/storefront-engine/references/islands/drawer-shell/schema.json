@@ -60,7 +60,7 @@
     "width": {
       "type": "string",
       "required": false,
-      "default": "400px"
+      "default": "var(--lx-cart-panel-width,440px)"
     },
     "maxHeight": {
       "type": "string",
@@ -95,6 +95,53 @@
       "required": false,
       "default": "true"
     },
+    "headerLayout": {
+      "type": "enum",
+      "values": [
+        "single_row",
+        "title_and_count"
+      ],
+      "required": false,
+      "default": "title_and_count"
+    },
+    "countStyle": {
+      "type": "enum",
+      "values": [
+        "inline",
+        "secondary",
+        "hidden"
+      ],
+      "required": false,
+      "default": "secondary"
+    },
+    "closeStyle": {
+      "type": "enum",
+      "values": [
+        "plain",
+        "circle"
+      ],
+      "required": false,
+      "default": "circle"
+    },
+    "stickyHeader": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
+    "stickyFooter": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
+    "contentBackground": {
+      "type": "enum",
+      "values": [
+        "surface",
+        "subtle"
+      ],
+      "required": false,
+      "default": "surface"
+    },
     "__innerHTML": {
       "type": "string",
       "required": false,
@@ -104,21 +151,26 @@
   "variants": null,
   "css_vars": [
     "--lx-bg-color",
+    "--lx-bg-surface",
     "--lx-border-color",
+    "--lx-cart-panel-width",
     "--lx-surface-alt",
     "--lx-text-color",
     "--lx-text-muted"
   ],
   "parts": [
+    "body",
     "close",
     "content",
     "drag-handle",
+    "footer",
     "header",
     "header-count",
     "header-title",
     "overlay",
     "panel",
-    "portal"
+    "portal",
+    "scroll-region"
   ],
   "authoring": {
     "format": "source-html",
