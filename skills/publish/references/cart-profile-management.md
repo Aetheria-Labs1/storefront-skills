@@ -39,9 +39,14 @@ edit, activate, or delete a promotion.
 
 ## `lexsis_cart.preview`
 
-Create or refresh an ephemeral signed preview for the current profile draft.
-Use the returned preview URL for desktop and mobile visual QA. A preview is not
-a published profile and does not change page assignment.
+Pass `page_id` to render an immutable cart profile version on the existing
+storefront page. The returned URL carries `preview=1`, `cart_profile_id`, and
+`cart_version`. This path only reads the saved version snapshot: it does not
+publish the profile, change page assignment, or create/update Shopify
+discounts.
+
+Omit `page_id` to create or refresh an isolated signed cart fixture preview.
+Use either preview URL for desktop and mobile visual QA.
 
 ## `lexsis_drafts.cart_set`
 

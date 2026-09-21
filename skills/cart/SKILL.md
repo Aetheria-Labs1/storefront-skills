@@ -58,9 +58,15 @@ stop and ask the user to run `/setup`; never invoke setup automatically.
    - Use `before_module_id: "checkout"` and `region: "footer"` for a block
      immediately above checkout.
 6. Re-read the profile with `lexsis_cart.get`.
-7. Call `lexsis_cart.preview`, then verify the signed preview on desktop and
-   mobile. Test both populated and empty cart states when the design changes
-   structure.
+7. Call `lexsis_cart.preview`.
+   - Pass `page_id` to render the immutable cart draft version on the existing
+     storefront page. The returned URL includes `preview=1`,
+     `cart_profile_id`, and `cart_version`; it does not publish or synchronize
+     Shopify discounts.
+   - Omit `page_id` only when an isolated signed cart fixture preview is more
+     useful.
+   Verify desktop and mobile. Test both populated and empty cart states when
+   the design changes structure.
 
 Use real catalog and review data in custom modules. For example, a rotating
 review strip above checkout should use `ReviewCarousel` with an active review
