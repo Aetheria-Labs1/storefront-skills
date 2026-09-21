@@ -1,6 +1,8 @@
 # Cart Profile Composition
 
 A cart profile is a renderer-managed surface backed by a published profile.
+Custom cart interactions, batch add flows, and controls selecting multiple
+products use the documented `lx:cart:add-items` renderer command.
 
 ## Page contract
 
@@ -56,9 +58,36 @@ Add-to-cart controls and the site header emit `cart:open`. The hydrator bridges
 DOM events into the cart event bus. The injected `DrawerShell` listens for the
 event and lazily hydrates its children on first open.
 
-Use the selected island's supported cart trigger instead of adding a parallel
-global-DOM handler in section JS. Resolve custom behavior through the live
-schema and managed runtime contract.
+Use the selected island's supported cart trigger for normal product controls.
+For a custom interaction that owns a dynamic product selection, use the
+renderer-managed `lx:cart:add-items` command instead of hidden BuyBoxes,
+programmatic clicks, or a parallel Shopify/cart mutation. This is the custom
+cart and batch add contract for controls that select multiple products.
+
+```js
+const addButton = lifecycle.query('[data-lx-control="add-selection"]');
+
+addButton.addEventListener("click", () => {
+  section.dispatchEvent(
+    new CustomEvent("lx:cart:add-items", {
+      bubbles: true,
+      detail: {
+        requestId: crypto.randomUUID(),
+        items: selectedProducts.map((product) => ({
+          variantId: product.variantId,
+          quantity: product.quantity,
+        })),
+        openCart: true,
+      },
+    }),
+  );
+});
+```
+
+The control must use `data-lx-control` and a registered lifecycle handler.
+Responses return to the originating section as
+`lx:cart:add-items:pending`, `lx:cart:add-items:success`, or
+`lx:cart:add-items:error`. Every response includes `requestId`.
 
 No trigger should carry or infer a profile ID.
 
@@ -79,3 +108,5 @@ page sections or page metadata.
 | Agent publishes a draft automatically | Merchant reviews and publishes in the app |
 | Fabricated products or selling plans | Use real store catalog data |
 | Page-wide selectors in cart CSS | Use profile-scoped CSS |
+| Hidden BuyBox plus `.click()` for a custom selection | Dispatch `lx:cart:add-items` from the registered section control |
+| Direct `/cart/add.js` or Storefront API request | Let the renderer perform the managed GraphQL cart mutation |

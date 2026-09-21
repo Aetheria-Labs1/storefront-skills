@@ -3256,6 +3256,22 @@ that a 3D composition is framed well or that an interaction feels correct.
 Always review the hosted draft visually. Read `animation-system.md` before
 authoring or editing managed motion.
 
+## Renderer-Managed Custom Cart Commands
+
+`lexsis_cart.capabilities` exposes the `lx:cart:add-items` contract for custom
+cart interactions, batch add, multiple-product selection, quizzes,
+configurators, comparison tools, wishlists, calculators, swipe decks, and
+guided selling. The command is a bubbling DOM event from the authored section
+to the renderer; pending, success, and error events return to that originating
+section.
+
+The renderer validates and normalizes the request, deduplicates compatible
+lines and repeated `requestId` values, performs one Shopify Storefront GraphQL
+batch add, preserves Cart V2 attribution/promotions, and opens the effective
+published cart only after full success. Agents must not substitute hidden
+BuyBoxes, programmatic clicks, authored cart shells, direct Shopify requests,
+or undocumented cart events.
+
 ## Resolve Actions with Exact Slots
 
 The public skills declare the stable router and action pairs they use. Resolve
@@ -5903,6 +5919,11 @@ control sizing. Native markup is not a license to recreate cart logic.
   DOM access, observers, storage, networking or programmatic clicks into JS.
 - Plain top-level section script is compatibility behavior, not a route
   around the compiler's managed-code checks.
+- Custom cart, batch add, multiple-product, and guided-selling controls use
+  the documented `lx:cart:add-items` event from `section`. Keep the initiating
+  element under `data-lx-control`, bind it through the lifecycle API, and
+  listen for renderer response events on the same section. Do not create
+  hidden commerce islands or drive their controls with `.click()`.
 
 ## Compile handoff
 

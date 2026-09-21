@@ -68,6 +68,11 @@ control sizing. Native markup is not a license to recreate cart logic.
   DOM access, observers, storage, networking or programmatic clicks into JS.
 - Plain top-level section script is compatibility behavior, not a route
   around the compiler's managed-code checks.
+- Custom cart, batch add, multiple-product, and guided-selling controls use
+  the documented `lx:cart:add-items` event from `section`. Keep the initiating
+  element under `data-lx-control`, bind it through the lifecycle API, and
+  listen for renderer response events on the same section. Do not create
+  hidden commerce islands or drive their controls with `.click()`.
 
 ## Compile handoff
 
