@@ -1,6 +1,6 @@
 # Lexsis AI — Storefront Skills
 
-> Native AI workflows for building high-converting Shopify storefront pages, funnels, carts, and experiments. One canonical skill set ([Agent Skills standard](https://agentskills.io)), consumable from Claude Code, OpenAI Codex, Cursor, and custom GPTs.
+> Native AI workflows for building high-converting Shopify storefront pages, carts, and experiments. One canonical skill set ([Agent Skills standard](https://agentskills.io)), consumable from Claude Code, OpenAI Codex, Cursor, and custom GPTs.
 
 ## The one-line install
 
@@ -69,7 +69,7 @@ Both files are **generated** from the canonical skills by `scripts/build-distrib
 
 ## What's Included
 
-- **10 focused storefront commands** — six reviewed-workflow commands and four independent operations
+- **9 focused storefront commands** — six reviewed-workflow commands and three independent operations
 - **2 agents** (cro-analyzer, page-builder) for Claude Code
 - Shared CRO, vertical, traffic-source, workflow, and island references under `skills/storefront-engine/references/`, including the house `design-rules.md` and `island-presets.md`
 - **Page-type contracts** (`references/page-types/`): 30 ecommerce page types
@@ -115,7 +115,6 @@ Invoke as `/name` (Claude Code) or `$name` (Codex); most also trigger automatica
 | `optimize` | Score an existing page, propose a strict optimization plan, apply approved changes |
 | `ab-test` | Analyze a Lexsis page URL, build verified challengers, and create or evaluate a draft A/B test |
 | `cart` | Inspect, assign, and edit cart profiles |
-| `funnels` | Plan, create, validate, and interactively preview reusable funnel drafts |
 
 ## Workflow Sequence
 
@@ -149,10 +148,6 @@ When several saved stores or themes are available, every page records the
 selected `storeId` and `themeId`; it never silently switches themes. Commands
 remain independently invokable, and explicitly skipped steps are recorded in
 the task handoff.
-
-`funnels` is independent from the page workflow. It creates and tests reusable
-journey drafts for quizzes, branching offers, gift reveals, and lead capture.
-The current command does not attach, activate, or publish a funnel.
 
 `plan-page` finalizes the page narrative, customer-facing copy, proof and
 offer decisions, responsive layout, template direction, and production asset

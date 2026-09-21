@@ -26,7 +26,6 @@ EXPECTED_PUBLIC_SKILLS = {
     "publish",
     "cart",
     "ab-test",
-    "funnels",
 }
 
 
@@ -262,7 +261,7 @@ class PublicSkillPackTests(unittest.TestCase):
         self.assertIn("shelf is empty", text)
         self.assertIn("Review the checklist", text)
         self.assertIn("lexsis_template_library.search_page_kits", text)
-        self.assertIn("lexsis_capture.funnel_templates", text)
+        self.assertIn("dedicated live island schema", text)
         self.assertIn("PLAN_READY_FOR_APPROVAL", text)
         self.assertIn("PLAN_APPROVED", text)
         self.assertNotIn("reviewsEndpoint", text)
@@ -522,29 +521,12 @@ class PublicSkillPackTests(unittest.TestCase):
                 front = re.match(r"^---\n(.*?)\n---\n", path.read_text(encoding="utf-8"), re.S)
                 yaml.safe_load(front.group(1))
 
-    def test_release_version_is_8_2_0(self) -> None:
+    def test_release_version_is_9_0_0(self) -> None:
         for path in (
             ROOT / ".claude-plugin" / "plugin.json",
             ROOT / "codex" / ".codex-plugin" / "plugin.json",
         ):
-            self.assertEqual("8.2.0", json.loads(path.read_text())["version"])
-
-    def test_funnels_uses_current_draft_only_contract(self) -> None:
-        text = (SKILLS / "funnels" / "SKILL.md").read_text(encoding="utf-8")
-        for action in (
-            "funnel_capabilities",
-            "funnel_templates",
-            "funnel_template",
-            "get_funnel",
-            "validate_funnel",
-            "preview_funnel",
-            "funnel_create",
-            "funnel_update",
-            "expected_revision",
-        ):
-            self.assertIn(action, text)
-        self.assertIn("never attaches, activates, or publishes", text.lower())
-        self.assertNotIn("lexsis_live_ops.publish", text)
+            self.assertEqual("9.0.0", json.loads(path.read_text())["version"])
 
     def test_discovery_is_not_a_global_blocker(self) -> None:
         checked = [

@@ -30,9 +30,12 @@ Use:
   `lexsis_catalog.reviews`, and `lexsis_catalog.reviews_search` for proof;
 - `lexsis_template_library.search_page_kits`,
   `lexsis_template_library.search_sections`, and
-  `lexsis_template_library.get_kit` after sections are planned;
-- `lexsis_capture.funnel_templates` and
-  `lexsis_capture.funnel_template` for quiz or lead-capture structures.
+  `lexsis_template_library.get_kit` after sections are planned.
+
+Interactive quiz, game, reveal, and multi-step capture implementations are not
+available in the current island catalog. Plan their shopper journey and
+configuration requirements, but mark implementation as blocked until a
+dedicated live island schema exists. Do not invent a runtime or hidden control.
 
 Resolve unfamiliar schemas through exact router/action discovery. Use
 authoritative web research for public facts and ask the user about private

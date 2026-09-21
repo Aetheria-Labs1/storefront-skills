@@ -26,9 +26,8 @@ Identify the page type before template search.
 | 1 | read setup context | brand, product map, personas, rules, theme |
 | 2 | `lexsis_catalog.list`, `.get` | refresh selected products and media jobs |
 | 3 | `lexsis_catalog.reviews_status`, `.review_collections`, `.reviews`, `.reviews_search` | proof and claims |
-| 4 | `lexsis_capture.funnel_templates`, `.funnel_template` | quiz/lead structure only |
-| 5 | `lexsis_template_library.search_page_kits` | after sections are planned |
-| 6 | `.search_sections`, `.get_kit` | section fallback or selected kit |
+| 4 | `lexsis_template_library.search_page_kits` | after sections are planned |
+| 5 | `.search_sections`, `.get_kit` | section fallback or selected kit |
 
 Output: complete plan with final copy and asset requirements;
 `PLAN_READY_FOR_APPROVAL`, then `PLAN_APPROVED`.

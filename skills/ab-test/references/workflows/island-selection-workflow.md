@@ -45,7 +45,7 @@ because a legacy file named one.
 | Reviews | ReviewCarousel, ReviewList | Eligibility and scope from `references/proof/reviews-sourcing.md` |
 | Product explanation | IngredientExplorer, BeforeAfter | Verified product/evidence requirements, not decorative proof |
 | Media | VideoPlayer, MediaCarousel, ShoppableVideoFeed | User-controlled behavior required by the type |
-| Capture | EmailCapture, FunnelRuntime | Real form schema and the type's authorized goal |
+| Capture | EmailCapture | A supported one-field email form and the type's authorized goal |
 | Availability or deadline | InventoryIndicator, CountdownTimer | Verified offer-ledger basis and type permission |
 | Navigation/overlay | SiteHeader, Navbar, Footer, MobileMenu, Modal | Required navigation or interaction, with one owner per role |
 

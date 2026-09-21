@@ -11,8 +11,8 @@ that discover that path natively. Invoke by name, or let your agent select from
 each skill's description.
 
 The normal reviewed workflow is Setup → Plan → Design → Publish. Optimize
-scores and improves an existing page with the same plan blocks. Funnels,
-experiments, and carts are independent operations. The ten
+scores and improves an existing page with the same plan blocks. Experiments
+and carts are independent operations. The nine
 public commands remain independently invokable; explicit skips are recorded in
 the task handoff.
 Pages are authored directly through MCP. Do not reintroduce local page

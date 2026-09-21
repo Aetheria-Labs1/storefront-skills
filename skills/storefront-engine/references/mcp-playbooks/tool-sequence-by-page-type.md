@@ -12,7 +12,7 @@ calls below, in the stage where they belong. Ids refer to
 | `advertorial` | inspect the supplied campaign hook and audience; `lexsis_catalog.reviews_search` for each narrative claim | one BuyBox or a linked offer bridge only; no gallery island | StickyBar in the first half, CountdownTimer |
 | `listicle` | `lexsis_catalog.list` for every featured product; `lexsis_brand.navigation` for internal links | QuickAdd or ProductCarousel per item; comparison table and FAQ as static HTML | countdown |
 | `comparison-us-vs-them` | `lexsis_catalog.get` for spec facts; merchant-confirmed competitor facts with source URLs | static comparison table; BuyBox | competitor logos or product photos |
-| `quiz-funnel` | `lexsis_capture.funnel_templates` U+2192 `.funnel_template`; `lexsis_capture.form_schemas` | `lexsis_drafts.funnel_create` U+2192 `lexsis_capture.validate_funnel` U+2192 `.preview_funnel`; FunnelRuntime island | BuyBox above the quiz |
+| `quiz-funnel` | catalogue, proof, and form-schema reads for planning only | no interactive quiz island is available in this release; stop before design until a dedicated schema exists | invented quiz runtime, hidden controls, BuyBox above the quiz |
 | `bundle-kit` | `lexsis_catalog.get` for each component; verified bundle price and savings math | BundleBuilder or QuantityBreaks, PlanSelector, BuyBox | percent-off pills |
 | `offer-page` | offer ledger items confirmed with the merchant; `lexsis_cart.get` for discount behaviour | BuyBox with the offer, CartDiscountInput only if a code is required, CountdownTimer only with a verified end | reset timers |
 | `sale-clearance-flash` | verified end date and stock; `lexsis_catalog.list` filtered to sale items | product grid composition (`references/product-grid.md`) with compare-at, CountdownTimer (verified), InventoryIndicator (verified) | fabricated stock counts |
@@ -29,12 +29,12 @@ calls below, in the stage where they belong. Ids refer to
 | `lookbook-shop-the-look` | `lexsis_catalog.get` per look item | GalleryLightbox, QuickAdd, ProductCarousel | walls of text |
 | `gift-guide` | recipient personas; price bands; delivery cutoffs | product grid per band, CSS tabs by recipient, DeliveryEstimate | one undifferentiated grid |
 | `lead-capture-giveaway` | `lexsis_capture.form_schemas`; incentive and terms confirmed | EmailCapture, Modal only as exit intent | popups within 10 seconds |
-| `referral-loyalty-vip` | programme terms confirmed | EmailCapture or a FunnelRuntime form; tier table as static HTML | invented member counts |
+| `referral-loyalty-vip` | programme terms confirmed | EmailCapture for a supported email field, or link to the approved referral provider; tier table as static HTML | invented member counts |
 | `retargeting-warm` | analytics: `lexsis_analytics.page` for the source page; objection list | BuyBox early, native-details FAQ early, ReviewCarousel | re-explaining the product |
 | `thank-you-post-purchase` | `lexsis_catalog.get` for cross-sell; delivery expectations | ProductCarousel with a named relationship, EmailCapture for referral | full navigation |
 | `faq-support-led` | policies and answers confirmed | FAQ islands grouped by topic, CSS tabs, DeliveryEstimate | hard-sell CTA blocks |
 | `trial-sample` | trial terms, shipping fee, conversion terms confirmed | BuyBox for the trial SKU; native-details FAQ with "what happens after" first | hidden auto-renew |
-| `wholesale-b2b` | MOQ, pricing tiers, lead times confirmed | EmailCapture or FunnelRuntime form; specs as CSS tabs; downloadable line sheet | consumer urgency |
+| `wholesale-b2b` | MOQ, pricing tiers, lead times confirmed | EmailCapture for a supported email field, or link to an approved application provider; specs as CSS tabs; downloadable line sheet | consumer urgency |
 
 Rules:
 

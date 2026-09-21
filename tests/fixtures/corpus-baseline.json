@@ -717,8 +717,6 @@
       "template_update",
       "template_apply",
       "experiment_create",
-      "funnel_create",
-      "funnel_update",
       "cart_set",
       "cart_edit",
       "review_collection_create",
@@ -757,13 +755,7 @@
     ],
     "lexsis_capture": [
       "form_schemas",
-      "submissions",
-      "funnel_capabilities",
-      "funnel_templates",
-      "funnel_template",
-      "get_funnel",
-      "validate_funnel",
-      "preview_funnel"
+      "submissions"
     ],
     "lexsis_cart": [
       "get",
@@ -4865,7 +4857,6 @@
     "islands/cart-drawer/schema.json": "c264a7e5d43acf47acc95e6bac899a9cfb8056b528e98fca1d8414ae6c91ec23",
     "islands/product-gallery/schema.json": "4d3e7e2bf1ebb7f8752629411c9c0fa3d60c1a342ca38bc5a92f956a1763ba71",
     "islands/plan-selector/schema.json": "099ca6c4758315a0c9fbe331b42d1644cd381099eec2dab284f173c648b75377",
-    "islands/funnel-runtime/schema.json": "4f26002f81033e7d98de5d0d2442d3f689b2615d076ce8076943d802055fef0d",
     "islands/cart-summary/schema.json": "8f260c556276b481c3d85deb1824c0a52ac87e2834b8ad6806a5249ab235704d",
     "islands/cart-checkout-button/schema.json": "6ab9dc4c11dcee5e861ff3b289e5c392e24c05e09af391d219dcfd11bbe3023d",
     "islands/quick-add/schema.json": "91fcc7fdd167127adc4964debd5770bf6c9b18ab39d141dd8ff9e78cf7c8fbcc",
