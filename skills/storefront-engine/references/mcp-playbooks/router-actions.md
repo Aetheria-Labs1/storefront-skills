@@ -1,7 +1,7 @@
 # MCP router/action inventory
 
 Derived from the `CONSOLIDATED_ROUTERS` declaration in the sibling MCP
-service on 2026-09-14: 19 routers, 93 actions. Re-derive this inventory when
+service on 2026-09-21: 19 routers, 97 actions. Re-derive this inventory when
 that source changes. This lists operation names, not arguments or island
 props; resolve an unfamiliar action schema before calling it.
 
@@ -24,5 +24,5 @@ props; resolve an unfamiliar action schema before calling it.
 | `lexsis_template_library` | `lexsis_template_library.search_sections`, `lexsis_template_library.search_page_kits`, `lexsis_template_library.get_kit`, `lexsis_template_library.list_mine`, `lexsis_template_library.get_mine` |
 | `lexsis_analytics` | `lexsis_analytics.timeseries`, `lexsis_analytics.page`, `lexsis_analytics.attribution`, `lexsis_analytics.experiment` |
 | `lexsis_capture` | `lexsis_capture.form_schemas`, `lexsis_capture.submissions`, `lexsis_capture.funnel_templates`, `lexsis_capture.funnel_template`, `lexsis_capture.get_funnel`, `lexsis_capture.validate_funnel`, `lexsis_capture.preview_funnel` |
-| `lexsis_cart` | `lexsis_cart.get` |
+| `lexsis_cart` | `lexsis_cart.get`, `lexsis_cart.capabilities`, `lexsis_cart.promotions`, `lexsis_cart.preview` |
 | `lexsis_support` | `lexsis_support.search_docs` |

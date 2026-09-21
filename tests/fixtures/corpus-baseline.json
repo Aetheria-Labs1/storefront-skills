@@ -766,7 +766,10 @@
       "preview_funnel"
     ],
     "lexsis_cart": [
-      "get"
+      "get",
+      "capabilities",
+      "promotions",
+      "preview"
     ],
     "lexsis_support": [
       "search_docs"
