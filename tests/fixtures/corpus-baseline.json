@@ -758,6 +758,7 @@
     "lexsis_capture": [
       "form_schemas",
       "submissions",
+      "funnel_capabilities",
       "funnel_templates",
       "funnel_template",
       "get_funnel",

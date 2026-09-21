@@ -26,6 +26,7 @@ EXPECTED_PUBLIC_SKILLS = {
     "publish",
     "cart",
     "ab-test",
+    "funnels",
 }
 
 
@@ -521,12 +522,29 @@ class PublicSkillPackTests(unittest.TestCase):
                 front = re.match(r"^---\n(.*?)\n---\n", path.read_text(encoding="utf-8"), re.S)
                 yaml.safe_load(front.group(1))
 
-    def test_release_version_is_8_1_0(self) -> None:
+    def test_release_version_is_8_2_0(self) -> None:
         for path in (
             ROOT / ".claude-plugin" / "plugin.json",
             ROOT / "codex" / ".codex-plugin" / "plugin.json",
         ):
-            self.assertEqual("8.1.1", json.loads(path.read_text())["version"])
+            self.assertEqual("8.2.0", json.loads(path.read_text())["version"])
+
+    def test_funnels_uses_current_draft_only_contract(self) -> None:
+        text = (SKILLS / "funnels" / "SKILL.md").read_text(encoding="utf-8")
+        for action in (
+            "funnel_capabilities",
+            "funnel_templates",
+            "funnel_template",
+            "get_funnel",
+            "validate_funnel",
+            "preview_funnel",
+            "funnel_create",
+            "funnel_update",
+            "expected_revision",
+        ):
+            self.assertIn(action, text)
+        self.assertIn("never attaches, activates, or publishes", text.lower())
+        self.assertNotIn("lexsis_live_ops.publish", text)
 
     def test_discovery_is_not_a_global_blocker(self) -> None:
         checked = [

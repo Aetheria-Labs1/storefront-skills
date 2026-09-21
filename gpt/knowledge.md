@@ -1,5 +1,5 @@
 <!-- GENERATED from skills/ by scripts/build-distributions.py - DO NOT EDIT.
-     storefront-skills v8.1.1; 9 skills; 51 active islands -->
+     storefront-skills v8.2.0; 10 skills; 51 active islands -->
 
 # Lexsis Storefront Skills - Knowledge Base
 
@@ -284,6 +284,91 @@ sections, islands, and status:
 - `DESIGN_APPROVED` only after hosted QA and explicit approval.
 
 Never publish.
+
+---
+
+# Skill: funnels
+
+> Plan, create, update, validate, and interactively preview a Lexsis storefront funnel from a plain-language request. Use for product-finder quizzes, branching offers, gift reveals, and multi-step lead capture. Creates drafts only; never attaches, activates, or publishes a funnel.
+
+# Create a Funnel
+
+Read `references/funnels.md`.
+
+Turn the merchant's desired shopper journey into one complete, reviewable
+funnel definition. A funnel is reusable journey logic, not a page. Do not edit
+page source or add a `FunnelRuntime` island while running this skill.
+
+Use:
+
+- `lexsis_capture` action `funnel_capabilities`
+- `lexsis_capture` actions `funnel_templates` and `funnel_template`
+- `lexsis_capture` actions `get_funnel`, `validate_funnel`, and
+  `preview_funnel`
+- `lexsis_drafts` actions `funnel_create` and `funnel_update`
+
+Use `lexsis_catalog` and `lexsis_pages` to resolve real product and page
+destinations before putting identifiers into outcomes. Resolve unfamiliar
+argument schemas with `lexsis_discover`. An empty discovery result is not a
+funnel outage; call the documented router action and report its concrete error.
+
+Resolve the store from an explicitly supplied workspace/page URL, the page
+binding, a saved store choice, or the unambiguous default saved by `/setup`.
+If multiple stores remain possible, ask the merchant to choose. Never invoke
+`/setup` automatically.
+
+## Workflow
+
+1. Read `funnel_capabilities`. Treat the returned schema version, node kinds,
+   triggers, outcomes, and activation availability as authoritative.
+2. List the backend-owned templates. Read the closest template when it reduces
+   unnecessary custom work; do not create an empty shell.
+3. Clarify only missing decisions that change the journey: audience, goal,
+   questions, branch logic, result for every path, desired presentation, and
+   eventual entry point.
+4. Resolve every referenced product, collection, or page. Never invent an ID,
+   price, reward, discount, product relationship, or destination.
+5. Present a concise funnel plan before mutation:
+   - entry trigger and modal/inline presentation;
+   - ordered questions and answer options;
+   - branch conditions and default paths;
+   - terminal result and intended outcome for every reachable path;
+   - unresolved activation work.
+6. After the merchant approves the plan, create one complete version-2 draft
+   with `lexsis_drafts` action `funnel_create`.
+7. Re-read it with `get_funnel`, run `validate_funnel`, and fix all errors.
+   Warnings must be reported and may remain only when they concern a later
+   publish or activation step.
+8. Create a signed preview with `preview_funnel`. Open it using the host's
+   browser capability and exercise every reachable path at mobile and desktop
+   widths. Preview answers are local and do not prove capture, analytics,
+   attachment, or live runtime behavior.
+9. For revisions, read the draft again and pass its exact `revision` as
+   `expected_revision` to `funnel_update`. Replace the complete definition;
+   do not patch isolated steps from stale state.
+
+## Safety boundaries
+
+- Draft creation and updates are reversible writes and require the normal
+  `lexsis_drafts` approval.
+- There is no funnel publish, attachment, or activation action in the current
+  MCP contract. Do not substitute page editing or `lexsis_live_ops`.
+- A dedicated funnel URL will be a normal Lexsis page with an inline funnel
+  placement. It is not created by this skill.
+- Existing-button, inserted-button, automatic, and custom-event triggers are
+  definition contracts for later placement activation. Recording a trigger in
+  a draft does not make it live.
+- Never use arbitrary JavaScript. Do not use a CSS selector when a stable page
+  block or action ID is available.
+- Never claim an outcome navigates, adds to cart, starts checkout, captures a
+  lead, or records analytics until activation and runtime execution are
+  separately available and verified.
+
+## Return
+
+Report the funnel ID, store, revision, definition summary, validation errors
+and warnings, preview URL and expiry, paths exercised, and the exact work still
+required for page placement, activation, outcomes, and publication.
 
 ---
 
@@ -2670,6 +2755,160 @@ published version in place; verify this rather than assuming recovery.
 Variants follow `references/ab-testing.md`; every variant keeps its own
 page/version and hosted QA evidence. Never infer publication from draft
 creation, design approval, experiment creation or a request for a preview.
+
+---
+
+# Funnel Authoring
+
+## Mental model
+
+```text
+Trigger -> Presentation -> Journey -> Outcome
+```
+
+A funnel is a reusable, versioned journey. It is not a page. The same journey
+may eventually be placed on several pages with different triggers. A dedicated
+funnel URL is a normal Lexsis page with the funnel placed inline.
+
+The current MCP release supports complete draft creation, revision-guarded
+replacement, authoritative validation, and isolated interactive preview. It
+does not yet expose page placement, activation, or funnel publishing.
+
+Start every custom definition with
+`lexsis_capture.funnel_capabilities`.
+
+## Version 2 definition
+
+Every write sends one complete definition:
+
+```json
+{
+  "schema_version": 2,
+  "name": "Routine finder",
+  "description": "Match shoppers to the right routine.",
+  "type": "branching",
+  "entry_step_key": "goal",
+  "presentation": "modal",
+  "trigger": { "type": "manual" },
+  "settings": {},
+  "steps": [
+    {
+      "key": "goal",
+      "name": "Primary goal",
+      "kind": "quiz_question",
+      "config": {
+        "question": "What would you like help with?",
+        "field_key": "goal",
+        "required": true,
+        "options": [
+          { "value": "hydrate", "label": "Hydration" },
+          { "value": "clarify", "label": "Clarity" }
+        ]
+      },
+      "transitions": {
+        "rules": [
+          {
+            "when": {
+              "field": "goal",
+              "operator": "equals",
+              "value": "clarify"
+            },
+            "goto": "clarity-result"
+          }
+        ],
+        "default_goto": "hydration-result"
+      }
+    },
+    {
+      "key": "hydration-result",
+      "name": "Hydration result",
+      "kind": "offer",
+      "config": {
+        "title": "Your hydration routine",
+        "cta_text": "View the routine"
+      },
+      "transitions": { "rules": [] },
+      "outcome": { "type": "show_result", "target": {} }
+    },
+    {
+      "key": "clarity-result",
+      "name": "Clarity result",
+      "kind": "offer",
+      "config": {
+        "title": "Your clarity routine",
+        "cta_text": "View the routine"
+      },
+      "transitions": { "rules": [] },
+      "outcome": { "type": "show_result", "target": {} }
+    }
+  ]
+}
+```
+
+Defaults are schema version 2, modal presentation, and a manual trigger.
+Step keys begin with a lowercase letter and use lowercase letters, numbers,
+hyphens, or underscores. Keep step keys and `field_key` values stable when
+revising an established funnel.
+
+## Supported contracts
+
+Journey types are `quiz`, `sequential`, and `branching`.
+
+Step kinds are `page`, `quiz_question`, `offer`, `thankyou`, `email_capture`,
+`gift_reveal`, and `product_recommendation`.
+
+Condition operators are `equals`, `not_equals`, `in`, and `contains`. Every
+non-terminal step needs a reachable next step. Use explicit rules for
+meaningful branches and `default_goto` for the fallback path.
+
+Presentation is `modal` for short, focused journeys or `inline` for longer
+journeys and a future dedicated funnel page.
+
+Trigger contracts are `manual`, `immediate`, `delay`, `scroll`,
+`exit_intent`, `existing_button`, `inserted_button`, and `custom_event`.
+Trigger-specific fields include `delay_seconds`, `scroll_percent`,
+`event_name`, and `source_block_id`. These describe intended activation; they
+do not attach or activate the draft.
+
+Outcome contracts are `show_result`, `navigate_to_page`, `navigate_to_url`,
+`navigate_to_product`, `navigate_to_collection`, `add_to_cart`, `open_cart`,
+`start_checkout`, `capture_and_close`, and `show_thank_you`. Every terminal
+path needs an explicit outcome. Resolve target identifiers from the active
+store. The presence of an outcome does not prove live execution.
+
+## Templates
+
+Backend-owned starting points currently include `product-finder-quiz`,
+`mystery-gift-reveal`, and `offer-capture`. Read the template before using it.
+Customize the complete definition and validate it against the active store
+instead of assuming its sample copy or result actions are suitable.
+
+## Validation
+
+Validation should reject or surface:
+
+- duplicate or malformed step keys;
+- duplicate field keys;
+- missing entry steps or transition targets;
+- unreachable steps, cycles, and non-terminal dead ends;
+- terminal steps without outcomes;
+- products or pages outside the selected store;
+- invalid trigger parameters or unsupported node/outcome types.
+
+Draft warnings may identify work that belongs to publication or activation.
+Do not convert warnings into claims that the funnel is live.
+
+## Revisions and preview
+
+Draft replacement is atomic. Read the latest draft, preserve its complete
+definition, and send the returned revision as `expected_revision`. On a
+revision conflict, re-read and reconcile rather than retrying stale content.
+
+Preview URLs are signed, isolated, and expire after 15 minutes. Exercise each
+reachable answer path. Preview answers remain in the preview and create no
+lead captures or analytics. A successful preview proves draft interaction
+only; it does not prove page placement, live triggers, outcome execution, or
+publication.
 
 ---
 

@@ -1,7 +1,7 @@
 {
   "name": "lexsis-storefront-skills",
-  "version": "8.1.1",
-  "description": "AI-powered Shopify storefront builder with 7 focused commands for planning, design, optimization, A/B testing, carts, and publishing.",
+  "version": "8.2.0",
+  "description": "AI-powered Shopify storefront builder with 10 focused commands for pages, funnels, optimization, A/B testing, carts, and publishing.",
   "author": {
     "name": "Aetheria Labs",
     "email": "hello@trylexsis.com"
@@ -32,7 +32,8 @@
     "defaultPrompt": [
       "Design a storefront page and create a draft for my product.",
       "Audit this storefront URL for CRO opportunities.",
-      "Configure a cart profile with relevant upsells."
+      "Configure a cart profile with relevant upsells.",
+      "Create and preview a product-finder funnel from my prompt."
     ]
   }
 }

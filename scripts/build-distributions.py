@@ -79,6 +79,9 @@ SKILL_SHARED_REFERENCES = {
     "publish": {
         "workflow-intent.md",
     },
+    "funnels": {
+        "funnels.md",
+    },
 }
 
 RETIRED_TOOLS = [
@@ -141,6 +144,7 @@ GPT_REFERENCE_ALLOWLIST = [
     "asset-prep",
     "qa-recipe",
     "publishing",
+    "funnels",
     "page-generation",
     "page-editing",
     "source-artifact-workflow",
@@ -479,6 +483,8 @@ bindings, creates one unpublished hosted draft, runs hosted QA at 390, 768 and
 1280 with commerce checks, applies later edits with expected_version, and
 returns DESIGN_APPROVED. optimize scores an existing page against the same
 rules, proposes a plan, and applies approved changes.
+funnels plans, creates, revision-guards, validates, and interactively previews
+reusable journey drafts. It never attaches, activates, or publishes them.
 Each command remains independently invokable, and explicit skips are recorded.
 Infer only question depth and publish-versus-draft intent from the request;
 plan approval before design and live publishing always require explicit
