@@ -1,0 +1,11 @@
+interface:
+  display_name: "Create Storefront Quizzes"
+  short_description: "Build product finders and guided quizzes."
+  default_prompt: "Use $quiz to create and validate a custom storefront quiz."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "lexsis-ai"
+      description: "Lexsis AI storefront MCP server"
+      transport: "streamable_http"
+      url: "https://mcp.trylexsis.com/mcp"

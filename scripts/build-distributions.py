@@ -71,6 +71,7 @@ SKILL_SHARED_REFERENCES = {
         "plan-page.md",
         "page-editing.md",
         "qa-recipe.md",
+        "quiz-authoring.md",
         "offers/offer-ledger.md",
         "assets/generation-policy.md",
         "copy/",
@@ -78,6 +79,9 @@ SKILL_SHARED_REFERENCES = {
     },
     "publish": {
         "workflow-intent.md",
+    },
+    "quiz": {
+        "quiz-authoring.md",
     },
 }
 
@@ -147,6 +151,7 @@ GPT_REFERENCE_ALLOWLIST = [
     "visual-layout-workflow",
     "workflow-handoffs",
     "lexsis-mcp-contract",
+    "quiz-authoring",
     "merchant-templates",
     "lexsis-design-capabilities",
     "page-types/_index",

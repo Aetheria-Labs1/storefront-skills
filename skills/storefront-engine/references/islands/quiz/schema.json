@@ -1,0 +1,250 @@
+{
+  "contract_version": 2,
+  "name": "Quiz",
+  "category": "engagement",
+  "capabilities": [
+    {
+      "name": "product:resolve"
+    },
+    {
+      "name": "cart:add"
+    },
+    {
+      "name": "cart:open"
+    }
+  ],
+  "usage_hint": "General-purpose deterministic quiz and guided-interaction engine with replaceable experience, input, and result renderers.",
+  "when_to_use": "For product finders, profile quizzes, calculators, guided selling, assessments, recommendation journeys, or campaign interactions that need branching, scoring, product resolution, or Cart V2 handoff.",
+  "when_not_to_use": "For a single static question, arbitrary runtime code, random reward allocation, coupon minting, medical diagnosis, or direct Shopify/ESP calls.",
+  "defaultHydrate": "immediate",
+  "combine_with": [
+    "Cart V2 profile",
+    "Modal",
+    "Shopify products",
+    "custom quiz renderer islands"
+  ],
+  "anti_patterns": [
+    "Hiding BuyBox controls and clicking them programmatically",
+    "Encoding quiz logic inside presentation islands",
+    "Authoring prices or availability instead of resolving Shopify products",
+    "Using reward or offer actions before the secure reward adapter is available"
+  ],
+  "props": {
+    "schemaVersion": {
+      "type": "number",
+      "required": true
+    },
+    "quizKey": {
+      "type": "string",
+      "required": true
+    },
+    "content": {
+      "type": "object",
+      "shape": {
+        "eyebrow": "?string",
+        "title": "string",
+        "description": "?string",
+        "startLabel": "?string",
+        "resumeLabel": "?string",
+        "restartLabel": "?string",
+        "backLabel": "?string",
+        "nextLabel": "?string",
+        "submitLabel": "?string"
+      },
+      "required": true
+    },
+    "questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "shape": {
+          "id": "string",
+          "type": "'number' | 'boolean' | 'phone' | 'select' | 'text' | 'scale' | 'single_select' | 'multi_select' | 'number_range' | 'email' | 'textarea' | 'date'",
+          "title": "string",
+          "description": "?string",
+          "required": "?boolean",
+          "minSelections": "?number",
+          "maxSelections": "?number",
+          "min": "?number",
+          "max": "?number",
+          "step": "?number",
+          "minLabel": "?string",
+          "maxLabel": "?string",
+          "placeholder": "?string",
+          "options": "?array<{id: string, label: string, description: ?string, image: ?string, icon: ?string, swatch: ?string, value: ?string | number | boolean | boolean, effects: ?array<{}>}>",
+          "input": "?{island: string, props: ?object}"
+        }
+      },
+      "shape": {
+        "id": "string",
+        "type": "'number' | 'boolean' | 'phone' | 'select' | 'text' | 'scale' | 'single_select' | 'multi_select' | 'number_range' | 'email' | 'textarea' | 'date'",
+        "title": "string",
+        "description": "?string",
+        "required": "?boolean",
+        "minSelections": "?number",
+        "maxSelections": "?number",
+        "min": "?number",
+        "max": "?number",
+        "step": "?number",
+        "minLabel": "?string",
+        "maxLabel": "?string",
+        "placeholder": "?string",
+        "options": "?array<{id: string, label: string, description: ?string, image: ?string, icon: ?string, swatch: ?string, value: ?string | number | boolean | boolean, effects: ?array<{}>}>",
+        "input": "?{island: string, props: ?object}"
+      },
+      "required": true
+    },
+    "logic": {
+      "type": "object",
+      "shape": {
+        "dynamicScoring": "?{entries: ?array<{}>}",
+        "rules": "?array<{id: string, priority: ?number, when: object | object | object | object, then: array<object | object | object | object | object | object | object | object>}>",
+        "variantMatrices": "?array<{key: string, productKey: string, axes: ?array<{}>, combinations: ?array<{}>, onNoCombination: ?'require_choice' | 'show_no_match', onUnavailable: ?'require_choice' | 'show_unavailable'}>",
+        "branches": "?array<{id: string, fromQuestionId: string, when: ?object | object | object | object, nextQuestionId: ?string, resultKey: ?string, priority: ?number}>",
+        "pointProfiles": "?array<{key: string, bands: ?array<{}>}>",
+        "resolution": "?{minimumScore: ?number, tieBreak: ?'priority_then_score' | 'score_then_priority'}"
+      },
+      "required": false
+    },
+    "catalog": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "shape": {
+          "key": "string",
+          "productId": "string",
+          "preferredVariantId": "?string",
+          "sellingPlanId": "?string",
+          "alternativeKeys": "?array<string>"
+        }
+      },
+      "shape": {
+        "key": "string",
+        "productId": "string",
+        "preferredVariantId": "?string",
+        "sellingPlanId": "?string",
+        "alternativeKeys": "?array<string>"
+      },
+      "required": false
+    },
+    "productIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "required": false
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "shape": {
+          "key": "string",
+          "priority": "?number",
+          "title": "string",
+          "description": "?string",
+          "image": "?string",
+          "badges": "?array<string>",
+          "products": "?array<{productKey: string, quantity: ?number, reason: ?string, required: ?boolean}>",
+          "actions": "?array<{type: 'add_items' | 'view_product' | 'navigate' | 'restart' | 'reward' | 'offer', label: string, url: ?string, productKey: ?string, openCart: ?boolean}>"
+        }
+      },
+      "shape": {
+        "key": "string",
+        "priority": "?number",
+        "title": "string",
+        "description": "?string",
+        "image": "?string",
+        "badges": "?array<string>",
+        "products": "?array<{productKey: string, quantity: ?number, reason: ?string, required: ?boolean}>",
+        "actions": "?array<{type: 'add_items' | 'view_product' | 'navigate' | 'restart' | 'reward' | 'offer', label: string, url: ?string, productKey: ?string, openCart: ?boolean}>"
+      },
+      "required": true
+    },
+    "fallbackResultKey": {
+      "type": "string",
+      "required": true
+    },
+    "completion": {
+      "type": "object",
+      "shape": {
+        "review": "?boolean"
+      },
+      "required": false
+    },
+    "behavior": {
+      "type": "object",
+      "shape": {
+        "persistence": "?'none' | 'session' | 'local'",
+        "persistenceTtlMinutes": "?number",
+        "showIntro": "?boolean"
+      },
+      "required": false
+    },
+    "appearance": {
+      "type": "object",
+      "shape": {
+        "layout": "?'split' | 'compact' | 'contained' | 'full_bleed'",
+        "progressStyle": "?'percentage' | 'steps' | 'hidden' | 'bar' | 'count'",
+        "density": "?'compact' | 'comfortable' | 'spacious'",
+        "motion": "?'none' | 'subtle' | 'playful'"
+      },
+      "required": false
+    },
+    "analytics": {
+      "type": "object",
+      "shape": {
+        "answerAllowlist": "?array<string>"
+      },
+      "required": false
+    },
+    "instanceKey": {
+      "type": "string",
+      "required": false
+    },
+    "experience": {
+      "type": "object",
+      "shape": {
+        "island": "string",
+        "props": "?object"
+      },
+      "required": false
+    },
+    "resultRenderer": {
+      "type": "object",
+      "shape": {
+        "island": "string",
+        "props": "?object"
+      },
+      "required": false
+    },
+    "__resolvedProducts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "required": false
+    }
+  },
+  "variants": null,
+  "css_vars": [],
+  "parts": [
+    "quiz-host",
+    "renderer-error",
+    "renderer-loading"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate"
+    ],
+    "headless": {
+      "supported": false
+    }
+  }
+}

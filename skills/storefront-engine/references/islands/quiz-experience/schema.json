@@ -1,0 +1,93 @@
+{
+  "contract_version": 2,
+  "name": "QuizExperience",
+  "category": "engagement",
+  "capabilities": [
+    {
+      "name": "quiz:experience"
+    }
+  ],
+  "host_only": true,
+  "host_role": "quiz:experience",
+  "usage_hint": "Default hosted full-experience renderer for Quiz. It composes an input renderer and result renderer through the Quiz runtime contexts.",
+  "when_to_use": "As the standard accessible quiz presentation or as a reference when creating a completely custom quiz experience island.",
+  "when_not_to_use": "As a standalone page island or as a place to duplicate scoring, persistence, product, or cart logic.",
+  "defaultHydrate": "immediate",
+  "combine_with": [
+    "Quiz",
+    "QuizInput",
+    "QuizResult"
+  ],
+  "anti_patterns": [],
+  "props": {
+    "input": {
+      "type": "object",
+      "shape": {
+        "island": "string",
+        "props": "?object"
+      },
+      "required": false
+    },
+    "result": {
+      "type": "object",
+      "shape": {
+        "island": "string",
+        "props": "?object"
+      },
+      "required": false
+    },
+    "maxWidth": {
+      "type": "string",
+      "required": false
+    }
+  },
+  "variants": null,
+  "css_vars": [
+    "--lx-quiz-accent",
+    "--lx-quiz-bg",
+    "--lx-quiz-max-width",
+    "--lx-quiz-progress-bg",
+    "--lx-quiz-progress-fill",
+    "--lx-quiz-radius",
+    "--lx-quiz-text"
+  ],
+  "parts": [
+    "back-button",
+    "description",
+    "error",
+    "evaluating",
+    "eyebrow",
+    "intro",
+    "navigation",
+    "next-button",
+    "progress",
+    "progress-fill",
+    "progress-label",
+    "progress-track",
+    "question",
+    "question-description",
+    "question-title",
+    "renderer-error",
+    "renderer-loading",
+    "resume-button",
+    "review",
+    "root",
+    "start-button",
+    "title",
+    "validation-error"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate"
+    ],
+    "headless": {
+      "supported": false
+    }
+  }
+}

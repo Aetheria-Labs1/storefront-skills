@@ -1,0 +1,66 @@
+{
+  "contract_version": 2,
+  "name": "QuizInput",
+  "category": "engagement",
+  "capabilities": [
+    {
+      "name": "quiz:input"
+    }
+  ],
+  "host_only": true,
+  "host_role": "quiz:input",
+  "usage_hint": "Default hosted input renderer for Quiz questions. It is loaded by QuizExperience and is not authored as a standalone page island.",
+  "when_to_use": "As the default renderer for common quiz field types, or as a reference contract when building a custom input renderer.",
+  "when_not_to_use": "Outside a Quiz experience, or for file, image, camera, arbitrary HTML, or unvalidated executable inputs.",
+  "defaultHydrate": "immediate",
+  "combine_with": [
+    "Quiz",
+    "QuizExperience"
+  ],
+  "anti_patterns": [],
+  "props": {
+    "optionColumns": {
+      "type": "number",
+      "required": false
+    },
+    "showDescriptions": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    }
+  },
+  "variants": null,
+  "css_vars": [
+    "--lx-accent-color",
+    "--lx-quiz-accent",
+    "--lx-quiz-border",
+    "--lx-quiz-option-gap",
+    "--lx-quiz-option-radius",
+    "--lx-quiz-surface",
+    "--lx-quiz-text"
+  ],
+  "parts": [
+    "input",
+    "option",
+    "option-description",
+    "option-label",
+    "option-media",
+    "options",
+    "scale",
+    "scale-labels"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate"
+    ],
+    "headless": {
+      "supported": false
+    }
+  }
+}

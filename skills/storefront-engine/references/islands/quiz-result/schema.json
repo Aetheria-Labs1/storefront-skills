@@ -1,0 +1,72 @@
+{
+  "contract_version": 2,
+  "name": "QuizResult",
+  "category": "engagement",
+  "capabilities": [
+    {
+      "name": "quiz:result"
+    }
+  ],
+  "host_only": true,
+  "host_role": "quiz:result",
+  "usage_hint": "Default hosted result renderer for Quiz recommendations and content outcomes. It is not authored as a standalone page island.",
+  "when_to_use": "As the default result presentation or as a reference contract for custom result islands.",
+  "when_not_to_use": "Outside a Quiz experience or to own cart/network mutations directly.",
+  "defaultHydrate": "immediate",
+  "combine_with": [
+    "Quiz",
+    "QuizExperience",
+    "Cart V2"
+  ],
+  "anti_patterns": [],
+  "props": {
+    "showReasons": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
+    "showDescriptions": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    }
+  },
+  "variants": null,
+  "css_vars": [
+    "--lx-quiz-accent",
+    "--lx-quiz-border",
+    "--lx-quiz-button-bg",
+    "--lx-quiz-button-color",
+    "--lx-quiz-radius",
+    "--lx-quiz-result-card-bg"
+  ],
+  "parts": [
+    "error",
+    "restart-button",
+    "result",
+    "result-actions",
+    "result-badges",
+    "result-description",
+    "result-image",
+    "result-price",
+    "result-product",
+    "result-products",
+    "result-reason",
+    "result-title",
+    "variant-selector"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate"
+    ],
+    "headless": {
+      "supported": false
+    }
+  }
+}
