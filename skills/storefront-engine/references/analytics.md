@@ -44,6 +44,16 @@ lexsis_live_ops.scale_winner(experiment_id, { variant_id: "..." })
 ```
 Scales winning variant to 100% traffic, marks experiment complete.
 
+### Reading Section Engagement
+
+Section rows follow page order. Views are sessions where the section was at
+least half on screen; engaged is the share of viewers who stayed 3s or longer;
+drop-off compares each section with the previous in-flow section; CTR is
+viewers who clicked a CTA divided by views. Sticky bars, floating buttons,
+sticky headers, and cart drawers are reported as persistent elements or
+overlays outside page order, so they never create a drop-off. Treat pages with
+fewer than 20 sessions as directional.
+
 ## Best Practices
 
 - Wait for statistical significance before scaling winner

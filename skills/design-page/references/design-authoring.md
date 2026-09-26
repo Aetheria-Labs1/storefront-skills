@@ -72,6 +72,26 @@ already owns the behaviour.
 - Header, announcement, navigation, main content, and footer appear once in
   source order.
 
+## Analytics Tracking
+
+Section views, scroll depth, and CTA clicks are tracked automatically. Page
+analytics reports sections in page order and lists always-on-screen elements
+separately, so a floating element authored inside a content section distorts
+that section's numbers and the page's drop-off.
+
+- Put a sticky bar, floating button, or popup in its own section. Never nest
+  it inside a content section.
+- Build it with the island that owns the behaviour: `StickyBar`,
+  `SocialProofPopup`, or `Navbar`/`SiteHeader` with `sticky`. These are
+  recognised as persistent from the source.
+- A hand-authored `position: fixed` element must be the only content of its
+  section, so the section has no in-flow height; that is how the tracker
+  recognises it.
+- Links, buttons, and island CTA parts count as CTA clicks without extra
+  markup. Add `data-lx-no-track` to controls that are not conversion actions
+  (for example a custom carousel arrow), and `data-lx-label` when the visible
+  text does not name the action.
+
 ## Copy, Proof, and Offers
 
 - Place approved customer-facing copy verbatim.
