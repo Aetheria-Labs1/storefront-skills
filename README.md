@@ -69,7 +69,7 @@ Both files are **generated** from the canonical skills by `scripts/build-distrib
 
 ## What's Included
 
-- **9 focused storefront commands** — six reviewed-workflow commands and three independent operations
+- **10 focused storefront commands** — six reviewed-workflow commands and four independent operations
 - **2 agents** (cro-analyzer, page-builder) for Claude Code
 - Shared CRO, vertical, traffic-source, workflow, and island references under `skills/storefront-engine/references/`, including the house `design-rules.md` and `island-presets.md`
 - **Page-type contracts** (`references/page-types/`): 30 ecommerce page types
@@ -111,6 +111,7 @@ Invoke as `/name` (Claude Code) or `$name` (Codex); most also trigger automatica
 | `visualize-page` | Create mobile-first concept frames, then infer or generate larger-screen treatments |
 | `plan-assets` | Resolve mobile assets first, then produce and verify their larger-screen variants |
 | `design-page` | Implement `PLAN_APPROVED` with `ASSETS_READY`, create one unpublished hosted draft, run hosted QA at 390/768/1280, apply edits, return `DESIGN_APPROVED` |
+| `quiz` | Build product finders and branching journeys with real catalog results, optional response saving, and hosted QA |
 | `publish` | Release a `DESIGN_APPROVED` draft version only after explicit approval |
 | `optimize` | Score an existing page, propose a strict optimization plan, apply approved changes |
 | `ab-test` | Analyze a Lexsis page URL, build verified challengers, and create or evaluate a draft A/B test |
@@ -162,6 +163,13 @@ The workflow infers only question depth and publish-versus-draft intent from
 the request; plan approval before design and publishing approval are never
 inferred. Publishing, paid generation, deletion, and destructive changes retain
 explicit authorization boundaries.
+
+For quizzes, `/quiz` authors the live Quiz island, validates all paths and real
+product/variant results, and can return `DESIGN_APPROVED` for `/publish`. Optional
+saving uses a version-bound capture policy: inspect and prepare, activate with
+explicit approval, publish the matching page version, then verify the saved
+response. Saving consent and analytics consent remain independent. Draft preview
+does not prove production capture; contact collection does not send result email.
 
 ## MCP Server
 

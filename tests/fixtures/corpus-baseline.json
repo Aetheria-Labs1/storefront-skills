@@ -720,6 +720,7 @@
       "cart_set",
       "cart_edit",
       "review_collection_create",
+      "quiz_prepare",
       "send_feedback"
     ],
     "lexsis_page_create": [
@@ -732,7 +733,9 @@
       "rollback",
       "template_publish",
       "template_archive",
-      "scale_winner"
+      "scale_winner",
+      "quiz_activate",
+      "quiz_deactivate"
     ],
     "lexsis_design": [
       "guide",
@@ -755,7 +758,10 @@
     ],
     "lexsis_capture": [
       "form_schemas",
-      "submissions"
+      "submissions",
+      "quiz_inspect",
+      "quiz_responses",
+      "quiz_response"
     ],
     "lexsis_cart": [
       "get",

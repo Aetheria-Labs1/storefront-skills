@@ -59,11 +59,24 @@ Exercise every planned interaction. For commerce pages verify:
 - cart opens in the intended responsive form;
 - quantity, line totals, subtotal, selling plan, discount, and checkout path
   update correctly;
-- Quick Add and sticky purchase controls target the correct product state;
+- Quick Add and sticky purchase controls, when present, target the correct product state;
 - disclosures, details, forms, quiz/funnel steps, video, galleries, and review
   controls respond;
 - hydration does not blank, flicker, duplicate, or shift content;
 - no console errors occur.
+
+## Quiz review
+
+Use `references/quiz-authoring.md` for path, fallback, product/variant, and capture
+checks. Test forward/back/review/result transitions, focus after state changes,
+reduced motion, and saving/error states. Apply checks only to controls present;
+a Quiz does not need a duplicate Quick Add, BuyBox, or sticky control to pass.
+
+Preview does not collect production responses. Keep live saving/analytics checks
+pending until authorized activation and publication, then verify on the returned
+published URL. Do not infer saving from a result screen or purchase from cart
+success. Reuse existing MCP QA evidence and operation notes; do not save local
+JSON or screenshot reports.
 
 ## Record and Repair
 

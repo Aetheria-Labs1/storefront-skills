@@ -1,5 +1,5 @@
 <!-- GENERATED from skills/ by scripts/build-distributions.py - DO NOT EDIT.
-     storefront-skills v9.1.0; 10 skills; 54 active islands -->
+     storefront-skills v9.2.0; 10 skills; 54 active islands -->
 
 # Lexsis Storefront Skills - Knowledge Base
 
@@ -777,7 +777,7 @@ Always read:
 - `references/page-type-guide.md`;
 - `references/planning-rules.md`.
 
-These three references are the complete planning packet. General setup
+These three references are the base planning packet. General setup
 context is a map, not live commerce authority.
 
 Use:
@@ -789,10 +789,16 @@ Use:
   `lexsis_template_library.search_sections`, and
   `lexsis_template_library.get_kit` after sections are planned.
 
-Interactive quiz, game, reveal, and multi-step capture implementations are not
-available in the current island catalog. Plan their shopper journey and
-configuration requirements, but mark implementation as blocked until a
-dedicated live island schema exists. Do not invent a runtime or hidden control.
+Product finders, assessments, branching questions, and guided recommendations
+are supported by the live `Quiz` island. For a quiz plan, read
+`references/quiz-authoring.md` and route implementation to `/quiz`. Plan the
+entry, question paths, deterministic results, real products/variants, and exit
+or cart actions. If saving is needed, include purpose, disclosure, question
+classification, visibility, retention, resume window, and separate contact
+choice. Keep response saving independent from analytics consent.
+
+Games, reward issuance, or custom interactions still require a dedicated live island schema; do not invent a runtime or hidden controls. Do not promise automated
+result email, preview capture, or an unshipped quiz funnel dashboard.
 
 Resolve unfamiliar schemas through exact router/action discovery. Use
 authoritative web research for public facts and ask the user about private
@@ -963,7 +969,7 @@ Return the complete plan, binding, status, and next route:
 
 # Skill: publish
 
-> Publish a Lexsis storefront draft version that carries DESIGN_APPROVED from /design-page or /optimize. Use only when the user explicitly asks to release a specific page version.
+> Publish a Lexsis storefront draft version that carries DESIGN_APPROVED from /design-page, /quiz, or /optimize. Use only when the user explicitly asks to release a specific page version.
 
 # Publish a Page
 
@@ -991,13 +997,15 @@ authorize or substitute for a successful live publish.
    draft and recorded baseline.
 4. Read `lexsis_pages` action `edit_context`.
 5. Confirm the remote version equals `remote.lastKnownVersion`.
-6. Confirm `DESIGN_APPROVED` was recorded by `/design-page` or `/optimize` for
+6. Confirm `DESIGN_APPROVED` was recorded by `/design-page`, `/quiz`, or `/optimize` for
    this same page version and reviewed bundle, with hosted QA at 390, 768 and
    1280 and commerce, copy, claims, assets and integrity checks passed.
 7. Re-read integrity and source/bundle evidence through MCP. Missing or stale
    evidence blocks release; no local file or validator substitutes for it.
 8. Confirm the store has the required entitlement.
-9. Ask for explicit approval naming the page and version.
+9. Confirm explicit publication approval naming the page and version. Reuse an
+   approval already given for this exact scope; ask only if it is missing or the
+   reviewed version has changed.
 
 Only then call:
 
@@ -1006,6 +1014,19 @@ lexsis_live_ops({ action: "publish", args: { page_id } })
 ```
 
 Do not treat draft creation or a preview request as publishing approval.
+
+## Quiz capture
+
+For a Quiz with saving enabled, follow `references/quiz-authoring.md`. Confirm
+that the prepared/active policy matches the immutable page-version UUID and
+instance hash. Capture activation has its own explicit approval; design or page
+publication approval alone does not silently authorize a new collection policy.
+A quiz without saving does not need capture activation.
+
+Draft QA proves interactions and design. After publishing, verify saving and
+analytics consent combinations, save/edit/reload/retry, a retained Forms response,
+and real cart outcomes on the returned published URL. Report any pending live
+checks separately; preview intentionally cannot collect production responses.
 
 ## Other Lifecycle Actions
 
@@ -1022,62 +1043,72 @@ evidence.
 
 # Skill: quiz
 
-> Create, update, validate, or preview a Lexsis Quiz island for product finders, assessments, branching journeys, variant matching, profile scoring, and guided recommendations.
+> Create, update, validate, or preview a Lexsis Quiz island with real product recommendations, branching, variant matching, optional response saving, and consent-aware analytics.
 
 # Create a Quiz
 
-Use the live `Quiz` island rather than a funnel runtime, hidden commerce
-controls, or a custom section state machine.
-
-Read `references/quiz-authoring.md` before authoring or
-changing a quiz. Read the current `vibe://schema/island/Quiz` resource before
-compilation because the schema is the contract authority.
+Use the live `Quiz` island for the journey. Read
+`references/quiz-authoring.md` and the current `vibe://schema/island/Quiz`
+before authoring. Resolve unfamiliar MCP arguments through `lexsis_discover`.
 
 ## Workflow
 
-1. Resolve the exact workspace, store, page, and theme.
-2. Inspect real candidate products and variants with `lexsis_catalog`; never
-   invent Shopify IDs, prices, availability, or option values.
-3. Define the journey before writing source:
-   - Stable quiz, question, option, product, and result keys
-   - Question order and conditional paths
-   - How every meaningful answer changes scoring, eligibility, variant
-     selection, or the final result
-   - Deterministic fallback result
-   - Result products, reasons, quantities, and actions
-4. Author one complete `Quiz` props definition in normal page source.
-5. Build the design through surrounding HTML, theme variables, and
-   section-scoped CSS. Do not use or invent runtime design presets.
-6. Compile and repair every blocking validation issue.
-7. Create or update only the requested unpublished page draft with version
-   protection.
-8. Exercise every reachable path, fallback, unavailable-product state,
-   required variant choice, restart, resume, and Cart V2 result action at
-   mobile and desktop widths.
+1. Resolve the exact workspace, store, page, and theme. Load brand context and
+   inspect available desktop/mobile references. Keep the same theme throughout.
+2. Refresh real candidate products and variants with `lexsis_catalog`; never
+   invent Shopify IDs, prices, availability, option values, or result imagery.
+3. Plan stable keys, questions, branches, scoring, deterministic fallback,
+   result explanations, product/variant mapping, and entry and exit actions.
+   Remove questions that serve no recommendation or stated capture purpose.
+4. Decide whether responses should be saved. For saving, define the purpose,
+   disclosure, question classifications, merchant visibility, retention, resume
+   window, and optional contact purpose. Saving and analytics are independent;
+   collecting contact details does not subscribe the visitor to marketing.
+5. Author one complete `Quiz` definition in normal page source. Use scoped CSS,
+   supported hooks, and managed motion for transitions. Preserve focus and
+   reduced-motion behavior; do not invent runtime presets or custom state machines.
+6. Compile, repair blockers, then create or update the requested unpublished
+   draft with version protection. Keep source and QA in MCP; do not save local
+   JSON dumps, screenshot reports, or ad hoc page artifacts.
+7. If saving is requested, inspect the immutable page-version UUID using
+   `lexsis_capture.quiz_inspect` and prepare its inactive policy with
+   `lexsis_drafts.quiz_prepare`. Reinspect after any source edit.
+8. Test reachable branches/results, ties/fallbacks, required/optional inputs,
+   back/review/restart, unavailable variants, Cart V2 outcomes, focus, transitions,
+   and reduced motion at 390, 768, and 1280. Record supported hosted QA via MCP.
+9. Return `DRAFT_CREATED` while QA or approval is pending. Record
+   `DESIGN_APPROVED` only after hosted QA and explicit approval of that same
+   version. This is a valid handoff to `/publish`.
+10. When explicitly authorized, activate the reviewed policy with
+    `lexsis_live_ops.quiz_activate` and publish the reviewed page through
+    `/publish`. These are separate decisions; reuse approval already given for
+    the exact scope. Preview does not prove production capture.
+11. After publication, verify saving allowed/declined and analytics allowed/denied,
+    edit/reload/retry, one completed Forms response, and redacted MCP reads.
+    Use the returned published URL. Report any untested path or live limitation.
 
 ## Boundaries
 
-- Quiz definitions live in page source, not Forms.
-- Email and phone question values remain local quiz answers; do not claim they
-  were captured or subscribed.
-- Result commerce uses Quiz `add_items`; do not add hidden BuyBoxes, direct
+- Definitions live in page source. Saved responses use the managed capture
+  policy and Forms response viewer; do not edit generic Forms schemas to bypass it.
+- Personal and sensitive answers are protected; MCP exposes only permitted
+  categorical values. `analytics.answerAllowlist` does not allow raw analytics.
+- Result commerce uses Quiz `add_items`. Do not add hidden BuyBoxes, direct
   Shopify requests, authored cart shells, or programmatic clicks.
-- `reward` and `offer` actions are unavailable until a managed reward service
-  exists.
-- Use only renderer islands returned by the live schema. Host-only renderers
-  cannot be placed directly in page source.
-- If scoped CSS and the default Quiz structure cannot express the requested
-  interaction, report that a reusable engineering-owned Quiz host island is
-  required. Do not fabricate an island name or inject arbitrary JavaScript.
-- Templates may be consulted as examples when available, but remain editable
-  source—not runtime presets or hidden dependencies.
+- `reward` and `offer` actions are unavailable. Verify existing cart promotions
+  separately before claiming a discount or gift.
+- Only use registered islands and host capabilities present in the live schema.
+  If supported hooks cannot express the design, identify the reusable host
+  change needed; do not fabricate an island or inject arbitrary JavaScript.
+- Do not promise automatic result email, marketing sync, a dedicated quiz funnel
+  dashboard, paid-order attribution, preview capture, or historical-version resume.
 
 ## Return
 
-Report the page and version, hosted preview, question and result count, logic
-types used, reachable paths tested, product and variant sources, Cart V2
-evidence, responsive QA, and any unsupported interaction that needs a reusable
-host island.
+Report page/version and hosted URL; product sources and tested paths; responsive,
+cart, and motion QA; saving policy state; activation/publication state; and live
+capture/analytics evidence or pending checks. Keep design approval, policy
+activation, publication, confirmed saving, and purchase as separate outcomes.
 
 ---
 
@@ -2658,7 +2689,7 @@ rights, operation history, and verification status.
 
 # Hosted draft verification
 
-Run by `/design-page` (Hosted Design Review) and `/optimize` Apply.
+Run by `/design-page`, `/quiz`, and `/optimize` Apply.
 
 ## Evidence gate
 
@@ -2684,6 +2715,10 @@ the hosted checks below; no browser access means no claimed visual pass.
 - Desktop: 1280px
 
 ### Check for:
+
+Apply commerce and component checks to controls actually present. A quiz does
+not require a separate Quick Add drawer, sticky control, or product grid.
+
 - [ ] No horizontal overflow at any viewport
 - [ ] All images load (no broken/gray placeholders)
 - [ ] Hero section visible above fold on both viewports
@@ -2713,6 +2748,18 @@ Record claims review, asset verification, screenshots, interaction evidence,
 blockers and readiness. Save supported evidence with
 `lexsis_drafts.page_record_qa` using its current schema; reread the QA record.
 
+## Quiz checks
+
+Follow `references/quiz-authoring.md` for reachable paths, ties/fallbacks,
+unavailable variants, back/review/restart, keyboard focus, transitions, and
+reduced motion. Preview is the design surface, not production capture proof.
+After authorized activation and publication, verify saving/analytics consent
+combinations, confirmed saving, edit/reload/retry, and retained Forms responses.
+Record explicit pending checks when live proof is not yet available.
+
+Use screenshots only as hosted review evidence or transient browser inspection;
+do not create local JSON dumps, screenshot bundles, or ad hoc QA reports.
+
 ## Common Issues
 
 | Symptom | Cause | Fix |
@@ -2725,7 +2772,7 @@ blockers and readiness. Save supported evidence with
 
 ## Draft vs Live
 
-- `publish: false` U+2192 draft at `/v/{slug}?shop={domain}&preview=1`
+- `publish: false` returns a draft `preview_url`; use that exact URL
 - `lexsis_page_create` is draft-only and rejects `publish:true`
 - Publish later with `lexsis_live_ops` action `publish` after explicit approval
 - Draft edits do not replace the public `published_version_id`
@@ -2744,7 +2791,8 @@ Publication promotes a reviewed draft; it does not create another page.
 3. Match the current version and source/bundle hashes to the approved hosted
    QA evidence from `references/qa-recipe.md`. Stale evidence blocks release.
 4. Verify current publish permissions and entitlement.
-5. Obtain explicit approval naming this page and version.
+5. Confirm explicit approval naming this page and version; reuse approval
+   already given for the same scope.
 6. Call `lexsis_live_ops.publish` using the discovered argument schema.
 7. Re-read the published version and verify the returned public URL. Report
    publication and live HTTP verification separately.
@@ -2752,6 +2800,20 @@ Publication promotes a reviewed draft; it does not create another page.
 If no draft exists, use `references/generation-protocol.md` first. If a draft
 exists, reuse its returned preview URL; previewing never creates another page.
 No local source, CSS, manifest, compile artifact or QA file is required.
+
+## Quiz policies and verification
+
+A `/quiz` draft can carry `DESIGN_APPROVED` after the same hosted QA and explicit
+version approval as `/design-page` or `/optimize`. If saving is requested, follow
+`references/quiz-authoring.md` to inspect and prepare the policy for the immutable
+page-version UUID. Activate only with capture-policy approval; publish with page
+release approval. Any source edit requires fresh inspection and matching policy.
+
+Preview verifies design, logic, product mapping, focus, and transition motion.
+Verify production saving and analytics after publication on the returned public
+URL, including consent denial, retry/edit/reload, and the Forms response. A
+published page, a saved response, an analytics event, and a purchase are distinct
+facts. Deactivation stops collection without deleting retained responses.
 
 ## Other lifecycle operations
 
@@ -3258,24 +3320,10 @@ quiz, guided recommendation.
 Read `vibe://schema/island/Quiz` immediately before authoring. The current
 schema defines available fields, limits, host roles, and styling hooks.
 
-The definition is embedded in ordinary versioned page source:
-
-```html
-<lx-island name="Quiz" hydrate="visible">
-  <script type="application/json">
-    {
-      "schemaVersion": 1,
-      "quizKey": "routine_finder",
-      "content": {
-        "title": "Find your routine"
-      },
-      "questions": [],
-      "results": [],
-      "fallbackResultKey": "balanced"
-    }
-  </script>
-</lx-island>
-```
+Embed one complete props object in an `<lx-island name="Quiz">` with a single
+JSON script child, in ordinary versioned page source. Empty question/result
+arrays are not a valid starting definition. Use the public Quiz example or the
+live schema, and replace illustrative IDs with the selected store's catalog IDs.
 
 Do not put resolved product data, current prices, inventory, or authored
 copies of Shopify variants in production source. Use `lexsis_catalog` to
@@ -3298,7 +3346,8 @@ Always define a deterministic fallback result.
 
 Supported question families include choices, booleans, scales, numeric
 ranges, numbers, selects, text, textarea, email, phone, and date. Email and
-phone are local answer values in this release; they are not Forms submissions.
+phone values are answer fields, not automatic subscriptions. Persisting any
+answer requires the managed capture policy and shopper consent described below.
 
 ## Logic choices
 
@@ -3328,6 +3377,82 @@ profile. Never call Shopify directly or click hidden controls.
 Use `view_product`, `navigate`, or `restart` for non-cart outcomes.
 Do not use `reward` or `offer`; those require a future managed adapter.
 
+## Optional response saving
+
+Definitions remain in page source. A version-bound capture policy controls
+whether the published Quiz offers saving and which answers are retained.
+Discover exact arguments before calling these actions:
+
+| Action | Purpose and boundary |
+|---|---|
+| `lexsis_capture.quiz_inspect` | Read the saved page version's instances, hashes, and current capture state. |
+| `lexsis_drafts.quiz_prepare` | Prepare an inactive definition and policy; does not enable collection. |
+| `lexsis_live_ops.quiz_activate` | Activate the exact reviewed policy with explicit approval. |
+| `lexsis_live_ops.quiz_deactivate` | Stop collection with explicit approval; retained responses are not deleted. |
+| `lexsis_capture.quiz_responses` | Paginated retained response summaries, filtered by definition, status, and test mode. |
+| `lexsis_capture.quiz_response` | Read one attempt; personal/sensitive values are redacted in MCP. |
+
+Every call needs `store_id`; supply `workspace_id` explicitly when selection is
+ambiguous. Inspect uses `page_id` and immutable `page_version_id`, not the display
+version number. Prepare uses that version, `instance_id`,
+`expected_definition_hash`, and `policy`. Activation/deactivation uses
+`definition_id`, `expected_definition_hash`, and `expected_active_definition_id`
+(the current ID, or null when none is active). Re-read conflicts; do not retry
+with a guessed hash or silently replace another active definition.
+
+Policy fields:
+
+| Field | Contract |
+|---|---|
+| `version`, `mode` | `1`, `"responses"` |
+| `purpose`, `disclosure` | State why answers are saved and explain the shopper's choice. |
+| `fields` | Every `question_id`, classification (`categorical`, `personal`, `sensitive`), and `merchant_visible`. |
+| `partial_retention_days` | 1-30 days for unfinished responses. |
+| `completed_retention_days` | 1-365 days for completed responses. |
+| `resume_ttl_minutes` | 1-10080 minutes for resume credentials. |
+| `contact_fields`, `contact_purpose` | Optional email/phone/name plus a separate purpose when collecting contact. |
+
+Choose the shortest retention that serves the stated purpose. The limits are
+validation bounds, not recommended defaults. Do not misclassify contact, free
+text, or sensitive questions as categorical to expose them through MCP.
+The policy must cover every question, and resume cannot outlive unfinished
+retention. Text, textarea, email, phone, and date cannot be categorical.
+
+Saving is an unchecked choice; the visitor can continue without it. Contact
+collection has a separate unchecked choice. Analytics consent is independent:
+saving while analytics is denied can create a Forms response without events.
+Neither saving nor contact collection sends results by email or enrolls marketing.
+
+The managed service protects answer/contact values. Forms submissions reference
+attempts rather than duplicating plaintext answers. When managed capture is
+available, the browser does not persist a local raw-answer snapshot; scoped
+credentials allow resume within policy and current-version limits. A result
+screen is not proof of saving: wait for confirmed save status and inspect the
+response. The merchant Forms viewer provides controlled reveal and export of
+displayed answers; MCP exposes only merchant-visible categorical answers.
+
+Prepare and activate the same version that will be published. Page publication
+and policy activation require their own explicit authorization; an existing
+approval for the exact scope remains valid. Editing source requires fresh
+inspection and a matching policy. Preview does not collect production responses.
+Normal visits used for testing a published page are not automatically test-mode
+records. Respect response filters, pagination, and retention when verifying.
+
+## Journey analytics
+
+Quiz emits identifier-only `lx_quiz_*` events for exposure, start/resume/restart,
+question views, committed/changed answers, skipped questions, branches, review,
+validation/errors, completion, results, products, cart outcomes, and explicit
+dismissal. Do not emit answer text, contact values, or question labels.
+`analytics.answerAllowlist` remains a compatibility field and does not permit
+raw answers. Respect analytics denial and preview suppression.
+
+`lx_quiz_completed` means a result was reached. `lx_quiz_submission_saved` is a
+server event for a persisted completion with analytics linkage. Cart outcome is
+separate from both, and none of these proves payment. The current tools do not
+provide a dedicated question drop-off or quiz-to-paid-order report. Missing
+completion does not establish a specific exit point or cause.
+
 ## Custom visual design
 
 There are no Quiz presets. Create the requested design through:
@@ -3353,7 +3478,7 @@ treat them as hardcoded runtime modes.
 
 ## QA
 
-Compile before creating or editing a draft. Verify:
+Compile before creating or editing a draft. Review at 390, 768, and 1280. Verify:
 
 - Every reachable branch and result
 - Default and tied scores
@@ -3364,10 +3489,29 @@ Compile before creating or editing a draft. Verify:
 - Cart pending, success, partial, and error states
 - Keyboard operation, focus visibility, selected state, and error
   announcements
-- Mobile and desktop layout without overflow
+- Mobile, tablet, and desktop layout without overflow
+- Forward/back/review/result transition motion, keyboard focus after each change,
+  reduced motion, and visible saving/error/retry states
 
 Do not claim a Quiz is ready when only the start screen or happy path was
 tested.
+
+After authorized activation and publication, test on the returned published URL:
+
+- Saving declined: the quiz still works and creates no saved response.
+- Saving accepted and analytics allowed: confirmed save, one completed Forms row,
+  and consented identifier-only events without duplicate counts on retry.
+- Saving accepted and analytics denied: saved response with no quiz analytics.
+- Edit/back/reload/retry: restored state within the active version and resume
+  window, with visible failure handling when saving or resume is unavailable.
+- Correct product/variant and final cart outcome; inspect existing promotions
+  separately when gifts or discounts change the cart.
+
+Store concise evidence in existing hosted QA/operation records, not local JSON
+or screenshot bundles. Mark pre-publication capture checks pending, rather than
+claiming preview captured a response. Distinguish a design approval from live
+capture proof. Historical-version resume, preview capture, automatic result
+email, dedicated funnel dashboards, and paid-order attribution remain deferred.
 
 ---
 
@@ -5474,6 +5618,20 @@ Output: permanent slot bindings and `ASSETS_READY`,
 
 Output: `DRAFT_CREATED`, then `DESIGN_APPROVED`.
 
+## Quiz capture alongside design and release
+
+For `/quiz`, follow `references/quiz-authoring.md`. After saving a draft,
+`lexsis_capture.quiz_inspect` (R) reads the immutable version and instance hash;
+`lexsis_drafts.quiz_prepare` (W) prepares an inactive policy. Design QA includes
+paths, real products/variants, responsive motion, focus, and reduced motion.
+
+`lexsis_live_ops.quiz_activate` (W !) needs approval for that exact policy.
+Publish the reviewed matching page version separately. After publication, verify
+consent combinations, save/edit/reload/retry, and the Forms response using
+`lexsis_capture.quiz_responses` and `.quiz_response` (R). Preview is not production
+capture. `lexsis_live_ops.quiz_deactivate` (W !) stops collection without deleting
+retained responses. Reuse explicit approval already given for the same scope.
+
 ## Stage 3: Publish and Experiment
 
 | Call | Type | Purpose |
@@ -5499,7 +5657,7 @@ Output: `DRAFT_CREATED`, then `DESIGN_APPROVED`.
 # MCP router/action inventory
 
 Derived from the `CONSOLIDATED_ROUTERS` declaration in the sibling MCP
-service on 2026-09-21. Re-derive this inventory when
+service, with Quiz capture actions updated on 2026-10-03. Re-derive this inventory when
 that source changes. This lists operation names, not arguments or island
 props; resolve an unfamiliar action schema before calling it.
 
@@ -5515,13 +5673,13 @@ props; resolve an unfamiliar action schema before calling it.
 | `lexsis_brand` | `lexsis_brand.context`, `lexsis_brand.brand_kit`, `lexsis_brand.list_themes`, `lexsis_brand.get_theme`, `lexsis_brand.navigation`, `lexsis_brand.compile_theme` |
 | `lexsis_catalog` | `lexsis_catalog.list`, `lexsis_catalog.get`, `lexsis_catalog.reviews_status`, `lexsis_catalog.reviews`, `lexsis_catalog.reviews_search`, `lexsis_catalog.review_collections`, `lexsis_catalog.review_collection_items` |
 | `lexsis_pages` | `lexsis_pages.list`, `lexsis_pages.find`, `lexsis_pages.get`, `lexsis_pages.edit_context`, `lexsis_pages.content`, `lexsis_pages.source`, `lexsis_pages.section_source`, `lexsis_pages.inspect`, `lexsis_pages.diff`, `lexsis_pages.integrity`, `lexsis_pages.qa`, `lexsis_pages.compile`, `lexsis_pages.compile_artifact` |
-| `lexsis_drafts` | `lexsis_drafts.asset_generate`, `lexsis_drafts.theme_update`, `lexsis_drafts.page_replace`, `lexsis_drafts.page_patch`, `lexsis_drafts.page_attach_bundle`, `lexsis_drafts.page_update_section`, `lexsis_drafts.page_remove_section`, `lexsis_drafts.page_move_section`, `lexsis_drafts.page_update_head`, `lexsis_drafts.page_record_qa`, `lexsis_drafts.page_duplicate`, `lexsis_drafts.page_variation`, `lexsis_drafts.template_create`, `lexsis_drafts.template_update`, `lexsis_drafts.template_apply`, `lexsis_drafts.experiment_create`, `lexsis_drafts.cart_set`, `lexsis_drafts.cart_edit`, `lexsis_drafts.review_collection_create`, `lexsis_drafts.send_feedback` |
+| `lexsis_drafts` | `lexsis_drafts.asset_generate`, `lexsis_drafts.theme_update`, `lexsis_drafts.page_replace`, `lexsis_drafts.page_patch`, `lexsis_drafts.page_attach_bundle`, `lexsis_drafts.page_update_section`, `lexsis_drafts.page_remove_section`, `lexsis_drafts.page_move_section`, `lexsis_drafts.page_update_head`, `lexsis_drafts.page_record_qa`, `lexsis_drafts.page_duplicate`, `lexsis_drafts.page_variation`, `lexsis_drafts.template_create`, `lexsis_drafts.template_update`, `lexsis_drafts.template_apply`, `lexsis_drafts.experiment_create`, `lexsis_drafts.cart_set`, `lexsis_drafts.cart_edit`, `lexsis_drafts.review_collection_create`, `lexsis_drafts.send_feedback`, `lexsis_drafts.quiz_prepare` |
 | `lexsis_page_create` | `lexsis_page_create.create` |
-| `lexsis_live_ops` | `lexsis_live_ops.publish`, `lexsis_live_ops.unpublish`, `lexsis_live_ops.delete`, `lexsis_live_ops.rollback`, `lexsis_live_ops.template_publish`, `lexsis_live_ops.template_archive`, `lexsis_live_ops.scale_winner` |
+| `lexsis_live_ops` | `lexsis_live_ops.publish`, `lexsis_live_ops.unpublish`, `lexsis_live_ops.delete`, `lexsis_live_ops.rollback`, `lexsis_live_ops.template_publish`, `lexsis_live_ops.template_archive`, `lexsis_live_ops.scale_winner`, `lexsis_live_ops.quiz_activate`, `lexsis_live_ops.quiz_deactivate` |
 | `lexsis_design` | `lexsis_design.guide`, `lexsis_design.islands`, `lexsis_design.island_schema`, `lexsis_design.get_section` |
 | `lexsis_template_library` | `lexsis_template_library.search_sections`, `lexsis_template_library.search_page_kits`, `lexsis_template_library.get_kit`, `lexsis_template_library.list_mine`, `lexsis_template_library.get_mine` |
 | `lexsis_analytics` | `lexsis_analytics.timeseries`, `lexsis_analytics.page`, `lexsis_analytics.attribution`, `lexsis_analytics.experiment` |
-| `lexsis_capture` | `lexsis_capture.form_schemas`, `lexsis_capture.submissions` |
+| `lexsis_capture` | `lexsis_capture.form_schemas`, `lexsis_capture.submissions`, `lexsis_capture.quiz_inspect`, `lexsis_capture.quiz_responses`, `lexsis_capture.quiz_response` |
 | `lexsis_cart` | `lexsis_cart.get`, `lexsis_cart.capabilities`, `lexsis_cart.promotions`, `lexsis_cart.preview` |
 | `lexsis_support` | `lexsis_support.search_docs` |
 

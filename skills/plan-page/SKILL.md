@@ -20,7 +20,7 @@ Always read:
 - `references/page-type-guide.md`;
 - `references/planning-rules.md`.
 
-These three references are the complete planning packet. General setup
+These three references are the base planning packet. General setup
 context is a map, not live commerce authority.
 
 Use:
@@ -32,10 +32,16 @@ Use:
   `lexsis_template_library.search_sections`, and
   `lexsis_template_library.get_kit` after sections are planned.
 
-Interactive quiz, game, reveal, and multi-step capture implementations are not
-available in the current island catalog. Plan their shopper journey and
-configuration requirements, but mark implementation as blocked until a
-dedicated live island schema exists. Do not invent a runtime or hidden control.
+Product finders, assessments, branching questions, and guided recommendations
+are supported by the live `Quiz` island. For a quiz plan, read
+`references/quiz-authoring.md` and route implementation to `/quiz`. Plan the
+entry, question paths, deterministic results, real products/variants, and exit
+or cart actions. If saving is needed, include purpose, disclosure, question
+classification, visibility, retention, resume window, and separate contact
+choice. Keep response saving independent from analytics consent.
+
+Games, reward issuance, or custom interactions still require a dedicated live island schema; do not invent a runtime or hidden controls. Do not promise automated
+result email, preview capture, or an unshipped quiz funnel dashboard.
 
 Resolve unfamiliar schemas through exact router/action discovery. Use
 authoritative web research for public facts and ask the user about private

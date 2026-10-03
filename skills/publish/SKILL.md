@@ -1,6 +1,6 @@
 ---
 name: publish
-description: Publish a Lexsis storefront draft version that carries DESIGN_APPROVED from /design-page or /optimize. Use only when the user explicitly asks to release a specific page version.
+description: Publish a Lexsis storefront draft version that carries DESIGN_APPROVED from /design-page, /quiz, or /optimize. Use only when the user explicitly asks to release a specific page version.
 ---
 
 # Publish a Page
@@ -29,13 +29,15 @@ authorize or substitute for a successful live publish.
    draft and recorded baseline.
 4. Read `lexsis_pages` action `edit_context`.
 5. Confirm the remote version equals `remote.lastKnownVersion`.
-6. Confirm `DESIGN_APPROVED` was recorded by `/design-page` or `/optimize` for
+6. Confirm `DESIGN_APPROVED` was recorded by `/design-page`, `/quiz`, or `/optimize` for
    this same page version and reviewed bundle, with hosted QA at 390, 768 and
    1280 and commerce, copy, claims, assets and integrity checks passed.
 7. Re-read integrity and source/bundle evidence through MCP. Missing or stale
    evidence blocks release; no local file or validator substitutes for it.
 8. Confirm the store has the required entitlement.
-9. Ask for explicit approval naming the page and version.
+9. Confirm explicit publication approval naming the page and version. Reuse an
+   approval already given for this exact scope; ask only if it is missing or the
+   reviewed version has changed.
 
 Only then call:
 
@@ -44,6 +46,19 @@ lexsis_live_ops({ action: "publish", args: { page_id } })
 ```
 
 Do not treat draft creation or a preview request as publishing approval.
+
+## Quiz capture
+
+For a Quiz with saving enabled, follow `references/quiz-authoring.md`. Confirm
+that the prepared/active policy matches the immutable page-version UUID and
+instance hash. Capture activation has its own explicit approval; design or page
+publication approval alone does not silently authorize a new collection policy.
+A quiz without saving does not need capture activation.
+
+Draft QA proves interactions and design. After publishing, verify saving and
+analytics consent combinations, save/edit/reload/retry, a retained Forms response,
+and real cart outcomes on the returned published URL. Report any pending live
+checks separately; preview intentionally cannot collect production responses.
 
 ## Other Lifecycle Actions
 

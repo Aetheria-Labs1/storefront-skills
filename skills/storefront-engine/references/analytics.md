@@ -61,3 +61,29 @@ fewer than 20 sessions as directional.
 - Check device split  -  a variant may win on mobile but lose on desktop
 - Use `lexsis_analytics.attribution` to understand which traffic sources convert best
 - Compare page analytics before/after changes to measure impact
+
+
+## Quiz journey and response evidence
+
+`Quiz` emits consented, identifier-only `lx_quiz_*` events across exposure,
+start/resume/restart, questions, committed/changed answers, branches, review,
+completion, results, product interactions, cart outcomes, and explicit dismissal.
+Raw answers, contact details, and question labels are excluded;
+`analytics.answerAllowlist` does not permit raw values.
+
+Response saving is a separate shopper choice. A saved response can exist without
+analytics consent and without quiz events. `lx_quiz_completed` means a result was
+reached; server-side `lx_quiz_submission_saved` requires persisted completion and
+analytics linkage. Retries reuse event identity. Neither proves checkout or payment.
+
+Read retained response summaries/details through `lexsis_capture.quiz_responses`
+and `lexsis_capture.quiz_response`, scoped to the selected store and definition.
+MCP values are redacted; use the merchant response viewer for authorized reveals.
+Check pagination, status, test-mode filters, and retention before concluding that
+responses are missing. Normal tests on published pages are not automatically
+classified as test mode.
+
+There is no dedicated quiz drop-off, entry/exit cohort, or paid-order attribution
+report in the current tools. Missing completion is not an observed exit reason.
+Follow `references/quiz-authoring.md` for policy setup and post-publication proof;
+preview does not collect production responses.

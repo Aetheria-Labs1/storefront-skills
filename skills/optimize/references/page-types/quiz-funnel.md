@@ -10,6 +10,12 @@ recommendation is a form and routes to `lead-capture-giveaway`. Implement the
 journey with the live `Quiz` island and read
 `references/quiz-authoring.md` before authoring its definition.
 
+The counts and presentation choices below are editorial defaults for a compact
+product-finder funnel, not Quiz runtime limits. The live schema is authoritative.
+Shorter useful journeys are valid; larger journeys need a clear shopper purpose.
+Start, questions, review, results, product cards, and cart actions are states of
+one Quiz island, not separate islands or hidden controls.
+
 ## Identify it
 
 - Brief says "find your", "which one is right for me", "shade finder",
@@ -62,19 +68,15 @@ Uplup guidance in internal research audit (2026-09-10) types 6 and 23.
    start screen is one verified `customer-count` of takers or a
    `review-summary`, and an authorship line when real ("created by Bobbi").
    Concern chips (Traya's six concerns) may sit here as the first question.
-3. `quiz`: mandatory. 5 to 8 questions, one per screen, large tap targets,
-   image choice where possible, concrete questions first, use case or budget
-   mid-quiz, every answer mapped to a product or collection, skip logic for
-   irrelevant branches, a progress indicator, no open text fields. Ceiling:
-   10 questions; more than 12 is forbidden (RevenueHunt
-   https://docs.revenuehunt.com/customer-success/how-to-build-successful-quiz/ ).
-   A question that does not change the recommendation is removed.
-4. `email-capture`: conditional: the merchant has a lead goal. Placed after
-   the last question and before results, never before question one; skippable
-   ("Show my results" without email) unless the merchant confirms a hard gate
-   and the plan records it. Marketing consent un-ticked; results shown either
-   way. OPERATOR: Jones Road reports a 35% opt-in at the post-question gate
-   (Octane AI, above).
+3. `quiz`: mandatory. Use the fewest questions needed, one per screen, large
+   tap targets, concrete questions first, skip logic, and progress. Five to
+   eight questions is a starting design range, not a minimum or runtime cap.
+   Prefer choices; use free text only when its purpose and capture classification
+   justify collecting it. Remove questions that serve no result or capture purpose.
+4. Optional saving: the managed Quiz controls offer an unchecked saving choice
+   and optional, separately consented contact fields before starting. Results
+   remain available without saving. A separate EmailCapture placement can serve
+   an approved lead goal, but does not save the Quiz answers or send results.
 5. `quiz-results`: mandatory. Personalised header using the answers ("Maya,
    here is your dry-skin routine"), a one to three line summary of what was
    learned, and the reason for the result. RESEARCH (vendor data): one
@@ -85,10 +87,11 @@ Uplup guidance in internal research audit (2026-09-10) types 6 and 23.
    `review-summary` when 5 or more reviews, and a "why this matches you" line
    tied to a specific answer. One to three products total; a single product
    result carries its "why" inside `quiz-results`.
-7. `buy-box`: mandatory. One "Add my set" CTA with the recommended set
-   pre-loaded and trimmable, per-item add or remove, price of the set and any
-   set saving shown as arithmetic; the quiz discount, if any, applied
-   automatically. Side cart keeps the shopper on the results screen.
+7. `buy-box`: mandatory commerce role inside the Quiz result, implemented with
+   `add_items`. Show required variant choices and the current resolved prices.
+   Verify any saving, coupon, or gift through the effective Cart V2 profile;
+   quiz completion does not issue a discount. Do not promise per-item removal
+   or a custom set builder unless the selected live schema supports it.
 8. `guarantee`: recommended. Returns, shade or fit guarantee ("if we miss,
    we send the right one"), stated in one line beside the CTA.
 9. `reviews` with a `-same-profile` suffix: optional. Two or three verbatim
@@ -124,11 +127,11 @@ copy procedures; this table supplies their inputs, not another policy.
 | Section | Purpose | Media job and source | Interactive decision | Copy constraints | Decision evidence |
 |---|---|---|---|---|---|
 | `header` | logo only, not clickable; the only exit is the quiz. | brand logo or text wordmark; without a logo, use the wordmark. | none; a plain HTML header (Navbar carries navigation, and none belongs here). | none. | `lexsis_brand.brand_kit` logo asset. |
-| `hero` (start screen) | outcome headline, what they get, time estimate, one Start button, one verified proof line. | `typographic` by default: HTML text on the page background, or on one generated `hero_bg` (ALLOW, landscape plus portrait, quiet zone, only as the plan's bold moment). Alternate `editorial-lifestyle` from library `lifestyle` when the sending ad was a lifestyle frame. Never a packshot before routing, never a generated person. Missing lifestyle frame for a message-matched start: (context, landscape and portrait); alternative: the `hero_bg` generation with its credit cost. | planned only; the Start control is implemented only by a future dedicated quiz island | headline outcome plus time ("Find your shade in 60 seconds"), 8 words; one sentence on what they get (16 words); proof line ledgered or a labelled store rating; authorship only when real. | the ad frame from step 6; ledger rows from step 4; credits from step 8. |
+| `hero` (start screen) | outcome headline, what they get, time estimate, one Start button, one verified proof line. | `typographic` by default: HTML text on the page background, or on one generated `hero_bg` (ALLOW, landscape plus portrait, quiet zone, only as the plan's bold moment). Alternate `editorial-lifestyle` from library `lifestyle` when the sending ad was a lifestyle frame. Never a packshot before routing, never a generated person. Missing lifestyle frame for a message-matched start: (context, landscape and portrait); alternative: the `hero_bg` generation with its credit cost. | the live Quiz owns the Start control and entry state | headline outcome plus time ("Find your shade in 60 seconds"), 8 words; one sentence on what they get (16 words); proof line ledgered or a labelled store rating; authorship only when real. | the ad frame from step 6; ledger rows from step 4; credits from step 8. |
 | `quiz` | 5 to 8 questions, one per screen, image choice where possible, every answer mapped to a product or collection, skip logic, progress, no open text unless the result genuinely needs it. | plan real option imagery from catalog variant media or approved library scenes; never stock or generated people as "you". | `Quiz`; configure questions, scoring, rules, branches, profiles, matrices, and results in validated props; style through scoped CSS | questions 12 words; options 4 words; "why we ask" 16 words; second person. | approved step and result configuration from step 1; option imagery found in steps 2 and 6. |
-| `email-capture` | optional separate capture after results; consent un-ticked. | none. | use the supported EmailCapture island only when the plan has a lead goal; Quiz answer values are not persisted to Forms | explain exactly what the email is for; never imply quiz answers were saved when they were not. | lead goal in the brief. |
+| `email-capture` | optional separate capture after results; consent un-ticked. | none. | use EmailCapture only for a separate lead goal; saved Quiz answers use the version-bound policy and managed Forms response viewer | explain exactly what the email is for; never imply quiz answers were saved when they were not. | lead goal in the brief. |
 | `quiz-results` | personalised header using the answers, a summary of what was learned, the reason for the result. | the first recommended product's identity from catalog media leads the screen; never a generated result image (GN4). | configure result content, products, reasons, variant requirements, and actions in `Quiz` | the header repeats the shopper's words; "results", never "diagnosis" without a clinician and disclaimer. | approved result mapping from step 1. |
-| `product-spotlight` | one card per recommended product (one to three) with image, price, review summary and a "why this matches you" line tied to an answer. | yes, identity per product from catalog media; never stock or generated. Missing media: (identity, square, per product); the product waits out of the results until then. | none (HTML cards) for one to three products; FeaturedCollectionStage when two or three products should share one large stage, quick add off, badges off, no autoplay or entry animation (N10); ProductCarousel is not used (it needs four or more products). Review summary per product by band. | "why this matches you" 18 words per product, each naming a specific answer. | result mapping from step 1; product bands from step 3. |
+| `product-spotlight` | one card per recommended product (one to three) with image, price, review summary and a "why this matches you" line tied to an answer. | yes, identity per product from catalog media; never stock or generated. Missing media: (identity, square, per product); the product waits out of the results until then. | Quiz renders its resolved result product cards and required variant choices; do not duplicate them with static HTML, another product island, or hidden BuyBoxes. | "why this matches you" 18 words per product, each naming a specific answer. | result mapping from step 1; product bands from step 3. |
 | `buy-box` | one result action such as "Add my set" with the resolved product array and any required variant choices visible. | product images already resolve through the Quiz result. | use the result's `add_items` action; Quiz dispatches one renderer-managed Cart V2 command. Use BundleConfigurator only when the shopper must manually fill or substitute slots after the recommendation. | "Add my set", "Add my routine"; state any verified saving as arithmetic (`references/offers/price-presentation.md` PP10). | product count per result; offer ledger; `lexsis_cart.get`. |
 | `guarantee` | shade or fit guarantee in one line beside the CTA. | none. | none. | "If we miss, we send the right shade free" (12 words), exact terms. | `policy-fact` row. |
 | `reviews` (`-same-profile`) | two or three verbatim quotes from reviewers with the same result type. | reviewer photos only from records; avatars real or CSS initials. | none; static verbatim dated cards from confirmed `reviews_search` candidates (RS16); no carousel, three quotes do not need motion. | quote 60 words; the profile label from the record's fields only. | confirmed candidates from step 3. |
@@ -148,12 +151,14 @@ Minimal assets (identity per product only): a typographic start screen on the pa
 ## Above the fold (390px)
 
 Start screen: logo, outcome headline, one sentence on what the shopper gets,
-time estimate, the Start button, one verified proof line. Nothing else. Each
+time estimate, the Start button, one verified proof line, and optional saving
+disclosure/controls when an active capture policy exists. Each
 question screen: progress indicator, the question, its answer options with
 tap targets of 48px or more, a back control. Results screen: the personalised
 header, the first recommended product with its "why" line, the set CTA.
-Not above the fold anywhere: price before results, an email field before
-question one, a countdown, a navigation menu, an offer bar.
+Keep price before results, countdowns, navigation menus, and offer bars out of
+this compact funnel. Optional contact fields appear only after separate consent
+in the managed saving controls; never turn them into a hard result gate.
 
 ## Proof
 
@@ -201,8 +206,9 @@ question one, a countdown, a navigation menu, an offer bar.
 - Preload the set: the recommended items are in the cart-ready state with
   per-item remove; a redirect to a separate PDP for each add costs conversion
   (RevenueHunt, above).
-- Follow-up: the results are emailed when an address was given; a segmented
-  flow by result type is the merchant's job, not the page's.
+- Follow-up: saved contact details do not trigger result email or marketing
+  enrollment. Promise follow-up only when a separate, consented integration has
+  been configured and verified.
 
 ## Imagery
 
@@ -238,27 +244,43 @@ question one, a countdown, a navigation menu, an offer bar.
   repeated on results ("you said your skin feels tight by noon"); "results"
   never "diagnosis" unless a clinician is involved and the disclaimer is
   present. Never "unlock", "reveal", "your perfect match awaits", "hurry".
-- Microcopy at the gate: what the email is for ("we will send these results
-  to you") and the skip control in plain words.
+- Saving microcopy: explain the actual purpose, retention, resume window, and
+  option to continue without saving. Describe optional contact use separately;
+  do not promise an email that the current integration does not send.
 
 ## Never
 
-- Never ask for email or phone before question one.
-- Never exceed 10 questions; never ship a question that does not change the
-  recommendation.
-- Never show more than three products on results, or more than one results
-  page per outcome.
+- Never require saving or contact consent to see results.
+- Never exceed the live schema limits or add questions without a stated purpose.
+- Prefer one to three products for focused recommendations; larger result sets
+  must serve the plan and remain within live schema limits.
 - Never show a sold-out product in results.
 - Never show a result without its reason.
 - Never show a price, offer bar or discount before the results screen.
 - Never render navigation on question screens.
-- Never use open text fields.
+- Never collect free text without a stated purpose and appropriate classification.
 - Never redirect to a separate PDP for each add; preload the set.
 - Never pre-select a subscription plan on results.
 - Never render a countdown or a taker count that is not ledgered.
 - Never use generic boilerplate across result types; each result type reads
   as written for that answer set.
 - Never gate results behind marketing consent that is pre-ticked or required.
+
+## Capture and full-journey verification
+
+Plan exposure and Start, reachable question paths, back/review/restart, results,
+product navigation, cart actions, and explicit exits. Use the managed Quiz event
+bridge; never add analytics carrying raw answers. Saving and analytics are
+independent choices, and completion, confirmed saving, cart success, and payment
+are distinct outcomes.
+
+For saved responses, follow `references/quiz-authoring.md`: inspect the immutable
+version, prepare its policy, activate with approval, publish the reviewed version,
+then verify a retained response on the published URL. Preview checks cover paths,
+focus, transitions, reduced motion, products, and responsive layout; production
+capture proof follows publication. There is no dedicated full-funnel report or
+paid-order attribution in this release. Keep evidence in MCP and the existing
+operation record, not ad hoc local JSON or screenshot bundles.
 
 ## Examples
 

@@ -1,6 +1,6 @@
 # Hosted draft verification
 
-Run by `/design-page` (Hosted Design Review) and `/optimize` Apply.
+Run by `/design-page`, `/quiz`, and `/optimize` Apply.
 
 ## Evidence gate
 
@@ -26,6 +26,10 @@ the hosted checks below; no browser access means no claimed visual pass.
 - Desktop: 1280px
 
 ### Check for:
+
+Apply commerce and component checks to controls actually present. A quiz does
+not require a separate Quick Add drawer, sticky control, or product grid.
+
 - [ ] No horizontal overflow at any viewport
 - [ ] All images load (no broken/gray placeholders)
 - [ ] Hero section visible above fold on both viewports
@@ -55,6 +59,18 @@ Record claims review, asset verification, screenshots, interaction evidence,
 blockers and readiness. Save supported evidence with
 `lexsis_drafts.page_record_qa` using its current schema; reread the QA record.
 
+## Quiz checks
+
+Follow `references/quiz-authoring.md` for reachable paths, ties/fallbacks,
+unavailable variants, back/review/restart, keyboard focus, transitions, and
+reduced motion. Preview is the design surface, not production capture proof.
+After authorized activation and publication, verify saving/analytics consent
+combinations, confirmed saving, edit/reload/retry, and retained Forms responses.
+Record explicit pending checks when live proof is not yet available.
+
+Use screenshots only as hosted review evidence or transient browser inspection;
+do not create local JSON dumps, screenshot bundles, or ad hoc QA reports.
+
 ## Common Issues
 
 | Symptom | Cause | Fix |
@@ -67,7 +83,7 @@ blockers and readiness. Save supported evidence with
 
 ## Draft vs Live
 
-- `publish: false` U+2192 draft at `/v/{slug}?shop={domain}&preview=1`
+- `publish: false` returns a draft `preview_url`; use that exact URL
 - `lexsis_page_create` is draft-only and rejects `publish:true`
 - Publish later with `lexsis_live_ops` action `publish` after explicit approval
 - Draft edits do not replace the public `published_version_id`

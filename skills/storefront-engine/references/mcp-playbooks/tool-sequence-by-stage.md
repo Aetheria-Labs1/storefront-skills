@@ -77,6 +77,20 @@ Output: permanent slot bindings and `ASSETS_READY`,
 
 Output: `DRAFT_CREATED`, then `DESIGN_APPROVED`.
 
+## Quiz capture alongside design and release
+
+For `/quiz`, follow `references/quiz-authoring.md`. After saving a draft,
+`lexsis_capture.quiz_inspect` (R) reads the immutable version and instance hash;
+`lexsis_drafts.quiz_prepare` (W) prepares an inactive policy. Design QA includes
+paths, real products/variants, responsive motion, focus, and reduced motion.
+
+`lexsis_live_ops.quiz_activate` (W !) needs approval for that exact policy.
+Publish the reviewed matching page version separately. After publication, verify
+consent combinations, save/edit/reload/retry, and the Forms response using
+`lexsis_capture.quiz_responses` and `.quiz_response` (R). Preview is not production
+capture. `lexsis_live_ops.quiz_deactivate` (W !) stops collection without deleting
+retained responses. Reuse explicit approval already given for the same scope.
+
 ## Stage 3: Publish and Experiment
 
 | Call | Type | Purpose |
