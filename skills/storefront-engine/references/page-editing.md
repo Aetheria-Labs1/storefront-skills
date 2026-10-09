@@ -22,60 +22,87 @@ assertion. Service-token store/workspace scopes remain authorization boundaries.
 
 ## Operations
 
-### Update/Replace a Section
+Every section write below loads `edit_context`, applies the change to the
+page source, recompiles the whole page and commits exactly one new version.
+Pass `expected_version` (and `expected_source_sha256` when you have it): a
+stale value is rejected with `version_conflict` and nothing is written.
 
-```
-lexsis_drafts({
-  action: "page_update_section",
-  args: {
-    page_id,
-    section_id,
-    source,
-    expected_version,
-    expected_source_sha256,
-    idempotency_key
-  }
-})
-```
-- Replaces the compiled section from source-format HTML
-- Auto-bumps page version
-- Returns `version_conflict` if another edit landed first
-- Use for: changing copy, swapping images, restyling
+### Batch changes: `page_patch` (preferred)
 
-### Add a New Section
+Several operations in one call apply in order and commit one version, or
+nothing if any step fails. Use it for any edit touching more than one section.
 
+```json lexsis-args=patch_page
+{
+  "page_id": "00000000-0000-4000-8000-000000000001",
+  "expected_version": 7,
+  "idempotency_key": "indimums-hero-copy-1",
+  "changes": [
+    {
+      "operation": "upsert_section",
+      "source": "<!-- section: hero -->\n<section id=\"hero\" class=\"px-4 py-16\"><h1>Gentle care for new skin</h1></section>"
+    },
+    { "operation": "move_section", "section_id": "reviews", "position": { "after": "hero" } },
+    { "operation": "remove_section", "section_id": "old-banner" }
+  ]
+}
 ```
-lexsis_drafts({
-  action: "page_update_section",
-  args: {
-    page_id,
-    source,
-    position,
-    expected_version,
-    expected_source_sha256,
-    idempotency_key
-  }
-})
-```
-- Position: `{ "before": "section-id" }`, `{ "after": "section-id" }`, or an
-  index number
-- Must include full section HTML
 
-### Remove a Section
+### Position semantics (`upsert_section`, `move_section`, `page_update_section`, `page_move_section`)
 
-```
-lexsis_drafts({ action: "page_remove_section", args: { page_id, section_id, expected_version } })
-```
-- Creates a reversible new page version
-- Auto-bumps version
+| `position` | Result |
+| --- | --- |
+| omitted on an existing section | replaced in place |
+| omitted on a new section | appended last |
+| `"first"` / `"last"` | moved/inserted there |
+| number `n` | final index `n`, counted after the section is taken out |
+| `{ "before": "id" }` / `{ "after": "id" }` | next to that section |
 
-### Reorder Sections
+A `position` on an existing section replaces **and** moves it. An unknown or
+self-referencing anchor id is rejected instead of silently appending.
 
+### Update, add or move one section
+
+```json lexsis-args=update_section_from_source
+{
+  "page_id": "00000000-0000-4000-8000-000000000001",
+  "expected_version": 7,
+  "source": "<!-- section: faq -->\n<section id=\"faq\" class=\"px-4 py-16\"><h2>Questions</h2></section>",
+  "position": { "before": "footer" }
+}
 ```
-lexsis_drafts({ action: "page_move_section", args: { page_id, section_id, position, expected_version } })
+
+```json lexsis-args=move_page_section
+{
+  "page_id": "00000000-0000-4000-8000-000000000001",
+  "section_id": "reviews",
+  "position": "first",
+  "expected_version": 8
+}
 ```
-- Position is 0-indexed
-- All other sections shift accordingly
+
+`page_remove_section` takes `page_id`, `section_id` and `expected_version`
+and follows the same version protection.
+
+### Update page CSS (`page_update_head`)
+
+`theme_css` **replaces** the page's stylesheet wholesale; it is never merged.
+Read the current value from `lexsis_pages.content`, edit that full string and
+send all of it back. Section `<style>` blocks travel with their section and are
+replaced only when that section is upserted. `page_patch` never changes
+`theme_css`.
+
+```json lexsis-args=update_page_head
+{
+  "page_id": "00000000-0000-4000-8000-000000000001",
+  "expected_version": 9,
+  "theme_css": ":root { --lx-bg-color: #fffaf5; }\n.offer-note { color: var(--lx-text-muted, #555); }"
+}
+```
+
+A class the compiler reports as `missing_tailwind_utility` must become a real
+Tailwind utility, a rule that actually styles it, or a data attribute if it
+only marks an element for script. Never add an empty rule to pass.
 
 ## Best Practices
 
@@ -86,8 +113,6 @@ lexsis_drafts({ action: "page_move_section", args: { page_id, section_id, positi
 - Reference section IDs from the page data (don't guess)
 - Compile the complete editable source before section patching
 - After editing, run `diff` and `integrity`
-- Batch related multi-section changes with `page_patch` so they create one
-  version.
 - Use explicit remove operations for absent properties. `null` remains a JSON
   value and is not deletion.
 - When changing a collection binding, setting `products` removes `productIds`

@@ -74,6 +74,64 @@ control sizing. Native markup is not a license to recreate cart logic.
   listen for renderer response events on the same section. Do not create
   hidden commerce islands or drive their controls with `.click()`.
 
+## Working examples
+
+Each block below compiles cleanly against the current compiler and live
+island schemas (checked in CI). Copy the mechanics, not the copy or ids.
+Replace placeholder product, variant and image values with resolved catalog
+data; never ship them.
+
+A custom control needs `data-lx-control` plus a `click` listener bound
+through `lifecycle.query` or `section.querySelector`. An unregistered
+`data-behavior` name, a non-click listener alone, or any `document.*` /
+`window.*` lookup fails compilation by design.
+
+```html lexsis-example
+<!-- section: ingredients -->
+<section id="ingredients" class="px-4 py-12">
+  <h2 class="text-2xl font-semibold">What's inside</h2>
+  <button type="button" data-lx-control="ingredients-toggle" aria-expanded="false" class="min-h-[48px] underline">Show full list</button>
+  <ul data-ingredients hidden class="mt-4 list-disc pl-5"><li>Coconut oil</li></ul>
+  <script>
+    const toggle = lifecycle.query('[data-lx-control="ingredients-toggle"]');
+    toggle.addEventListener("click", () => {
+      const list = section.querySelector("[data-ingredients]");
+      list.hidden = !list.hidden;
+      toggle.setAttribute("aria-expanded", String(!list.hidden));
+    });
+  </script>
+</section>
+```
+
+A vertical offer selector is `QuantityBreaks` with `variant: "list"` (stacked
+rows, smallest quantity first). Set `showCta: false` with `emitEvents: true`
+when a BuyBox owns the add-to-cart button. Prices are labels; a repeated-unit
+discount also needs a cart-profile promotion (`promotionRef`).
+
+```html lexsis-example
+<!-- section: offer -->
+<section id="offer" class="px-4 py-12">
+  <h2 class="text-2xl font-semibold">Choose your pack</h2>
+  <lx-island name="QuantityBreaks">
+    <script type="application/json">{"variant":"list","variantId":"gid://shopify/ProductVariant/1","currency":"INR","tiers":[{"quantity":1,"price":"₹349","perUnit":"₹349 each"},{"quantity":2,"price":"₹649","perUnit":"₹325 each","badge":"Most picked"}]}</script>
+  </lx-island>
+</section>
+```
+
+A responsive product gallery uses `ProductGallery`: `layout` sets desktop
+(here a vertical thumbnail rail on the left), `mobileLayout: "swipe"` sets a
+swipe rail below `md`. Give every image real `alt` text.
+
+```html lexsis-example
+<!-- section: gallery -->
+<section id="gallery" class="px-4 py-8">
+  <h2 class="sr-only">Product photos</h2>
+  <lx-island name="ProductGallery">
+    <script type="application/json">{"layout":"vertical","thumbPosition":"left","mobileLayout":"swipe","navigation":"arrows","media":[{"type":"image","src":"https://cdn.shopify.com/s/files/1/0000/0001/files/oil-front.jpg","alt":"Baby oil bottle, front"},{"type":"image","src":"https://cdn.shopify.com/s/files/1/0000/0001/files/oil-back.jpg","alt":"Baby oil bottle, ingredients label"}]}</script>
+  </lx-island>
+</section>
+```
+
 ## Compile handoff
 
 Write complete source, then follow `references/generation-protocol.md` for

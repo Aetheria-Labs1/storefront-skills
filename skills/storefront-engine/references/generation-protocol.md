@@ -5,6 +5,20 @@ presentation. The source contract is `references/authoring/source-authoring.md`;
 `references/source-artifact-workflow.md` owns artifact and manifest state.
 Choose section order from the page-type contract, not from this protocol.
 
+## Fast draft (new page)
+
+1. Reuse the saved setup: workspace, store and `theme_id`; do not re-ask.
+2. Resolve products with `lexsis_catalog.list` (query) then
+   `lexsis_catalog.get` (`product_ids`), and assets from the bound library.
+3. Compose complete source, compile it with `lexsis_pages.compile`, and fix
+   every `validation_issues` entry (`section_id` names the offending section).
+4. Create exactly one unpublished draft with `lexsis_page_create.create`
+   (`compile_id`, `publish: false`) and return its preview URL and version
+   as `DRAFT_CREATED`.
+
+Changes to a page that already exists never create a new page: follow
+`references/page-editing.md`.
+
 ## Compile exact inputs
 
 1. Reuse the bound workspace, store and theme; read current page context for
@@ -16,8 +30,8 @@ Choose section order from the page-type contract, not from this protocol.
 3. Call `lexsis_pages.compile` with the exact `source`, `head`, `theme_css`
    and optional `scripts` inputs. `lexsis_pages.compile_artifact` retrieves
    an existing result by `compile_id` for inspection; it does not compile.
-4. Read all `validation_errors`, publish validation and missing utility
-   candidates. Repair the source rather than mutating compiled JSON.
+4. Read all `validation_issues` (check + section id), `validation_errors`,
+   publish validation and missing utility candidates. Repair the source rather than mutating compiled JSON.
 5. Save the successful response and input hashes as compile evidence.
 
 ## Create or edit one draft

@@ -40,6 +40,11 @@ is recommended for agent reasoning but is not a technical prerequisite.
 `data` + `mime_type`, or a non-empty `attachments` array of conversation
 attachment IDs. It imports directly into the library and never opens the upload UI.
 Do not call import without a source or combine multiple source types.
+A failed import returns `error.source`: `upstream` means the remote host
+refused or failed (`upstream_status`, e.g. 403/404); try another source rather
+than retrying the same URL. `lexsis` means a Lexsis-side failure; retry once
+only when `retryable` is true and report `request_id`/`correlation_id` if it
+persists. Transient upstream failures are already retried server-side.
 
 `lexsis_asset_upload.upload` exclusively opens the local image/video upload UI.
 Pass only the selected `workspace_id` and `theme_id`; do not send URL, base64,
@@ -180,6 +185,9 @@ user what is blocked.
 - Missing router, authentication failure, transport failure, or an error from
   the actual domain call: report that concrete error and identify the affected
   operation.
+- A catalog `get` by handle that returns `product_not_found` lists read-only
+  `suggestions` and `catalog_synced_at`. Confirm the intended product with the
+  user before binding a suggestion; never trigger a catalog sync to work around it.
 - Continue work that does not depend on the failed live operation.
 - Do not claim live data, successful compilation, a remote write, QA, or
   publishing when the corresponding real call did not succeed.

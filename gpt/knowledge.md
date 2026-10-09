@@ -2152,6 +2152,20 @@ presentation. The source contract is `references/authoring/source-authoring.md`;
 `references/source-artifact-workflow.md` owns artifact and manifest state.
 Choose section order from the page-type contract, not from this protocol.
 
+## Fast draft (new page)
+
+1. Reuse the saved setup: workspace, store and `theme_id`; do not re-ask.
+2. Resolve products with `lexsis_catalog.list` (query) then
+   `lexsis_catalog.get` (`product_ids`), and assets from the bound library.
+3. Compose complete source, compile it with `lexsis_pages.compile`, and fix
+   every `validation_issues` entry (`section_id` names the offending section).
+4. Create exactly one unpublished draft with `lexsis_page_create.create`
+   (`compile_id`, `publish: false`) and return its preview URL and version
+   as `DRAFT_CREATED`.
+
+Changes to a page that already exists never create a new page: follow
+`references/page-editing.md`.
+
 ## Compile exact inputs
 
 1. Reuse the bound workspace, store and theme; read current page context for
@@ -2163,8 +2177,8 @@ Choose section order from the page-type contract, not from this protocol.
 3. Call `lexsis_pages.compile` with the exact `source`, `head`, `theme_css`
    and optional `scripts` inputs. `lexsis_pages.compile_artifact` retrieves
    an existing result by `compile_id` for inspection; it does not compile.
-4. Read all `validation_errors`, publish validation and missing utility
-   candidates. Repair the source rather than mutating compiled JSON.
+4. Read all `validation_issues` (check + section id), `validation_errors`,
+   publish validation and missing utility candidates. Repair the source rather than mutating compiled JSON.
 5. Save the successful response and input hashes as compile evidence.
 
 ## Create or edit one draft
@@ -2858,60 +2872,87 @@ assertion. Service-token store/workspace scopes remain authorization boundaries.
 
 ## Operations
 
-### Update/Replace a Section
+Every section write below loads `edit_context`, applies the change to the
+page source, recompiles the whole page and commits exactly one new version.
+Pass `expected_version` (and `expected_source_sha256` when you have it): a
+stale value is rejected with `version_conflict` and nothing is written.
 
-```
-lexsis_drafts({
-  action: "page_update_section",
-  args: {
-    page_id,
-    section_id,
-    source,
-    expected_version,
-    expected_source_sha256,
-    idempotency_key
-  }
-})
-```
-- Replaces the compiled section from source-format HTML
-- Auto-bumps page version
-- Returns `version_conflict` if another edit landed first
-- Use for: changing copy, swapping images, restyling
+### Batch changes: `page_patch` (preferred)
 
-### Add a New Section
+Several operations in one call apply in order and commit one version, or
+nothing if any step fails. Use it for any edit touching more than one section.
 
+```json lexsis-args=patch_page
+{
+  "page_id": "00000000-0000-4000-8000-000000000001",
+  "expected_version": 7,
+  "idempotency_key": "indimums-hero-copy-1",
+  "changes": [
+    {
+      "operation": "upsert_section",
+      "source": "<!-- section: hero -->\n<section id=\"hero\" class=\"px-4 py-16\"><h1>Gentle care for new skin</h1></section>"
+    },
+    { "operation": "move_section", "section_id": "reviews", "position": { "after": "hero" } },
+    { "operation": "remove_section", "section_id": "old-banner" }
+  ]
+}
 ```
-lexsis_drafts({
-  action: "page_update_section",
-  args: {
-    page_id,
-    source,
-    position,
-    expected_version,
-    expected_source_sha256,
-    idempotency_key
-  }
-})
-```
-- Position: `{ "before": "section-id" }`, `{ "after": "section-id" }`, or an
-  index number
-- Must include full section HTML
 
-### Remove a Section
+### Position semantics (`upsert_section`, `move_section`, `page_update_section`, `page_move_section`)
 
-```
-lexsis_drafts({ action: "page_remove_section", args: { page_id, section_id, expected_version } })
-```
-- Creates a reversible new page version
-- Auto-bumps version
+| `position` | Result |
+| --- | --- |
+| omitted on an existing section | replaced in place |
+| omitted on a new section | appended last |
+| `"first"` / `"last"` | moved/inserted there |
+| number `n` | final index `n`, counted after the section is taken out |
+| `{ "before": "id" }` / `{ "after": "id" }` | next to that section |
 
-### Reorder Sections
+A `position` on an existing section replaces **and** moves it. An unknown or
+self-referencing anchor id is rejected instead of silently appending.
 
+### Update, add or move one section
+
+```json lexsis-args=update_section_from_source
+{
+  "page_id": "00000000-0000-4000-8000-000000000001",
+  "expected_version": 7,
+  "source": "<!-- section: faq -->\n<section id=\"faq\" class=\"px-4 py-16\"><h2>Questions</h2></section>",
+  "position": { "before": "footer" }
+}
 ```
-lexsis_drafts({ action: "page_move_section", args: { page_id, section_id, position, expected_version } })
+
+```json lexsis-args=move_page_section
+{
+  "page_id": "00000000-0000-4000-8000-000000000001",
+  "section_id": "reviews",
+  "position": "first",
+  "expected_version": 8
+}
 ```
-- Position is 0-indexed
-- All other sections shift accordingly
+
+`page_remove_section` takes `page_id`, `section_id` and `expected_version`
+and follows the same version protection.
+
+### Update page CSS (`page_update_head`)
+
+`theme_css` **replaces** the page's stylesheet wholesale; it is never merged.
+Read the current value from `lexsis_pages.content`, edit that full string and
+send all of it back. Section `<style>` blocks travel with their section and are
+replaced only when that section is upserted. `page_patch` never changes
+`theme_css`.
+
+```json lexsis-args=update_page_head
+{
+  "page_id": "00000000-0000-4000-8000-000000000001",
+  "expected_version": 9,
+  "theme_css": ":root { --lx-bg-color: #fffaf5; }\n.offer-note { color: var(--lx-text-muted, #555); }"
+}
+```
+
+A class the compiler reports as `missing_tailwind_utility` must become a real
+Tailwind utility, a rule that actually styles it, or a data attribute if it
+only marks an element for script. Never add an empty rule to pass.
 
 ## Best Practices
 
@@ -2922,8 +2963,6 @@ lexsis_drafts({ action: "page_move_section", args: { page_id, section_id, positi
 - Reference section IDs from the page data (don't guess)
 - Compile the complete editable source before section patching
 - After editing, run `diff` and `integrity`
-- Batch related multi-section changes with `page_patch` so they create one
-  version.
 - Use explicit remove operations for absent properties. `null` remains a JSON
   value and is not deletion.
 - When changing a collection binding, setting `products` removes `productIds`
@@ -3106,6 +3145,11 @@ is recommended for agent reasoning but is not a technical prerequisite.
 `data` + `mime_type`, or a non-empty `attachments` array of conversation
 attachment IDs. It imports directly into the library and never opens the upload UI.
 Do not call import without a source or combine multiple source types.
+A failed import returns `error.source`: `upstream` means the remote host
+refused or failed (`upstream_status`, e.g. 403/404); try another source rather
+than retrying the same URL. `lexsis` means a Lexsis-side failure; retry once
+only when `retryable` is true and report `request_id`/`correlation_id` if it
+persists. Transient upstream failures are already retried server-side.
 
 `lexsis_asset_upload.upload` exclusively opens the local image/video upload UI.
 Pass only the selected `workspace_id` and `theme_id`; do not send URL, base64,
@@ -3246,6 +3290,9 @@ user what is blocked.
 - Missing router, authentication failure, transport failure, or an error from
   the actual domain call: report that concrete error and identify the affected
   operation.
+- A catalog `get` by handle that returns `product_not_found` lists read-only
+  `suggestions` and `catalog_synced_at`. Confirm the intended product with the
+  user before binding a suggestion; never trigger a catalog sync to work around it.
 - Continue work that does not depend on the failed live operation.
 - Do not claim live data, successful compilation, a remote write, QA, or
   publishing when the corresponding real call did not succeed.
@@ -6035,6 +6082,64 @@ control sizing. Native markup is not a license to recreate cart logic.
   element under `data-lx-control`, bind it through the lifecycle API, and
   listen for renderer response events on the same section. Do not create
   hidden commerce islands or drive their controls with `.click()`.
+
+## Working examples
+
+Each block below compiles cleanly against the current compiler and live
+island schemas (checked in CI). Copy the mechanics, not the copy or ids.
+Replace placeholder product, variant and image values with resolved catalog
+data; never ship them.
+
+A custom control needs `data-lx-control` plus a `click` listener bound
+through `lifecycle.query` or `section.querySelector`. An unregistered
+`data-behavior` name, a non-click listener alone, or any `document.*` /
+`window.*` lookup fails compilation by design.
+
+```html lexsis-example
+<!-- section: ingredients -->
+<section id="ingredients" class="px-4 py-12">
+  <h2 class="text-2xl font-semibold">What's inside</h2>
+  <button type="button" data-lx-control="ingredients-toggle" aria-expanded="false" class="min-h-[48px] underline">Show full list</button>
+  <ul data-ingredients hidden class="mt-4 list-disc pl-5"><li>Coconut oil</li></ul>
+  <script>
+    const toggle = lifecycle.query('[data-lx-control="ingredients-toggle"]');
+    toggle.addEventListener("click", () => {
+      const list = section.querySelector("[data-ingredients]");
+      list.hidden = !list.hidden;
+      toggle.setAttribute("aria-expanded", String(!list.hidden));
+    });
+  </script>
+</section>
+```
+
+A vertical offer selector is `QuantityBreaks` with `variant: "list"` (stacked
+rows, smallest quantity first). Set `showCta: false` with `emitEvents: true`
+when a BuyBox owns the add-to-cart button. Prices are labels; a repeated-unit
+discount also needs a cart-profile promotion (`promotionRef`).
+
+```html lexsis-example
+<!-- section: offer -->
+<section id="offer" class="px-4 py-12">
+  <h2 class="text-2xl font-semibold">Choose your pack</h2>
+  <lx-island name="QuantityBreaks">
+    <script type="application/json">{"variant":"list","variantId":"gid://shopify/ProductVariant/1","currency":"INR","tiers":[{"quantity":1,"price":"₹349","perUnit":"₹349 each"},{"quantity":2,"price":"₹649","perUnit":"₹325 each","badge":"Most picked"}]}</script>
+  </lx-island>
+</section>
+```
+
+A responsive product gallery uses `ProductGallery`: `layout` sets desktop
+(here a vertical thumbnail rail on the left), `mobileLayout: "swipe"` sets a
+swipe rail below `md`. Give every image real `alt` text.
+
+```html lexsis-example
+<!-- section: gallery -->
+<section id="gallery" class="px-4 py-8">
+  <h2 class="sr-only">Product photos</h2>
+  <lx-island name="ProductGallery">
+    <script type="application/json">{"layout":"vertical","thumbPosition":"left","mobileLayout":"swipe","navigation":"arrows","media":[{"type":"image","src":"https://cdn.shopify.com/s/files/1/0000/0001/files/oil-front.jpg","alt":"Baby oil bottle, front"},{"type":"image","src":"https://cdn.shopify.com/s/files/1/0000/0001/files/oil-back.jpg","alt":"Baby oil bottle, ingredients label"}]}</script>
+  </lx-island>
+</section>
+```
 
 ## Compile handoff
 
