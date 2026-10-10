@@ -153,6 +153,10 @@
         }
       ],
       "required": false
+    },
+    "paymentVisibility": {
+      "type": "string",
+      "required": false
     }
   },
   "variants": [

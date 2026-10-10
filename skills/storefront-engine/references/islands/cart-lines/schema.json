@@ -116,6 +116,10 @@
       "type": "boolean",
       "required": false
     },
+    "purchaseOptionsVisibility": {
+      "type": "string",
+      "required": false
+    },
     "purchaseOptionStyle": {
       "type": "enum",
       "values": [

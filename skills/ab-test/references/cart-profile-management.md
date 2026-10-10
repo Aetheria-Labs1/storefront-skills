@@ -30,6 +30,9 @@ The response describes:
 - source compilation and placement operations
 - design token and custom CSS capabilities
 - promotion access boundaries
+- the frozen `lifecycle.cart` snapshot schema and settled `onCart` subscriptions
+- managed line, code, attribute, note, gift and variant commands with scoped responses
+- module `visible_when`, condition fields/operators and no-JS binding paths
 
 ## `lexsis_cart.promotions`
 
@@ -79,30 +82,23 @@ Apply a design or composition patch to a profile draft:
 {
   "cart_profile_id": "PROFILE_UUID",
   "expected_version": 12,
-  "change_note": "Add rotating reviews above checkout",
+  "change_note": "Add a cart reminder above checkout",
   "patch": {
     "design_patch": {
-      "checkout": {
-        "button": {
-          "radius": "pill"
-        }
-      }
+      "shell": {"title": "Your cart"}
     },
     "custom_css": "[data-part=\"checkout\"] { font-weight: 700; }",
     "composition_ops": [
       {
-        "op": "upsert",
-        "module": {
-          "id": "checkout-reviews",
-          "region": "body",
-          "source": {
-            "html": "<section class=\"review-strip\" aria-label=\"Customer reviews\"><p>Rated 4.9 by verified buyers</p></section>",
-            "css": ".review-strip { overflow: hidden; padding: .75rem 1rem; }",
-            "js": "const items = section.querySelectorAll('[data-review]');",
-            "motion": []
-          }
-        },
-        "before": "checkout"
+        "operation": "upsert",
+        "module_id": "checkout-reminder",
+        "region": "footer",
+        "source": "<!-- section: checkout-reminder -->\n<section><p>Review your cart before checkout.</p></section>",
+        "before_module_id": "checkout",
+        "visible_when": {
+          "op": "AND",
+          "clauses": [{"field": "cart.item_count", "op": "gt", "value": 0}]
+        }
       }
     ]
   }
@@ -120,7 +116,30 @@ Composition operations support `upsert`, `move`, `set_enabled`, and `remove`.
 An upsert compiles the same section source shape used by normal storefront
 pages: HTML, CSS, JavaScript, and managed motion. It may use active storefront
 islands, but it cannot replace or nest renderer-owned cart modules such as cart
-lines, summary, or checkout.
+lines, summary, or checkout. Existing custom and optional built-in modules may
+omit source when upserting `visible_when`; pass null to clear the condition.
+
+Custom scripts read the frozen `lifecycle.cart` snapshot and subscribe with
+`lifecycle.onCart((snapshot, previous) => ...)`. Subscriptions wait for confirmed
+currency/prices and completed cart settlement, coalesce per frame, and clean up
+on unmount. Money is `{amount, currencyCode, minor}` and matches CartSummary.
+No default currency is invented.
+
+Dispatch managed commands from `section` with `bubbles: true` and a unique
+`requestId`: `lx:cart:add-items`, `update-line`, `remove-line`, `apply-code`,
+`remove-code`, `set-attributes`, `set-note`, `choose-gift`, `swap-variant`
+(all use the `lx:cart:` prefix). Read the exact payload and error contract from
+capabilities. Responses return to the originating module. Identical replay
+does not write again; a changed payload under the same ID is rejected.
+
+`visible_when` uses AND/OR clauses over typed cart, reward and context fields.
+Money comparisons use minor units; membership `neq` hides an offer when the
+given variant is present. It sets `hidden`, including for inline offers and
+inside-checkout payment logos. `data-lx-if` supports validated comparisons and
+predicates; `data-lx-text="rewards.next.remaining"` formats real Money without
+JavaScript. Unknown fields, types and expression paths fail before saving.
+Customer context requires a host provider; collection membership requires
+Shopify metadata access. Missing metadata is not proof of exclusion.
 
 Design objects merge. Composition operations are applied in order. Pass
 `custom_css: null` to remove profile CSS. The tool validates and compiles the

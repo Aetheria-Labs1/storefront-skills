@@ -104,6 +104,8 @@ stop and ask the user to run `/setup`; never invoke setup automatically.
    Supported areas are cart mode, typed design settings, responsive
    presentation, scoped custom CSS, and composition operations.
    - `upsert` adds or replaces one custom module from one source section.
+     Omit source to change `visible_when` on an existing custom or optional
+     built-in module; pass `visible_when: null` to clear the rule.
    - `move` reorders a module within its header, body, or footer region.
    - `set_enabled` toggles custom or optional modules.
    - `remove` deletes only custom modules.
@@ -127,6 +129,120 @@ Cart triggers dispatch `cart:open`; they do not need a profile ID.
 
 Custom CSS must remain scoped to the cart. External imports, remote URLs,
 script escapes, and unbalanced rules are not allowed.
+
+## Custom module examples
+
+Read `capabilities.snapshot_schema`, `commands`, and `conditions` first.
+Money has decimal `amount`, `currencyCode`, and integer `minor`. Never supply
+a fallback currency. Snapshot amounts share CartSummary's confirmed selectors.
+`lifecycle.cart` is deeply frozen. Use `onCart` during initialization: it waits
+for currency/prices and settlement, calls at most once per frame, and cleans up
+on unmount. The getter reports pending status with confirmed merchandise values
+while a mutation runs.
+
+### Read live gift remaining
+
+Use this single section as `composition_ops[].source`. Its reward comes from
+the existing profile, not a hardcoded threshold or invented gift.
+
+```html
+<!-- section: gift-remaining -->
+<section>
+  <p data-gift-message hidden>Only <strong data-remaining></strong> to go for your gift.</p>
+  <script>
+    lifecycle.onCart((cart, previous) => {
+      const next = cart.rewards.next;
+      lifecycle.query('[data-gift-message]').hidden = !next;
+      lifecycle.query('[data-remaining]').textContent = next
+        ? new Intl.NumberFormat(cart.context.locale || undefined, {
+            style: 'currency', currency: next.remaining.currencyCode
+          }).format(Number(next.remaining.amount))
+        : '';
+    });
+  </script>
+</section>
+```
+
+### Send a managed command
+
+Every command uses a unique request ID and bubbles from `section`; responses
+return to this module. Replaying the identical request returns its terminal
+response without another write. The eight additional commands are
+`update-line`, `remove-line`, `apply-code`, `remove-code`, `set-attributes`,
+`set-note`, `choose-gift`, and `swap-variant`, all prefixed `lx:cart:`.
+Read their exact limits and payloads in capabilities.
+
+```html
+<!-- section: cart-note -->
+<section>
+  <label>Order note <textarea data-note maxlength="5000"></textarea></label>
+  <button type="button" data-lx-control="save-note">Save note</button>
+  <span data-result role="status"></span>
+  <script>
+    let sequence = 0;
+    lifecycle.on(lifecycle.query('[data-lx-control="save-note"]'), 'click', () => {
+      section.dispatchEvent(new CustomEvent('lx:cart:set-note', {
+        bubbles: true,
+        detail: {
+          requestId: 'note-' + Date.now() + '-' + (++sequence),
+          note: lifecycle.query('[data-note]').value
+        }
+      }));
+    });
+    lifecycle.on(section, 'lx:cart:set-note:success', () => {
+      lifecycle.query('[data-result]').textContent = 'Note saved';
+    });
+    lifecycle.on(section, 'lx:cart:set-note:error', (event) => {
+      lifecycle.query('[data-result]').textContent = event.detail.message;
+    });
+  </script>
+</section>
+```
+
+Success waits for settlement; pending/accepted/confirmed are intermediate
+phases. Shopper code application and gift selection do not change promotion
+configuration. Gift IDs and variants must come from the configured profile.
+An AJAX variant swap can return `partial_swap` if only the replacement add
+succeeded; show the error and current cart, never blindly replay a new add.
+
+### Hide a module on an empty cart
+
+Use the actual module ID from `cart.get`. This example updates an existing
+payment module without replacing its renderer-owned source:
+
+```json
+{
+  "operation": "upsert",
+  "module_id": "payment-options",
+  "visible_when": {
+    "op": "AND",
+    "clauses": [{"field": "cart.item_count", "op": "gt", "value": 0}]
+  }
+}
+```
+
+The same `visible_when` works on custom modules and offers. To hide an upsell
+after its variant is added, use `cart.has_variant_id`, `op: "neq"`, and the
+real ProductVariant GID as `value`. Hidden content leaves the accessibility
+tree; it updates without a reload. Required cart modules cannot be hidden.
+Money conditions use minor units. Customer flags default false without a host
+session provider; tags/collections depend on available Shopify metadata.
+
+### Bind simple content without JavaScript
+
+```html
+<!-- section: gift-binding -->
+<section>
+  <p data-lx-if="rewards.next.remaining.minor &gt; 0">
+    Only <strong data-lx-text="rewards.next.remaining"></strong> to go.
+  </p>
+</section>
+```
+
+Conditions also accept comparisons, `!`, `&&`, `||`, parentheses and predicates
+such as `!reward.unlocked('REAL_REWARD_ID')`. Unknown paths/functions are rejected
+by the compiler. Money text uses the real snapshot currency. No `window` or
+`document` access is needed.
 
 ## Return
 
