@@ -612,7 +612,7 @@
     "https://www.verygoodcopy.com/verygoodcopy-blogs-10/how-to-write-concisely",
     "https://www.vogue.com/article/should-luxury-brands-reduce-their-prices",
     "https://www.vogue.in/",
-    "https://www.vogue.in/…",
+    "https://www.vogue.in/\u2026",
     "https://www.w3.org/TR/WCAG22/#audio-control",
     "https://www.w3.org/WAI/WCAG21/Understanding/audio-control.html",
     "https://www.w3.org/WAI/WCAG22/Techniques/failures/F93.html",
@@ -719,6 +719,11 @@
       "experiment_create",
       "cart_set",
       "cart_edit",
+      "cart_create",
+      "cart_duplicate",
+      "cart_archive",
+      "cart_promotions_edit",
+      "cart_assign_campaign",
       "review_collection_create",
       "quiz_prepare",
       "send_feedback"
@@ -731,6 +736,9 @@
       "unpublish",
       "delete",
       "rollback",
+      "cart_publish",
+      "cart_rollback",
+      "cart_set_default",
       "template_publish",
       "template_archive",
       "scale_winner",
@@ -4333,8 +4341,8 @@
     }
   },
   "house_rule_clauses": {
-    "N1": "N1. Never use emoji by default, and never as icons: not in tickers, trust strips, badges, buttons, alt text, island JSON props or CSS `content`. Emoji may appear in copy only when the user explicitly insists; record it in `page-plan.md` under \"Design direction › Emoji in copy\" with the merchant's wording, and keep every occurrence inside running text. When the page needs icons and no inline SVG set fits, generate a monochrome SVG icon set (one stroke, one size); never substitute emoji.",
-    "N2": "N2. Never change the background from section to section. The page has one background, `--lx-bg-color`, from below the navbar to above the footer. Allowed exceptions, exhaustively: the announcement bar, the navbar, the footer, and at most one full-bleed moment that `page-plan.md` names under \"Design direction › Bold moment\". A `<section>` or any full-width wrapper painted `--lx-bg-surface`, `--lx-surface-alt` or `--lx-secondary-color` is a band and fails, even if it is white.",
+    "N1": "N1. Never use emoji by default, and never as icons: not in tickers, trust strips, badges, buttons, alt text, island JSON props or CSS `content`. Emoji may appear in copy only when the user explicitly insists; record it in `page-plan.md` under \"Design direction \u203a Emoji in copy\" with the merchant's wording, and keep every occurrence inside running text. When the page needs icons and no inline SVG set fits, generate a monochrome SVG icon set (one stroke, one size); never substitute emoji.",
+    "N2": "N2. Never change the background from section to section. The page has one background, `--lx-bg-color`, from below the navbar to above the footer. Allowed exceptions, exhaustively: the announcement bar, the navbar, the footer, and at most one full-bleed moment that `page-plan.md` names under \"Design direction \u203a Bold moment\". A `<section>` or any full-width wrapper painted `--lx-bg-surface`, `--lx-surface-alt` or `--lx-secondary-color` is a band and fails, even if it is white.",
     "N3": "N3. Never use emoji, images or mixed libraries as icons. Icons are one inline SVG set, one stroke weight, `stroke=\"currentColor\"`, `fill=\"none\"`, one size per context, `aria-hidden=\"true\"` with a visible text label. Or no icons.",
     "N4": "N4. Never use more than two type families. A non-Latin script gets one matching family declared with `[lang]`; it does not count.",
     "N5": "N5. Never set eyebrow labels in ALL-CAPS unless a merchant-stated brand rule (not a generator-observed one) requires it, and then at most one per three sections.",
@@ -4344,7 +4352,7 @@
     "N9": "N9. Never render discount or status pills in ALL-CAPS or with percentages (\"31% OFF\", \"BEST VALUE\", \"MOST POPULAR\", \"NEW ARRIVALS\") unless the merchant runs a named sale recorded in the plan's confirmed claims. Compare-at price is struck-through text only.",
     "N10": "N10. Never add motion that is not answering a user action, except one orchestrated moment named in the plan. No fade-up per section, no stagger, no counters, no parallax, no marquee ticker unless the announcement bar's own island provides it. Custom motion must follow `animation-system.md` and use `application/lexsis-motion`, not raw observers, timers, or global DOM access.",
     "N11": "N11. Never show proof you cannot source: star glyphs, review counts, customer counts, \"Only N left\", countdowns, \"as seen in\" logos. Every number in a proof section traces to \"Claims confirmed\" in the plan.",
-    "N12": "N12. Never append `→` or `»` to link and button text, join meta strings with middle dots, or place an icon in a rounded tile above a heading (icon-tile-stack).",
+    "N12": "N12. Never append `\u2192` or `\u00bb` to link and button text, join meta strings with middle dots, or place an icon in a rounded tile above a heading (icon-tile-stack).",
     "N13": "N13. Never mix radii on the same object type or use one radius on everything. Declare a radius scale by object type and use only those tokens.",
     "N14": "N14. Never hardcode off-brand hex or Tailwind default colours. Colours come from `--lx-*` tokens or the plan's named palette.",
     "A1": "A1. Always write the Design direction block in `page-plan.md` before any HTML: palette of 4 to 6 named hex with roles; type roles, families and one modular ratio; layout concept in one sentence plus an ASCII wireframe at 1280 and 390; alignment rule; icon decision; the one bold moment; the background rule with its single named exception or \"none\"; motion decision; the generic-default check with at least three concrete differences; the list of brand-design.md lines being overridden.",
@@ -4358,7 +4366,7 @@
     "A9": "A9. Always spend boldness once. Name the single memorable element in the plan; every other element is quiet: page background, body weight, hairlines, sentence case.",
     "A10": "A10. For production-ready work, always run the hosted design review at 390 and 1280 before recording design approval. Fast drafts return `DRAFT_CREATED` first and may leave this review pending.",
     "A11": "A11. Always ship the quality floor without announcing it: `:focus-visible` styles, `prefers-reduced-motion` handling, 48px minimum tap targets, alt text on product media, `lang` attributes on non-Latin text.",
-    "A12": "A12. Always write copy as design content: sentence case, active voice, the CTA says what happens (\"Add to cart\", not \"Shop Now →\"), no placeholder or invented copy, brand voice from `voice_md` or the merchant."
+    "A12": "A12. Always write copy as design content: sentence case, active voice, the CTA says what happens (\"Add to cart\", not \"Shop Now \u2192\"), no placeholder or invented copy, brand voice from `voice_md` or the merchant."
   },
   "workflow_sections": {
     "collection-landing.md": [

@@ -1,8 +1,7 @@
 # Cart Profile MCP Management
 
-The Storefront MCP exposes cart inspection, design/composition editing, and
-ephemeral preview operations. Keep lifecycle and promotion management in the
-app.
+The Storefront MCP exposes cart inspection, draft design/promotion editing,
+previews and approved lifecycle operations through the same backend as the app.
 
 ## `lexsis_cart.get`
 
@@ -14,6 +13,7 @@ Inputs:
 - `cart_profile_id`
 - `store_id` as an optional multi-store hint
 - `include_available_profiles`
+- `include_history` for the latest 100 lifecycle events, authenticated actor/client and diff summaries
 
 Pass `page_id` to get the published snapshot a shopper receives and its
 `resolution_source`. Pass `cart_profile_id` to inspect the draft.
@@ -37,8 +37,8 @@ The response describes:
 ## `lexsis_cart.promotions`
 
 Read configured profile offers plus active Shopify discount codes and automatic
-discounts. This operation is read-only. Do not claim that the MCP can create,
-edit, activate, or delete a promotion.
+discounts. This operation is read-only. Use `cart_promotions_edit` for requested
+draft edits and explicitly approved `cart_publish` for Shopify synchronization.
 
 ## `lexsis_cart.preview`
 
@@ -163,20 +163,63 @@ effect. Confirmed gift quantities remain controlled by reward rules.
 Promotion configuration, cart rules, raw commerce configuration, and raw layout
 schema are deliberately absent from the MCP edit contract.
 
-## App-only operations
+## Lifecycle and promotion actions
 
-Use the Lexsis app to:
+Capabilities report `lifecycle_access: "mcp_with_approval"` and
+`promotion_access: "draft_then_publish"`. The custom-module lifecycle is under
+`module_lifecycle`, alongside the unchanged snapshot and command schemas.
 
-- Create, duplicate, rename, and archive profiles
-- Publish and roll back versions
-- Set the store default
-- Manage campaign assignments
-- Create, edit, activate, and delete discounts or offers
-- Review assignment history and analytics
+| Router | Action | Arguments |
+|---|---|---|
+| `lexsis_drafts` | `cart_create` | `store_id`, `name`, optional `from_preset` or `from_profile_id` |
+| `lexsis_drafts` | `cart_duplicate` | `cart_profile_id`, `name` |
+| `lexsis_drafts` | `cart_promotions_edit` | `cart_profile_id`, `expected_version`, `patch` |
+| `lexsis_drafts` | `cart_archive` | `cart_profile_id`, optional `reassign_to` |
+| `lexsis_drafts` | `cart_assign_campaign` | `campaign_id`, `cart_profile_id` (nullable) |
+| `lexsis_live_ops` | `cart_publish` | `cart_profile_id`, `expected_version`, `allow_partial:false`, `skip_reward_ids:[]` |
+| `lexsis_live_ops` | `cart_rollback` | `cart_profile_id`, `target_version` |
+| `lexsis_live_ops` | `cart_set_default` | `store_id`, `cart_profile_id` |
+
+Presets: `default`, `subscription`, `aov_booster`. Creation and duplication are
+unpublished. Optional `store_id` speeds profile/campaign lookup.
+
+Promotion patches merge `rewards`, `offer_slots`, `quantity_promotions` and
+`cart_rules` by ID. Omitted rows remain. `{id,operation:"remove"}` removes one
+existing row; an empty patch array is a no-op. New rows need complete required
+fields. `coupon_settings` and `payment_settings` merge objects; nested arrays
+replace. Coupon allow-list is `coupon_settings.coupons`; manual entry is
+`allow_manual_entry`. Payment `placement` is `inside_checkout | below_checkout |
+hidden`; `providers` is an ordered unique list. Monetary thresholds use minor
+currency units. Gift/qualifying products and collections use verified Shopify IDs.
+
+The promotion edit response includes `profile` and `readiness`. Incomplete setup
+can be saved; malformed values and stale versions fail. Shopify transport
+failure returns a saved draft with `readiness_unavailable`. No promotion edit
+writes to Shopify. Readiness uses the same validator as publication.
+
+Publishing requires explicit approval and publish access. It checks the exact
+version, provisions the managed contracts, then commits the live pointer.
+`CART_NOT_READY` includes issues; `VERSION_CONFLICT` includes the current version.
+Partial publication disables only the explicitly approved `skip_reward_ids`,
+then reruns readiness. Remaining/global issues still block publication. The
+response gives `published_version`, created/updated/disabled Shopify discount IDs
+and warnings. Contract resolution can add a version. Use the returned version.
+
+Rollback makes a new forward draft and leaves the live version unchanged.
+Preview it, then obtain separate approval for `cart_publish`. Default and
+campaign/page assignment change live resolution and require approval plus
+publish access. Campaign assignment is under drafts but is not draft-only.
+Archive blocks default or assigned profiles unless `reassign_to` is a published
+replacement in the same store. It preserves assignment priority/enabled state.
+
+Shopify has no cross-mutation transaction. On failure the publisher compensates
+created/retired discounts; an unconfirmed cleanup returns
+`CART_PUBLISH_RECOVERY_REQUIRED` and must be resolved before retrying. A discount
+still shared by another published profile remains active with a warning.
 
 ## Verification
 
 After a mutation, re-read the draft with `lexsis_cart.get`, then call
 `lexsis_cart.preview`. Confirm the profile ID and version, and visually inspect
-the preview at desktop and mobile widths. Assignment and publication remain
-separate app-managed states.
+the preview at desktop and mobile widths. Assignment and publication remain separate approved actions.
+Use `get` with `include_history:true` to inspect the actor/client and diff summary.

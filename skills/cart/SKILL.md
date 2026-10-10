@@ -1,6 +1,6 @@
 ---
 name: cart
-description: Inspect, assign, design, compose, or preview Lexsis cart profiles. Supports responsive design, scoped CSS, custom source-format modules, and read-only promotion diagnostics.
+description: Create, design, compose, preview and manage Lexsis cart profiles. Edit promotion drafts, inspect readiness, and publish exact approved versions. Supports custom module state, commands and conditional visibility.
 ---
 
 # Configure a Cart
@@ -9,7 +9,8 @@ Cart profiles are managed separately from page section HTML.
 
 Use `lexsis_cart.get`, `lexsis_cart.capabilities`,
 `lexsis_cart.promotions`, and `lexsis_cart.preview`. When requested, use
-`lexsis_drafts.cart_set` and `lexsis_drafts.cart_edit`. Resolve unfamiliar
+`lexsis_drafts.cart_set`, `cart_edit`, and `cart_promotions_edit`. Profile lifecycle
+actions are listed below. Resolve unfamiliar
 argument schemas with exact router/action discovery. An empty discovery result
 is not a cart outage; the actual cart call determines availability. Do not
 infer the effective cart profile from page HTML.
@@ -24,11 +25,14 @@ stop and ask the user to run `/setup`; never invoke setup automatically.
   DrawerShell or cart-line markup to page sections.
 - Effective profile order is page assignment, campaign assignment, store
   default, then legacy fallback.
-- Draft profile edits are not live until published in the Lexsis app.
+- Draft edits are not live until the exact version is explicitly approved and
+  published through `lexsis_live_ops.cart_publish` or the app.
 - Do not invent products, prices, currencies, offers, or selling plans.
-- Promotion, discount, offer, shipping-threshold, and cart-rule configuration
-  is read-only through MCP. Never try to recreate those writes through another
-  tool.
+- Promotion, offer, threshold, coupon, payment and rule edits use
+  `lexsis_drafts.cart_promotions_edit`. Shopify writes happen only at publish.
+- Defaults, campaign/page assignment and archive with reassignment change live
+  resolution. Obtain explicit approval and use publish access for these writes.
+- Rollback restores a forward draft; it does not publish.
 - Custom modules use the same Lexsis source format as normal pages: HTML,
   `<style>`, section `<script>`, managed motion, and registered `<lx-island>`
   components. Cart lines, order summary, checkout, and DrawerShell remain
@@ -44,7 +48,8 @@ stop and ask the user to run `/setup`; never invoke setup automatically.
    in a task. Resolve island props through `lexsis_design.island_schema`.
 3. For discounts or offers, call `lexsis_cart.promotions` and report the
    configured profile values, active Shopify discounts, and readiness or
-   conflict diagnostics without changing them.
+   conflict diagnostics. Apply requested changes with `cart_promotions_edit`,
+   using the latest `expected_version`, then review the returned readiness.
 4. When requested, assign a published profile with
    `lexsis_drafts` action `cart_set`. Passing a null profile removes the page
    assignment.
@@ -77,6 +82,60 @@ Cart triggers dispatch `cart:open`; they do not need a profile ID.
 
 Custom CSS must remain scoped to the cart. External imports, remote URLs,
 script escapes, and unbalanced rules are not allowed.
+
+## Lifecycle example
+
+Read `references/cart-profile-management.md` for exact schemas and failure handling.
+A complete cycle uses these router actions (parameters shown inside `args`):
+
+1. `lexsis_drafts.cart_create` with `{store_id, name, from_preset:"default"}`.
+   Alternatively use `from_profile_id`, or `lexsis_drafts.cart_duplicate` with `{cart_profile_id,name}`.
+2. `cart_edit` for design, with the returned `expected_version`.
+3. `cart_promotions_edit` for a partial, ID-addressed draft patch:
+
+```json
+{
+  "cart_profile_id": "PROFILE_UUID",
+  "expected_version": 2,
+  "patch": {
+    "rewards": [{
+      "id": "shipping", "type": "free_shipping", "title": "Free shipping",
+      "threshold": 150000, "discount_source": "managed", "enabled": true
+    }],
+    "payment_settings": {"placement": "below_checkout", "providers": ["visa", "mastercard"]}
+  }
+}
+```
+
+Use the store's real minor currency units: 150000 is ₹1,500 in INR. Gift products,
+variants and qualifying products/collections must use verified catalog IDs.
+Omitted rows remain; remove one with `{id,operation:"remove"}`. Empty patch arrays
+do not clear a collection. Coupons/providers replace their nested ordered lists.
+
+4. Re-read and call `lexsis_cart.preview`; inspect mobile/desktop and applicable
+   empty, populated and reward states.
+5. Obtain explicit approval of the exact draft, then call
+   `lexsis_live_ops.cart_publish` with `{cart_profile_id,expected_version,allow_partial:false,skip_reward_ids:[]}`.
+   `CART_NOT_READY` returns issues; `VERSION_CONFLICT` requires re-reading and
+   approving the current draft. With partial approval, list the exact rewards
+   to disable in `skip_reward_ids`; unskipped/global issues still block publication.
+6. To restore, call `lexsis_live_ops.cart_rollback` with `{cart_profile_id,target_version}`.
+   Preview and separately approve publication of the new forward draft.
+
+Default: `lexsis_live_ops.cart_set_default` with `{store_id,cart_profile_id}`.
+Campaign: `lexsis_drafts.cart_assign_campaign` with `{campaign_id,cart_profile_id}`;
+null clears the override. These change live resolution even though campaign
+assignment is grouped under drafts.
+
+Archive: `lexsis_drafts.cart_archive` with `{cart_profile_id}`. If default or assigned,
+provide an explicitly approved published `reassign_to` in the same store.
+History: `lexsis_cart.get` with `{cart_profile_id,include_history:true}` returns
+actor, MCP client and changed-field summaries.
+
+Shopify failure leaves the previous published pointer live and triggers
+compensation. `CART_PUBLISH_RECOVERY_REQUIRED` means cleanup could not be verified:
+report its recovery details and resolve them before retrying. Never claim a
+failed or uncertain publish succeeded.
 
 ## Custom module examples
 
