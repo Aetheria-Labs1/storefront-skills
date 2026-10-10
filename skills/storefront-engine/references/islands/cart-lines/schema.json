@@ -161,14 +161,57 @@
       "required": false,
       "default": "false"
     },
+    "visual": {
+      "type": "union",
+      "anyOf": [
+        {
+          "type": "object",
+          "shape": {
+            "kind": "string",
+            "name": "'check' | 'alert-circle' | 'arrow-down' | 'arrow-left' | 'arrow-right' | 'arrow-up' | 'award' | 'camera' | 'cart' | 'check-circle' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'clock' | 'credit-card' | 'download' | 'droplet' | 'external' | 'eye' | 'filter' | 'flame' | 'gift' | 'globe' | 'heart' | 'image' | 'info' | 'leaf' | 'lock' | 'mail' | 'menu' | 'minus' | 'moon' | 'package' | 'pause' | 'percent' | 'phone' | 'play' | 'plus' | 'refresh' | 'search' | 'share' | 'shield' | 'shield-check' | 'sparkles' | 'star' | 'star-outline' | 'sun' | 'tag' | 'thumbs-up' | 'trash' | 'truck' | 'user' | 'volume' | 'x' | 'zap'",
+            "fallbackIcon": "?'check' | 'alert-circle' | 'arrow-down' | 'arrow-left' | 'arrow-right' | 'arrow-up' | 'award' | 'camera' | 'cart' | 'check-circle' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'clock' | 'credit-card' | 'download' | 'droplet' | 'external' | 'eye' | 'filter' | 'flame' | 'gift' | 'globe' | 'heart' | 'image' | 'info' | 'leaf' | 'lock' | 'mail' | 'menu' | 'minus' | 'moon' | 'package' | 'pause' | 'percent' | 'phone' | 'play' | 'plus' | 'refresh' | 'search' | 'share' | 'shield' | 'shield-check' | 'sparkles' | 'star' | 'star-outline' | 'sun' | 'tag' | 'thumbs-up' | 'trash' | 'truck' | 'user' | 'volume' | 'x' | 'zap'"
+          }
+        },
+        {
+          "type": "object",
+          "shape": {
+            "kind": "'asset_svg' | 'asset_image'",
+            "assetId": "string",
+            "url": "string",
+            "srcSet": "?string",
+            "altText": "?string",
+            "width": "?unknown | number",
+            "height": "?unknown | number",
+            "fit": "?'contain' | 'cover'",
+            "fallbackIcon": "'check' | 'alert-circle' | 'arrow-down' | 'arrow-left' | 'arrow-right' | 'arrow-up' | 'award' | 'camera' | 'cart' | 'check-circle' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'clock' | 'credit-card' | 'download' | 'droplet' | 'external' | 'eye' | 'filter' | 'flame' | 'gift' | 'globe' | 'heart' | 'image' | 'info' | 'leaf' | 'lock' | 'mail' | 'menu' | 'minus' | 'moon' | 'package' | 'pause' | 'percent' | 'phone' | 'play' | 'plus' | 'refresh' | 'search' | 'share' | 'shield' | 'shield-check' | 'sparkles' | 'star' | 'star-outline' | 'sun' | 'tag' | 'thumbs-up' | 'trash' | 'truck' | 'user' | 'volume' | 'x' | 'zap'"
+          }
+        }
+      ],
+      "required": false
+    },
+    "productOffer": {
+      "type": "object",
+      "shape": {
+        "layout": "?'horizontal' | 'grid' | 'stack'",
+        "visual": "?{kind: string, name: 'check' | 'alert-circle' | 'arrow-down' | 'arrow-left' | 'arrow-right' | 'arrow-up' | 'award' | 'camera' | 'cart' | 'check-circle' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'clock' | 'credit-card' | 'download' | 'droplet' | 'external' | 'eye' | 'filter' | 'flame' | 'gift' | 'globe' | 'heart' | 'image' | 'info' | 'leaf' | 'lock' | 'mail' | 'menu' | 'minus' | 'moon' | 'package' | 'pause' | 'percent' | 'phone' | 'play' | 'plus' | 'refresh' | 'search' | 'share' | 'shield' | 'shield-check' | 'sparkles' | 'star' | 'star-outline' | 'sun' | 'tag' | 'thumbs-up' | 'trash' | 'truck' | 'user' | 'volume' | 'x' | 'zap', fallbackIcon: ?'check' | 'alert-circle' | 'arrow-down' | 'arrow-left' | 'arrow-right' | 'arrow-up' | 'award' | 'camera' | 'cart' | 'check-circle' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'clock' | 'credit-card' | 'download' | 'droplet' | 'external' | 'eye' | 'filter' | 'flame' | 'gift' | 'globe' | 'heart' | 'image' | 'info' | 'leaf' | 'lock' | 'mail' | 'menu' | 'minus' | 'moon' | 'package' | 'pause' | 'percent' | 'phone' | 'play' | 'plus' | 'refresh' | 'search' | 'share' | 'shield' | 'shield-check' | 'sparkles' | 'star' | 'star-outline' | 'sun' | 'tag' | 'thumbs-up' | 'trash' | 'truck' | 'user' | 'volume' | 'x' | 'zap'} | {kind: 'asset_svg' | 'asset_image', assetId: string, url: string, srcSet: ?string, altText: ?string, width: ?object | number, height: ?object | number, fit: ?'contain' | 'cover', fallbackIcon: 'check' | 'alert-circle' | 'arrow-down' | 'arrow-left' | 'arrow-right' | 'arrow-up' | 'award' | 'camera' | 'cart' | 'check-circle' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'clock' | 'credit-card' | 'download' | 'droplet' | 'external' | 'eye' | 'filter' | 'flame' | 'gift' | 'globe' | 'heart' | 'image' | 'info' | 'leaf' | 'lock' | 'mail' | 'menu' | 'minus' | 'moon' | 'package' | 'pause' | 'percent' | 'phone' | 'play' | 'plus' | 'refresh' | 'search' | 'share' | 'shield' | 'shield-check' | 'sparkles' | 'star' | 'star-outline' | 'sun' | 'tag' | 'thumbs-up' | 'trash' | 'truck' | 'user' | 'volume' | 'x' | 'zap'}"
+      },
+      "required": false
+    },
     "freeGift": {
       "type": "object",
       "shape": {
         "variant": "?'standard_line' | 'highlighted_line' | 'gift_card'",
         "badgeText": "?string",
-        "icon": "?string",
-        "showOriginalPrice": "?boolean",
-        "lockQuantity": "?boolean"
+        "visual": "?{kind: string, name: 'check' | 'alert-circle' | 'arrow-down' | 'arrow-left' | 'arrow-right' | 'arrow-up' | 'award' | 'camera' | 'cart' | 'check-circle' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'clock' | 'credit-card' | 'download' | 'droplet' | 'external' | 'eye' | 'filter' | 'flame' | 'gift' | 'globe' | 'heart' | 'image' | 'info' | 'leaf' | 'lock' | 'mail' | 'menu' | 'minus' | 'moon' | 'package' | 'pause' | 'percent' | 'phone' | 'play' | 'plus' | 'refresh' | 'search' | 'share' | 'shield' | 'shield-check' | 'sparkles' | 'star' | 'star-outline' | 'sun' | 'tag' | 'thumbs-up' | 'trash' | 'truck' | 'user' | 'volume' | 'x' | 'zap', fallbackIcon: ?'check' | 'alert-circle' | 'arrow-down' | 'arrow-left' | 'arrow-right' | 'arrow-up' | 'award' | 'camera' | 'cart' | 'check-circle' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'clock' | 'credit-card' | 'download' | 'droplet' | 'external' | 'eye' | 'filter' | 'flame' | 'gift' | 'globe' | 'heart' | 'image' | 'info' | 'leaf' | 'lock' | 'mail' | 'menu' | 'minus' | 'moon' | 'package' | 'pause' | 'percent' | 'phone' | 'play' | 'plus' | 'refresh' | 'search' | 'share' | 'shield' | 'shield-check' | 'sparkles' | 'star' | 'star-outline' | 'sun' | 'tag' | 'thumbs-up' | 'trash' | 'truck' | 'user' | 'volume' | 'x' | 'zap'} | {kind: 'asset_svg' | 'asset_image', assetId: string, url: string, srcSet: ?string, altText: ?string, width: ?object | number, height: ?object | number, fit: ?'contain' | 'cover', fallbackIcon: 'check' | 'alert-circle' | 'arrow-down' | 'arrow-left' | 'arrow-right' | 'arrow-up' | 'award' | 'camera' | 'cart' | 'check-circle' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'clock' | 'credit-card' | 'download' | 'droplet' | 'external' | 'eye' | 'filter' | 'flame' | 'gift' | 'globe' | 'heart' | 'image' | 'info' | 'leaf' | 'lock' | 'mail' | 'menu' | 'minus' | 'moon' | 'package' | 'pause' | 'percent' | 'phone' | 'play' | 'plus' | 'refresh' | 'search' | 'share' | 'shield' | 'shield-check' | 'sparkles' | 'star' | 'star-outline' | 'sun' | 'tag' | 'thumbs-up' | 'trash' | 'truck' | 'user' | 'volume' | 'x' | 'zap'}",
+        "showOriginalPrice": "?boolean"
+      },
+      "required": false
+    },
+    "emptyState": {
+      "type": "object",
+      "shape": {
+        "variant": "?'compact' | 'illustrated'",
+        "visual": "?{kind: string, name: 'check' | 'alert-circle' | 'arrow-down' | 'arrow-left' | 'arrow-right' | 'arrow-up' | 'award' | 'camera' | 'cart' | 'check-circle' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'clock' | 'credit-card' | 'download' | 'droplet' | 'external' | 'eye' | 'filter' | 'flame' | 'gift' | 'globe' | 'heart' | 'image' | 'info' | 'leaf' | 'lock' | 'mail' | 'menu' | 'minus' | 'moon' | 'package' | 'pause' | 'percent' | 'phone' | 'play' | 'plus' | 'refresh' | 'search' | 'share' | 'shield' | 'shield-check' | 'sparkles' | 'star' | 'star-outline' | 'sun' | 'tag' | 'thumbs-up' | 'trash' | 'truck' | 'user' | 'volume' | 'x' | 'zap', fallbackIcon: ?'check' | 'alert-circle' | 'arrow-down' | 'arrow-left' | 'arrow-right' | 'arrow-up' | 'award' | 'camera' | 'cart' | 'check-circle' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'clock' | 'credit-card' | 'download' | 'droplet' | 'external' | 'eye' | 'filter' | 'flame' | 'gift' | 'globe' | 'heart' | 'image' | 'info' | 'leaf' | 'lock' | 'mail' | 'menu' | 'minus' | 'moon' | 'package' | 'pause' | 'percent' | 'phone' | 'play' | 'plus' | 'refresh' | 'search' | 'share' | 'shield' | 'shield-check' | 'sparkles' | 'star' | 'star-outline' | 'sun' | 'tag' | 'thumbs-up' | 'trash' | 'truck' | 'user' | 'volume' | 'x' | 'zap'} | {kind: 'asset_svg' | 'asset_image', assetId: string, url: string, srcSet: ?string, altText: ?string, width: ?object | number, height: ?object | number, fit: ?'contain' | 'cover', fallbackIcon: 'check' | 'alert-circle' | 'arrow-down' | 'arrow-left' | 'arrow-right' | 'arrow-up' | 'award' | 'camera' | 'cart' | 'check-circle' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'clock' | 'credit-card' | 'download' | 'droplet' | 'external' | 'eye' | 'filter' | 'flame' | 'gift' | 'globe' | 'heart' | 'image' | 'info' | 'leaf' | 'lock' | 'mail' | 'menu' | 'minus' | 'moon' | 'package' | 'pause' | 'percent' | 'phone' | 'play' | 'plus' | 'refresh' | 'search' | 'share' | 'shield' | 'shield-check' | 'sparkles' | 'star' | 'star-outline' | 'sun' | 'tag' | 'thumbs-up' | 'trash' | 'truck' | 'user' | 'volume' | 'x' | 'zap'}"
       },
       "required": false
     }
@@ -179,12 +222,32 @@
   ],
   "css_vars": [
     "--lx-accent-color",
+    "--lx-accent-contrast",
+    "--lx-bg-color",
     "--lx-bg-surface",
     "--lx-border-color",
+    "--lx-cart-body-size",
+    "--lx-cart-control-radius",
+    "--lx-cart-font-family",
+    "--lx-cart-font-weight",
     "--lx-cart-radius",
+    "--lx-cart-title-size",
     "--lx-error-color",
+    "--lx-focus-color",
+    "--lx-font-body",
+    "--lx-font-heading",
     "--lx-gift-color",
+    "--lx-muted-color",
+    "--lx-quick-add-backdrop",
+    "--lx-quick-add-bg",
+    "--lx-quick-add-button-radius",
+    "--lx-quick-add-drawer-width",
+    "--lx-quick-add-option-radius",
+    "--lx-quick-add-shadow",
+    "--lx-quick-add-sheet-height",
+    "--lx-quick-add-z-index",
     "--lx-reward-color",
+    "--lx-success-color",
     "--lx-surface-alt",
     "--lx-surface-color",
     "--lx-text-color",
@@ -192,9 +255,12 @@
   ],
   "parts": [
     "add-button",
+    "adding-indicator",
+    "discount-percent",
     "empty",
     "empty-cta",
     "empty-message",
+    "empty-visual",
     "fallback",
     "free-gift-label",
     "heading",
@@ -206,11 +272,39 @@
     "item-title",
     "item-variant",
     "line-group",
+    "optimistic-qty",
     "purchase-option",
     "qty-controls",
     "qty-decrease",
     "qty-increase",
+    "qty-select",
     "qty-value",
+    "quick-add-backdrop",
+    "quick-add-body",
+    "quick-add-close",
+    "quick-add-drag-handle",
+    "quick-add-eyebrow",
+    "quick-add-footer",
+    "quick-add-header",
+    "quick-add-image",
+    "quick-add-option",
+    "quick-add-option-group",
+    "quick-add-option-label",
+    "quick-add-option-values",
+    "quick-add-options",
+    "quick-add-panel",
+    "quick-add-price",
+    "quick-add-product",
+    "quick-add-product-copy",
+    "quick-add-product-title",
+    "quick-add-purchase-options",
+    "quick-add-selected-variant",
+    "quick-add-sheet",
+    "quick-add-status",
+    "quick-add-submit",
+    "quick-add-title",
+    "quick-add-variant",
+    "quick-add-variant-list",
     "remove-btn",
     "reward-badge",
     "reward-qty",

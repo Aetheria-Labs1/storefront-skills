@@ -50,17 +50,46 @@
     "celebrationEnabled": {
       "type": "boolean",
       "required": false
+    },
+    "variant": {
+      "type": "enum",
+      "values": [
+        "default",
+        "filled",
+        "subtle",
+        "outlined"
+      ],
+      "required": false,
+      "default": "default"
+    },
+    "visuals": {
+      "type": "object",
+      "shape": {
+        "default": "?{kind: string, name: 'check' | 'alert-circle' | 'arrow-down' | 'arrow-left' | 'arrow-right' | 'arrow-up' | 'award' | 'camera' | 'cart' | 'check-circle' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'clock' | 'credit-card' | 'download' | 'droplet' | 'external' | 'eye' | 'filter' | 'flame' | 'gift' | 'globe' | 'heart' | 'image' | 'info' | 'leaf' | 'lock' | 'mail' | 'menu' | 'minus' | 'moon' | 'package' | 'pause' | 'percent' | 'phone' | 'play' | 'plus' | 'refresh' | 'search' | 'share' | 'shield' | 'shield-check' | 'sparkles' | 'star' | 'star-outline' | 'sun' | 'tag' | 'thumbs-up' | 'trash' | 'truck' | 'user' | 'volume' | 'x' | 'zap', fallbackIcon: ?'check' | 'alert-circle' | 'arrow-down' | 'arrow-left' | 'arrow-right' | 'arrow-up' | 'award' | 'camera' | 'cart' | 'check-circle' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'clock' | 'credit-card' | 'download' | 'droplet' | 'external' | 'eye' | 'filter' | 'flame' | 'gift' | 'globe' | 'heart' | 'image' | 'info' | 'leaf' | 'lock' | 'mail' | 'menu' | 'minus' | 'moon' | 'package' | 'pause' | 'percent' | 'phone' | 'play' | 'plus' | 'refresh' | 'search' | 'share' | 'shield' | 'shield-check' | 'sparkles' | 'star' | 'star-outline' | 'sun' | 'tag' | 'thumbs-up' | 'trash' | 'truck' | 'user' | 'volume' | 'x' | 'zap'} | {kind: 'asset_svg' | 'asset_image', assetId: string, url: string, srcSet: ?string, altText: ?string, width: ?object | number, height: ?object | number, fit: ?'contain' | 'cover', fallbackIcon: 'check' | 'alert-circle' | 'arrow-down' | 'arrow-left' | 'arrow-right' | 'arrow-up' | 'award' | 'camera' | 'cart' | 'check-circle' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'clock' | 'credit-card' | 'download' | 'droplet' | 'external' | 'eye' | 'filter' | 'flame' | 'gift' | 'globe' | 'heart' | 'image' | 'info' | 'leaf' | 'lock' | 'mail' | 'menu' | 'minus' | 'moon' | 'package' | 'pause' | 'percent' | 'phone' | 'play' | 'plus' | 'refresh' | 'search' | 'share' | 'shield' | 'shield-check' | 'sparkles' | 'star' | 'star-outline' | 'sun' | 'tag' | 'thumbs-up' | 'trash' | 'truck' | 'user' | 'volume' | 'x' | 'zap'}",
+        "locked": "?{kind: string, name: 'check' | 'alert-circle' | 'arrow-down' | 'arrow-left' | 'arrow-right' | 'arrow-up' | 'award' | 'camera' | 'cart' | 'check-circle' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'clock' | 'credit-card' | 'download' | 'droplet' | 'external' | 'eye' | 'filter' | 'flame' | 'gift' | 'globe' | 'heart' | 'image' | 'info' | 'leaf' | 'lock' | 'mail' | 'menu' | 'minus' | 'moon' | 'package' | 'pause' | 'percent' | 'phone' | 'play' | 'plus' | 'refresh' | 'search' | 'share' | 'shield' | 'shield-check' | 'sparkles' | 'star' | 'star-outline' | 'sun' | 'tag' | 'thumbs-up' | 'trash' | 'truck' | 'user' | 'volume' | 'x' | 'zap', fallbackIcon: ?'check' | 'alert-circle' | 'arrow-down' | 'arrow-left' | 'arrow-right' | 'arrow-up' | 'award' | 'camera' | 'cart' | 'check-circle' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'clock' | 'credit-card' | 'download' | 'droplet' | 'external' | 'eye' | 'filter' | 'flame' | 'gift' | 'globe' | 'heart' | 'image' | 'info' | 'leaf' | 'lock' | 'mail' | 'menu' | 'minus' | 'moon' | 'package' | 'pause' | 'percent' | 'phone' | 'play' | 'plus' | 'refresh' | 'search' | 'share' | 'shield' | 'shield-check' | 'sparkles' | 'star' | 'star-outline' | 'sun' | 'tag' | 'thumbs-up' | 'trash' | 'truck' | 'user' | 'volume' | 'x' | 'zap'} | {kind: 'asset_svg' | 'asset_image', assetId: string, url: string, srcSet: ?string, altText: ?string, width: ?object | number, height: ?object | number, fit: ?'contain' | 'cover', fallbackIcon: 'check' | 'alert-circle' | 'arrow-down' | 'arrow-left' | 'arrow-right' | 'arrow-up' | 'award' | 'camera' | 'cart' | 'check-circle' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'clock' | 'credit-card' | 'download' | 'droplet' | 'external' | 'eye' | 'filter' | 'flame' | 'gift' | 'globe' | 'heart' | 'image' | 'info' | 'leaf' | 'lock' | 'mail' | 'menu' | 'minus' | 'moon' | 'package' | 'pause' | 'percent' | 'phone' | 'play' | 'plus' | 'refresh' | 'search' | 'share' | 'shield' | 'shield-check' | 'sparkles' | 'star' | 'star-outline' | 'sun' | 'tag' | 'thumbs-up' | 'trash' | 'truck' | 'user' | 'volume' | 'x' | 'zap'}",
+        "near": "?{kind: string, name: 'check' | 'alert-circle' | 'arrow-down' | 'arrow-left' | 'arrow-right' | 'arrow-up' | 'award' | 'camera' | 'cart' | 'check-circle' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'clock' | 'credit-card' | 'download' | 'droplet' | 'external' | 'eye' | 'filter' | 'flame' | 'gift' | 'globe' | 'heart' | 'image' | 'info' | 'leaf' | 'lock' | 'mail' | 'menu' | 'minus' | 'moon' | 'package' | 'pause' | 'percent' | 'phone' | 'play' | 'plus' | 'refresh' | 'search' | 'share' | 'shield' | 'shield-check' | 'sparkles' | 'star' | 'star-outline' | 'sun' | 'tag' | 'thumbs-up' | 'trash' | 'truck' | 'user' | 'volume' | 'x' | 'zap', fallbackIcon: ?'check' | 'alert-circle' | 'arrow-down' | 'arrow-left' | 'arrow-right' | 'arrow-up' | 'award' | 'camera' | 'cart' | 'check-circle' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'clock' | 'credit-card' | 'download' | 'droplet' | 'external' | 'eye' | 'filter' | 'flame' | 'gift' | 'globe' | 'heart' | 'image' | 'info' | 'leaf' | 'lock' | 'mail' | 'menu' | 'minus' | 'moon' | 'package' | 'pause' | 'percent' | 'phone' | 'play' | 'plus' | 'refresh' | 'search' | 'share' | 'shield' | 'shield-check' | 'sparkles' | 'star' | 'star-outline' | 'sun' | 'tag' | 'thumbs-up' | 'trash' | 'truck' | 'user' | 'volume' | 'x' | 'zap'} | {kind: 'asset_svg' | 'asset_image', assetId: string, url: string, srcSet: ?string, altText: ?string, width: ?object | number, height: ?object | number, fit: ?'contain' | 'cover', fallbackIcon: 'check' | 'alert-circle' | 'arrow-down' | 'arrow-left' | 'arrow-right' | 'arrow-up' | 'award' | 'camera' | 'cart' | 'check-circle' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'clock' | 'credit-card' | 'download' | 'droplet' | 'external' | 'eye' | 'filter' | 'flame' | 'gift' | 'globe' | 'heart' | 'image' | 'info' | 'leaf' | 'lock' | 'mail' | 'menu' | 'minus' | 'moon' | 'package' | 'pause' | 'percent' | 'phone' | 'play' | 'plus' | 'refresh' | 'search' | 'share' | 'shield' | 'shield-check' | 'sparkles' | 'star' | 'star-outline' | 'sun' | 'tag' | 'thumbs-up' | 'trash' | 'truck' | 'user' | 'volume' | 'x' | 'zap'}",
+        "unlocked": "?{kind: string, name: 'check' | 'alert-circle' | 'arrow-down' | 'arrow-left' | 'arrow-right' | 'arrow-up' | 'award' | 'camera' | 'cart' | 'check-circle' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'clock' | 'credit-card' | 'download' | 'droplet' | 'external' | 'eye' | 'filter' | 'flame' | 'gift' | 'globe' | 'heart' | 'image' | 'info' | 'leaf' | 'lock' | 'mail' | 'menu' | 'minus' | 'moon' | 'package' | 'pause' | 'percent' | 'phone' | 'play' | 'plus' | 'refresh' | 'search' | 'share' | 'shield' | 'shield-check' | 'sparkles' | 'star' | 'star-outline' | 'sun' | 'tag' | 'thumbs-up' | 'trash' | 'truck' | 'user' | 'volume' | 'x' | 'zap', fallbackIcon: ?'check' | 'alert-circle' | 'arrow-down' | 'arrow-left' | 'arrow-right' | 'arrow-up' | 'award' | 'camera' | 'cart' | 'check-circle' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'clock' | 'credit-card' | 'download' | 'droplet' | 'external' | 'eye' | 'filter' | 'flame' | 'gift' | 'globe' | 'heart' | 'image' | 'info' | 'leaf' | 'lock' | 'mail' | 'menu' | 'minus' | 'moon' | 'package' | 'pause' | 'percent' | 'phone' | 'play' | 'plus' | 'refresh' | 'search' | 'share' | 'shield' | 'shield-check' | 'sparkles' | 'star' | 'star-outline' | 'sun' | 'tag' | 'thumbs-up' | 'trash' | 'truck' | 'user' | 'volume' | 'x' | 'zap'} | {kind: 'asset_svg' | 'asset_image', assetId: string, url: string, srcSet: ?string, altText: ?string, width: ?object | number, height: ?object | number, fit: ?'contain' | 'cover', fallbackIcon: 'check' | 'alert-circle' | 'arrow-down' | 'arrow-left' | 'arrow-right' | 'arrow-up' | 'award' | 'camera' | 'cart' | 'check-circle' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'clock' | 'credit-card' | 'download' | 'droplet' | 'external' | 'eye' | 'filter' | 'flame' | 'gift' | 'globe' | 'heart' | 'image' | 'info' | 'leaf' | 'lock' | 'mail' | 'menu' | 'minus' | 'moon' | 'package' | 'pause' | 'percent' | 'phone' | 'play' | 'plus' | 'refresh' | 'search' | 'share' | 'shield' | 'shield-check' | 'sparkles' | 'star' | 'star-outline' | 'sun' | 'tag' | 'thumbs-up' | 'trash' | 'truck' | 'user' | 'volume' | 'x' | 'zap'}"
+      },
+      "required": false
     }
   },
-  "variants": null,
+  "variants": [
+    "default",
+    "filled",
+    "subtle",
+    "outlined"
+  ],
   "css_vars": [
-    "--lx-accent-color"
+    "--lx-accent-color",
+    "--lx-border-color",
+    "--lx-surface-alt"
   ],
   "parts": [
     "bar",
     "message",
     "root",
-    "track"
+    "track",
+    "visual"
   ],
   "authoring": {
     "format": "source-html",

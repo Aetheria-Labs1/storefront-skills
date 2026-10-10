@@ -14,6 +14,34 @@
   ],
   "anti_patterns": [],
   "props": {
+    "visual": {
+      "type": "union",
+      "anyOf": [
+        {
+          "type": "object",
+          "shape": {
+            "kind": "string",
+            "name": "'check' | 'alert-circle' | 'arrow-down' | 'arrow-left' | 'arrow-right' | 'arrow-up' | 'award' | 'camera' | 'cart' | 'check-circle' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'clock' | 'credit-card' | 'download' | 'droplet' | 'external' | 'eye' | 'filter' | 'flame' | 'gift' | 'globe' | 'heart' | 'image' | 'info' | 'leaf' | 'lock' | 'mail' | 'menu' | 'minus' | 'moon' | 'package' | 'pause' | 'percent' | 'phone' | 'play' | 'plus' | 'refresh' | 'search' | 'share' | 'shield' | 'shield-check' | 'sparkles' | 'star' | 'star-outline' | 'sun' | 'tag' | 'thumbs-up' | 'trash' | 'truck' | 'user' | 'volume' | 'x' | 'zap'",
+            "fallbackIcon": "?'check' | 'alert-circle' | 'arrow-down' | 'arrow-left' | 'arrow-right' | 'arrow-up' | 'award' | 'camera' | 'cart' | 'check-circle' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'clock' | 'credit-card' | 'download' | 'droplet' | 'external' | 'eye' | 'filter' | 'flame' | 'gift' | 'globe' | 'heart' | 'image' | 'info' | 'leaf' | 'lock' | 'mail' | 'menu' | 'minus' | 'moon' | 'package' | 'pause' | 'percent' | 'phone' | 'play' | 'plus' | 'refresh' | 'search' | 'share' | 'shield' | 'shield-check' | 'sparkles' | 'star' | 'star-outline' | 'sun' | 'tag' | 'thumbs-up' | 'trash' | 'truck' | 'user' | 'volume' | 'x' | 'zap'"
+          }
+        },
+        {
+          "type": "object",
+          "shape": {
+            "kind": "'asset_svg' | 'asset_image'",
+            "assetId": "string",
+            "url": "string",
+            "srcSet": "?string",
+            "altText": "?string",
+            "width": "?unknown | number",
+            "height": "?unknown | number",
+            "fit": "?'contain' | 'cover'",
+            "fallbackIcon": "'check' | 'alert-circle' | 'arrow-down' | 'arrow-left' | 'arrow-right' | 'arrow-up' | 'award' | 'camera' | 'cart' | 'check-circle' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'clock' | 'credit-card' | 'download' | 'droplet' | 'external' | 'eye' | 'filter' | 'flame' | 'gift' | 'globe' | 'heart' | 'image' | 'info' | 'leaf' | 'lock' | 'mail' | 'menu' | 'minus' | 'moon' | 'package' | 'pause' | 'percent' | 'phone' | 'play' | 'plus' | 'refresh' | 'search' | 'share' | 'shield' | 'shield-check' | 'sparkles' | 'star' | 'star-outline' | 'sun' | 'tag' | 'thumbs-up' | 'trash' | 'truck' | 'user' | 'volume' | 'x' | 'zap'"
+          }
+        }
+      ],
+      "required": false
+    },
     "text": {
       "type": "string",
       "required": false,
@@ -79,6 +107,52 @@
       ],
       "required": false,
       "default": "below_checkout"
+    },
+    "paymentVariant": {
+      "type": "enum",
+      "values": [
+        "icons_only",
+        "icons_with_labels"
+      ],
+      "required": false,
+      "default": "icons_only"
+    },
+    "paymentAlignment": {
+      "type": "enum",
+      "values": [
+        "left",
+        "center"
+      ],
+      "required": false,
+      "default": "center"
+    },
+    "paymentVisual": {
+      "type": "union",
+      "anyOf": [
+        {
+          "type": "object",
+          "shape": {
+            "kind": "string",
+            "name": "'check' | 'alert-circle' | 'arrow-down' | 'arrow-left' | 'arrow-right' | 'arrow-up' | 'award' | 'camera' | 'cart' | 'check-circle' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'clock' | 'credit-card' | 'download' | 'droplet' | 'external' | 'eye' | 'filter' | 'flame' | 'gift' | 'globe' | 'heart' | 'image' | 'info' | 'leaf' | 'lock' | 'mail' | 'menu' | 'minus' | 'moon' | 'package' | 'pause' | 'percent' | 'phone' | 'play' | 'plus' | 'refresh' | 'search' | 'share' | 'shield' | 'shield-check' | 'sparkles' | 'star' | 'star-outline' | 'sun' | 'tag' | 'thumbs-up' | 'trash' | 'truck' | 'user' | 'volume' | 'x' | 'zap'",
+            "fallbackIcon": "?'check' | 'alert-circle' | 'arrow-down' | 'arrow-left' | 'arrow-right' | 'arrow-up' | 'award' | 'camera' | 'cart' | 'check-circle' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'clock' | 'credit-card' | 'download' | 'droplet' | 'external' | 'eye' | 'filter' | 'flame' | 'gift' | 'globe' | 'heart' | 'image' | 'info' | 'leaf' | 'lock' | 'mail' | 'menu' | 'minus' | 'moon' | 'package' | 'pause' | 'percent' | 'phone' | 'play' | 'plus' | 'refresh' | 'search' | 'share' | 'shield' | 'shield-check' | 'sparkles' | 'star' | 'star-outline' | 'sun' | 'tag' | 'thumbs-up' | 'trash' | 'truck' | 'user' | 'volume' | 'x' | 'zap'"
+          }
+        },
+        {
+          "type": "object",
+          "shape": {
+            "kind": "'asset_svg' | 'asset_image'",
+            "assetId": "string",
+            "url": "string",
+            "srcSet": "?string",
+            "altText": "?string",
+            "width": "?unknown | number",
+            "height": "?unknown | number",
+            "fit": "?'contain' | 'cover'",
+            "fallbackIcon": "'check' | 'alert-circle' | 'arrow-down' | 'arrow-left' | 'arrow-right' | 'arrow-up' | 'award' | 'camera' | 'cart' | 'check-circle' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'clock' | 'credit-card' | 'download' | 'droplet' | 'external' | 'eye' | 'filter' | 'flame' | 'gift' | 'globe' | 'heart' | 'image' | 'info' | 'leaf' | 'lock' | 'mail' | 'menu' | 'minus' | 'moon' | 'package' | 'pause' | 'percent' | 'phone' | 'play' | 'plus' | 'refresh' | 'search' | 'share' | 'shield' | 'shield-check' | 'sparkles' | 'star' | 'star-outline' | 'sun' | 'tag' | 'thumbs-up' | 'trash' | 'truck' | 'user' | 'volume' | 'x' | 'zap'"
+          }
+        }
+      ],
+      "required": false
     }
   },
   "variants": [

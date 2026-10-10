@@ -126,6 +126,21 @@ Design objects merge. Composition operations are applied in order. Pass
 `custom_css: null` to remove profile CSS. The tool validates and compiles the
 complete merged configuration and never publishes.
 
+Presentation edits rebuild cart sections. `shell.title` controls the visible
+header and dialog label. Disabled optional modules stay absent; product-offer
+visibility is mirrored into offer slots so inline offers also disappear.
+
+Use `design_patch.modules.payment_options.placement` for `inside_checkout`,
+`below_checkout`, or `hidden`, and `providers` for a unique, ordered provider
+list. The payment module's enabled flag gates both placements. Variant,
+alignment, colors, and icon styling apply inside checkout too.
+
+Read the returned `warnings` array. Entries with `code: "setting_not_rendered"`
+identify a stored path with no effect. Responsive overrides support tokens,
+`shell.width`, and module/state CSS; use base settings for island props.
+Deprecated gift `lock_quantity` and the unused `warning` color token have no
+effect. Confirmed gift quantities remain controlled by reward rules.
+
 Promotion configuration, cart rules, raw commerce configuration, and raw layout
 schema are deliberately absent from the MCP edit contract.
 

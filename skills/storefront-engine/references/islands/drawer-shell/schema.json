@@ -136,11 +136,20 @@
     "contentBackground": {
       "type": "enum",
       "values": [
-        "surface",
-        "subtle"
+        "subtle",
+        "surface"
       ],
       "required": false,
       "default": "surface"
+    },
+    "desktopLayout": {
+      "type": "enum",
+      "values": [
+        "split",
+        "single"
+      ],
+      "required": false,
+      "default": "single"
     },
     "__innerHTML": {
       "type": "string",
@@ -161,11 +170,14 @@
   "parts": [
     "body",
     "close",
+    "committed-content",
     "content",
     "drag-handle",
     "footer",
     "header",
+    "header-content",
     "header-count",
+    "header-region",
     "header-title",
     "overlay",
     "panel",
