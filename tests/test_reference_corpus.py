@@ -118,6 +118,49 @@ class ReferenceCorpusTests(unittest.TestCase):
                 self.assertEqual((references / "old.md").read_text(), "Retained canonical entry point.\n")
                 self.assertFalse(BUILDER.sync_skill_shared_references(check=True))
 
+    def test_offer_strategy_reaches_standalone_consumers(self) -> None:
+        reference = "offers/offer-strategy.md"
+        expected = BUILDER.packaged_reference_content(REFERENCES / reference)
+        for skill_name in ("plan-page", "optimize", "ab-test"):
+            with self.subTest(skill=skill_name):
+                skill = ROOT / "skills" / skill_name
+                entrypoint = (skill / "SKILL.md").read_text()
+                self.assertIn(
+                    reference,
+                    LINK_RE.findall(entrypoint),
+                    "The installed skill must explicitly load the strategy",
+                )
+                packaged = skill / "references" / reference
+                self.assertTrue(packaged.is_file())
+                self.assertEqual(packaged.read_text(), expected)
+                for dependency in LINK_RE.findall(packaged.read_text()):
+                    self.assertTrue((skill / "references" / dependency).is_file())
+
+    def test_offer_strategy_keeps_planning_packet_small(self) -> None:
+        strategy = "offers/offer-strategy.md"
+        self.assertEqual(
+            BUILDER.shared_reference_closure({strategy}),
+            {strategy},
+            "The strategy must not pull the older offer/CRO corpus into planning",
+        )
+        self.assertEqual(
+            BUILDER.shared_reference_closure(BUILDER.skill_reference_roots("plan-page")),
+            {
+                "plan-page.md",
+                "planning-rules.md",
+                "page-type-guide.md",
+                "quiz-authoring.md",
+                strategy,
+            },
+        )
+
+    def test_gpt_receives_complete_offer_strategy_once(self) -> None:
+        strategy = (REFERENCES / "offers/offer-strategy.md").read_text().strip()
+        built = BUILDER.build_gpt()["gpt/knowledge.md"]
+        checked_in = (ROOT / "gpt/knowledge.md").read_text()
+        self.assertEqual(built.count(strategy), 1)
+        self.assertEqual(checked_in.count(strategy), 1)
+
     def test_all_original_checklists_and_workflow_sections_survive(self) -> None:
         for name, expected in BASELINE["checklists"].items():
             with self.subTest(page_type=name):

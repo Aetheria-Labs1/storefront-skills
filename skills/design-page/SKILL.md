@@ -57,6 +57,12 @@ Return strategy, copy, offer, proof, claim, section, or template changes to
 to `/plan-assets`. The visual stage is optional; continue when it was never
 used or was explicitly skipped.
 
+Preserve the approved value argument, component explanations, mechanism
+evidence, proof placement, and offer terms through copy, imagery, and section
+order. Previously approved plans remain usable without the newer value-strategy
+fields; do not require retroactive replanning for unrelated scoped edits.
+Changing the argument or commercial terms returns to `/plan-page`.
+
 An explicit `/design-page` request authorizes one unpublished page-creation
 credit for the named page. It does not authorize another page, paid asset
 work, publication, or live operations.

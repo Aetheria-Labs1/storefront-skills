@@ -68,10 +68,29 @@ unlabelled assumptions are not.
 **Product scope.** <product/collection ids and default variant>
 **Purchase model.** <one-time, subscription, pre-order, bundle, lead, quiz>
 **Offer.** <summary or none>
+**Desire and evidence.** <customer language and source/date; labelled inference; buyer/recipient if relevant>
+**Outcome and differentiation.** <desired outcome, alternatives, supported reason to choose>
+**Mechanism.** <evidenced explanation and useful steps, or reason no distinct mechanism is claimed>
+**Offer composition and component roles.** <included items, jobs, fulfillment basis, or why one product suffices>
+**Value, price rationale, and economics.** <confirmed price/anchor basis, value improvements, known costs/limits, visual position>
+**Proof and objection mapping.** <objections -> proof/policy rows, section IDs, asset jobs>
+**Test hypothesis and review signals.** <one test, metric, guardrails, feasibility, review trigger or measurement gaps>
 **Primary concern.** <largest unresolved shopper question>
 **Narrative.** <one sentence describing how the page earns the action>
 **Section order.** 1 <id>; 2 <id>; ...
 ```
+
+Complete the seven value-strategy fields for new or substantively replanned
+selling pages using `references/offers/offer-strategy.md`, even when the
+promotional offer is `none`. For informational or support pages, retain the
+fields and use "not applicable" with a reason where appropriate. They explain
+planning decisions, not seven extra page sections.
+
+Cite evidence and section IDs where applicable. Keep unconfirmed commercial
+alternatives in Open decisions, never in final copy. A valid existing offer
+can proceed with unknown economics explicitly limiting profit conclusions.
+Previously approved plans remain usable without these additional fields;
+complete them when replanning strategy, not during an unrelated scoped edit.
 
 ## Consumer Decision Model
 

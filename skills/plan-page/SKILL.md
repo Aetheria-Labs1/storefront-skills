@@ -23,6 +23,11 @@ Always read:
 These three references are the base planning packet. General setup
 context is a map, not live commerce authority.
 
+For selling pages, including full-price products with no promotion, also read
+`references/offers/offer-strategy.md` before choosing the page type or sections.
+For informational or support pages, record applicability without forcing an
+offer.
+
 Use:
 
 - `lexsis_catalog.list` and `lexsis_catalog.get` to refresh selected products;
@@ -85,6 +90,20 @@ For a supplied campaign message or creative, extract its promise, nouns, CTA,
 tone, claims, and visual cues from the material the user supplied. Do not
 invent a campaign context.
 
+### Develop the Offer Value Strategy
+
+For selling pages, follow `references/offers/offer-strategy.md` to connect
+customer evidence to the desired outcome, differentiation, mechanism, complete
+solution, value, proof, and one testable uncertainty. Consider value improvements before
+proposing discounts. Complete the seven value-strategy fields in Page strategy
+before finalizing sections and copy; attach section IDs once the narrative is
+chosen.
+
+Respect fixed merchant offers and supplied campaign promises. Keep unconfirmed
+prices, bonuses, or alternative positioning in Open decisions and out of final
+copy. Missing economics limits profitability conclusions without blocking a
+valid existing offer. These decisions do not authorize commercial changes.
+
 ## 3. Identify One Page Type
 
 Walk `references/page-type-guide.md` before template search. Select exactly
@@ -107,6 +126,10 @@ ordered section narrative:
 4. place proof beside the claim it supports;
 5. present the offer and risk reversal;
 6. close with one clear action.
+
+Use the Page strategy rationale to place component explanations, mechanism
+evidence, major objections, and value-supporting imagery in that narrative.
+The strategy fields are not additional mandatory sections.
 
 Sections are decided before templates. Each section must have a distinct
 consumer job; merge or remove sections that repeat the same job.

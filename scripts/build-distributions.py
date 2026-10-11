@@ -49,6 +49,7 @@ SKILL_SHARED_REFERENCES = {
         "plan-page.md",
         "page-type-guide.md",
         "planning-rules.md",
+        "offers/offer-strategy.md",
     },
     "visualize-page": set(),
     "plan-assets": {
@@ -62,6 +63,7 @@ SKILL_SHARED_REFERENCES = {
         "animation-system.md",
         "ab-testing.md",
         "consumer-behavior-cro.md",
+        "offers/offer-strategy.md",
     },
     "optimize": {
         "industry-cro.md",
@@ -79,6 +81,7 @@ SKILL_SHARED_REFERENCES = {
         "qa-recipe.md",
         "quiz-authoring.md",
         "offers/offer-ledger.md",
+        "offers/offer-strategy.md",
         "assets/generation-policy.md",
         "copy/",
         "proof/",
@@ -166,6 +169,7 @@ GPT_REFERENCE_ALLOWLIST = [
     "proof/proof-ledger",
     "assets/generation-policy",
     "offers/offer-types",
+    "offers/offer-strategy",
     "anti-patterns/dark-patterns",
     "anti-patterns/copy-anti-patterns",
     "mcp-playbooks/tool-sequence-by-stage",

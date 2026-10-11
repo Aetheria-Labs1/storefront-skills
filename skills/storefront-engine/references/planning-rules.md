@@ -55,6 +55,13 @@ or substantiate a promise; it may not silently enlarge it.
 
 ## Offers
 
+For selling pages, before choosing sections or finalizing copy, follow
+`references/offers/offer-strategy.md` and complete the value-strategy fields in
+Page strategy. This applies to full-price selling pages as well as promotions.
+Consider useful value improvements before discounts and preserve fixed merchant
+offers and campaign promises. Alternative terms remain proposals until confirmed.
+Retain existing selection and promotional tier-badge rules.
+
 Record exact price, compare-at basis, discount, code or automatic mechanic,
 eligibility, region, start/end, gift, shipping threshold, stock basis,
 subscription cadence, cancellation, pre-order delivery, guarantee, and return

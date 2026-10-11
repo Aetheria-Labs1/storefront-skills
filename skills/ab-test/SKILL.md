@@ -8,6 +8,11 @@ description: Analyze an editable Lexsis landing-page URL, plan one controlled ch
 Read `references/ab-testing.md` and
 `references/consumer-behavior-cro.md`.
 
+For offer, positioning, or pricing hypotheses, also read
+`references/offers/offer-strategy.md`. Separate an actual price change from a
+presentation test; confirm the purchase flow can honor each arm's terms before
+building price challengers.
+
 Use the host's available browser capability to inspect the supplied URL at
 desktop and mobile widths. For Lexsis state, use
 `lexsis_pages.find`, `lexsis_pages.get`, `lexsis_pages.edit_context`,

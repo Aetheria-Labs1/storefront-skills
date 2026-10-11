@@ -17,6 +17,7 @@ persisted source and review the hosted draft. Never publish.
 |---|---|
 | `references/plan-page.md` | always; the shared block vocabulary (Asset slots decisions, Claim gate, Work queue owners, status labels) this skill reuses |
 | `references/evidence-led-cro.md`, `references/consumer-behavior-cro.md` | ordering evidence and forming one behavioural hypothesis |
+| `references/offers/offer-strategy.md` | diagnosing positioning, offer value, composition, or pricing |
 | the matching section of `references/industry-cro.md` | when the vertical is known |
 | `references/page-types/_index.md`, then the type file | scoring the page against its type contract (Above the fold, Proof, Offer and CTA, Imagery, Copy, Never, Checklist) |
 | `references/design-rules.md` | scoring N1 to N14 and A1 to A12 |
@@ -102,6 +103,23 @@ Proof and offer findings block; type deviations and copy findings are review
 notes unless the page's own plan recorded them. Use
 `references/consumer-behavior-cro.md` to name the visitor mode, the top
 unanswered decision question, and the smallest behavioural hypothesis.
+
+### Offer Value Findings
+
+When positioning, offer value, composition, or pricing is in scope, use
+`references/offers/offer-strategy.md`. Distinguish a weak value argument from
+missing evidence, confusing terms, or purchase friction; each needs a different
+response. Record the relevant rationale and, when substantively replanning the
+offer, complete the seven value-strategy fields in Page strategy.
+
+Preserve fixed offers and campaign promises. Keep unconfirmed commercial
+alternatives separate from final replacement copy. Unknown margins limit
+profitability conclusions, not valid existing offers. Check traffic mix, stock,
+seasonality, and tracking before diagnosing offer fatigue.
+
+Do not require a strategy rewrite for unrelated copy, layout, speed, or metadata
+fixes. Previously approved plans remain usable; carry their argument forward
+unless the approved scope changes it.
 
 ## Findings by Section
 

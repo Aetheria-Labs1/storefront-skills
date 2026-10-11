@@ -50,6 +50,22 @@ coordinated CSS changes that express one visual hypothesis, but do not bundle
 an unrelated headline, offer, section order, and design rewrite into the same
 challenger.
 
+For offer, positioning, or pricing tests, use
+`references/offers/offer-strategy.md` and carry the relevant Page strategy
+rationale into the hypothesis. Default price/offer economics tests to `rpv`;
+review `cvr` and `aov` alongside it. Record merchant-supplied contribution
+margin, refund, or retention guardrails when available, with their sources
+and measurement windows. Do not invent native profit metrics or call higher
+AOV a profit improvement when costs are unknown.
+
+For an actual price change, record the confirmed commerce configuration that
+honors each arm's price, eligibility, and recurring terms from page through
+cart and checkout. If that support is unavailable, leave the test as a proposal;
+do not duplicate, build, or activate price challengers that only change the
+displayed price. A presentation-only test keeps payable terms unchanged.
+Preserve existing rules against preselecting multipacks, paid add-ons, or
+subscriptions, and retain the existing promotional tier-badge rules.
+
 Write `ab-test-plan.md` with:
 
 - observed control evidence;
