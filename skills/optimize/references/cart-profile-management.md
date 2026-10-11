@@ -39,7 +39,9 @@ The response describes:
 ## `lexsis_cart.promotions`
 
 Read configured profile offers plus active Shopify discount codes and automatic
-discounts. This operation is read-only. Use `cart_promotions_edit` for requested
+discounts. Pass `cart_profile_id` alone to infer its store; `store_id` is an
+optional explicit scope. A store-only call lists Shopify discounts without
+profile readiness. This operation is read-only. Use `cart_promotions_edit` for requested
 draft edits and explicitly approved `cart_publish` for Shopify synchronization.
 
 ## `lexsis_cart.preview`

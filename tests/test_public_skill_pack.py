@@ -527,7 +527,7 @@ class PublicSkillPackTests(unittest.TestCase):
             ROOT / ".claude-plugin" / "plugin.json",
             ROOT / "codex" / ".codex-plugin" / "plugin.json",
         ):
-            self.assertEqual("9.2.0", json.loads(path.read_text())["version"])
+            self.assertEqual("9.3.0", json.loads(path.read_text())["version"])
 
     def test_discovery_is_not_a_global_blocker(self) -> None:
         checked = [

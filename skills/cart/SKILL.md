@@ -19,6 +19,21 @@ Resolve the target store from a page binding, an explicit saved choice, or the
 unambiguous default in `work/storefront/setup/setup.json`. If it is not saved,
 stop and ask the user to run `/setup`; never invoke setup automatically.
 
+## References
+
+- `references/cart-composition.md`: ownership, placement, IDs and patch semantics
+- `references/module-authoring.md`: lifecycle, commands and a complete upsell
+- `references/styling-hooks.md`: shell/island parts and inline-style exceptions
+- `references/cart-profile-management.md`: lifecycle, promotions and previews
+
+Natural-language discovery returns at most 10 ranked matches by default, with
+schemas for the top 3. Use `include_schema:true` for all returned schemas,
+`limit`/`offset` to page, or exact router/action for one schema.
+`lexsis_cart.promotions` accepts `cart_profile_id` alone; the store is inferred.
+Transient upstream failures return `UPSTREAM_UNAVAILABLE` with top-level
+`retryable:true` and `retry_after_s`. Before retrying a write, re-read its version
+and history because a lost response does not prove the write failed.
+
 ## Rules
 
 - A page enables the cart through its supported page configuration; do not add
@@ -80,6 +95,11 @@ Use real catalog and review data in custom modules. For example, a rotating
 review strip above checkout should use `ReviewCarousel` with an active review
 collection or merchant-confirmed reviews; never fabricate quotes or ratings.
 Cart triggers dispatch `cart:open`; they do not need a profile ID.
+
+`design_patch` is JSON Merge Patch: omitted fields remain, null removes an
+override and arrays replace arrays. A source-bearing `upsert` replaces the
+whole module source, including its CSS and script. `data-module` is the layout
+ID; `data-module-type` is the layout type (for example `product_offer`).
 
 Custom CSS must remain scoped to the cart. External imports, remote URLs,
 script escapes, and unbalanced rules are not allowed.

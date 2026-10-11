@@ -114,6 +114,11 @@ Do not use a natural-language `query` for a known workflow action. The `query`
 field is only a convenience when the router/action is genuinely unknown or
 when mapping a former tool name.
 
+Natural-language results are relevance-ranked, with at most 10 returned by
+default. Schemas appear for the top 3; `include_schema:true` includes every
+returned schema. Use `limit` (1-100), `offset`, `total_matches` and `next_offset`
+for paging. Exact router/action lookup returns the authoritative schema.
+
 `lexsis_discover` is an API directory, not a connection test and not the tool
 that performs the operation. A response with `ok: true` and `count: 0` is a
 lookup miss. It does not mean Lexsis MCP, the target router, or the storefront
@@ -178,6 +183,11 @@ fix yourself, and never let filing substitute for finishing or for telling the
 user what is blocked.
 
 ## Error Handling
+
+- Transient upstream failures return `UPSTREAM_UNAVAILABLE` with top-level
+  `retryable:true` and `retry_after_s`. Wait before retrying; for writes inspect
+  the latest version/history first because the operation may have completed.
+  Published pages use a recent cached render or return 503 with `Retry-After`.
 
 - `ok: true, count: 0` from discovery: keep working. Retry with the exact
   router/action pair, then use the current MCP tool schema or bundled Lexsis

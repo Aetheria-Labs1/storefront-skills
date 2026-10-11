@@ -39,6 +39,12 @@ REFERENCES = SKILLS / "storefront-engine" / "references"
 LEGACY_CLAUDE_PLUGIN_ROOT = ROOT / "plugins" / "lexsis-storefront-skills"
 SHARED_RESOURCE_DIRS = {"storefront-engine"}
 SKILL_SHARED_REFERENCES = {
+    "cart": {
+        "cart-composition.md",
+        "cart-profile-management.md",
+        "module-authoring.md",
+        "styling-hooks.md",
+    },
     "plan-page": {
         "plan-page.md",
         "page-type-guide.md",

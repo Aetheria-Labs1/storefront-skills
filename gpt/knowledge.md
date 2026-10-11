@@ -1,5 +1,5 @@
 <!-- GENERATED from skills/ by scripts/build-distributions.py - DO NOT EDIT.
-     storefront-skills v9.2.0; 10 skills; 54 active islands -->
+     storefront-skills v9.3.0; 10 skills; 54 active islands -->
 
 # Lexsis Storefront Skills - Knowledge Base
 
@@ -71,6 +71,21 @@ Resolve the target store from a page binding, an explicit saved choice, or the
 unambiguous default in `work/storefront/setup/setup.json`. If it is not saved,
 stop and ask the user to run `/setup`; never invoke setup automatically.
 
+## References
+
+- `references/cart-composition.md`: ownership, placement, IDs and patch semantics
+- `references/module-authoring.md`: lifecycle, commands and a complete upsell
+- `references/styling-hooks.md`: shell/island parts and inline-style exceptions
+- `references/cart-profile-management.md`: lifecycle, promotions and previews
+
+Natural-language discovery returns at most 10 ranked matches by default, with
+schemas for the top 3. Use `include_schema:true` for all returned schemas,
+`limit`/`offset` to page, or exact router/action for one schema.
+`lexsis_cart.promotions` accepts `cart_profile_id` alone; the store is inferred.
+Transient upstream failures return `UPSTREAM_UNAVAILABLE` with top-level
+`retryable:true` and `retry_after_s`. Before retrying a write, re-read its version
+and history because a lost response does not prove the write failed.
+
 ## Rules
 
 - A page enables the cart through its supported page configuration; do not add
@@ -132,6 +147,11 @@ Use real catalog and review data in custom modules. For example, a rotating
 review strip above checkout should use `ReviewCarousel` with an active review
 collection or merchant-confirmed reviews; never fabricate quotes or ratings.
 Cart triggers dispatch `cart:open`; they do not need a profile ID.
+
+`design_patch` is JSON Merge Patch: omitted fields remain, null removes an
+override and arrays replace arrays. A source-bearing `upsert` replaces the
+whole module source, including its CSS and script. `data-module` is the layout
+ID; `data-module-type` is the layout type (for example `product_offer`).
 
 Custom CSS must remain scoped to the cart. External imports, remote URLs,
 script escapes, and unbalanced rules are not allowed.
@@ -3460,6 +3480,11 @@ Do not use a natural-language `query` for a known workflow action. The `query`
 field is only a convenience when the router/action is genuinely unknown or
 when mapping a former tool name.
 
+Natural-language results are relevance-ranked, with at most 10 returned by
+default. Schemas appear for the top 3; `include_schema:true` includes every
+returned schema. Use `limit` (1-100), `offset`, `total_matches` and `next_offset`
+for paging. Exact router/action lookup returns the authoritative schema.
+
 `lexsis_discover` is an API directory, not a connection test and not the tool
 that performs the operation. A response with `ok: true` and `count: 0` is a
 lookup miss. It does not mean Lexsis MCP, the target router, or the storefront
@@ -3524,6 +3549,11 @@ fix yourself, and never let filing substitute for finishing or for telling the
 user what is blocked.
 
 ## Error Handling
+
+- Transient upstream failures return `UPSTREAM_UNAVAILABLE` with top-level
+  `retryable:true` and `retry_after_s`. Wait before retrying; for writes inspect
+  the latest version/history first because the operation may have completed.
+  Published pages use a recent cached render or return 503 with `Retry-After`.
 
 - `ok: true, count: 0` from discovery: keep working. Retry with the exact
   router/action pair, then use the current MCP tool schema or bundled Lexsis

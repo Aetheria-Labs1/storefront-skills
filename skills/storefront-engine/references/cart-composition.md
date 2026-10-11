@@ -64,30 +64,13 @@ renderer-managed `lx:cart:add-items` command instead of hidden BuyBoxes,
 programmatic clicks, or a parallel Shopify/cart mutation. This is the custom
 cart and batch add contract for controls that select multiple products.
 
-```js
-const addButton = lifecycle.query('[data-lx-control="add-selection"]');
-
-addButton.addEventListener("click", () => {
-  section.dispatchEvent(
-    new CustomEvent("lx:cart:add-items", {
-      bubbles: true,
-      detail: {
-        requestId: crypto.randomUUID(),
-        items: selectedProducts.map((product) => ({
-          variantId: product.variantId,
-          quantity: product.quantity,
-        })),
-        openCart: true,
-      },
-    }),
-  );
-});
-```
-
-The control must use `data-lx-control` and a registered lifecycle handler.
-Responses return to the originating section as
-`lx:cart:add-items:pending`, `lx:cart:add-items:success`, or
-`lx:cart:add-items:error`. Every response includes `requestId`.
+See `references/module-authoring.md` for a complete compiler-tested upsell,
+including its registered add control and request-scoped state handling.
+Dispatch from `section`, the `[data-cart-custom-module="<id>"]` wrapper.
+Responses return to that wrapper and bubble: `lx:cart:add-items:pending`,
+`:accepted`, `:confirmed`, `:success`, and `:error`. Listen on the wrapper and
+filter by requestId; a listener on an authored child section will not receive
+an event dispatched from its parent.
 
 No trigger should carry or infer a profile ID.
 
@@ -97,7 +80,40 @@ Page `theme_css` provides brand defaults. Cart profile design values and
 `custom_css` apply only under the cart profile root.
 
 Custom CSS is sanitized and scoped at render time. Do not put profile CSS in
-page sections or page metadata.
+page sections or page metadata. See `references/styling-hooks.md` for the full
+part map and inline-style exceptions.
+
+## Patch and module identity contract
+
+- `custom_css` replaces all CSS, including named blocks; null clears it.
+  Use `css_ops` to upsert/remove named blocks without resending other blocks.
+- `design_patch` is JSON Merge Patch: omitted fields remain, null removes a
+  stored override, arrays replace arrays. Removing an override can expose a default.
+- `composition_ops.upsert` with source replaces the whole module source.
+  Omit source to preserve it during visibility/placement changes.
+- `data-module` equals the layout ID, including `offer-<uuid>` and custom IDs.
+  `data-module-type` equals the layout type, such as `product_offer` or `custom`.
+  Generated sections before `default@13` used `data-module="product-offer"`;
+  recompile a draft to get consistent IDs. After-line offers repeat their slot
+  ID under each qualifying line; use the line group to distinguish instances.
+- Layout enabled flags are authoritative; offer-slot enabled flags are mirrored.
+  Disabled optional modules are absent. `visible_when` keeps a module mounted
+  with `hidden` while its cart-state predicate is false.
+
+## Current cart workflow
+
+The recent cart changes include paid-price reward eligibility/readiness,
+page-to-cart CSS isolation, typed settings that reach the DOM, custom module
+snapshots/commands/conditions, approved MCP lifecycle and promotion writes,
+and compact edits with signed sample carts. The type-only component cleanup
+adds no authoring API. Local source support does not upgrade an immutable
+published runtime: verify the deployed capability/schema and preview.
+
+Read `references/cart-profile-management.md` for the create, design, promotion,
+preview, approved publish and rollback flow. `lexsis_cart.promotions` accepts a
+profile ID alone and infers the store. Use `lexsis_discover` with
+`query:"publish cart"` for up to 10 ranked results (schemas for the top 3), or
+exact router/action discovery for an authoritative schema.
 
 ## Anti-patterns
 
@@ -105,7 +121,7 @@ page sections or page metadata.
 |---|---|
 | Inline `DrawerShell` on a storefront page | Remove it and configure the effective profile |
 | Cart selected through title or SEO metadata | Use a page assignment |
-| Agent publishes a draft automatically | Merchant reviews and publishes in the app |
+| Agent publishes a draft automatically | Review the exact draft; publish through approved `lexsis_live_ops.cart_publish` or the app |
 | Fabricated products or selling plans | Use real store catalog data |
 | Page-wide selectors in cart CSS | Use profile-scoped CSS |
 | Hidden BuyBox plus `.click()` for a custom selection | Dispatch `lx:cart:add-items` from the registered section control |
