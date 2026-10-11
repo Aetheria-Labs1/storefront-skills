@@ -14,6 +14,8 @@ Inputs:
 - `store_id` as an optional multi-store hint
 - `include_available_profiles`
 - `include_history` for the latest 100 lifecycle events, authenticated actor/client and diff summaries
+- `fields` for selected profile fields/dotted paths; unknown paths fail
+- `response:"full"` for complete source; metadata is the default
 
 Pass `page_id` to get the published snapshot a shopper receives and its
 `resolution_source`. Pass `cart_profile_id` to inspect the draft.
@@ -42,14 +44,47 @@ draft edits and explicitly approved `cart_publish` for Shopify synchronization.
 
 ## `lexsis_cart.preview`
 
-Pass `page_id` to render an immutable cart profile version on the existing
-storefront page. The returned URL carries `preview=1`, `cart_profile_id`, and
-`cart_version`. This path only reads the saved version snapshot: it does not
-publish the profile, change page assignment, or create/update Shopify
-discounts.
+Pass `page_id`, `cart_profile_id`, and a fixture name: `empty`,
+`below_first_reward`, `between_rewards`, `all_unlocked`, `gift_chosen`, or
+`code_applied`. Optional `cart_version` pins a saved version. Explicit fixture:
+`{lines:[{variantId,quantity,sellingPlanId?}],codes?:[]}` (real store GIDs,
+12 lines, quantity 1-999, 10 codes). Default fixture is empty.
 
-Omit `page_id` to create or refresh an isolated signed cart fixture preview.
-Use either preview URL for desktop and mobile visual QA.
+The URL carries `preview=1`, `cart_version` and a signed `fixture` token,
+expiring in 15 minutes. Omit `page_id` for an isolated sample cart. No browser
+is started. Open the URL in your own browser. Samples are computed from synced
+catalogue prices and shared reward calculations, marked `source:"computed"`.
+They do not mutate Shopify, restore/write `lx_cartId`, or permit checkout.
+Tracking is suppressed. Tampering/expiry logs `fixture_invalid` and falls back
+to normal cart: only interact as a sample when its badge is present.
+
+## `lexsis_cart.preview_states`
+
+Pass `{page_id,cart_profile_id}` for all six signed URLs, CartSnapshots, module
+visibility and static checks in one response. Checks: setting warnings,
+configured color contrast, shown unready rewards, custom compilation and
+hardcoded checkout links. No screenshots or DOM measurements. Unavailable
+fixtures/checks are explicit warnings or `not_run`, not proof of success.
+
+## Edit-loop response and CSS contract
+
+Draft writes return compact summaries by default; `response:"full"` returns
+full profile source. `cart_edit dry_run:true` runs the same compiler, returns
+errors/warnings, a module tree and signed uncommitted URL without saving a
+version. Module visibility uses an empty fixture; an unavailable evaluator is
+reported explicitly. Saved edits with `preview_error` should retry preview,
+not the write.
+
+`custom_css` replaces all CSS, including named blocks; null clears it.
+`css_ops:[{op:"upsert",id:"checkout",css:"..."},{op:"remove",id:"old"}]` updates
+named blocks in insertion order. Upsert keeps the position; removal requires
+an existing ID. First use preserves old CSS as `legacy`. Both together fail.
+Each block and their concatenation are sanitized and scoped.
+
+`island_schema` defaults to a compact overview with shared `$defs.iconName`.
+`fields:["rewards"]` expands a prop; `verbose:true` adds full styling/examples.
+`type_expression` definitions preserve the authoring DSL with `$ref(...)`
+aliases; they are not standalone JSON Schema.
 
 ## `lexsis_drafts.cart_set`
 

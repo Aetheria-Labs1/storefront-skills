@@ -775,7 +775,8 @@
       "get",
       "capabilities",
       "promotions",
-      "preview"
+      "preview",
+      "preview_states"
     ],
     "lexsis_support": [
       "search_docs"

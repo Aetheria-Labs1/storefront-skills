@@ -64,16 +64,17 @@ stop and ask the user to run `/setup`; never invoke setup automatically.
    - `remove` deletes only custom modules.
    - Use `before_module_id: "checkout"` and `region: "footer"` for a block
      immediately above checkout.
-6. Re-read the profile with `lexsis_cart.get`.
-7. Call `lexsis_cart.preview`.
-   - Pass `page_id` to render the immutable cart draft version on the existing
-     storefront page. The returned URL includes `preview=1`,
-     `cart_profile_id`, and `cart_version`; it does not publish or synchronize
-     Shopify discounts.
-   - Omit `page_id` only when an isolated signed cart fixture preview is more
-     useful.
-   Verify desktop and mobile. Test both populated and empty cart states when
-   the design changes structure.
+6. Responses default to compact summaries. Re-read needed fields with
+   `lexsis_cart.get` using `fields:["version","design_spec","layout_schema"]`,
+   or `response:"full"` for all source. Use `dry_run:true` on `cart_edit` to
+   compile before saving: no version or audit write, and a signed preview URL.
+7. Call `lexsis_cart.preview` with `page_id`, `cart_profile_id` and
+   `fixture:"all_unlocked"` (or another named state). Omit `page_id` for an
+   isolated preview. The URL expires after 15 minutes. For all six URLs,
+   snapshots, visibility and static checks, call `lexsis_cart.preview_states`.
+   Lexsis starts no browser; open returned URLs in your own browser and inspect
+   mobile/desktop. Sample carts are in memory, block checkout and never touch
+   `lx_cartId`. Computed estimates do not prove Shopify discount readiness.
 
 Use real catalog and review data in custom modules. For example, a rotating
 review strip above checkout should use `ReviewCarousel` with an active review
@@ -82,6 +83,71 @@ Cart triggers dispatch `cart:open`; they do not need a profile ID.
 
 Custom CSS must remain scoped to the cart. External imports, remote URLs,
 script escapes, and unbalanced rules are not allowed.
+
+## Cheap edit examples
+
+All arguments below belong inside the router's `args`.
+
+Compile a title before saving with `lexsis_drafts.cart_edit`:
+
+```json
+{
+  "cart_profile_id": "PROFILE_UUID", "expected_version": 12,
+  "page_id": "PAGE_UUID", "dry_run": true,
+  "patch": {"design_patch": {"shell": {"title": "Your cart"}}}
+}
+```
+
+Inspect `module_tree`, `compile_errors`, `warnings` and the temporary
+`preview_url`. Repeat with `dry_run:false` to save the reviewed patch. A stale
+version still fails. Default writes return version, changed fields, bounded
+warnings, URL and readiness summary; `response:"full"` opts into full source.
+If `preview_error` says the draft saved, retry preview only.
+
+Edit one named CSS block:
+
+```json
+{
+  "cart_profile_id": "PROFILE_UUID", "expected_version": 12,
+  "patch": {"css_ops": [
+    {"op": "upsert", "id": "checkout", "css": "[data-part=\"checkout\"] { font-weight: 700; }"}
+  ]}
+}
+```
+
+`custom_css` replaces **all** CSS and named blocks; null clears them. Never
+resend it for a one-block change. `css_ops` retains insertion order, imports
+old CSS as `legacy` on first use, and supports remove by existing ID. Do not
+combine the two mechanisms.
+
+Preview a saved state with `lexsis_cart.preview`:
+
+```json
+{
+  "page_id": "PAGE_UUID", "cart_profile_id": "PROFILE_UUID",
+  "fixture": "all_unlocked"
+}
+```
+
+Named states are empty, below_first_reward, between_rewards, all_unlocked,
+gift_chosen and code_applied. Explicit fixtures use
+`{lines:[{variantId,quantity,sellingPlanId?}],codes?:[]}` with verified catalogue
+GIDs, up to 12 lines and 10 codes. Source is currently `computed`; warn on
+unavailable tiers/catalogue scopes. Unready rewards may be simulated for design
+review but remain flagged and cannot authorize publication.
+
+Request all states with `lexsis_cart.preview_states` and
+`{page_id:"PAGE_UUID",cart_profile_id:"PROFILE_UUID"}`. Static reports cover
+configured color contrast, ineffective settings, shown unready rewards,
+compile errors and checkout links. They contain no screenshots or DOM/layout
+measurements. Open the URLs in your existing browser for visual proof. A
+missing sample badge plus `fixture_invalid` means normal cart fallback; mint
+a new URL before interacting with the cart.
+
+Request a small schema with `lexsis_design.island_schema` and
+`{name:"CartRewardProgress",fields:["rewards","visuals"],verbose:false}`.
+Defaults return a compact overview; `expand:true` marks omitted nested detail.
+Repeated icons use `$defs.iconName`. Use `verbose:true` for styling and examples.
 
 ## Lifecycle example
 
