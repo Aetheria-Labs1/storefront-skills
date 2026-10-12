@@ -53,14 +53,23 @@ controls. Scope common names like `root`, `item` and `bar` to the island's
 | Island | Parts |
 | --- | --- |
 | CartLines | `root`, `empty`, `empty-visual`, `empty-message`, `empty-cta`, `line-group`, `item`, `item-image-wrap`, `item-image`, `reward-badge`, `item-info`, `item-title`, `adding-indicator`, `remove-btn`, `free-gift-label`, `item-variant`, `item-price`, `discount-percent`, `purchase-option`, `optimistic-qty`, `qty-controls`, `qty-select`, `qty-decrease`, `qty-value`, `qty-increase`, `reward-qty`, `module-frame` |
-| CartSummary | `root`, `line`, `line-label`, `line-value`, `subtotal`, `subtotal-label`, `subtotal-value` |
-| CartRewardProgress | `root`, `message`, `track`, `bar`, `milestones`, `milestone`, `milestone-threshold`, `milestone-visual`, `milestone-label`, `milestone-status`, `configuration-badge`, `scoped-offer`, `offer-condition`, `gift-title`, `gift-select`, `gift-action` |
+| CartSummary | `root`, `line`, `line-label`, `line-value`, `subtotal`, `subtotal-label`, `subtotal-hint`, `subtotal-value` |
+| CartRewardProgress | `root`, `message`, `track`, `bar`, `milestones`, `milestone`, `milestone-threshold`, `milestone-visual`, `milestone-label`, `milestone-status`, `configuration-badge`, `scoped-offer`, `offer-condition`, `gift-title`, `gift-select`, `gift-action`, `compact-track`, `milestone-dot`, `milestone-captions`, `milestone-icon` |
 | CartCoupons | `root`, `summary`, `savings`, `coupon-view` |
 | CartCheckoutButton | `root`, `cta`, `payment-logos`, `secondary-cta` |
 | CartCrossSell | `root`, `heading`, `fallback`, `item`, `item-image`, `item-info`, `item-title`, `item-price`, `add-button` |
 | CartProgressBar | `root`, `visual`, `track`, `bar`, `message` |
 | PaymentOptions | `root`, `provider`, `provider-logo`, `provider-fallback`, `button`, `text`, `icons-row` |
 | Shared cart status | `cart-sync-status`, `cart-action-dots` |
+
+`subtotal-hint` is separate from `subtotal-label` and defaults to smaller, muted
+text. Compact milestone labels, thresholds and icons use their typed state's
+`text_color`; dots and caption chips use `background`.
+
+Unlock effects expose `celebration-layer`, `reward-confetti` and `reward-toast`.
+Viewport effects belong to the drawer portal, above the panel. Toasts are
+panel-width and clear the close control; configure their location and lifetime
+with `celebration.toast.position` and `celebration.toast.duration_ms`.
 
 CartCoupons portals `coupon-view` into the shell panel, outside its island
 mount. Target `[data-part="coupon-view"]` under the profile, not only below
