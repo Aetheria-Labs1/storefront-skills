@@ -1,5 +1,5 @@
 <!-- GENERATED from skills/ by scripts/build-distributions.py - DO NOT EDIT.
-     storefront-skills v9.4.0; 10 skills; 54 active islands -->
+     storefront-skills v9.5.0; 10 skills; 54 active islands -->
 
 # Lexsis Storefront Skills - Knowledge Base
 
@@ -3671,6 +3671,12 @@ state ledger.
 
 `setup` has no page record, so it returns this evidence directly with its
 saved setup paths.
+
+## Workspace health
+
+Use `lexsis_workspace.health` to check OAuth authorization and workspace connectivity.
+Expired tool authorization returns `AUTH_EXPIRED`; reconnect before retrying.
+Use `lexsis_support.get_doc` to read a complete documentation page after search.
 
 ---
 
