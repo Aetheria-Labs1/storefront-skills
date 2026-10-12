@@ -8,12 +8,15 @@ Renderer-owned cart islands must not be embedded in a custom module.
 
 ## Lifecycle and state
 
-`section` and `lifecycle.root` are the renderer's
+`root` and `lifecycle.root` are the renderer's
 `[data-cart-custom-module="<module_id>"]` wrapper, not the authored inner
 `<section>`. `lifecycle.query(selector)` returns the first matching descendant
 or null; `queryAll` returns an array. Both exclude island internals.
 Use `lifecycle.on(target,event,handler)` for managed listeners. Timers, frames,
 observers and `addCleanup` are managed too; unmount stops them.
+`section` remains a deprecated alias of `root`. `lifecycle.setVisible(boolean)`
+controls the wrapper and authored top-level section; an authored hidden root
+section produces a compile warning.
 
 The compiler rejects `window` and `document` access. Do not reach outside the
 wrapper, fetch Shopify directly, write cart storage or dispatch fake response
@@ -30,7 +33,7 @@ the getter reports pending status with confirmed merchandise amounts.
 Read `lexsis_cart.capabilities` for `snapshot_schema`, `module_lifecycle`,
 `commands`, and `conditions`. Snapshot fields:
 
-- `status`, `itemCount`, `currency`, `subtotal`, `compareAtSubtotal`, `savings`
+- `status`, `itemCount`, `currency`, `subtotal`, `total`, `compareAtSubtotal`, `savings`
 - `discountCodes`: code and applicability
 - `lines`: identity, variant/product IDs, handle, titles, quantity, prices,
   line total, selling plan, attributes, tags, collections and reward-gift flag
@@ -49,9 +52,9 @@ without a host session provider.
 
 ## Commands and responses
 
-Dispatch a bubbling `CustomEvent` from `section` with a unique `requestId` in
+Dispatch a bubbling `CustomEvent` from `root` with a unique `requestId` in
 `detail`. Responses arrive on that same **wrapper** and bubble. Listen on
-`section`, not only on an authored inner element. Every command emits
+`root`, not only on an authored inner element. Every command emits
 `:pending`, `:accepted`, `:confirmed`, then terminal `:success` or `:error`.
 Errors can arrive before any intermediate phase. Filter responses by requestId.
 
@@ -122,22 +125,22 @@ updates after cart changes, and disables adding when the variant is present.
       requestId = 'upsell-' + Date.now() + '-' + (++sequence);
       refreshButton();
       result.textContent = '';
-      section.dispatchEvent(new CustomEvent('lx:cart:add-items', {
+      root.dispatchEvent(new CustomEvent('lx:cart:add-items', {
         bubbles: true,
         detail: { requestId, items: [{ variantId, quantity: 1 }], openCart: true }
       }));
     });
-    lifecycle.on(section, 'lx:cart:add-items:pending', (event) => {
+    lifecycle.on(root, 'lx:cart:add-items:pending', (event) => {
       if (event.detail.requestId === requestId) result.textContent = 'Adding item...';
     });
-    lifecycle.on(section, 'lx:cart:add-items:success', (event) => {
+    lifecycle.on(root, 'lx:cart:add-items:success', (event) => {
       if (event.detail.requestId !== requestId) return;
       requestId = null;
       present = lifecycle.cart.lines.some((line) => line.variantId === variantId);
       result.textContent = 'Added to your cart';
       refreshButton();
     });
-    lifecycle.on(section, 'lx:cart:add-items:error', (event) => {
+    lifecycle.on(root, 'lx:cart:add-items:error', (event) => {
       if (event.detail.requestId !== requestId) return;
       requestId = null;
       result.textContent = event.detail.message;

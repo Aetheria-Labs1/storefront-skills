@@ -35,8 +35,9 @@ Optional regions/controls exist only when enabled.
 | `scroll-region` | Scrollable content and non-sticky regions | None |
 | `body` | Body modules | None |
 | `footer` | Footer module markup | None |
-| `module-frame` | Built-in module container | None |
-| `custom-module` | Custom wrapper / script event target | None supplied by renderer |
+| `module-frame` | Direct built-in or custom module container, in composition order | None |
+| `above-title` | Custom modules above the title, outside scrolling content | None |
+| `floating-above` | Custom modules anchored above the panel, outside scrolling content | None |
 
 The `panel` also carries `data-mode`, `data-header-layout`, `data-count-style`,
 `data-close-style`, `data-sticky-header`, `data-sticky-footer`,
@@ -112,3 +113,16 @@ Merge Patch: omitted values remain, null removes a stored override and defaults
 can take effect, arrays replace whole arrays. A source-bearing composition
 `upsert` replaces the entire custom module source; it is not a source diff.
 Use dry run and signed fixture previews to inspect both populated and empty carts.
+
+## Typed cart additions
+
+CartLines exposes `unit-price` and `savings-chip` when its metadata settings enable them.
+The compact reward rail exposes `compact-track`, `milestone-dot` and `milestone-captions`.
+Dots carry `data-state` and `data-reward-id`; `--lx-reward-progress` supplies the bar percentage.
+Reward toasts use `reward-toast` and a visible status message.
+
+Configure frame appearance with `shell.panel`, `shell.overlay`, `shell.sheet`,
+`shell.motion` and `shell.behaviour`. Select frame modes independently through
+`responsive.mobile.cart_mode`, `responsive.tablet.cart_mode` and
+`responsive.desktop.cart_mode`. Top-level `cart_mode:"headless"` omits DrawerShell
+and gives custom modules cart bindings, lifecycle and managed commands.

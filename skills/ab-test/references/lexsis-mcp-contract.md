@@ -253,3 +253,9 @@ state ledger.
 
 `setup` has no page record, so it returns this evidence directly with its
 saved setup paths.
+
+## Workspace health
+
+Use `lexsis_workspace.health` to check OAuth authorization and workspace connectivity.
+Expired tool authorization returns `AUTH_EXPIRED`; reconnect before retrying.
+Use `lexsis_support.get_doc` to read a complete documentation page after search.
