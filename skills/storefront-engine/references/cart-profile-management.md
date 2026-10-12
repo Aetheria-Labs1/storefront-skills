@@ -58,15 +58,34 @@ is started. Open the URL in your own browser. Samples are computed from synced
 catalogue prices and shared reward calculations, marked `source:"computed"`.
 They do not mutate Shopify, restore/write `lx_cartId`, or permit checkout.
 Tracking is suppressed. Tampering/expiry logs `fixture_invalid` and falls back
-to normal cart: only interact as a sample when its badge is present.
+to normal cart: confirm fixture mode before interacting. The sample badge is
+at the top, dismissible, and omitted with `preview_badge=0` for screenshots.
+Removing the badge does not change fixture isolation. Fixture country and
+language use Shopify's configured default region and primary locale, independent
+of request geolocation or currency. Missing market access is reported as unknown.
 
 ## `lexsis_cart.preview_states`
 
-Pass `{page_id,cart_profile_id}` for all six signed URLs, CartSnapshots, module
-visibility and static checks in one response. Checks: setting warnings,
+Pass `{page_id,cart_profile_id}` for all six signed URLs. `response:"compact"`
+is the default: each state has `url`, `total`, `savings`, `visible_modules`,
+`warnings` and `status`. Use `response:"full"` for CartSnapshots, module
+definitions and detailed static checks. Checks: setting warnings,
 configured color contrast, shown unready rewards, custom compilation and
 hardcoded checkout links. No screenshots or DOM measurements. Unavailable
 fixtures/checks are explicit warnings or `not_run`, not proof of success.
+
+For animation QA after opening the cart, call `window.__lx.celebrate(rewardId)`.
+This replays the normal configured unlock effect without changing commerce.
+The readiness and reduced-motion checks remain active. It bypasses only the
+once-per-cart/session limit.
+
+`setting_not_rendered` warnings describe only fields present in the edit's
+`design_patch`. Server-injected defaults and untouched stored settings do not
+produce repeated edit, preview or publish warnings.
+
+Publish responses return consistent top-level and `profile.used_by`, plus
+`changed_fields` and `pages_affected` (live pages using this profile). Replaying
+an already-published version returns no changed fields.
 
 ## Edit-loop response and CSS contract
 

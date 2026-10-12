@@ -91,6 +91,9 @@ part map and inline-style exceptions.
   stored override, arrays replace arrays. Removing an override can expose a default.
 - `composition_ops.upsert` with source replaces the whole module source.
   Omit source to preserve it during visibility/placement changes.
+  New modules honour `before_module_id` or `after_module_id` on the first upsert.
+  Without an explicit region, the module inherits its anchor's region,
+  including header and before-checkout offer placements.
 - `data-module` equals the layout ID, including `offer-<uuid>` and custom IDs.
   `data-module-type` equals the layout type, such as `product_offer` or `custom`.
   Generated sections before `default@13` used `data-module="product-offer"`;
@@ -99,6 +102,30 @@ part map and inline-style exceptions.
 - Layout enabled flags are authoritative; offer-slot enabled flags are mirrored.
   Disabled optional modules are absent. `visible_when` keeps a module mounted
   with `hidden` while its cart-state predicate is false.
+
+Built-in module DOM is identical in the sandbox and published renderer:
+`[data-module="cart-lines"] [data-lx-island-runtime] > [data-part="root"]`.
+The island can share its module frame or sit inside it. Use a module descendant
+selector, or explicitly include the runtime wrapper in child
+selectors. Gift rows follow paid rows.
+
+Reward messages accept `{remaining}`, `{next_title}`, `{threshold}`,
+`{unlocked_title}` and `{unlocked_list}`. Amounts are formatted money; unlocked
+titles describe applied rewards and are empty before the first application.
+`{reward_title}` is the triggering reward's title in `toast.template` only.
+Use `{unlocked_title|Your rewards}` for a literal fallback, or
+`{#if unlocked}{unlocked_title} unlocked. {/if}{remaining} more gets you {next_title}.`
+for an optional clause. Conditional blocks cannot nest.
+
+`compact_bar` applies state `text_color` to icons and labels and state
+`border_color`/`background` to dots. Labels, icons and dots expose `data-state`.
+Summary copy exposes separate `subtotal-label` and muted `subtotal-hint` spans.
+
+Celebration particles start at the unlocked dot (or panel top). Cart scope
+stays in the panel; viewport scope renders above the sheet and overlay.
+Toasts fit the panel and clear close controls. Positions are `top` (below the
+header), `bottom`, `above_header` (falls below the header when no space).
+`toast.duration_ms` overrides the inherited celebration duration.
 
 ## Current cart workflow
 

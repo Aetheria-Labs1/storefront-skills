@@ -14,6 +14,32 @@
   ],
   "anti_patterns": [],
   "props": {
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "enum",
+        "values": [
+          "subtotal",
+          "discounts",
+          "shipping",
+          "tax",
+          "total"
+        ]
+      },
+      "required": false
+    },
+    "totalLabel": {
+      "type": "string",
+      "required": false
+    },
+    "totalHint": {
+      "type": "string",
+      "required": false
+    },
+    "savingsLabel": {
+      "type": "string",
+      "required": false
+    },
     "visual": {
       "type": "union",
       "anyOf": [
@@ -36,6 +62,7 @@
             "width": "?unknown | number",
             "height": "?unknown | number",
             "fit": "?'contain' | 'cover'",
+            "colorMode": "?'original' | 'grayscale'",
             "fallbackIcon": "'check' | 'alert-circle' | 'arrow-down' | 'arrow-left' | 'arrow-right' | 'arrow-up' | 'award' | 'camera' | 'cart' | 'check-circle' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'clock' | 'credit-card' | 'download' | 'droplet' | 'external' | 'eye' | 'filter' | 'flame' | 'gift' | 'globe' | 'heart' | 'image' | 'info' | 'leaf' | 'lock' | 'mail' | 'menu' | 'minus' | 'moon' | 'package' | 'pause' | 'percent' | 'phone' | 'play' | 'plus' | 'refresh' | 'search' | 'share' | 'shield' | 'shield-check' | 'sparkles' | 'star' | 'star-outline' | 'sun' | 'tag' | 'thumbs-up' | 'trash' | 'truck' | 'user' | 'volume' | 'x' | 'zap'"
           }
         }
@@ -85,13 +112,8 @@
     "--lx-text-muted"
   ],
   "parts": [
-    "line",
-    "line-label",
-    "line-value",
     "root",
-    "subtotal",
-    "subtotal-label",
-    "subtotal-value"
+    "subtotal-hint"
   ],
   "authoring": {
     "format": "source-html",
