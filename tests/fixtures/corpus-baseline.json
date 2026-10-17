@@ -777,7 +777,8 @@
       "submissions",
       "quiz_inspect",
       "quiz_responses",
-      "quiz_response"
+      "quiz_response",
+      "network_access"
     ],
     "lexsis_cart": [
       "get",
