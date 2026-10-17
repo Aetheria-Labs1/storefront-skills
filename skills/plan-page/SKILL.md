@@ -59,7 +59,9 @@ Identify:
 
 - workspace, store, and default working theme;
 - requested page and page type;
-- product, collection, or whole-store scope;
+- product, collection, or whole-store scope, and whether the layout is one
+  page or a product or collection template that serves many handles
+  (`references/resource-templates.md`; record the sample handles);
 - target market and persona;
 - traffic source and supplied campaign message;
 - funnel stage and awareness;

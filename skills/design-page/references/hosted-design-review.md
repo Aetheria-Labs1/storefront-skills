@@ -65,6 +65,36 @@ Exercise every planned interaction. For commerce pages verify:
 - hydration does not blank, flicker, duplicate, or shift content;
 - no console errors occur.
 
+## Collection review
+
+For CollectionGrid and CollectionSwipe pages, verify on the hosted page:
+
+- the grid loads the planned collection with live prices, stock and the
+  result count;
+- applying a filter or sort updates the URL (`filter.*`, `sort_by`), and
+  reloading that URL restores the same filters, sort and results;
+- clearing filters returns the full collection; a filter with no results
+  says so;
+- "Load more" appends the next page, updates `page` in the URL, and is a
+  link to that page;
+- Quick Add adds the correct product and variant; multi-variant products
+  open the picker; sold-out variants are disabled; the cart opens or stays
+  closed as `openCartOnAdd` intends;
+- when paired, the swipe deck appears only below 768px and the grid only at
+  768px and wider (check 390px and 1280px); swipe right adds, swipe left
+  passes, photo taps step through images, undo restores the last card.
+
+## Template review
+
+For a product or collection template, open the preview at two or three
+different handles from the plan
+(`<renderer>/v/<template slug>?preview=1&resource=product:<handle>` or
+`resource=collection:<handle>`). At each, confirm every bound island and
+text shows that resource, no other product's name, image, claim or offer
+leaks into shared copy, and the layout holds for the longest title, the
+fewest images and a sold-out or small resource. After routing, confirm
+`lexsis_pages.resolve_resource` returns the template for those handles.
+
 ## Quiz review
 
 Use `references/quiz-authoring.md` for path, fallback, product/variant, and capture

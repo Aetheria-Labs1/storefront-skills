@@ -96,6 +96,12 @@ Follow `references/design-authoring.md`.
 7. Author semantic source, scoped section styles, page-wide `theme_css`,
    required scripts, head data, and schema-valid islands.
 
+When the plan's scope is a product or collection template, follow
+`references/resource-templates.md`: pass `resource_type` at compile and
+create, bind islands and text to the resource instead of one product or
+collection, and review the hosted preview at the plan's sample handles.
+Routing live URLs to the template is a separate approved live operation.
+
 Concept images guide composition only. Their URLs never enter source or asset
 bindings.
 

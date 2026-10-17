@@ -53,6 +53,13 @@ Implementation depth (island recipes, per-vertical modules) lives in
   meal", Mamaearth "₹1.11/ml"). RESEARCH: Gourville 1998 per-day framing
   https://doi.org/10.1086/209517 ; never on one-time goods over the Rule-of-100
   line (`references/offers/price-presentation.md` PP9).
+- **Product template** (the layout should serve every product, or every
+  product in a collection, tag, type or vendor). Build it once as a product
+  resource template with no hardcoded `productId`, preview it against two
+  or three sample handles, publish, then route it
+  (`references/resource-templates.md`). Shared copy must hold for every
+  routed product; product-specific claims, proof and offers bind to the
+  product or stay on a dedicated page.
 - **Intra-brand comparison PDP** (2 to 4 sibling SKUs or tiers). A
   `comparison` table with one "best for" line per tier sits below the
   explanation sections (Huel 3-SKU table, Wakefit 4 tiers, Endy persona rows).

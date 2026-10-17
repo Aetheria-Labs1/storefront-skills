@@ -1,0 +1,257 @@
+{
+  "contract_version": 2,
+  "name": "CollectionSwipe",
+  "category": "commerce",
+  "capabilities": [
+    {
+      "name": "cart:add",
+      "when": {
+        "prop": "quickAdd.enabled",
+        "notEquals": false
+      }
+    },
+    {
+      "name": "cart:open",
+      "when": {
+        "prop": "quickAdd.enabled",
+        "notEquals": false
+      }
+    }
+  ],
+  "usage_hint": "Mobile-only swipe deck for a live Shopify collection. One card at a time; swipe right (or tap the bag button) to add to bag, swipe left to pass, tap the left or right side of the photo to step through images. Renders and fetches nothing at 768px and wider.",
+  "when_to_use": "Use on collection pages as the mobile view, in the same section as a CollectionGrid that has hideOnMobile set, so desktop gets the full grid and mobile gets the deck.",
+  "when_not_to_use": "Not as the only collection view (desktop would show nothing) and not for a handful of hand-picked products.",
+  "defaultHydrate": "visible",
+  "combine_with": [
+    "CollectionGrid (with hideOnMobile)",
+    "Navbar",
+    "the renderer-managed effective Cart V2 profile"
+  ],
+  "anti_patterns": [
+    "Placing CollectionSwipe without a CollectionGrid that has hideOnMobile: desktop shoppers see no products",
+    "Card templates with an lx-slot named quick-add: deck actions live under the deck, not in the card",
+    "Animating the card with page CSS transforms: the island owns card motion; style with --lx-swipe-* tokens and parts"
+  ],
+  "props": {
+    "collection": {
+      "type": "string",
+      "required": false
+    },
+    "pageSize": {
+      "type": "number",
+      "required": false,
+      "default": "12"
+    },
+    "initialSort": {
+      "type": "enum",
+      "values": [
+        "manual",
+        "best-selling",
+        "title-ascending",
+        "title-descending",
+        "price-ascending",
+        "price-descending",
+        "created-ascending",
+        "created-descending"
+      ],
+      "required": false,
+      "default": "manual"
+    },
+    "showFilters": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
+    "quickAdd": {
+      "type": "union",
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "object",
+          "shape": {
+            "enabled": "?boolean",
+            "placement": "?'media-top-right' | 'details-after' | 'custom'",
+            "label": "?string",
+            "triggerContent": "?string",
+            "openCartOnAdd": "?boolean",
+            "picker": "?{desktop: ?'drawer-right' | 'bottom-sheet', mobile: ?'bottom-sheet', title: ?string, closeOnAdd: ?boolean}"
+          }
+        }
+      ],
+      "required": false,
+      "default": "true"
+    },
+    "openCartOnAdd": {
+      "type": "boolean",
+      "required": false,
+      "default": "false"
+    },
+    "hideSoldOut": {
+      "type": "boolean",
+      "required": false,
+      "default": "false"
+    },
+    "syncUrl": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
+    "metafields": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "required": false
+    },
+    "aspectRatio": {
+      "type": "string",
+      "required": false,
+      "default": "4 / 5"
+    },
+    "likeLabel": {
+      "type": "string",
+      "required": false,
+      "default": "Add to bag"
+    },
+    "skipLabel": {
+      "type": "string",
+      "required": false,
+      "default": "Not for me"
+    },
+    "emptyText": {
+      "type": "string",
+      "required": false,
+      "default": "No pieces match these filters."
+    },
+    "endText": {
+      "type": "string",
+      "required": false,
+      "default": "You have seen every piece."
+    },
+    "__originalHtml": {
+      "type": "string",
+      "required": false
+    }
+  },
+  "variants": null,
+  "css_vars": [
+    "--lx-accent-color",
+    "--lx-accent-contrast",
+    "--lx-bg-color",
+    "--lx-bg-surface",
+    "--lx-border-color",
+    "--lx-card-radius",
+    "--lx-cart-body-size",
+    "--lx-cart-control-radius",
+    "--lx-cart-font-family",
+    "--lx-cart-font-weight",
+    "--lx-cart-title-size",
+    "--lx-chip-radius",
+    "--lx-error-color",
+    "--lx-focus-color",
+    "--lx-font-body",
+    "--lx-font-heading",
+    "--lx-header-height",
+    "--lx-input-radius",
+    "--lx-muted-color",
+    "--lx-quick-add-backdrop",
+    "--lx-quick-add-bg",
+    "--lx-quick-add-button-radius",
+    "--lx-quick-add-drawer-width",
+    "--lx-quick-add-option-radius",
+    "--lx-quick-add-shadow",
+    "--lx-quick-add-sheet-height",
+    "--lx-quick-add-z-index",
+    "--lx-surface-alt",
+    "--lx-swipe-",
+    "--lx-swipe-aspect",
+    "--lx-swipe-card-bg",
+    "--lx-swipe-card-padding",
+    "--lx-swipe-card-radius",
+    "--lx-swipe-card-shadow",
+    "--lx-swipe-control-bg",
+    "--lx-swipe-control-border",
+    "--lx-swipe-control-color",
+    "--lx-swipe-like-bg",
+    "--lx-swipe-like-color",
+    "--lx-swipe-like-fg",
+    "--lx-swipe-media-radius",
+    "--lx-swipe-skip-color",
+    "--lx-swipe-width",
+    "--lx-text-color",
+    "--lx-text-muted"
+  ],
+  "parts": [
+    "card",
+    "card-body",
+    "card-desc",
+    "card-media",
+    "card-photo-bars",
+    "card-price",
+    "card-title",
+    "compare-price",
+    "controls",
+    "count",
+    "deck",
+    "empty",
+    "end",
+    "error",
+    "filter-chip",
+    "filter-clear",
+    "filter-count",
+    "filter-group",
+    "filter-price",
+    "filters",
+    "like",
+    "price",
+    "quick-add-backdrop",
+    "quick-add-body",
+    "quick-add-close",
+    "quick-add-drag-handle",
+    "quick-add-eyebrow",
+    "quick-add-footer",
+    "quick-add-header",
+    "quick-add-image",
+    "quick-add-option",
+    "quick-add-option-group",
+    "quick-add-option-label",
+    "quick-add-option-values",
+    "quick-add-options",
+    "quick-add-panel",
+    "quick-add-price",
+    "quick-add-product",
+    "quick-add-product-copy",
+    "quick-add-product-title",
+    "quick-add-purchase-options",
+    "quick-add-selected-variant",
+    "quick-add-sheet",
+    "quick-add-status",
+    "quick-add-submit",
+    "quick-add-title",
+    "quick-add-variant",
+    "quick-add-variant-list",
+    "root",
+    "skip",
+    "sort",
+    "stamp-like",
+    "stamp-skip",
+    "toolbar",
+    "undo"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate"
+    ],
+    "headless": {
+      "supported": false
+    }
+  }
+}

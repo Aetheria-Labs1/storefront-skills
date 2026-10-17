@@ -150,6 +150,7 @@ class ReferenceCorpusTests(unittest.TestCase):
                 "planning-rules.md",
                 "page-type-guide.md",
                 "quiz-authoring.md",
+                "resource-templates.md",
                 strategy,
             },
         )

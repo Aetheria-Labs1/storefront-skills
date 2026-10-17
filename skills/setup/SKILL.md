@@ -16,7 +16,8 @@ Use these exact action slots:
 - brand and theme: `lexsis_brand.context`, `lexsis_brand.brand_kit`,
 `lexsis_brand.list_themes`, `lexsis_brand.get_theme`,
 `lexsis_brand.navigation`, `lexsis_design.guide`;
-- catalog: `lexsis_catalog.list`, `lexsis_catalog.get`;
+- catalog: `lexsis_catalog.list`, `lexsis_catalog.get`,
+`lexsis_catalog.collections`;
 - proof availability: `lexsis_catalog.reviews_status`,
 `lexsis_catalog.review_collections`.
 
@@ -83,9 +84,11 @@ For each selected store:
   maximum supported page size.
 5. If lightweight catalog rows omit fields required by `products.md`, call
   `lexsis_catalog.get` in supported batches for those product ids.
-6. Read `lexsis_catalog.reviews_status`, then page through active
+6. Read `lexsis_catalog.collections` for every collection's handle, title
+  and synced product count.
+7. Read `lexsis_catalog.reviews_status`, then page through active
   `lexsis_catalog.review_collections`.
-7. Merge verified MCP facts with existing merchant-confirmed local notes.
+8. Merge verified MCP facts with existing merchant-confirmed local notes.
   Mark unresolved or inferred information explicitly.
 
 Do not silently stop after the first catalog or review-collection page.
@@ -217,12 +220,15 @@ system. Add only the binding header.
 ## Products
 | Product id | Handle | Title | Status | Type | Vendor | Tags | Variants | Options | Media | Hero media | Selling plans |
 
+## Collections
+| Handle | Title | Product count |
+
 ## Catalog gaps
 | Product | Missing field | Refresh action |
 ```
 
-Keep one compact row per product. Label price and availability as a dated
-snapshot. This file is a discovery map, not commerce authority: later skills
+Keep one compact row per product and per collection. Label price and
+availability as a dated snapshot. This file is a discovery map, not commerce authority: later skills
 refresh every selected product live before using variants, prices,
 availability, media, or selling plans.
 

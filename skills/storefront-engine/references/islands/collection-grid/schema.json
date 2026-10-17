@@ -1,0 +1,368 @@
+{
+  "contract_version": 2,
+  "name": "CollectionGrid",
+  "category": "commerce",
+  "capabilities": [
+    {
+      "name": "cart:add",
+      "when": {
+        "prop": "quickAdd.enabled",
+        "notEquals": false
+      }
+    },
+    {
+      "name": "cart:open",
+      "when": {
+        "prop": "quickAdd.enabled",
+        "notEquals": false
+      }
+    }
+  ],
+  "usage_hint": "Live Shopify collection grid. Loads the collection by handle from the Storefront API with filters, sort, load-more and Quick Add per card; filter, sort and page state live in the URL using Shopify theme parameter names.",
+  "when_to_use": "Use for collection and category pages, and any edit with more than about 24 products, so every product in the collection is reachable with live price and stock.",
+  "when_not_to_use": "Not for a short hand-picked rail (use ProductCarousel or FeaturedCollectionStage) or a single product (use BuyBox).",
+  "defaultHydrate": "visible",
+  "combine_with": [
+    "Navbar",
+    "AnnouncementBar",
+    "the renderer-managed effective Cart V2 profile"
+  ],
+  "anti_patterns": [
+    "Typing product cards by hand for a collection this island can load: prices and stock go stale",
+    "Card templates without an lx-slot named quick-add while quickAdd is on: the compiler rejects them",
+    "Restyling cards with hover scale or translate: use the card parts and colour or shadow changes"
+  ],
+  "props": {
+    "collection": {
+      "type": "string",
+      "required": false
+    },
+    "pageSize": {
+      "type": "number",
+      "required": false,
+      "default": "24"
+    },
+    "initialSort": {
+      "type": "enum",
+      "values": [
+        "manual",
+        "best-selling",
+        "title-ascending",
+        "title-descending",
+        "price-ascending",
+        "price-descending",
+        "created-ascending",
+        "created-descending"
+      ],
+      "required": false,
+      "default": "manual"
+    },
+    "columns": {
+      "type": "object",
+      "shape": {
+        "mobile": "?number",
+        "tablet": "?number",
+        "desktop": "?number"
+      },
+      "required": false
+    },
+    "aspectRatio": {
+      "type": "string",
+      "required": false,
+      "default": "4 / 5"
+    },
+    "showCompareAt": {
+      "type": "boolean",
+      "required": false,
+      "default": "false"
+    },
+    "hoverSecondImage": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
+    "quickAdd": {
+      "type": "union",
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "object",
+          "shape": {
+            "enabled": "?boolean",
+            "placement": "?'media-top-right' | 'details-after' | 'custom'",
+            "label": "?string",
+            "triggerContent": "?string",
+            "openCartOnAdd": "?boolean",
+            "picker": "?{desktop: ?'drawer-right' | 'bottom-sheet', mobile: ?'bottom-sheet', title: ?string, closeOnAdd: ?boolean}"
+          }
+        }
+      ],
+      "required": false,
+      "default": "true"
+    },
+    "openCartOnAdd": {
+      "type": "boolean",
+      "required": false
+    },
+    "hideSoldOut": {
+      "type": "boolean",
+      "required": false,
+      "default": "false"
+    },
+    "filterPlacement": {
+      "type": "enum",
+      "values": [
+        "none",
+        "chips",
+        "sidebar"
+      ],
+      "required": false,
+      "default": "chips"
+    },
+    "hideOnMobile": {
+      "type": "boolean",
+      "required": false,
+      "default": "false"
+    },
+    "showSort": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
+    "syncUrl": {
+      "type": "boolean",
+      "required": false,
+      "default": "true"
+    },
+    "metafields": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "required": false
+    },
+    "loadMoreLabel": {
+      "type": "string",
+      "required": false,
+      "default": "Load more"
+    },
+    "emptyText": {
+      "type": "string",
+      "required": false,
+      "default": "No products match these filters."
+    },
+    "__originalHtml": {
+      "type": "string",
+      "required": false
+    }
+  },
+  "variants": null,
+  "css_vars": [
+    "--lx-accent-color",
+    "--lx-accent-contrast",
+    "--lx-bg-color",
+    "--lx-bg-surface",
+    "--lx-border-color",
+    "--lx-button-radius",
+    "--lx-card-radius",
+    "--lx-cart-body-size",
+    "--lx-cart-control-radius",
+    "--lx-cart-font-family",
+    "--lx-cart-font-weight",
+    "--lx-cart-title-size",
+    "--lx-cg-aspect",
+    "--lx-cg-cols-d",
+    "--lx-cg-cols-m",
+    "--lx-cg-cols-t",
+    "--lx-chip-radius",
+    "--lx-collection-gap",
+    "--lx-error-color",
+    "--lx-featured-media-arrow-bg",
+    "--lx-featured-media-arrow-border",
+    "--lx-featured-media-arrow-color",
+    "--lx-featured-media-arrow-inset",
+    "--lx-featured-media-arrow-radius",
+    "--lx-featured-media-arrow-shadow",
+    "--lx-featured-media-arrow-size",
+    "--lx-featured-media-dot-color",
+    "--lx-featured-media-dot-gap",
+    "--lx-featured-media-dot-size",
+    "--lx-featured-media-dots-bottom",
+    "--lx-focus-color",
+    "--lx-font-body",
+    "--lx-font-heading",
+    "--lx-header-height",
+    "--lx-input-radius",
+    "--lx-media-carousel-arrow-bg",
+    "--lx-media-carousel-arrow-border",
+    "--lx-media-carousel-arrow-color",
+    "--lx-media-carousel-arrow-hover-bg",
+    "--lx-media-carousel-arrow-offset",
+    "--lx-media-carousel-arrow-radius",
+    "--lx-media-carousel-arrow-shadow",
+    "--lx-media-carousel-arrow-size",
+    "--lx-media-carousel-bg",
+    "--lx-media-carousel-dot-active-color",
+    "--lx-media-carousel-dot-active-scale",
+    "--lx-media-carousel-dot-color",
+    "--lx-media-carousel-dot-gap",
+    "--lx-media-carousel-dot-offset",
+    "--lx-media-carousel-dot-shadow",
+    "--lx-media-carousel-dot-size",
+    "--lx-media-carousel-duration",
+    "--lx-media-carousel-ease",
+    "--lx-media-carousel-fit",
+    "--lx-media-carousel-focus-color",
+    "--lx-media-carousel-focus-offset",
+    "--lx-media-carousel-focus-width",
+    "--lx-media-carousel-placeholder",
+    "--lx-media-carousel-radius",
+    "--lx-muted-color",
+    "--lx-quick-add-backdrop",
+    "--lx-quick-add-bg",
+    "--lx-quick-add-button-radius",
+    "--lx-quick-add-drawer-width",
+    "--lx-quick-add-option-radius",
+    "--lx-quick-add-shadow",
+    "--lx-quick-add-sheet-height",
+    "--lx-quick-add-z-index",
+    "--lx-shoppable-button-radius",
+    "--lx-shoppable-control-bg",
+    "--lx-shoppable-control-border",
+    "--lx-shoppable-control-color",
+    "--lx-shoppable-control-hover",
+    "--lx-shoppable-control-size",
+    "--lx-shoppable-progress-bg",
+    "--lx-shoppable-progress-color",
+    "--lx-shoppable-progress-height",
+    "--lx-shoppable-radius",
+    "--lx-shoppable-video-bg",
+    "--lx-shoppable-video-error-bg",
+    "--lx-surface-alt",
+    "--lx-text-color",
+    "--lx-text-muted",
+    "--lx-video-bg",
+    "--lx-video-button-bg",
+    "--lx-video-button-color",
+    "--lx-video-button-padding-x",
+    "--lx-video-button-radius",
+    "--lx-video-control-bg",
+    "--lx-video-control-border",
+    "--lx-video-control-color",
+    "--lx-video-control-gap",
+    "--lx-video-control-hover",
+    "--lx-video-control-inset",
+    "--lx-video-control-radius",
+    "--lx-video-control-size",
+    "--lx-video-control-transition",
+    "--lx-video-error-bg",
+    "--lx-video-error-color",
+    "--lx-video-error-padding",
+    "--lx-video-focus-color",
+    "--lx-video-object-fit",
+    "--lx-video-preview-fit",
+    "--lx-video-preview-opacity",
+    "--lx-video-progress-bg",
+    "--lx-video-progress-color",
+    "--lx-video-progress-height",
+    "--lx-video-radius"
+  ],
+  "parts": [
+    "adaptive-video",
+    "adaptive-video-controls",
+    "adaptive-video-element",
+    "adaptive-video-error",
+    "adaptive-video-error-content",
+    "adaptive-video-error-message",
+    "adaptive-video-mute",
+    "adaptive-video-play",
+    "adaptive-video-preview",
+    "adaptive-video-preview-media",
+    "adaptive-video-progress",
+    "adaptive-video-progress-fill",
+    "adaptive-video-retry",
+    "card",
+    "card-image",
+    "card-image-alt",
+    "card-media",
+    "card-price",
+    "card-skeleton",
+    "card-tag",
+    "card-title",
+    "compare-price",
+    "controls",
+    "count",
+    "dot",
+    "dots",
+    "empty",
+    "error",
+    "filter-chip",
+    "filter-clear",
+    "filter-count",
+    "filter-group",
+    "filter-price",
+    "filters",
+    "grid",
+    "image",
+    "image-placeholder",
+    "load-more",
+    "next",
+    "pagination",
+    "previous",
+    "price",
+    "quick-add",
+    "quick-add-backdrop",
+    "quick-add-body",
+    "quick-add-close",
+    "quick-add-drag-handle",
+    "quick-add-eyebrow",
+    "quick-add-footer",
+    "quick-add-header",
+    "quick-add-image",
+    "quick-add-option",
+    "quick-add-option-group",
+    "quick-add-option-label",
+    "quick-add-option-values",
+    "quick-add-options",
+    "quick-add-panel",
+    "quick-add-price",
+    "quick-add-product",
+    "quick-add-product-copy",
+    "quick-add-product-title",
+    "quick-add-purchase-options",
+    "quick-add-selected-variant",
+    "quick-add-sheet",
+    "quick-add-status",
+    "quick-add-submit",
+    "quick-add-title",
+    "quick-add-trigger",
+    "quick-add-variant",
+    "quick-add-variant-list",
+    "root",
+    "scroll-container",
+    "slide",
+    "sort",
+    "toolbar",
+    "track",
+    "video",
+    "video-placeholder",
+    "video-poster",
+    "viewport"
+  ],
+  "authoring": {
+    "format": "source-html",
+    "element": "lx-island",
+    "props_encoding": "script[type=application/json]",
+    "allowed_attributes": [
+      "class",
+      "id",
+      "style",
+      "hydrate"
+    ],
+    "headless": {
+      "supported": false
+    }
+  }
+}

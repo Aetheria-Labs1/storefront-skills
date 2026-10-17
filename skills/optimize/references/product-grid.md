@@ -2,7 +2,14 @@
 
 The collection contract in `references/page-types/collection-landing.md`
 owns product count, filtering decisions, placement, and card content.
-This file only implements a static, accessible product list.
+This file only implements a static, accessible product list for a
+hand-picked set (a curated edit, a gift group, a short sale list).
+
+A whole collection, or any list of more than about 24 products, uses the
+live CollectionGrid island instead (`references/islands/collection-grid/index.md`):
+it loads the collection by handle with live price and stock, filters, sort,
+Quick Add and a crawlable "Load more". Do not hand-type cards for a
+collection it can load.
 
 ## Source shape
 

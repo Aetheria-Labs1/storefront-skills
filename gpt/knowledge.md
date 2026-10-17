@@ -1,5 +1,5 @@
 <!-- GENERATED from skills/ by scripts/build-distributions.py - DO NOT EDIT.
-     storefront-skills v9.5.0; 10 skills; 54 active islands -->
+     storefront-skills v9.5.0; 10 skills; 56 active islands -->
 
 # Lexsis Storefront Skills - Knowledge Base
 
@@ -498,6 +498,12 @@ Follow `references/design-authoring.md`.
    policies only from their approved rows and refreshed live facts.
 7. Author semantic source, scoped section styles, page-wide `theme_css`,
    required scripts, head data, and schema-valid islands.
+
+When the plan's scope is a product or collection template, follow
+`references/resource-templates.md`: pass `resource_type` at compile and
+create, bind islands and text to the resource instead of one product or
+collection, and review the hosted preview at the plan's sample handles.
+Routing live URLs to the template is a separate approved live operation.
 
 Concept images guide composition only. Their URLs never enter source or asset
 bindings.
@@ -1106,7 +1112,9 @@ Identify:
 
 - workspace, store, and default working theme;
 - requested page and page type;
-- product, collection, or whole-store scope;
+- product, collection, or whole-store scope, and whether the layout is one
+  page or a product or collection template that serves many handles
+  (`references/resource-templates.md`; record the sample handles);
 - target market and persona;
 - traffic source and supplied campaign message;
 - funnel stage and awareness;
@@ -1442,7 +1450,8 @@ Use these exact action slots:
 - brand and theme: `lexsis_brand.context`, `lexsis_brand.brand_kit`,
 `lexsis_brand.list_themes`, `lexsis_brand.get_theme`,
 `lexsis_brand.navigation`, `lexsis_design.guide`;
-- catalog: `lexsis_catalog.list`, `lexsis_catalog.get`;
+- catalog: `lexsis_catalog.list`, `lexsis_catalog.get`,
+`lexsis_catalog.collections`;
 - proof availability: `lexsis_catalog.reviews_status`,
 `lexsis_catalog.review_collections`.
 
@@ -1509,9 +1518,11 @@ For each selected store:
   maximum supported page size.
 5. If lightweight catalog rows omit fields required by `products.md`, call
   `lexsis_catalog.get` in supported batches for those product ids.
-6. Read `lexsis_catalog.reviews_status`, then page through active
+6. Read `lexsis_catalog.collections` for every collection's handle, title
+  and synced product count.
+7. Read `lexsis_catalog.reviews_status`, then page through active
   `lexsis_catalog.review_collections`.
-7. Merge verified MCP facts with existing merchant-confirmed local notes.
+8. Merge verified MCP facts with existing merchant-confirmed local notes.
   Mark unresolved or inferred information explicitly.
 
 Do not silently stop after the first catalog or review-collection page.
@@ -1643,12 +1654,15 @@ system. Add only the binding header.
 ## Products
 | Product id | Handle | Title | Status | Type | Vendor | Tags | Variants | Options | Media | Hero media | Selling plans |
 
+## Collections
+| Handle | Title | Product count |
+
 ## Catalog gaps
 | Product | Missing field | Refresh action |
 ```
 
-Keep one compact row per product. Label price and availability as a dated
-snapshot. This file is a discovery map, not commerce authority: later skills
+Keep one compact row per product and per collection. Label price and
+availability as a dated snapshot. This file is a discovery map, not commerce authority: later skills
 refresh every selected product live before using variants, prices,
 availability, media, or selling plans.
 

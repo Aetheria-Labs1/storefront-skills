@@ -680,6 +680,8 @@
     "lexsis_catalog": [
       "list",
       "get",
+      "collections",
+      "collection",
       "reviews_status",
       "reviews",
       "reviews_search",
@@ -699,7 +701,9 @@
       "integrity",
       "qa",
       "compile",
-      "compile_artifact"
+      "compile_artifact",
+      "resource_routes",
+      "resolve_resource"
     ],
     "lexsis_drafts": [
       "asset_generate",
@@ -713,6 +717,7 @@
       "page_update_head",
       "page_record_qa",
       "page_duplicate",
+      "set_resource_template",
       "page_variation",
       "template_create",
       "template_update",
@@ -744,7 +749,9 @@
       "template_archive",
       "scale_winner",
       "quiz_activate",
-      "quiz_deactivate"
+      "quiz_deactivate",
+      "resource_route_upsert",
+      "resource_route_delete"
     ],
     "lexsis_design": [
       "guide",
