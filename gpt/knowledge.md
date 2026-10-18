@@ -1,5 +1,5 @@
 <!-- GENERATED from skills/ by scripts/build-distributions.py - DO NOT EDIT.
-     storefront-skills v9.6.0; 10 skills; 56 active islands -->
+     storefront-skills v9.7.0; 10 skills; 56 active islands -->
 
 # Lexsis Storefront Skills - Knowledge Base
 
@@ -504,6 +504,14 @@ When the plan's scope is a product or collection template, follow
 create, bind islands and text to the resource instead of one product or
 collection, and review the hosted preview at the plan's sample handles.
 Routing live URLs to the template is a separate approved live operation.
+
+On a PDP or product template, bind reviews with `productIds` and never
+hardcode a fallback collection in props. Apply the plan's review fallback by
+passing `review_fallback` to `lexsis_page_create.create`, or
+`lexsis_drafts.set_review_fallback` on an existing page; unset means store
+reviews. Write the product and fallback headings as page HTML toggled by CSS
+on `data-reviews-source` (snippet in `references/resource-templates.md`);
+the island renders no fallback labels.
 
 Concept images guide composition only. Their URLs never enter source or asset
 bindings.
@@ -1136,7 +1144,11 @@ Find likely products in `products.md`, then refresh every selected product
 with the live catalog. Capture exact ids, variants, options, prices,
 availability, selling plans, descriptions, and product-media jobs.
 
-Read review availability before planning proof. Verify public policy,
+Read review availability before planning proof. For a PDP or product
+template, ask the user what a product with no reviews shows: store reviews
+(default), one review collection from `lexsis_catalog.review_collections`
+(only active ones render), or none; record it as the plan's review fallback
+(`references/resource-templates.md`, "Reviews on product pages"). Verify public policy,
 occasion, certification, shipping, returns, and claim facts from authoritative
 sources when they are not available through Lexsis. Merchant-controlled
 conflicts return to the user.
@@ -6229,7 +6241,7 @@ props; resolve an unfamiliar action schema before calling it.
 | `lexsis_brand` | `lexsis_brand.context`, `lexsis_brand.brand_kit`, `lexsis_brand.list_themes`, `lexsis_brand.get_theme`, `lexsis_brand.navigation`, `lexsis_brand.compile_theme` |
 | `lexsis_catalog` | `lexsis_catalog.list`, `lexsis_catalog.get`, `lexsis_catalog.reviews_status`, `lexsis_catalog.reviews`, `lexsis_catalog.reviews_search`, `lexsis_catalog.review_collections`, `lexsis_catalog.review_collection_items` |
 | `lexsis_pages` | `lexsis_pages.list`, `lexsis_pages.find`, `lexsis_pages.get`, `lexsis_pages.edit_context`, `lexsis_pages.content`, `lexsis_pages.source`, `lexsis_pages.section_source`, `lexsis_pages.inspect`, `lexsis_pages.diff`, `lexsis_pages.integrity`, `lexsis_pages.qa`, `lexsis_pages.compile`, `lexsis_pages.compile_artifact` |
-| `lexsis_drafts` | `lexsis_drafts.asset_generate`, `lexsis_drafts.theme_update`, `lexsis_drafts.page_replace`, `lexsis_drafts.page_patch`, `lexsis_drafts.page_attach_bundle`, `lexsis_drafts.page_update_section`, `lexsis_drafts.page_remove_section`, `lexsis_drafts.page_move_section`, `lexsis_drafts.page_update_head`, `lexsis_drafts.page_record_qa`, `lexsis_drafts.page_duplicate`, `lexsis_drafts.page_variation`, `lexsis_drafts.template_create`, `lexsis_drafts.template_update`, `lexsis_drafts.template_apply`, `lexsis_drafts.experiment_create`, `lexsis_drafts.cart_set`, `lexsis_drafts.cart_edit`, `lexsis_drafts.review_collection_create`, `lexsis_drafts.send_feedback`, `lexsis_drafts.quiz_prepare` |
+| `lexsis_drafts` | `lexsis_drafts.asset_generate`, `lexsis_drafts.theme_update`, `lexsis_drafts.page_replace`, `lexsis_drafts.page_patch`, `lexsis_drafts.page_attach_bundle`, `lexsis_drafts.page_update_section`, `lexsis_drafts.page_remove_section`, `lexsis_drafts.page_move_section`, `lexsis_drafts.page_update_head`, `lexsis_drafts.page_record_qa`, `lexsis_drafts.page_duplicate`, `lexsis_drafts.page_variation`, `lexsis_drafts.template_create`, `lexsis_drafts.template_update`, `lexsis_drafts.template_apply`, `lexsis_drafts.experiment_create`, `lexsis_drafts.cart_set`, `lexsis_drafts.cart_edit`, `lexsis_drafts.review_collection_create`, `lexsis_drafts.set_resource_template`, `lexsis_drafts.set_review_fallback`, `lexsis_drafts.send_feedback`, `lexsis_drafts.quiz_prepare` |
 | `lexsis_page_create` | `lexsis_page_create.create` |
 | `lexsis_live_ops` | `lexsis_live_ops.publish`, `lexsis_live_ops.unpublish`, `lexsis_live_ops.delete`, `lexsis_live_ops.rollback`, `lexsis_live_ops.template_publish`, `lexsis_live_ops.template_archive`, `lexsis_live_ops.scale_winner`, `lexsis_live_ops.quiz_activate`, `lexsis_live_ops.quiz_deactivate` |
 | `lexsis_design` | `lexsis_design.guide`, `lexsis_design.islands`, `lexsis_design.island_schema`, `lexsis_design.get_section` |
