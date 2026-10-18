@@ -83,7 +83,11 @@ Find likely products in `products.md`, then refresh every selected product
 with the live catalog. Capture exact ids, variants, options, prices,
 availability, selling plans, descriptions, and product-media jobs.
 
-Read review availability before planning proof. Verify public policy,
+Read review availability before planning proof. For a PDP or product
+template, ask the user what a product with no reviews shows: store reviews
+(default), one review collection from `lexsis_catalog.review_collections`
+(only active ones render), or none; record it as the plan's review fallback
+(`references/resource-templates.md`, "Reviews on product pages"). Verify public policy,
 occasion, certification, shipping, returns, and claim facts from authoritative
 sources when they are not available through Lexsis. Merchant-controlled
 conflicts return to the user.

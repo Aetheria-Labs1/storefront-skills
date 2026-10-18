@@ -19,7 +19,10 @@
     "Passing reviews without id field when helpfulEndpoint is set (votes need review identity)",
     "Using variant=\"stamped\" without demographics data (sidebar renders empty; use \"minimal\" instead)",
     "Writing reviewsEndpoint with a placeholder page id — omit it, the page supplies the endpoint at runtime",
-    "averageRating/totalReviews not taken from the reviews API total"
+    "averageRating/totalReviews not taken from the reviews API total",
+    "Hardcoding productIds on a product template: use \"$resource\" so each product shows its own reviews",
+    "Hardcoding fallbackCollectionId / fallbackScope on a product page: the page's review fallback setting supplies it",
+    "Setting averageRating/totalReviews on a product template: omit them; the summary comes from the routed product's reviews"
   ],
   "props": {
     "reviews": {
@@ -123,10 +126,18 @@
       "required": false
     },
     "productIds": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
+      "type": "union",
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        {
+          "type": "string"
+        }
+      ],
       "required": false
     },
     "collectionId": {
@@ -145,6 +156,14 @@
         "featured"
       ],
       "required": false
+    },
+    "fallbackCollectionId": {
+      "type": "string",
+      "required": false
+    },
+    "fallbackScope": {
+      "type": "string",
+      "required": false
     }
   },
   "variants": [
@@ -154,12 +173,15 @@
   ],
   "css_vars": [
     "--lx-accent-color",
+    "--lx-bg-color",
     "--lx-bg-surface",
+    "--lx-border-color",
     "--lx-review-accent",
     "--lx-review-border",
     "--lx-review-border-color",
     "--lx-review-card-bg",
     "--lx-review-muted",
+    "--lx-review-surface",
     "--lx-review-text",
     "--lx-shoppable-button-radius",
     "--lx-shoppable-control-bg",
@@ -173,7 +195,9 @@
     "--lx-shoppable-radius",
     "--lx-shoppable-video-bg",
     "--lx-shoppable-video-error-bg",
+    "--lx-surface-alt",
     "--lx-text-color",
+    "--lx-text-muted",
     "--lx-video-bg",
     "--lx-video-button-bg",
     "--lx-video-button-color",
@@ -214,6 +238,8 @@
     "adaptive-video-progress",
     "adaptive-video-progress-fill",
     "adaptive-video-retry",
+    "clear-filter",
+    "empty",
     "feed",
     "filters",
     "header",

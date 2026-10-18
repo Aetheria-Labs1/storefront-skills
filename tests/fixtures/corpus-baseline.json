@@ -718,6 +718,7 @@
       "page_record_qa",
       "page_duplicate",
       "set_resource_template",
+      "set_review_fallback",
       "page_variation",
       "template_create",
       "template_update",
@@ -4902,7 +4903,7 @@
     "islands/video-player/schema.json": "9eac592baeeb8b6f25ce9d801a1a25f92fa8605a5392c223c9d1537126fa0adc",
     "islands/cart-discount-input/schema.json": "be758a525d08b5330e0c9b2153bceb20a1c58d8326d4a943c5d170cc59953597",
     "islands/announcement-bar/schema.json": "7e9be5db5dddbf3edf4751b57bc3b8dafb5117842a821dc3a9b96c35f197c930",
-    "islands/review-list/schema.json": "3932f6d8a69b07db63ee3c8e6ea238ddc612c30237b9a0660d9b62f5e1e8129f",
-    "islands/review-carousel/schema.json": "e4dbcdfa1b43c194b22598146f159fec0cd59d0a1e9d33f1aedd3199e95865a6"
+    "islands/review-list/schema.json": "2219d3482922050a6afee90460bfdbf41872195c12d6c87481b743dd6218f717",
+    "islands/review-carousel/schema.json": "9778f16cb16161c18ebac07c878c74a60b3afa1ab8ff89795e4c73dad6553ea1"
   }
 }

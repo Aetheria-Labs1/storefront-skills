@@ -61,6 +61,47 @@ a single page, plus the sample handles used for preview.
    resource; remove the pin unless that island is intentionally fixed (a
    cross-sell of one accessory).
 
+## Reviews on product pages
+
+- On a product template, `ReviewList` and `ReviewCarousel` take
+  `"productIds": "$resource"`; the renderer binds the routed product's id.
+  A hardcoded `productIds` on a product template warns
+  `resource_template_hardcoded`. On a single PDP, pass that product's id
+  in `productIds`.
+- On `ReviewList`, omit `averageRating` and `totalReviews`: the star summary
+  comes from that product's reviews.
+- Most products have few or no reviews. What they show instead is a page
+  setting, not an island prop, so the merchant can change it in the app
+  (Page templates, "When a product has no reviews"). Never hardcode
+  `fallbackCollectionId` or `fallbackScope` in props.
+  - `store` (the default when unset): all of the store's reviews.
+  - `collection`: one review collection. List them with
+    `lexsis_catalog.review_collections`; only `active` collections render.
+  - `none`: the reviews section hides when the product has none.
+  Ask the user which one they want (default `store`). Set it with
+  `lexsis_drafts.set_review_fallback`
+  `{ page_id, type: "store" | "collection" | "none", collection_id? }`,
+  or pass `review_fallback: { type, collection_id? }` to
+  `lexsis_page_create.create`.
+- ReviewList renders no headings or labels for the fallback. Author every
+  heading ("Customer reviews", "Loved by <brand> customers", sublines) as
+  page HTML and toggle it with page CSS on the island root's
+  `data-reviews-source="product" | "fallback" | "none"`:
+
+  ```css
+  .rv-head[data-for] { display: none; }
+  [data-section-id="reviews"]:has([data-reviews-source="product"]) .rv-head[data-for="product"] { display: block; }
+  [data-section-id="reviews"]:has([data-reviews-source="fallback"]) .rv-head[data-for="fallback"] { display: block; }
+  [data-section-id="reviews"]:has([data-reviews-source="none"]) { display: none; }
+  ```
+
+  Fallback reviews show no star summary, so store reviews never read as
+  the product's rating; keep the fallback heading free of a rating too.
+- Once loaded, ReviewList also fires a `window` `lx:reviews:state` event
+  with `{ source: "product" | "fallback" | "none", total, average }` for
+  section JS, e.g. hiding a buy-box review-stars anchor when the product
+  has no reviews of its own.
+
 ## Preview against sample handles
 
 Preview at `<renderer>/v/<template slug>?preview=1&resource=product:<handle>`

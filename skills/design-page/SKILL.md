@@ -102,6 +102,14 @@ create, bind islands and text to the resource instead of one product or
 collection, and review the hosted preview at the plan's sample handles.
 Routing live URLs to the template is a separate approved live operation.
 
+On a PDP or product template, bind reviews with `productIds` and never
+hardcode a fallback collection in props. Apply the plan's review fallback by
+passing `review_fallback` to `lexsis_page_create.create`, or
+`lexsis_drafts.set_review_fallback` on an existing page; unset means store
+reviews. Write the product and fallback headings as page HTML toggled by CSS
+on `data-reviews-source` (snippet in `references/resource-templates.md`);
+the island renders no fallback labels.
+
 Concept images guide composition only. Their URLs never enter source or asset
 bindings.
 

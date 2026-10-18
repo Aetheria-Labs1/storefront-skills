@@ -59,7 +59,13 @@ Implementation depth (island recipes, per-vertical modules) lives in
   or three sample handles, publish, then route it
   (`references/resource-templates.md`). Shared copy must hold for every
   routed product; product-specific claims, proof and offers bind to the
-  product or stay on a dedicated page.
+  product or stay on a dedicated page. Reviews bind with
+  `"productIds": "$resource"`; what a product with no reviews shows is the
+  page's review fallback (store reviews by default, a collection, or none),
+  set with `lexsis_drafts.set_review_fallback`, never a hardcoded
+  `fallbackCollectionId`. Product and fallback headings are page HTML
+  toggled by CSS on `data-reviews-source` (resource-templates.md, "Reviews
+  on product pages").
 - **Intra-brand comparison PDP** (2 to 4 sibling SKUs or tiers). A
   `comparison` table with one "best for" line per tier sits below the
   explanation sections (Huel 3-SKU table, Wakefit 4 tiers, Endy persona rows).
