@@ -1,5 +1,5 @@
 <!-- GENERATED from skills/ by scripts/build-distributions.py - DO NOT EDIT.
-     storefront-skills v9.7.0; 10 skills; 56 active islands -->
+     storefront-skills v9.7.1; 10 skills; 56 active islands -->
 
 # Lexsis Storefront Skills - Knowledge Base
 
@@ -6246,7 +6246,7 @@ props; resolve an unfamiliar action schema before calling it.
 | `lexsis_live_ops` | `lexsis_live_ops.publish`, `lexsis_live_ops.unpublish`, `lexsis_live_ops.delete`, `lexsis_live_ops.rollback`, `lexsis_live_ops.template_publish`, `lexsis_live_ops.template_archive`, `lexsis_live_ops.scale_winner`, `lexsis_live_ops.quiz_activate`, `lexsis_live_ops.quiz_deactivate` |
 | `lexsis_design` | `lexsis_design.guide`, `lexsis_design.islands`, `lexsis_design.island_schema`, `lexsis_design.get_section` |
 | `lexsis_template_library` | `lexsis_template_library.search_sections`, `lexsis_template_library.search_page_kits`, `lexsis_template_library.get_kit`, `lexsis_template_library.list_mine`, `lexsis_template_library.get_mine` |
-| `lexsis_analytics` | `lexsis_analytics.timeseries`, `lexsis_analytics.page`, `lexsis_analytics.attribution`, `lexsis_analytics.experiment` |
+| `lexsis_analytics` | `lexsis_analytics.timeseries`, `lexsis_analytics.page`, `lexsis_analytics.attribution`, `lexsis_analytics.experiment`, `lexsis_analytics.page_funnel`, `lexsis_analytics.page_attribution`, `lexsis_analytics.resource` (+ `resource_funnel`, `resource_attribution`, `resource_orders`, `resource_vitals`, `resource_views`) |
 | `lexsis_capture` | `lexsis_capture.form_schemas`, `lexsis_capture.submissions`, `lexsis_capture.quiz_inspect`, `lexsis_capture.quiz_responses`, `lexsis_capture.quiz_response`, `lexsis_capture.network_access` (origins section JS may call through `lifecycle.fetch`) |
 | `lexsis_cart` | `lexsis_cart.get`, `lexsis_cart.capabilities`, `lexsis_cart.promotions`, `lexsis_cart.preview` |
 | `lexsis_support` | `lexsis_support.search_docs` |
