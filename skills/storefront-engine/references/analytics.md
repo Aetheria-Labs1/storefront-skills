@@ -22,6 +22,28 @@ lexsis_analytics.attribution({ page_id? })
 ```
 Returns: ROAS by channel, revenue per page, top campaigns driving conversions.
 
+### Product & Collection Performance
+A product or collection can be shown by its own page or by a template. These actions combine every page that showed it.
+```
+lexsis_pages.resolve_resource({ resource_type: "product", handle })   // which page/template serves it
+lexsis_analytics.resource({ resource_type: "product", handle, period: "30d" })
+```
+Returns: sessions, CVR, bounce, sources, devices, section engagement, abandoned checkouts, ROAS by channel.
+Drill in with `resource_funnel`, `resource_attribution`, `resource_orders`, `resource_vitals`.
+To rank the products a template serves, collect handles with `lexsis_pages.resource_routes`, then call `resource_views({ resource_type, handles: [...] })`.
+For one page, `page_funnel` and `page_attribution` give the same funnel and attribution.
+
+### Product & Collection Performance
+A product or collection can be shown by its own page or by a template. These actions combine every page that showed it.
+```
+lexsis_pages.resolve_resource({ resource_type: "product", handle })   // which page/template serves it
+lexsis_analytics.resource({ resource_type: "product", handle, period: "30d" })
+```
+Returns: sessions, CVR, bounce, sources, devices, section engagement, abandoned checkouts, ROAS by channel.
+Drill in with `resource_funnel`, `resource_attribution`, `resource_orders`, `resource_vitals`.
+To rank the products a template serves, collect handles with `lexsis_pages.resource_routes`, then call `resource_views({ resource_type, handles: [...] })`.
+For one page, `page_funnel` and `page_attribution` give the same funnel and attribution.
+
 ## A/B Testing Flow
 
 ### 1. Create Experiment

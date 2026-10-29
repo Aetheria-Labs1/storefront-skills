@@ -771,7 +771,10 @@
       "timeseries",
       "page",
       "attribution",
-      "experiment"
+      "experiment",
+      "page_funnel",
+      "page_attribution",
+      "resource"
     ],
     "lexsis_capture": [
       "form_schemas",
