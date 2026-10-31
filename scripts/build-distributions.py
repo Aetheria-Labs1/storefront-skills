@@ -53,6 +53,7 @@ SKILL_SHARED_REFERENCES = {
         "offers/offer-stacking.md",
     },
     "visualize-page": set(),
+    "conversion-carousel": set(),
     "plan-assets": {
         "asset-prep.md",
     },

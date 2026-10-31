@@ -1,0 +1,11 @@
+interface:
+  display_name: "Conversion Carousel"
+  short_description: "Build evidence-backed product carousels."
+  default_prompt: "Use $conversion-carousel to plan and build a product image carousel for this page."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "lexsis-ai"
+      description: "Lexsis AI storefront MCP server"
+      transport: "streamable_http"
+      url: "https://mcp.trylexsis.com/mcp"
