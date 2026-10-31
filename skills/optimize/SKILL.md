@@ -17,7 +17,8 @@ persisted source and review the hosted draft. Never publish.
 |---|---|
 | `references/plan-page.md` | always; the shared block vocabulary (Asset slots decisions, Claim gate, Work queue owners, status labels) this skill reuses |
 | `references/evidence-led-cro.md`, `references/consumer-behavior-cro.md` | ordering evidence and forming one behavioural hypothesis |
-| `references/offers/offer-strategy.md` | diagnosing positioning, offer value, composition, or pricing |
+| `references/offers/offer-strategy.md`, `references/offers/offer-stacking.md` | diagnosing positioning, offer value, composition, or pricing |
+| `/audit` report | when one exists for this page version, start from its findings instead of rescoring |
 | the matching section of `references/industry-cro.md` | when the vertical is known |
 | `references/page-types/_index.md`, then the type file | scoring the page against its type contract (Above the fold, Proof, Offer and CTA, Imagery, Copy, Never, Checklist) |
 | `references/design-rules.md` | scoring N1 to N14 and A1 to A12 |

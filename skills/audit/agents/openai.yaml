@@ -1,0 +1,11 @@
+interface:
+  display_name: "Audit Page"
+  short_description: "Read-only CRO audit with ranked fixes."
+  default_prompt: "Use $audit to score this page and rank the fixes without changing it."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "lexsis-ai"
+      description: "Lexsis AI storefront MCP server"
+      transport: "streamable_http"
+      url: "https://mcp.trylexsis.com/mcp"

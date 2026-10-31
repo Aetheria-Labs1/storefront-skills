@@ -152,6 +152,7 @@ class ReferenceCorpusTests(unittest.TestCase):
                 "quiz-authoring.md",
                 "resource-templates.md",
                 strategy,
+                "offers/offer-stacking.md",
             },
         )
 

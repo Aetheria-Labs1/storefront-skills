@@ -1,13 +1,16 @@
 ---
 name: setup
-description: "Connect Lexsis storefront workspaces and build reusable, structured store context covering brand, design, products, personas, rules, and themes. Run initially, then refresh only the context domain that changed."
+description: "Connect Lexsis storefront workspaces, build reusable store context (brand, assets, design, products, personas, rules, themes), and create the store's shared header and footer sections. Run initially, then refresh only the domain that changed."
 ---
 
 # Set Up Lexsis
 
 Build the durable store map that later storefront skills read before making
-page decisions. Setup is read-only: it resolves Lexsis data and writes local
-Markdown/CSS context files; it does not create pages or production assets.
+page decisions. Setup always pulls the brand kit, themes and assets from
+Lexsis first, then compares the live site, then writes local Markdown/CSS
+context files. Its only remote writes are approved ones: one unpublished
+shared-sections source page, the shared sections on it, and design guide
+corrections. It never publishes and never generates production assets.
 
 Use these exact action slots:
 
@@ -16,6 +19,11 @@ Use these exact action slots:
 - brand and theme: `lexsis_brand.context`, `lexsis_brand.brand_kit`,
 `lexsis_brand.list_themes`, `lexsis_brand.get_theme`,
 `lexsis_brand.navigation`, `lexsis_design.guide`;
+- assets: `lexsis_asset_library.search`, `lexsis_assets.view`;
+- shared chrome: `lexsis_pages.shared_sections`, `lexsis_pages.shared_section`,
+`lexsis_page_create.create`, `lexsis_drafts.shared_section_create`,
+`lexsis_drafts.shared_section_update`;
+- design guide write: `lexsis_drafts.theme_update` with `design_md`;
 - catalog: `lexsis_catalog.list`, `lexsis_catalog.get`,
 `lexsis_catalog.collections`;
 - proof availability: `lexsis_catalog.reviews_status`,
@@ -69,7 +77,8 @@ workspaces, stores, or themes.
 additional selected theme as its own CSS file without merging theme systems.
 
 An initial run refreshes every context domain. A later run may refresh
-`brand`, `design`, `products`, `persona`, `rules`, `themes`, or `all`.
+`brand`, `assets`, `design`, `shared-sections`, `products`, `persona`, `rules`,
+`themes`, or `all`.
 Preserve unaffected files and user-confirmed notes.
 
 ### 2. Read store context
@@ -80,6 +89,7 @@ For each selected store:
   `lexsis_brand.brand_kit`, and `lexsis_brand.navigation`.
 2. Read every selected theme with `lexsis_brand.get_theme`.
 3. Read the selected theme's exact `lexsis_design.guide`.
+   Run steps 1 to 3 before anything else in this skill.
 4. Page through `lexsis_catalog.list` until no next cursor remains. Use the
   maximum supported page size.
 5. If lightweight catalog rows omit fields required by `products.md`, call
@@ -340,6 +350,48 @@ customer records or full review text into setup.
 Save the exact `theme_css` returned for that theme. Keep separate files for
 separate themes and identify the default in `setup.md`.
 
+## Live Site, Design Guide and Shared Sections
+
+Run after the Lexsis reads, for each selected store with a public site.
+
+1. Open the store's public domain in the host browser at 390 and 1280. Record
+   the real header and footer: logo, navigation, announcement bar, utility
+   icons, footer columns, legal and social links. Compare them with
+   `lexsis_brand.navigation`. If the site cannot be reached, record that in
+   `setup.md` and skip the rest of this section.
+2. Compare the live site with the design guide. When the guide is materially
+   wrong or empty, show the user a diff. Only after approval, write the full
+   guide with `lexsis_drafts.theme_update` (`theme_id`, `design_md`), read it
+   back with `lexsis_design.guide`, and save that read-back to `design.md`.
+   Never overwrite a guide a person edited without showing the diff.
+3. Call `lexsis_pages.shared_sections`. Reuse an existing header or footer;
+   use `lexsis_drafts.shared_section_update` only when the live site changed
+   and the user approves.
+4. If either is missing, ask for approval, then create one unpublished draft
+   page titled `Shared sections source` containing `SiteHeader` and `Footer`
+   sections that match the live site, using `lexsis_page_create.create` with
+   the normal compile path. Read each island's live schema first; navigation
+   links come from verified store data only.
+5. Call `lexsis_drafts.shared_section_create` for each section, with names
+   `Site header` and `Site footer`. Only source-backed pages can share sections.
+6. Record ids in `setup.md`. Never publish the source page.
+
+Pages that use `inherit_header` and `inherit_footer` already get store chrome.
+Link the shared sections only into pages that render their own chrome, such as
+custom-domain pages; turn inheritance off on those pages so the header never
+renders twice.
+
+Add these to `setup.md`:
+
+```markdown
+## Shared sections
+| Name | Shared section id | Section id | Revision | Source page id |
+```
+
+Add an asset summary to `brand.md` from `lexsis_asset_library.search`: counts
+by kind and the ids of logo, hero and lifestyle candidates. Never save image
+binaries.
+
 ## Validation
 
 Before returning:
@@ -352,6 +404,8 @@ selected theme CSS file;
 - each product appears once in `products.md`;
 - personas use stable ids and evidence labels;
 - unavailable domains appear in `setup.md`;
+- `setup.md` lists the shared header and footer ids, or says why they are absent;
+- local `design.md` matches the guide read back from Lexsis;
 - no credentials, authorization values, customer records, full review text,
 image binaries, or raw product JSON were saved.
 

@@ -1,5 +1,5 @@
 <!-- GENERATED from skills/ by scripts/build-distributions.py - DO NOT EDIT.
-     storefront-skills v9.7.1; 10 skills; 56 active islands -->
+     storefront-skills v9.7.1; 11 skills; 56 active islands -->
 
 # Lexsis Storefront Skills - Knowledge Base
 
@@ -27,8 +27,12 @@ desktop and mobile widths. For Lexsis state, use
 `lexsis_pages.source`, `lexsis_pages.compile`, `lexsis_pages.integrity`,
 `lexsis_analytics.page`, `lexsis_analytics.experiment`,
 `lexsis_workspace.credits`, `lexsis_drafts.page_duplicate`,
-`lexsis_drafts.page_replace`, `lexsis_drafts.page_update_section`, and
-`lexsis_drafts.experiment_create`.
+`lexsis_drafts.page_replace`, `lexsis_drafts.page_update_section`,
+`lexsis_drafts.page_split_create` (whole-page and product/collection template
+tests), `lexsis_analytics.page_split_get`, `lexsis_analytics.page_split_list`,
+and `lexsis_drafts.experiment_create` (legacy blueprint variants). Bring a
+running test's arms up to date with `lexsis_live_ops.experiment_refresh` only
+after explicit approval.
 
 Use `lexsis_live_ops.publish` and `lexsis_live_ops.scale_winner` only after
 explicit approval. Resolve unfamiliar or newly available start/pause arguments
@@ -53,6 +57,117 @@ traffic merely because the user approved the test plan.
 Return the control URL and page id, plan path, variant source and preview
 paths, remote page and blueprint ids, experiment id, current state, and
 remaining activation or evaluation steps.
+
+---
+
+# Skill: audit
+
+> Read-only conversion audit of a whole storefront page. Scores above-the-fold, offer strength, proof, copy, design, mobile and funnel data against the build rules and returns ranked fixes. Never edits; hand approved fixes to /optimize.
+
+# Audit a Page
+
+Produce an evidence-based CRO report for one live or draft page. This skill
+changes nothing: no page writes, no generation, no publishing.
+
+## References
+
+| Reference | Read when |
+|---|---|
+| `references/page-types/_index.md`, then the type file | always |
+| `references/evidence-led-cro.md`, `references/consumer-behavior-cro.md` | always |
+| `references/design-rules.md` | always |
+| `references/offers/offer-strategy.md`, `references/offers/offer-stacking.md`, `references/offers/offer-ledger.md` | always |
+| `references/proof/proof-ledger.md` | always |
+| `references/copy/headline-and-cta-rules.md`, `references/anti-patterns/cro-anti-patterns.md`, `references/anti-patterns/mobile-anti-patterns.md` | always |
+| the matching section of `references/industry-cro.md` | when the vertical is known |
+
+## Gather
+
+1. Resolve the page: `lexsis_pages.find`, `lexsis_pages.get`,
+   `lexsis_pages.inspect`, `lexsis_pages.source`.
+2. Read `lexsis_analytics.page`, `lexsis_analytics.page_funnel`,
+   `lexsis_analytics.page_attribution` and `lexsis_analytics.timeseries`. If
+   data is missing or thin, say so; do not invent findings from it.
+   For product and collection templates, also read
+   `lexsis_analytics.resource_funnel`, `lexsis_analytics.resource_attribution`,
+   `lexsis_analytics.resource_orders`, `lexsis_analytics.resource_views` and
+   `lexsis_analytics.resource_vitals`.
+3. Open the page in the host browser at 390 and 1280. Screenshot the first
+   screen before any scroll.
+4. `lexsis_assets.view` on hero and offer images; `lexsis_catalog.get` and
+   `lexsis_catalog.reviews` for claimed products and proof.
+5. If `work/storefront/setup.md` exists, read it for rules and personas. Its
+   absence limits the report but does not stop it.
+
+## Score
+
+### Above the fold, at 390 and 1280
+
+Pass or fail each, with the screenshot as evidence:
+
+| # | Check |
+|---|---|
+| F1 | What it is and who it is for is clear within five seconds |
+| F2 | The headline states the outcome and matches the ad or link that sent traffic |
+| F3 | The hero image shows the product or its result |
+| F4 | Price, or the offer, is visible on a PDP or offer page |
+| F5 | The primary CTA is visible, high contrast, and states the action |
+| F6 | Rating and review count sit near the title, when real reviews exist |
+| F7 | One risk reducer is visible: returns, guarantee, or delivery date |
+| F8 | Shipping cost or threshold is stated or one tap away |
+| F9 | Nothing competes with the CTA: pop-ups, stacked bars, a second offer |
+| F10 | Largest image is not lazy-loaded and appears quickly |
+
+### Whole page
+
+| Area | Rule source |
+|---|---|
+| Page type contract | `<type>.md` checklist |
+| Offer | value score and OS rules in `offer-stacking.md`, offer-ledger |
+| Proof | proof-ledger |
+| Copy | headline and CTA rules |
+| Design | design-rules N1-N14, A1-A12 |
+| Mobile | mobile-anti-patterns |
+| CRO tells | cro-anti-patterns |
+| Funnel | biggest drop-off, device and source split |
+
+Give each area 0 to 100 and one overall score. Unverified claims and
+compliance problems are blocking, whatever the score.
+
+## Report
+
+```markdown
+# Audit: <page> (version <n>, <date>)
+
+## Summary
+Overall: <score> | Blocking: <n> | Biggest opportunity: <one line>
+
+## Above the fold
+| Check | 390 | 1280 | Evidence |
+
+## Scorecard
+| Area | Score | Key finding | Rule |
+
+## Offer
+Value score, current stack, missing stack items, margin unknowns.
+
+## Ranked fixes
+| # | Fix | Evidence | Impact H/M/L | Effort H/M/L | Test or ship |
+
+## Not assessed
+<missing data>
+```
+
+Rank by evidence, impact, and effort. Do not promise a lift percentage. Mark
+ideas without page evidence as hypotheses, and send uncertain ones to
+`/ab-test`.
+
+Write the report to `work/storefront/audits/<page-id>-v<version>.md`.
+
+## Return
+
+Return the report path, overall score, blocking count, the top three fixes, and
+the state `AUDIT_READY`. To apply fixes, the user runs `/optimize`.
 
 ---
 
@@ -590,6 +705,21 @@ Any later visible source, CSS, copy, layout, island, or asset change returns
 the design to `changes-pending-approval`. `/publish` must gate on the same
 `DESIGN_APPROVED` version.
 
+## Shared Sections
+
+Read the `Shared sections` table in `work/storefront/setup.md`. Never rebuild a
+header, footer, or entry pop-up that already exists as a shared section. Use
+inherited chrome by default. When a page renders its own chrome, link the
+shared section with `lexsis_drafts.shared_section_sync` and `page_ids`, and
+turn the matching `inherit_header` or `inherit_footer` off.
+
+To change a shared section, edit it once with
+`lexsis_drafts.shared_section_update`, then run
+`lexsis_drafts.shared_section_sync` without `page_ids`. Sync writes drafts, so
+live pages change only after `/publish`. Pages in a running experiment are
+skipped with `reason: "running_experiment"`; report them. Use
+`lexsis_drafts.shared_section_detach` only when one page must diverge.
+
 ## Return
 
 Return the page id, version, hosted preview, compile evidence, QA evidence,
@@ -620,7 +750,8 @@ persisted source and review the hosted draft. Never publish.
 |---|---|
 | `references/plan-page.md` | always; the shared block vocabulary (Asset slots decisions, Claim gate, Work queue owners, status labels) this skill reuses |
 | `references/evidence-led-cro.md`, `references/consumer-behavior-cro.md` | ordering evidence and forming one behavioural hypothesis |
-| `references/offers/offer-strategy.md` | diagnosing positioning, offer value, composition, or pricing |
+| `references/offers/offer-strategy.md`, `references/offers/offer-stacking.md` | diagnosing positioning, offer value, composition, or pricing |
+| `/audit` report | when one exists for this page version, start from its findings instead of rescoring |
 | the matching section of `references/industry-cro.md` | when the vertical is known |
 | `references/page-types/_index.md`, then the type file | scoring the page against its type contract (Above the fold, Proof, Offer and CTA, Imagery, Copy, Never, Checklist) |
 | `references/design-rules.md` | scoring N1 to N14 and A1 to A12 |
@@ -904,6 +1035,9 @@ Use exact Lexsis actions:
 - `lexsis_asset_select.select`;
 - `lexsis_assets.view` and `lexsis_assets.capabilities`;
 - `lexsis_asset_import.import`;
+- `lexsis_asset_import.discover`, `lexsis_asset_import.import_batch`,
+`lexsis_asset_import.import_status`: when the user points at a website, scan it,
+let them pick, queue the batch, and poll until it finishes;
 - `lexsis_asset_upload.upload`;
 - `lexsis_workspace.credits`;
 - `lexsis_drafts.asset_generate`.
@@ -1289,6 +1423,13 @@ Status rules:
 Plan approval does not authorize asset spending, draft creation, or
 publication.
 
+## Offer Stack
+
+When the page sells an offer, read `references/offers/offer-stacking.md` and
+record the stack in the plan: blockers, the item answering each, real values,
+guarantee, and limits. Plan headers and footers as shared sections from
+`setup.md`; do not write new copy for them.
+
 ## Return
 
 Return the complete plan, binding, status, and next route:
@@ -1372,6 +1513,13 @@ Report the published page, version, public URL, and whether the previous live
 version remains available for rollback. Include the MCP capability and action
 evidence.
 
+## Shared Sections
+
+Before publishing, read linked pages with `lexsis_pages.shared_section`. A
+`stale` page holds an older revision: sync it, or tell the user it will publish
+the older copy. After a shared section sync, each linked live page needs its
+own explicit publish approval.
+
 ---
 
 # Skill: quiz
@@ -1447,13 +1595,16 @@ activation, publication, confirmed saving, and purchase as separate outcomes.
 
 # Skill: setup
 
-> "Connect Lexsis storefront workspaces and build reusable, structured store context covering brand, design, products, personas, rules, and themes. Run initially, then refresh only the context domain that changed."
+> "Connect Lexsis storefront workspaces, build reusable store context (brand, assets, design, products, personas, rules, themes), and create the store's shared header and footer sections. Run initially, then refresh only the domain that changed."
 
 # Set Up Lexsis
 
 Build the durable store map that later storefront skills read before making
-page decisions. Setup is read-only: it resolves Lexsis data and writes local
-Markdown/CSS context files; it does not create pages or production assets.
+page decisions. Setup always pulls the brand kit, themes and assets from
+Lexsis first, then compares the live site, then writes local Markdown/CSS
+context files. Its only remote writes are approved ones: one unpublished
+shared-sections source page, the shared sections on it, and design guide
+corrections. It never publishes and never generates production assets.
 
 Use these exact action slots:
 
@@ -1462,6 +1613,11 @@ Use these exact action slots:
 - brand and theme: `lexsis_brand.context`, `lexsis_brand.brand_kit`,
 `lexsis_brand.list_themes`, `lexsis_brand.get_theme`,
 `lexsis_brand.navigation`, `lexsis_design.guide`;
+- assets: `lexsis_asset_library.search`, `lexsis_assets.view`;
+- shared chrome: `lexsis_pages.shared_sections`, `lexsis_pages.shared_section`,
+`lexsis_page_create.create`, `lexsis_drafts.shared_section_create`,
+`lexsis_drafts.shared_section_update`;
+- design guide write: `lexsis_drafts.theme_update` with `design_md`;
 - catalog: `lexsis_catalog.list`, `lexsis_catalog.get`,
 `lexsis_catalog.collections`;
 - proof availability: `lexsis_catalog.reviews_status`,
@@ -1515,7 +1671,8 @@ workspaces, stores, or themes.
 additional selected theme as its own CSS file without merging theme systems.
 
 An initial run refreshes every context domain. A later run may refresh
-`brand`, `design`, `products`, `persona`, `rules`, `themes`, or `all`.
+`brand`, `assets`, `design`, `shared-sections`, `products`, `persona`, `rules`,
+`themes`, or `all`.
 Preserve unaffected files and user-confirmed notes.
 
 ### 2. Read store context
@@ -1526,6 +1683,7 @@ For each selected store:
   `lexsis_brand.brand_kit`, and `lexsis_brand.navigation`.
 2. Read every selected theme with `lexsis_brand.get_theme`.
 3. Read the selected theme's exact `lexsis_design.guide`.
+   Run steps 1 to 3 before anything else in this skill.
 4. Page through `lexsis_catalog.list` until no next cursor remains. Use the
   maximum supported page size.
 5. If lightweight catalog rows omit fields required by `products.md`, call
@@ -1786,6 +1944,48 @@ customer records or full review text into setup.
 Save the exact `theme_css` returned for that theme. Keep separate files for
 separate themes and identify the default in `setup.md`.
 
+## Live Site, Design Guide and Shared Sections
+
+Run after the Lexsis reads, for each selected store with a public site.
+
+1. Open the store's public domain in the host browser at 390 and 1280. Record
+   the real header and footer: logo, navigation, announcement bar, utility
+   icons, footer columns, legal and social links. Compare them with
+   `lexsis_brand.navigation`. If the site cannot be reached, record that in
+   `setup.md` and skip the rest of this section.
+2. Compare the live site with the design guide. When the guide is materially
+   wrong or empty, show the user a diff. Only after approval, write the full
+   guide with `lexsis_drafts.theme_update` (`theme_id`, `design_md`), read it
+   back with `lexsis_design.guide`, and save that read-back to `design.md`.
+   Never overwrite a guide a person edited without showing the diff.
+3. Call `lexsis_pages.shared_sections`. Reuse an existing header or footer;
+   use `lexsis_drafts.shared_section_update` only when the live site changed
+   and the user approves.
+4. If either is missing, ask for approval, then create one unpublished draft
+   page titled `Shared sections source` containing `SiteHeader` and `Footer`
+   sections that match the live site, using `lexsis_page_create.create` with
+   the normal compile path. Read each island's live schema first; navigation
+   links come from verified store data only.
+5. Call `lexsis_drafts.shared_section_create` for each section, with names
+   `Site header` and `Site footer`. Only source-backed pages can share sections.
+6. Record ids in `setup.md`. Never publish the source page.
+
+Pages that use `inherit_header` and `inherit_footer` already get store chrome.
+Link the shared sections only into pages that render their own chrome, such as
+custom-domain pages; turn inheritance off on those pages so the header never
+renders twice.
+
+Add these to `setup.md`:
+
+```markdown
+## Shared sections
+| Name | Shared section id | Section id | Revision | Source page id |
+```
+
+Add an asset summary to `brand.md` from `lexsis_asset_library.search`: counts
+by kind and the ids of logo, hero and lifestyle candidates. Never save image
+binaries.
+
 ## Validation
 
 Before returning:
@@ -1798,6 +1998,8 @@ selected theme CSS file;
 - each product appears once in `products.md`;
 - personas use stable ids and evidence labels;
 - unavailable domains appear in `setup.md`;
+- `setup.md` lists the shared header and footer ids, or says why they are absent;
+- local `design.md` matches the guide read back from Lexsis;
 - no credentials, authorization values, customer records, full review text,
 image binaries, or raw product JSON were saved.
 

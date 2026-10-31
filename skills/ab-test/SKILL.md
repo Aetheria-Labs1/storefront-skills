@@ -19,8 +19,12 @@ desktop and mobile widths. For Lexsis state, use
 `lexsis_pages.source`, `lexsis_pages.compile`, `lexsis_pages.integrity`,
 `lexsis_analytics.page`, `lexsis_analytics.experiment`,
 `lexsis_workspace.credits`, `lexsis_drafts.page_duplicate`,
-`lexsis_drafts.page_replace`, `lexsis_drafts.page_update_section`, and
-`lexsis_drafts.experiment_create`.
+`lexsis_drafts.page_replace`, `lexsis_drafts.page_update_section`,
+`lexsis_drafts.page_split_create` (whole-page and product/collection template
+tests), `lexsis_analytics.page_split_get`, `lexsis_analytics.page_split_list`,
+and `lexsis_drafts.experiment_create` (legacy blueprint variants). Bring a
+running test's arms up to date with `lexsis_live_ops.experiment_refresh` only
+after explicit approval.
 
 Use `lexsis_live_ops.publish` and `lexsis_live_ops.scale_winner` only after
 explicit approval. Resolve unfamiliar or newly available start/pause arguments
