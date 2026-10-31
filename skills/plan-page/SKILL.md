@@ -228,6 +228,13 @@ Status rules:
 Plan approval does not authorize asset spending, draft creation, or
 publication.
 
+## Offer Stack
+
+When the page sells an offer, read `references/offers/offer-stacking.md` and
+record the stack in the plan: blockers, the item answering each, real values,
+guarantee, and limits. Plan headers and footers as shared sections from
+`setup.md`; do not write new copy for them.
+
 ## Return
 
 Return the complete plan, binding, status, and next route:

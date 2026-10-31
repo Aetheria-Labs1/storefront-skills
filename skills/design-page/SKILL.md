@@ -187,6 +187,21 @@ Any later visible source, CSS, copy, layout, island, or asset change returns
 the design to `changes-pending-approval`. `/publish` must gate on the same
 `DESIGN_APPROVED` version.
 
+## Shared Sections
+
+Read the `Shared sections` table in `work/storefront/setup.md`. Never rebuild a
+header, footer, or entry pop-up that already exists as a shared section. Use
+inherited chrome by default. When a page renders its own chrome, link the
+shared section with `lexsis_drafts.shared_section_sync` and `page_ids`, and
+turn the matching `inherit_header` or `inherit_footer` off.
+
+To change a shared section, edit it once with
+`lexsis_drafts.shared_section_update`, then run
+`lexsis_drafts.shared_section_sync` without `page_ids`. Sync writes drafts, so
+live pages change only after `/publish`. Pages in a running experiment are
+skipped with `reason: "running_experiment"`; report them. Use
+`lexsis_drafts.shared_section_detach` only when one page must diverge.
+
 ## Return
 
 Return the page id, version, hosted preview, compile evidence, QA evidence,

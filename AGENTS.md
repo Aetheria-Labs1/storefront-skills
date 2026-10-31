@@ -12,7 +12,8 @@ each skill's description.
 
 The normal reviewed workflow is Setup → Plan → Design → Publish. Optimize
 scores and improves an existing page with the same plan blocks. Experiments,
-carts, and quizzes are independent operations. The ten
+carts, and quizzes are independent operations. Audit is a read-only report
+that Optimize can act on. The twelve
 public commands remain independently invokable; explicit skips are recorded in
 the task handoff.
 Pages are authored directly through MCP. Do not reintroduce local page

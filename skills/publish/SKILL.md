@@ -70,3 +70,10 @@ requests that action and the target page/version is clear.
 Report the published page, version, public URL, and whether the previous live
 version remains available for rollback. Include the MCP capability and action
 evidence.
+
+## Shared Sections
+
+Before publishing, read linked pages with `lexsis_pages.shared_section`. A
+`stale` page holds an older revision: sync it, or tell the user it will publish
+the older copy. After a shared section sync, each linked live page needs its
+own explicit publish approval.

@@ -27,6 +27,9 @@ Use exact Lexsis actions:
 - `lexsis_asset_select.select`;
 - `lexsis_assets.view` and `lexsis_assets.capabilities`;
 - `lexsis_asset_import.import`;
+- `lexsis_asset_import.discover`, `lexsis_asset_import.import_batch`,
+`lexsis_asset_import.import_status`: when the user points at a website, scan it,
+let them pick, queue the batch, and poll until it finishes;
 - `lexsis_asset_upload.upload`;
 - `lexsis_workspace.credits`;
 - `lexsis_drafts.asset_generate`.

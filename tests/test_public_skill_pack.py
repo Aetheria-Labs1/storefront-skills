@@ -23,6 +23,8 @@ EXPECTED_PUBLIC_SKILLS = {
     "plan-assets",
     "design-page",
     "optimize",
+    "audit",
+    "conversion-carousel",
     "publish",
     "cart",
     "ab-test",
