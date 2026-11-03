@@ -74,6 +74,45 @@ control sizing. Native markup is not a license to recreate cart logic.
   listen for renderer response events on the same section. Do not create
   hidden commerce islands or drive their controls with `.click()`.
 
+## Section script policy
+
+The compiler and validator enforce these rules. Plan around them before
+writing JS:
+
+- **No `window.location`.** Navigate with `lifecycle.navigate(url)`. It allows
+  same-origin paths and https URLs without credentials, and returns `false`
+  for anything else.
+- **No raw observers.** Use `lifecycle.observeMutations` and
+  `lifecycle.observeVisibility`. These cannot target nodes inside an island;
+  react to island events instead (for example `lx:quiz:result`, or
+  `lx:hydrated` once an island mounts).
+- **Buttons need a binding in their own section.** A `<button>` must have a
+  click listener in the same section's JS, or a registered behaviour. A
+  button with `data-lx-open-modal="<key>"` is bound by the Modal runtime, so
+  it can open a pop-up that lives in another section.
+- **`#hash` links** to an id not on the page are a warning, not an error, so
+  you can add a link before the shared section that owns the id is synced.
+
+### Lifecycle API
+
+Section JS receives `section` (the root element) and `lifecycle`. Everything
+registered through `lifecycle` is cleaned up with the section.
+
+| Member | Use |
+|---|---|
+| `root` | The section element. |
+| `query(sel)`, `queryAll(sel)` | Find elements in the section. Island internals are excluded. |
+| `on(target, type, listener, opts?)` | Add an event listener on the section, its children, `window` or `document`. Returns an unsubscribe function. |
+| `timeout(fn, ms)`, `interval(fn, ms)`, `frame(fn)`, `loop(fn, {fps})` | Managed timers. |
+| `observeVisibility(targets, cb, opts?)` | Managed `IntersectionObserver`. |
+| `observeMutations(target, cb, opts?)` | Managed `MutationObserver`, outside islands only. |
+| `navigate(url)` | Navigate with the allow-list above. |
+| `cart`, `onCart(cb)` | Cart snapshot and change subscription. |
+| `forms.schema(key)`, `forms.submit(key, data, {consent})` | Forms-dashboard forms. `submit` never throws; check `ok`. |
+| `store.session`, `store.local`, `store.onChange(cb)` | Store-wide key/value storage (`local` takes `{ttlDays}`). |
+| `guard(fn)` | Wrap a callback in the section's error and CPU budget. |
+| `addCleanup(fn)`, `setVisible(bool)` | Teardown hook; reveal-state control. |
+
 ## Working examples
 
 Each block below compiles cleanly against the current compiler and live
