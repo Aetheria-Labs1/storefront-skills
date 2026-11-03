@@ -90,8 +90,8 @@ when it differs from these examples.
 
 `then` is an array of:
 
-- `{"action":"include"|"exclude","target":"product"|"variant"|"result","key":"…"}`
-- `{"action":"add_score","target":"product"|"variant"|"result"|"profile","key":"…","value":2}`
+- `{"action":"include"|"exclude","target":"product"|"variant"|"result","key":"..."}`
+- `{"action":"add_score","target":"product"|"variant"|"result"|"profile","key":"...","value":2}`
 - `{"action":"set_trait","key":"recipient","value":"her"}`
 - `{"action":"force_result","resultKey":"gift_her"}`
 - `{"action":"set_variant_option","productKey":"ring","option":"Size","value":"7"}`
@@ -147,7 +147,7 @@ Do not use `reward` or `offer`; those require a future managed adapter.
 - **Host sections.** The quiz dispatches bubbling `lx:quiz:step`
   (`{quizKey, questionId, index}`) and `lx:quiz:result` (`{quizKey,
   resultKey}`) events. Listen with `lifecycle.on(section, "lx:quiz:result",
-  …)` rather than observing island DOM.
+  ...)` rather than observing island DOM.
 - **Pop-ups.** Put the quiz in a `Modal` with `trigger: "event"` and a
   `storageKey`; any `[data-lx-open-modal="<storageKey>"]` element on the
   page opens it. `position: {"mobile":"bottom","desktop":"center"}` gives a

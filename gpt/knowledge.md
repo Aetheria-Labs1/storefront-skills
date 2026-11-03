@@ -916,7 +916,9 @@ shared section with `lexsis_drafts.shared_section_sync` and `page_ids`, and
 turn the matching `inherit_header` or `inherit_footer` off.
 
 To change a shared section, edit it once with
-`lexsis_drafts.shared_section_update`, then run
+`lexsis_drafts.shared_section_update`, or change only island props or one
+exact CSS/JS snippet with `lexsis_drafts.shared_section_patch`; both reject a
+source no page could compile. Then run
 `lexsis_drafts.shared_section_sync` without `page_ids`. Sync writes drafts, so
 live pages change only after `/publish`. Pages in a running experiment are
 skipped with `reason: "running_experiment"`; report them. Use
@@ -4202,8 +4204,8 @@ when it differs from these examples.
 
 `then` is an array of:
 
-- `{"action":"include"|"exclude","target":"product"|"variant"|"result","key":"…"}`
-- `{"action":"add_score","target":"product"|"variant"|"result"|"profile","key":"…","value":2}`
+- `{"action":"include"|"exclude","target":"product"|"variant"|"result","key":"..."}`
+- `{"action":"add_score","target":"product"|"variant"|"result"|"profile","key":"...","value":2}`
 - `{"action":"set_trait","key":"recipient","value":"her"}`
 - `{"action":"force_result","resultKey":"gift_her"}`
 - `{"action":"set_variant_option","productKey":"ring","option":"Size","value":"7"}`
@@ -4259,7 +4261,7 @@ Do not use `reward` or `offer`; those require a future managed adapter.
 - **Host sections.** The quiz dispatches bubbling `lx:quiz:step`
   (`{quizKey, questionId, index}`) and `lx:quiz:result` (`{quizKey,
   resultKey}`) events. Listen with `lifecycle.on(section, "lx:quiz:result",
-  …)` rather than observing island DOM.
+  ...)` rather than observing island DOM.
 - **Pop-ups.** Put the quiz in a `Modal` with `trigger: "event"` and a
   `storageKey`; any `[data-lx-open-modal="<storageKey>"]` element on the
   page opens it. `position: {"mobile":"bottom","desktop":"center"}` gives a
