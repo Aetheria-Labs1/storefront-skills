@@ -47,6 +47,9 @@
         "startLabel": "?string",
         "resumeLabel": "?string",
         "restartLabel": "?string",
+        "showRestart": "?boolean",
+        "cardAction": "?'view' | 'add' | 'both'",
+        "cardAddLabel": "?string",
         "backLabel": "?string",
         "nextLabel": "?string",
         "submitLabel": "?string"
@@ -187,7 +190,8 @@
         "layout": "?'split' | 'compact' | 'contained' | 'full_bleed'",
         "progressStyle": "?'percentage' | 'steps' | 'hidden' | 'bar' | 'count'",
         "density": "?'compact' | 'comfortable' | 'spacious'",
-        "motion": "?'none' | 'subtle' | 'playful'"
+        "motion": "?'none' | 'subtle' | 'playful'",
+        "showQuestionNumber": "?boolean"
       },
       "required": false
     },
@@ -229,9 +233,14 @@
   "variants": null,
   "css_vars": [],
   "parts": [
+    "question-title",
     "quiz-host",
     "renderer-error",
-    "renderer-loading"
+    "renderer-loading",
+    "result-product",
+    "result-title",
+    "review",
+    "title"
   ],
   "authoring": {
     "format": "source-html",

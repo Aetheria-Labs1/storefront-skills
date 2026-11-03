@@ -13,6 +13,7 @@
   "defaultHydrate": "immediate",
   "combine_with": [
     "EmailCapture",
+    "FormCapture",
     "ReviewCarousel",
     "BuyBox (quick-view)",
     "FAQ",
@@ -31,9 +32,9 @@
       "type": "enum",
       "values": [
         "click",
+        "exit_intent",
         "delay",
         "scroll",
-        "exit_intent",
         "event"
       ],
       "required": false,
@@ -53,12 +54,18 @@
       "default": "5000"
     },
     "position": {
-      "type": "enum",
-      "values": [
-        "center",
-        "fullscreen",
-        "right",
-        "bottom"
+      "type": "union",
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "object",
+          "shape": {
+            "mobile": "?'center' | 'bottom' | 'fullscreen' | 'right'",
+            "desktop": "?'center' | 'bottom' | 'fullscreen' | 'right'"
+          }
+        }
       ],
       "required": false,
       "default": "center"
@@ -89,8 +96,8 @@
       "type": "enum",
       "values": [
         "fade",
-        "slide-up",
         "slide-right",
+        "slide-up",
         "scale"
       ],
       "required": false,

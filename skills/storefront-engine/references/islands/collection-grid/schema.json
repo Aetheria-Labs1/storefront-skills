@@ -18,7 +18,7 @@
       }
     }
   ],
-  "usage_hint": "Live Shopify collection grid. Loads the collection by handle from the Storefront API with filters, sort, load-more and Quick Add per card; filter, sort and page state live in the URL using Shopify theme parameter names.",
+  "usage_hint": "Live Shopify collection grid. Loads the collection by handle from the Storefront API with filters, sort, load-more and Quick Add per card; filter, sort and page state live in the URL using Shopify theme parameter names. Deep links can pre-filter it: filter.v.price.gte / filter.v.price.lte (price range), filter.p.* and other filter.* params (product filters), sort_by (e.g. price-ascending, best-selling) and page — e.g. /collections/rings?filter.v.price.lte=5000&sort_by=price-ascending.",
   "when_to_use": "Use for collection and category pages, and any edit with more than about 24 products, so every product in the collection is reachable with live price and stock.",
   "when_not_to_use": "Not for a short hand-picked rail (use ProductCarousel or FeaturedCollectionStage) or a single product (use BuyBox).",
   "defaultHydrate": "visible",

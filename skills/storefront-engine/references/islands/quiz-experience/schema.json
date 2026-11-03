@@ -53,6 +53,7 @@
   ],
   "parts": [
     "back-button",
+    "capture",
     "description",
     "error",
     "evaluating",
