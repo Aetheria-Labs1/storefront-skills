@@ -57,7 +57,13 @@
       "type": "union",
       "anyOf": [
         {
-          "type": "string"
+          "type": "enum",
+          "values": [
+            "center",
+            "bottom",
+            "fullscreen",
+            "right"
+          ]
         },
         {
           "type": "object",
