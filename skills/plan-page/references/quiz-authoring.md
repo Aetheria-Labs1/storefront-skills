@@ -58,6 +58,62 @@ answer requires the managed capture policy and shopper consent described below.
 These systems may be combined. Keep rule priority explicit and verify tied
 scores resolve predictably.
 
+### Evaluation order
+
+- `rules` run in **ascending** `priority` (lowest first). A later rule
+  overwrites traits set earlier, and the last `force_result` wins.
+- `force_result` beats scoring.
+- Otherwise results are ranked by **descending** `priority`, then score.
+  Set `resolution.tieBreak: "score_then_priority"` to rank by score first.
+- `branches` from one question are checked in descending `priority`; the
+  first match wins.
+
+### Condition operators
+
+A leaf condition is `{answer, operator, value}`, or a `trait_*` / `score_*`
+form. Combine leaves with `{all: [...]}`, `{any: [...]}` or `{not: {...}}`.
+
+| Operator | Example |
+|---|---|
+| `equals` / `not_equals` | `{"answer":"occasion","operator":"equals","value":"gift"}` |
+| `includes_any` / `includes_all` | `{"answer":"style","operator":"includes_any","value":["minimal","bold"]}` |
+| `greater_than`, `greater_than_or_equal`, `less_than`, `less_than_or_equal` | `{"answer":"budget","operator":"less_than","value":5000}` |
+| `between` | `{"answer":"budget","operator":"between","value":[2000,5000]}` |
+| `answered` / `unanswered` | `{"answer":"note","operator":"answered"}` |
+| `trait_equals` | `{"trait":"recipient","operator":"trait_equals","value":"her"}` |
+| `score_at_least` / `score_below` | `{"scoreTarget":"result","scoreKey":"minimal","operator":"score_at_least","value":5}` |
+
+Copy the exact leaf shape from the live `vibe://schema/island/Quiz` schema
+when it differs from these examples.
+
+### Rule actions
+
+`then` is an array of:
+
+- `{"action":"include"|"exclude","target":"product"|"variant"|"result","key":"..."}`
+- `{"action":"add_score","target":"product"|"variant"|"result"|"profile","key":"...","value":2}`
+- `{"action":"set_trait","key":"recipient","value":"her"}`
+- `{"action":"force_result","resultKey":"gift_her"}`
+- `{"action":"set_variant_option","productKey":"ring","option":"Size","value":"7"}`
+- `{"action":"add_reason","key":"ring","value":"Matches your minimal style"}`
+- `{"action":"add_badge","resultKey":"gift_her","value":"Best seller"}`
+
+### Limits
+
+The validator rejects definitions over these limits:
+
+| Item | Max |
+|---|---|
+| Questions | 30 |
+| Options per question | 20 |
+| Options in total | 250 |
+| Catalog products | 100 |
+| Results | 50 |
+| Products per result | 8 |
+| Branches | 200 |
+| Rules | 300 |
+| Variant-matrix combinations | 1,000 |
+
 ## Products and actions
 
 Declare Shopify products once in `catalog` and reference their stable keys
@@ -68,8 +124,34 @@ Use `add_items` for one or several recommended products. Quiz constructs one
 renderer-managed `lx:cart:add-items` request and uses the effective Cart V2
 profile. Never call Shopify directly or click hidden controls.
 
-Use `view_product`, `navigate`, or `restart` for non-cart outcomes.
+Use `view_product`, `navigate`, or `restart` for non-cart outcomes. They
+render as real links, so shoppers can open them in a new tab.
 Do not use `reward` or `offer`; those require a future managed adapter.
+
+- **Per-product cards.** Cards link to their PDP by default. Set
+  `content.cardAction` to `"add"` or `"both"` to give each card its own add
+  button (`content.cardAddLabel`). An `add_items` action with a `productKey`
+  adds only that product.
+- **Answer-driven URLs.** `navigate` URLs accept `{{questionId}}`
+  placeholders, filled with the URL-encoded answer (multi-select answers are
+  joined with commas). One result can then route to, say,
+  `/collections/rings?filter.v.price.lte={{budget}}` instead of authoring one
+  result per budget.
+- **Sold-out products.** A sold-out product is replaced by the first
+  available entry in its catalog `alternativeKeys`, or hidden. "Currently
+  unavailable" only shows when every product in the result is sold out.
+- **Controls.** The built-in restart button hides when a result has its own
+  `restart` action, or with `content.showRestart: false`. Back is hidden on
+  the first question. `appearance.showQuestionNumber: false` hides the
+  "Question N" label.
+- **Host sections.** The quiz dispatches bubbling `lx:quiz:step`
+  (`{quizKey, questionId, index}`) and `lx:quiz:result` (`{quizKey,
+  resultKey}`) events. Listen with `lifecycle.on(section, "lx:quiz:result",
+  ...)` rather than observing island DOM.
+- **Pop-ups.** Put the quiz in a `Modal` with `trigger: "event"` and a
+  `storageKey`; any `[data-lx-open-modal="<storageKey>"]` element on the
+  page opens it. `position: {"mobile":"bottom","desktop":"center"}` gives a
+  bottom sheet on phones.
 
 ## Optional response saving
 
@@ -148,6 +230,14 @@ provide a dedicated question drop-off or quiz-to-paid-order report. Missing
 completion does not establish a specific exit point or cause.
 
 ## Custom visual design
+
+Default result styles have zero specificity (`:where()`), so plain section
+CSS on any `data-part` overrides them without `!important`. For quick theming
+set `--lx-quiz-button-bg`, `--lx-quiz-button-color`, `--lx-quiz-button-radius`,
+`--lx-quiz-button-padding`, `--lx-quiz-badge-bg`, `--lx-quiz-badge-color`,
+`--lx-quiz-card-bg`, `--lx-quiz-card-border`, `--lx-quiz-card-radius` and
+`--lx-quiz-card-padding`. The schema's parts list names every `data-part`
+the default renderers emit.
 
 There are no Quiz presets. Create the requested design through:
 

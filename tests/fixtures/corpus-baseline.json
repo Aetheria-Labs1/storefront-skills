@@ -719,6 +719,7 @@
       "page_update_section",
       "shared_section_create",
       "shared_section_update",
+      "shared_section_patch",
       "shared_section_sync",
       "shared_section_detach",
       "page_remove_section",

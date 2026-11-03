@@ -196,7 +196,9 @@ shared section with `lexsis_drafts.shared_section_sync` and `page_ids`, and
 turn the matching `inherit_header` or `inherit_footer` off.
 
 To change a shared section, edit it once with
-`lexsis_drafts.shared_section_update`, then run
+`lexsis_drafts.shared_section_update`, or change only island props or one
+exact CSS/JS snippet with `lexsis_drafts.shared_section_patch`; both reject a
+source no page could compile. Then run
 `lexsis_drafts.shared_section_sync` without `page_ids`. Sync writes drafts, so
 live pages change only after `/publish`. Pages in a running experiment are
 skipped with `reason: "running_experiment"`; report them. Use
