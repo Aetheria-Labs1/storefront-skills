@@ -42,8 +42,8 @@ Use `lexsis_pages.edit_context`, `lexsis_pages.get`, `lexsis_pages.inspect`,
 `lexsis_workspace.credits`, `lexsis_drafts.asset_generate`,
 `lexsis_template_library.search_page_kits`,
 `lexsis_template_library.search_sections`,
-`lexsis_drafts.page_update_section`, `lexsis_drafts.page_patch`, and
-`lexsis_drafts.page_record_qa`. Resolve only unfamiliar schemas through exact
+`lexsis_build.get`, `lexsis_build.patch`, `lexsis_build.commit`,
+`lexsis_build.diff` and `lexsis_drafts.page_record_qa`. Resolve only unfamiliar schemas through exact
 router/action discovery. A zero-result directory lookup does not make page or
 analytics data unavailable. If the actual live read fails, state that
 limitation; generic CRO guidance is not a substitute for live evidence.
@@ -237,21 +237,23 @@ open task is `blocked-by-evidence`. Wait for explicit approval; record
 
 Run `/design-page`'s Existing Page Edits and Hosted Design Review procedures:
 
-1. `lexsis_pages.edit_context`, then `lexsis_pages.source` or
-   `lexsis_pages.section_source`; stop on unexpected version drift.
+1. `lexsis_build.get` for the version and file tree, reading only the files
+   the approved changes touch; stop on unexpected version drift.
 2. Resolve the approved asset decisions first: `lexsis_asset_library.search`
    and `lexsis_assets.view` for reuse, `lexsis_asset_select.select` when the
    user must choose among reviewed candidates, `lexsis_asset_upload.upload` or
    `lexsis_asset_import.import` for supplied files, `lexsis_workspace.credits`
    then `lexsis_drafts.asset_generate` per brief after the user confirms the
    batch. View every asset before it enters the source.
-3. Edit the source MCP returned, place the approved copy verbatim, compile
-   the changed inputs once with any page-wide `theme_css`.
-4. Write with `expected_version`: `lexsis_drafts.page_update_section` for one
-   section, `lexsis_drafts.page_patch` for several.
-5. `lexsis_pages.diff` and `lexsis_pages.integrity`; update recorded version
-   and hashes only after success.
-6. Hosted review at 390, 768 and 1280 with the commerce checks in
+3. Place the approved copy verbatim. Copy, price and single-rule CSS changes
+   go through `lexsis_build.patch`; new or rebuilt sections through
+   `lexsis_build.commit` with only those files. Pass `base_version` (the
+   build router's `expected_version` guard), run
+   `dry_run: true` first for large changes, and fix every returned diagnostic
+   in one pass.
+4. `lexsis_build.diff` and `lexsis_pages.integrity`; update recorded version
+   only after success.
+5. Hosted review at 390, 768 and 1280 with the commerce checks in
    `references/qa-recipe.md`; save evidence with `lexsis_drafts.page_record_qa`.
    Fix in place with another versioned patch; never a replacement page.
 

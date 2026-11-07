@@ -31,15 +31,17 @@ is recovery for a source write whose bundle attachment failed, with
 
 ## Edit the persisted source
 
-1. Read `lexsis_pages.edit_context` and `lexsis_pages.source` or
-   `lexsis_pages.section_source`. Confirm the target and current version.
-2. Reconcile unexpected version drift before writing. Edit the source value
-   returned by MCP, keeping stable section ids.
-3. Compile changed inputs, compare the intended section changes and use the
-   smallest source-based draft action with `expected_version`.
-4. Update recorded version/hash evidence only after a successful write.
-   Read back source and run `lexsis_pages.diff` and `lexsis_pages.integrity`.
-5. Review the updated hosted draft. Editing a draft is not publishing it.
+Every edit after creation goes through `lexsis_build`; the full flow is in
+`references/page-editing.md`.
+
+1. `lexsis_build.get` for the version and file tree; read only the files you
+   will change. Keep stable section ids.
+2. `patch` for small changes, `commit` with only the changed files for larger
+   ones, always with `base_version`. One compile returns every diagnostic with
+   file and line; fix them together.
+3. Update recorded version evidence only after a successful write, then run
+   `lexsis_build.diff` and `lexsis_pages.integrity`.
+4. Review the updated hosted draft. Editing a draft is not publishing it.
 
 ## Evidence without files
 

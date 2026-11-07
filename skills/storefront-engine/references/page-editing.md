@@ -5,84 +5,83 @@ Run by `/design-page` (Existing Page Edits) and `/optimize` Apply.
 Edit existing pages through canonical editable source and section-level remote
 operations. Read `source-artifact-workflow.md` first.
 
-## Edit Flow
+## Edit Flow (files, `lexsis_build`)
 
-1. Read `lexsis_pages.edit_context` and `lexsis_pages.source`.
-2. Compare the current version with the last recorded version; reconcile drift.
-3. Edit the returned source value and compile the complete changed inputs.
-4. Compare section changes with the persisted baseline.
-5. Patch only changed sections with `expected_version`,
-   `expected_source_sha256` and an idempotency key where supported.
-6. Update recorded version/hashes after success, then run `diff`, `integrity`
-   and the affected checks on the hosted draft.
+An existing page is a tree of files: `lexsis.json` (section order and `head`),
+`sections/<id>.html` (each starts with its own `<!-- section: id -->` line,
+markup, `<style>` and `<script>` together) and optional `styles/*.css` for
+classes shared across sections. Unchanged files are never resent.
+
+1. `lexsis_build` action `get` with `page_id`: returns `version` and the tree
+   (path to hash, sizes). Ask for contents only of the files you will change
+   (`files: ["sections/hero.html"]`). Do not read the whole page to edit one part.
+2. Pick the smallest write:
+   - **Under about 20 changed lines: `patch`.** `replace_text`
+     (`file`, `find`, `replace`, optional `all`), `upsert_css_rule`
+     (`file`, `selector`, `decl`), `remove_css_rule`. Never resend a file to
+     change a word, a price or one CSS rule.
+   - **New or heavily changed sections: `commit`** with only the changed
+     paths in `files`. `null` deletes a file.
+   - **Reorder or remove sections:** `commit` a new `lexsis.json` with the
+     `sections` order changed, plus `null` for a removed section's file.
+3. Always pass `base_version` (the version from step 1). Run `dry_run: true`
+   first when the change is large or risky; it compiles and validates without
+   saving.
+4. One compile returns **every** diagnostic with `file`, `line` and `code`.
+   Fix them all in one pass, then commit once. Do not fix one error per call.
+5. `noop: true` means nothing changed and no version was made.
+6. After success, record the new `version` and `preview_url`, run
+   `lexsis_build` action `diff` (`from`, `to`) to confirm only the intended
+   lines changed, then `lexsis_pages.integrity` and the affected hosted checks.
+
+A class used by more than one section belongs in `styles/base.css`, not in
+one section's `<style>`; this is what stops a cross-section class from failing
+the compile.
+
+On `version_conflict` (stale `base_version`), call `get` again, re-apply the
+change to the current files and retry. Never overwrite blindly.
 
 For existing pages, `page_id` is authoritative. Do not require the user to
 reselect a workspace or pass `store_id`; an optional store ID is only an
 assertion. Service-token store/workspace scopes remain authorization boundaries.
 
-## Operations
-
-Every section write below loads `edit_context`, applies the change to the
-page source, recompiles the whole page and commits exactly one new version.
-Pass `expected_version` (and `expected_source_sha256` when you have it): a
-stale value is rejected with `version_conflict` and nothing is written.
-
-### Batch changes: `page_patch` (preferred)
-
-Several operations in one call apply in order and commit one version, or
-nothing if any step fails. Use it for any edit touching more than one section.
-
-```json lexsis-args=patch_page
+```json lexsis-args=build_get
 {
   "page_id": "00000000-0000-4000-8000-000000000001",
-  "expected_version": 7,
-  "idempotency_key": "indimums-hero-copy-1",
-  "changes": [
-    {
-      "operation": "upsert_section",
-      "source": "<!-- section: hero -->\n<section id=\"hero\" class=\"px-4 py-16\"><h1>Gentle care for new skin</h1></section>"
-    },
-    { "operation": "move_section", "section_id": "reviews", "position": { "after": "hero" } },
-    { "operation": "remove_section", "section_id": "old-banner" }
+  "files": ["sections/hero.html"]
+}
+```
+
+```json lexsis-args=build_patch
+{
+  "page_id": "00000000-0000-4000-8000-000000000001",
+  "base_version": 7,
+  "ops": [
+    { "op": "replace_text", "file": "sections/hero.html", "find": "Gentle care", "replace": "Gentle daily care" },
+    { "op": "upsert_css_rule", "file": "sections/hero.html", "selector": ".hero h1", "decl": "font-size:44px" }
   ]
 }
 ```
 
-### Position semantics (`upsert_section`, `move_section`, `page_update_section`, `page_move_section`)
-
-| `position` | Result |
-| --- | --- |
-| omitted on an existing section | replaced in place |
-| omitted on a new section | appended last |
-| `"first"` / `"last"` | moved/inserted there |
-| number `n` | final index `n`, counted after the section is taken out |
-| `{ "before": "id" }` / `{ "after": "id" }` | next to that section |
-
-A `position` on an existing section replaces **and** moves it. An unknown or
-self-referencing anchor id is rejected instead of silently appending.
-
-### Update, add or move one section
-
-```json lexsis-args=update_section_from_source
+```json lexsis-args=build_commit
 {
   "page_id": "00000000-0000-4000-8000-000000000001",
-  "expected_version": 7,
-  "source": "<!-- section: faq -->\n<section id=\"faq\" class=\"px-4 py-16\"><h2>Questions</h2></section>",
-  "position": { "before": "footer" }
+  "base_version": 7,
+  "message": "add FAQ before footer",
+  "files": {
+    "sections/faq.html": "<!-- section: faq -->\n<section id=\"faq\" class=\"px-4 py-16\"><h2>Questions</h2></section>\n",
+    "lexsis.json": "{\n  \"schema\": \"lexsis.page/2\",\n  \"sections\": [\"hero\", \"faq\", \"footer\"]\n}\n"
+  }
 }
 ```
 
-```json lexsis-args=move_page_section
-{
-  "page_id": "00000000-0000-4000-8000-000000000001",
-  "section_id": "reviews",
-  "position": "first",
-  "expected_version": 8
-}
-```
+## V1 section actions (fallback only)
 
-`page_remove_section` takes `page_id`, `section_id` and `expected_version`
-and follows the same version protection.
+Use `lexsis_drafts` `page_patch`, `page_update_section`, `page_move_section`,
+`page_remove_section` and `page_replace` only when `lexsis_build` is not
+available on the connected server (it is missing from `lexsis_discover`).
+They resend whole sections and recompile the whole page on every call. Each
+takes `expected_version`; a stale value is rejected with `version_conflict`.
 
 ### Update page CSS (`page_update_head`)
 
@@ -107,12 +106,12 @@ only marks an element for script. Never add an empty rule to pass.
 ## Best Practices
 
 - Retain the intended change and returned version in the task handoff
-- Always call `lexsis_pages` action `edit_context` before a write
+- Always read the current version (`lexsis_build` `get`) before a write
 - Stop on unexpected version drift
 - Re-read source and reconcile against the current version when an edit returns `version_conflict`
 - Reference section IDs from the page data (don't guess)
-- Compile the complete editable source before section patching
-- After editing, run `diff` and `integrity`
+- Send only changed files; patch small edits instead of resending sections
+- After editing, run `lexsis_build` `diff` and `lexsis_pages` `integrity`
 - Use explicit remove operations for absent properties. `null` remains a JSON
   value and is not deletion.
 - When changing a collection binding, setting `products` removes `productIds`
