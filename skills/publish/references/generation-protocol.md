@@ -37,10 +37,11 @@ Changes to a page that already exists never create a new page: follow
 ## Create or edit one draft
 
 Use `lexsis_page_create.create` with `compile_id` and `publish: false`
-only when the workspace has no existing page id. Otherwise use the relevant
-versioned draft action: `page_update_section`, `page_patch`, `page_replace`,
-`page_update_head`, `page_move_section`, or `page_remove_section` on
-`lexsis_drafts`, with `expected_version` when the action supports it.
+only when the workspace has no existing page id. Every later change goes
+through `lexsis_build` (`get`, then `patch` or `commit` with only the changed
+files and `base_version`), as `references/page-editing.md` describes. The V1
+`lexsis_drafts` section actions are a fallback for servers without
+`lexsis_build`; `page_update_head` still owns `theme_css`.
 On a version conflict, read the latest context and reconcile; do not overwrite
 blindly. Return the hosted draft URL and exact version as `DRAFT_CREATED`.
 

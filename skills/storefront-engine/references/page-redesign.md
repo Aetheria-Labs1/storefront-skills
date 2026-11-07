@@ -55,27 +55,21 @@ Key rule: NEVER redesign sections that are converting well. Analytics data overr
 
 ### Step 4  -  Apply Section-by-Section Updates
 
-Read current source and edit context through MCP. Confirm the existing
-binding and version, modify the source value, compile the complete inputs,
-and compare section changes against that persisted baseline.
-
-For one changed section:
+Follow `references/page-editing.md`. Read the version and file tree with
+`lexsis_build.get`, then commit only the rebuilt section files in one call:
 ```
-lexsis_drafts({
-  action: "page_update_section",
-  args: { page_id, section_id, source, expected_version }
+lexsis_build({
+  action: "commit",
+  args: { page_id, base_version, files: { "sections/hero.html": "...", "sections/proof.html": "..." } }
 })
 ```
 
-For related sections, use one `page_patch`. For reordering:
-```
-lexsis_drafts({
-  action: "page_move_section",
-  args: { page_id, section_id, position, expected_version }
-})
-```
+Reorder or drop sections by committing a new `lexsis.json` (`sections` order)
+with `null` for a removed file. Small copy or CSS fixes after review use
+`lexsis_build.patch`. Run `dry_run: true` first for a large redesign and fix
+every returned diagnostic in one pass.
 
-Update manifest version and source hashes only after success. All updated
+Update the recorded version only after success. All updated
 sections must use `--lx-*` CSS variables from the current theme.
 
 ### Step 5  -  Validate

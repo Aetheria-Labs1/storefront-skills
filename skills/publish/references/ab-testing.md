@@ -86,8 +86,9 @@ For each approved challenger:
 2. Apply only its planned change.
 3. Compile the complete source and fix blocking compiler errors.
 4. Call `lexsis_drafts` action `page_duplicate` with a stable idempotency key.
-5. Apply the compiled challenger source to the duplicate with `page_replace`
-   or the smallest safe section action using `expected_version`.
+5. Apply the challenger change to the duplicate with `lexsis_build.patch` or
+   `lexsis_build.commit` (only the changed files, `base_version` from
+   `lexsis_build.get` on the duplicate).
 6. Record the duplicate page id, blueprint id, version and
    compile evidence.
 7. Run page integrity, affected commerce checks, and browser checks at mobile
