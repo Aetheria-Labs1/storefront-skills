@@ -61,9 +61,9 @@ classes shared across sections. Unchanged files are never resent.
 **When you can run shell commands** (Claude Code, Codex, Cursor, Cowork), edit
 through the folder instead of tool arguments for anything beyond a few lines:
 call `lexsis_build.push_token` with `page_id`, then run
-`LEXSIS_TOKEN=<token> npx lexsis pull <page_id> ./page`, edit the files with
-your file tools, check `npx lexsis diff ./page`, and run
-`LEXSIS_TOKEN=<token> npx lexsis push ./page` (add `--dry-run` first for large
+`LEXSIS_TOKEN=<token> npx @lexsis/cli pull <page_id> ./page`, edit the files with
+your file tools, check `npx @lexsis/cli diff ./page`, and run
+`LEXSIS_TOKEN=<token> npx @lexsis/cli push ./page` (add `--dry-run` first for large
 changes). Push sends only changed files and returns the same diagnostics,
 `version` and `preview_url` as `commit`. The token lasts 15 minutes and works
 on that page only; ask for a new one when it expires. Never show it to the
