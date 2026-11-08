@@ -5,6 +5,26 @@ Run by `/design-page` (Existing Page Edits) and `/optimize` Apply.
 Edit existing pages through canonical editable source and section-level remote
 operations. Read `source-artifact-workflow.md` first.
 
+## New Page (files, `lexsis_build`)
+
+Create a draft with `lexsis_build` action `commit` and no `page_id`:
+
+- `create`: `slug`, `title`, `theme_id`, optional `archetype`,
+  `product_binding`, `resource_type`. Always a draft; it never publishes.
+- `files`: the page as files, in the same layout as editing below.
+- `from` (optional): `{page_id, version?}` seeds the tree from an existing
+  page, so only new or changed files are sent. `null` drops a seeded file.
+- `shared_sections` (optional): shared section ids (store header, footer).
+  Each is added as `sections/<section_id>.html` and linked to the new page.
+  If `lexsis.json` doesn't list it, the first id goes on top and the rest at
+  the bottom.
+- `dry_run: true` returns every diagnostic with file and line and creates
+  nothing. Run it first, fix everything, then commit once.
+
+An existing slug returns `PAGE_EXISTS` with that page's id: edit it instead.
+The result carries `page_id`, `version` and `preview_url`; every later change
+uses the Edit Flow below.
+
 ## Edit Flow (files, `lexsis_build`)
 
 An existing page is a tree of files: `lexsis.json` (section order and `head`),
