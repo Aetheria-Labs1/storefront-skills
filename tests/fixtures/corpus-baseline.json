@@ -716,7 +716,8 @@
       "get",
       "commit",
       "patch",
-      "diff"
+      "diff",
+      "push_token"
     ],
     "lexsis_drafts": [
       "asset_generate",
