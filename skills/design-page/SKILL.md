@@ -33,11 +33,11 @@ Use exact Lexsis actions:
 - `lexsis_design.get_section`, `lexsis_design.islands`, and
   `lexsis_design.island_schema`;
 - `lexsis_pages.compile` and `lexsis_page_create.create`;
-- `lexsis_pages.edit_context`, `lexsis_pages.source`,
-  `lexsis_pages.section_source`, `lexsis_pages.diff`,
-  `lexsis_pages.integrity`, and `lexsis_pages.qa`;
-- `lexsis_drafts.page_update_section`, `lexsis_drafts.page_patch`,
-  `lexsis_drafts.page_update_head`, and `lexsis_drafts.page_record_qa`.
+- `lexsis_build.get`, `lexsis_build.patch`, `lexsis_build.commit` and
+  `lexsis_build.diff` for every edit after creation;
+- `lexsis_pages.integrity` and `lexsis_pages.qa`;
+- `lexsis_drafts.page_update_head` (page `theme_css`) and
+  `lexsis_drafts.page_record_qa`.
 
 Resolve unfamiliar schemas through exact router/action discovery.
 
