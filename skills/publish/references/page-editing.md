@@ -36,14 +36,18 @@ classes shared across sections. Unchanged files are never resent.
    (path to hash, sizes). Ask for contents only of the files you will change
    (`files: ["sections/hero.html"]`). Do not read the whole page to edit one part.
 2. Pick the smallest write:
-   - **Under about 20 changed lines: `patch`.** `replace_text`
-     (`file`, `find`, `replace`, optional `all`), `upsert_css_rule`
-     (`file`, `selector`, `decl`), `remove_css_rule`. Never resend a file to
-     change a word, a price or one CSS rule.
+   - **Under about 20 changed lines: `patch`.** Never resend a file to
+     change a word, a price, an attribute or one CSS rule. Ops:
+     - `replace_text` (`file`, `find`, `replace`, optional `all`)
+     - `upsert_css_rule` (`file`, `selector`, `decl`), `remove_css_rule`
+     - `set_attr` (`file`, `selector`, `attr`, `value`; `null` removes;
+       simple selectors only: `tag`, `#id`, `.class`, `[attr=value]`)
+     - `set_prop` (`file` ending `.json`, JSON `pointer`, `value`)
+     - `set_head` (`key`, `value`) for `lexsis.json` head
+     - `move_section` (`id` plus one of `before`, `after`, `index`),
+       `remove_section` (`id`)
    - **New or heavily changed sections: `commit`** with only the changed
      paths in `files`. `null` deletes a file.
-   - **Reorder or remove sections:** `commit` a new `lexsis.json` with the
-     `sections` order changed, plus `null` for a removed section's file.
 3. Always pass `base_version` (the version from step 1). Run `dry_run: true`
    first when the change is large or risky; it compiles and validates without
    saving.
@@ -54,12 +58,30 @@ classes shared across sections. Unchanged files are never resent.
    `lexsis_build` action `diff` (`from`, `to`) to confirm only the intended
    lines changed, then `lexsis_pages.integrity` and the affected hosted checks.
 
+**When you can run shell commands** (Claude Code, Codex, Cursor, Cowork), edit
+through the folder instead of tool arguments for anything beyond a few lines:
+call `lexsis_build.push_token` with `page_id`, then run
+`LEXSIS_TOKEN=<token> npx lexsis pull <page_id> ./page`, edit the files with
+your file tools, check `npx lexsis diff ./page`, and run
+`LEXSIS_TOKEN=<token> npx lexsis push ./page` (add `--dry-run` first for large
+changes). Push sends only changed files and returns the same diagnostics,
+`version` and `preview_url` as `commit`. The token lasts 15 minutes and works
+on that page only; ask for a new one when it expires. Never show it to the
+user or write it into a file. Without a shell, use `get`, `patch` and `commit`.
+
 A class used by more than one section belongs in `styles/base.css`, not in
 one section's `<style>`; this is what stops a cross-section class from failing
 the compile.
 
-On `version_conflict` (stale `base_version`), call `get` again, re-apply the
-change to the current files and retry. Never overwrite blindly.
+A stale `base_version` is rebased for you when the page's newer versions
+touched other files: the response carries `rebased_from`. When they touched
+the same file, `VERSION_CONFLICT` returns `conflicts` with `server_diff` and
+`your_diff` per file: `get` those files again, re-apply your change and
+retry. Never overwrite blindly.
+
+Pass `idempotency_key` (any unique string per intended edit) on `commit` and
+`patch`, and reuse it when retrying after a timeout, so a retry cannot make a
+second version.
 
 For existing pages, `page_id` is authoritative. Do not require the user to
 reselect a workspace or pass `store_id`; an optional store ID is only an
