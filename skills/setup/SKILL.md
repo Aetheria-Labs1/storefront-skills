@@ -376,10 +376,9 @@ Run after the Lexsis reads, for each selected store with a public site.
    `Site header` and `Site footer`. Only source-backed pages can share sections.
 6. Record ids in `setup.md`. Never publish the source page.
 
-Pages that use `inherit_header` and `inherit_footer` already get store chrome.
-Link the shared sections only into pages that render their own chrome, such as
-custom-domain pages; turn inheritance off on those pages so the header never
-renders twice.
+New pages get the store chrome by passing these ids in `lexsis_build.commit`
+`shared_sections` at creation. Existing pages are linked with
+`lexsis_drafts.shared_section_sync` and `page_ids`.
 
 Add these to `setup.md`:
 

@@ -752,7 +752,8 @@ Use exact Lexsis actions:
   `lexsis_template_library.get_mine` only for directions selected upstream;
 - `lexsis_design.get_section`, `lexsis_design.islands`, and
   `lexsis_design.island_schema`;
-- `lexsis_pages.compile` and `lexsis_page_create.create`;
+- `lexsis_build.commit` with `create` to make the draft (fallback:
+  `lexsis_pages.compile` then `lexsis_page_create.create`);
 - `lexsis_build.get`, `lexsis_build.patch`, `lexsis_build.commit` and
   `lexsis_build.diff` for every edit after creation;
 - `lexsis_pages.integrity` and `lexsis_pages.qa`;
@@ -849,9 +850,19 @@ replace unsupported interactions with unverified custom behaviour.
 
 ## 5. Create or Update One Draft
 
-For a new page, call `lexsis_page_create.create` once with the clean
-`compile_id`, creation metadata, and `publish:false`. Do not combine
-`compile_id` with source, CSS, head, scripts, or runtime dependencies.
+For a new page, call `lexsis_build.commit` once with no `page_id`, a
+`create` object (`slug`, `title`, `theme_id`, plus `archetype`,
+`product_binding` or `resource_type` when needed) and the page as files
+(`lexsis.json`, `sections/<id>.html`, `styles/*.css`). Run it with
+`dry_run: true` first: one call returns every diagnostic with file and line
+and creates nothing. Pass the store header and footer ids from `setup.md` in
+`shared_sections` so they are linked at creation. When a similar page or kit
+page exists, pass it as `from` and send only the new or changed files. See
+`page-editing.md`, New Page.
+
+Fallback when `lexsis_build` is unavailable: `lexsis_page_create.create` once
+with the clean `compile_id`, creation metadata and `publish:false`. Do not
+combine `compile_id` with source, CSS, head, scripts or runtime dependencies.
 
 Record the returned page id, version, hosted preview, compile evidence,
 `DRAFT_CREATED`, `design.status: pending-approval`, and
@@ -910,10 +921,11 @@ the design to `changes-pending-approval`. `/publish` must gate on the same
 ## Shared Sections
 
 Read the `Shared sections` table in `work/storefront/setup.md`. Never rebuild a
-header, footer, or entry pop-up that already exists as a shared section. Use
-inherited chrome by default. When a page renders its own chrome, link the
-shared section with `lexsis_drafts.shared_section_sync` and `page_ids`, and
-turn the matching `inherit_header` or `inherit_footer` off.
+header, footer, or entry pop-up that already exists as a shared section. On a
+new page, pass the shared section ids in `lexsis_build.commit`
+`shared_sections`; they are added and linked with no extra version. On an
+existing page, link one with `lexsis_drafts.shared_section_sync` and
+`page_ids`.
 
 To change a shared section, edit it once with
 `lexsis_drafts.shared_section_update`, or change only island props or one
@@ -2176,10 +2188,9 @@ Run after the Lexsis reads, for each selected store with a public site.
    `Site header` and `Site footer`. Only source-backed pages can share sections.
 6. Record ids in `setup.md`. Never publish the source page.
 
-Pages that use `inherit_header` and `inherit_footer` already get store chrome.
-Link the shared sections only into pages that render their own chrome, such as
-custom-domain pages; turn inheritance off on those pages so the header never
-renders twice.
+New pages get the store chrome by passing these ids in `lexsis_build.commit`
+`shared_sections` at creation. Existing pages are linked with
+`lexsis_drafts.shared_section_sync` and `page_ids`.
 
 Add these to `setup.md`:
 
@@ -3602,6 +3613,26 @@ Run by `/design-page` (Existing Page Edits) and `/optimize` Apply.
 
 Edit existing pages through canonical editable source and section-level remote
 operations. Read `source-artifact-workflow.md` first.
+
+## New Page (files, `lexsis_build`)
+
+Create a draft with `lexsis_build` action `commit` and no `page_id`:
+
+- `create`: `slug`, `title`, `theme_id`, optional `archetype`,
+  `product_binding`, `resource_type`. Always a draft; it never publishes.
+- `files`: the page as files, in the same layout as editing below.
+- `from` (optional): `{page_id, version?}` seeds the tree from an existing
+  page, so only new or changed files are sent. `null` drops a seeded file.
+- `shared_sections` (optional): shared section ids (store header, footer).
+  Each is added as `sections/<section_id>.html` and linked to the new page.
+  If `lexsis.json` doesn't list it, the first id goes on top and the rest at
+  the bottom.
+- `dry_run: true` returns every diagnostic with file and line and creates
+  nothing. Run it first, fix everything, then commit once.
+
+An existing slug returns `PAGE_EXISTS` with that page's id: edit it instead.
+The result carries `page_id`, `version` and `preview_url`; every later change
+uses the Edit Flow below.
 
 ## Edit Flow (files, `lexsis_build`)
 
