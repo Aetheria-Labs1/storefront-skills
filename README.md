@@ -177,6 +177,16 @@ does not prove production capture; contact collection does not send result email
   complete browser OAuth when prompted. User API keys and manually configured
   `Authorization` headers are not supported.
 
+## Lexsis CLI
+
+When the agent can run shell commands (Claude Code, Codex, Cursor, Cowork with
+network access), skills write pages through [`@lexsis/cli`](https://www.npmjs.com/package/@lexsis/cli):
+the page is a local folder of files, and `new`, `pull`, `diff` and `push` turn
+it into draft versions. The skills fetch a 15-minute token from the MCP
+(`lexsis_build` action `push_token`); nothing to configure. Without a shell
+(claude.ai chat, Custom GPT) they make the same `lexsis_build` calls inline.
+The CLI never publishes.
+
 ## Optional Capabilities
 
 Visual concepts and asset production dynamically inspect the tools installed

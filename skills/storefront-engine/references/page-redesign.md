@@ -55,7 +55,9 @@ Key rule: NEVER redesign sections that are converting well. Analytics data overr
 
 ### Step 4  -  Apply Section-by-Section Updates
 
-Follow `references/page-editing.md`. Read the version and file tree with
+Follow `references/page-editing.md` in the session's write mode. In CLI mode,
+`pull` the page, rewrite the section files and `lexsis.json` in the folder,
+then `push --dry-run` and `push`. Inline, read the version and file tree with
 `lexsis_build.get`, then commit only the rebuilt section files in one call:
 ```
 lexsis_build({
@@ -64,9 +66,9 @@ lexsis_build({
 })
 ```
 
-Reorder or drop sections by committing a new `lexsis.json` (`sections` order)
-with `null` for a removed file. Small copy or CSS fixes after review use
-`lexsis_build.patch`. Run `dry_run: true` first for a large redesign and fix
+Reorder or drop sections by editing `lexsis.json` (`sections` order) and
+deleting the file (inline: `null` for a removed file). Small inline copy or CSS
+fixes after review use `lexsis_build.patch`. Run a dry run first for a large redesign and fix
 every returned diagnostic in one pass.
 
 Update the recorded version only after success. All updated

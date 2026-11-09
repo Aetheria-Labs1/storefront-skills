@@ -36,10 +36,13 @@ Changes to a page that already exists never create a new page: follow
 
 ## Create or edit one draft
 
-Use `lexsis_page_create.create` with `compile_id` and `publish: false`
-only when the workspace has no existing page id. Every later change goes
-through `lexsis_build` (`get`, then `patch` or `commit` with only the changed
-files and `base_version`), as `references/page-editing.md` describes. The V1
+Create a new draft in the write mode from `lexsis-mcp-contract.md` (Write
+Path): `npx @lexsis/cli new` in CLI mode, `lexsis_build.commit` with `create`
+inline. `lexsis_page_create.create` with `compile_id` and `publish: false` is
+the fallback only when `lexsis_build` is unavailable. Every later change goes
+through `lexsis_build` (CLI `pull`/`push`, or inline `get` then `patch` or
+`commit` with only the changed files and `base_version`), as
+`references/page-editing.md` describes. The V1
 `lexsis_drafts` section actions are a fallback for servers without
 `lexsis_build`; `page_update_head` still owns `theme_css`.
 On a version conflict, read the latest context and reconcile; do not overwrite
