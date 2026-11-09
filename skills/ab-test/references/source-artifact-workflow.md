@@ -31,16 +31,20 @@ is recovery for a source write whose bundle attachment failed, with
 
 ## Edit the persisted source
 
-Every edit after creation goes through `lexsis_build`; the full flow is in
+Every edit after creation goes through `lexsis_build`, in the write mode chosen
+by the probe in `lexsis-mcp-contract.md` (Write Path); the full flow is in
 `references/page-editing.md`.
 
-1. `lexsis_build.get` for the version and file tree; read only the files you
-   will change. Keep stable section ids.
-2. `patch` for small changes, `commit` with only the changed files for larger
-   ones, always with `base_version`. One compile returns every diagnostic with
-   file and line; fix them together.
-3. Update recorded version evidence only after a successful write, then run
-   `lexsis_build.diff` and `lexsis_pages.integrity`.
+1. CLI mode (default): `push_token` with `page_id`, `npx @lexsis/cli pull`,
+   edit the files, `diff`, `push --dry-run`, `push`. Inline mode (no shell):
+   `lexsis_build.get` for the version and tree, reading only the files you will
+   change. Keep stable section ids.
+2. Inline: `patch` for small changes, `commit` with only the changed files for
+   larger ones, always with `base_version`. Either way one compile returns every
+   diagnostic with file and line; fix them together.
+3. Update recorded version evidence only after a successful write, then check
+   the diff (`npx @lexsis/cli diff` or `lexsis_build.diff`) and run
+   `lexsis_pages.integrity`.
 4. Review the updated hosted draft. Editing a draft is not publishing it.
 
 ## Evidence without files

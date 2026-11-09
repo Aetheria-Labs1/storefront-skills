@@ -5,7 +5,53 @@ Run by `/design-page` (Existing Page Edits) and `/optimize` Apply.
 Edit existing pages through canonical editable source and section-level remote
 operations. Read `source-artifact-workflow.md` first.
 
-## New Page (files, `lexsis_build`)
+Pick the write mode once per session with the probe in
+`lexsis-mcp-contract.md` (Write Path). CLI mode is the default; inline mode is
+the fallback when there is no shell or no network from it. Both write the same
+file tree through the same compile, so diagnostics, versions, rebase and
+idempotency behave identically.
+
+An existing page is a tree of files: `lexsis.json` (section order and `head`),
+`sections/<id>.html` (each starts with its own `<!-- section: id -->` line,
+markup, `<style>` and `<script>` together) and optional `styles/*.css` for
+classes shared across sections.
+
+## CLI mode (default)
+
+### New page
+
+1. `lexsis_build` action `push_token` with no `page_id`. The token can only
+   read the store and create one draft; it cannot edit any page.
+2. Write the page into a folder with your file tools: `lexsis.json`,
+   `sections/<id>.html`, optional `styles/base.css`.
+3. `LEXSIS_TOKEN=<token> npx @lexsis/cli new ./page --slug <slug> --theme <theme_id> --dry-run`.
+   Optional: `--title`, `--archetype`, `--from <page_id>` (seed from an existing
+   page; only your files override it), `--shared <id,id>` (store header and
+   footer). Fix every diagnostic in one pass.
+4. Run it again without `--dry-run`. The draft is created, the folder is
+   pulled back and now tracks the new page. `PAGE_EXISTS` returns that page's
+   id: edit it instead.
+5. For any edit after creation, ask for a page token (`push_token` with the new
+   `page_id`) and follow the edit flow below.
+
+### Edit an existing page
+
+1. `lexsis_build` action `push_token` with `page_id`.
+2. `LEXSIS_TOKEN=<token> npx @lexsis/cli pull <page_id> ./page`.
+3. Edit the files with your file tools. Change only what the task needs.
+4. `npx @lexsis/cli diff ./page` to confirm only the intended lines changed.
+5. `LEXSIS_TOKEN=<token> npx @lexsis/cli push ./page -m "<what changed>" --dry-run`,
+   fix every diagnostic, then push without `--dry-run`. Push sends only changed
+   files, makes one draft version, re-pulls the folder and prints `version` and
+   `preview_url`. `noop: true` means nothing changed.
+6. Run `lexsis_pages.integrity` and the affected hosted checks.
+
+Tokens last 15 minutes; ask for a new one on a 401. Never show a token, echo it
+or write it into a file. The CLI never publishes.
+
+## Inline mode (no shell)
+
+### New page (inline)
 
 Create a draft with `lexsis_build` action `commit` and no `page_id`:
 
@@ -23,14 +69,11 @@ Create a draft with `lexsis_build` action `commit` and no `page_id`:
 
 An existing slug returns `PAGE_EXISTS` with that page's id: edit it instead.
 The result carries `page_id`, `version` and `preview_url`; every later change
-uses the Edit Flow below.
+uses the edit flow below.
 
-## Edit Flow (files, `lexsis_build`)
+### Edit an existing page (inline)
 
-An existing page is a tree of files: `lexsis.json` (section order and `head`),
-`sections/<id>.html` (each starts with its own `<!-- section: id -->` line,
-markup, `<style>` and `<script>` together) and optional `styles/*.css` for
-classes shared across sections. Unchanged files are never resent.
+Unchanged files are never resent.
 
 1. `lexsis_build` action `get` with `page_id`: returns `version` and the tree
    (path to hash, sizes). Ask for contents only of the files you will change
@@ -57,17 +100,6 @@ classes shared across sections. Unchanged files are never resent.
 6. After success, record the new `version` and `preview_url`, run
    `lexsis_build` action `diff` (`from`, `to`) to confirm only the intended
    lines changed, then `lexsis_pages.integrity` and the affected hosted checks.
-
-**When you can run shell commands** (Claude Code, Codex, Cursor, Cowork), edit
-through the folder instead of tool arguments for anything beyond a few lines:
-call `lexsis_build.push_token` with `page_id`, then run
-`LEXSIS_TOKEN=<token> npx @lexsis/cli pull <page_id> ./page`, edit the files with
-your file tools, check `npx @lexsis/cli diff ./page`, and run
-`LEXSIS_TOKEN=<token> npx @lexsis/cli push ./page` (add `--dry-run` first for large
-changes). Push sends only changed files and returns the same diagnostics,
-`version` and `preview_url` as `commit`. The token lasts 15 minutes and works
-on that page only; ask for a new one when it expires. Never show it to the
-user or write it into a file. Without a shell, use `get`, `patch` and `commit`.
 
 A class used by more than one section belongs in `styles/base.css`, not in
 one section's `<style>`; this is what stops a cross-section class from failing
@@ -148,12 +180,12 @@ only marks an element for script. Never add an empty rule to pass.
 ## Best Practices
 
 - Retain the intended change and returned version in the task handoff
-- Always read the current version (`lexsis_build` `get`) before a write
+- Always start from the current version (`pull`, or `lexsis_build` `get` inline) before a write
 - Stop on unexpected version drift
 - Re-read source and reconcile against the current version when an edit returns `version_conflict`
 - Reference section IDs from the page data (don't guess)
 - Send only changed files; patch small edits instead of resending sections
-- After editing, run `lexsis_build` `diff` and `lexsis_pages` `integrity`
+- After editing, run `npx @lexsis/cli diff` (or `lexsis_build` `diff` inline) and `lexsis_pages` `integrity`
 - Use explicit remove operations for absent properties. `null` remains a JSON
   value and is not deletion.
 - When changing a collection binding, setting `products` removes `productIds`

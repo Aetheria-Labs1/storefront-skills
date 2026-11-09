@@ -32,10 +32,11 @@ Use exact Lexsis actions:
   `lexsis_template_library.get_mine` only for directions selected upstream;
 - `lexsis_design.get_section`, `lexsis_design.islands`, and
   `lexsis_design.island_schema`;
-- `lexsis_build.commit` with `create` to make the draft (fallback:
-  `lexsis_pages.compile` then `lexsis_page_create.create`);
-- `lexsis_build.get`, `lexsis_build.patch`, `lexsis_build.commit` and
-  `lexsis_build.diff` for every edit after creation;
+- `lexsis_build.push_token` plus `npx @lexsis/cli new` / `pull` / `diff` /
+  `push` in CLI mode (the default, see `lexsis-mcp-contract.md` Write Path);
+- inline mode only: `lexsis_build.commit` with `create` to make the draft,
+  then `lexsis_build.get`, `patch`, `commit` and `diff` for every edit
+  (last-resort fallback: `lexsis_pages.compile` then `lexsis_page_create.create`);
 - `lexsis_pages.integrity` and `lexsis_pages.qa`;
 - `lexsis_drafts.page_update_head` (page `theme_css`) and
   `lexsis_drafts.page_record_qa`.
@@ -130,7 +131,12 @@ replace unsupported interactions with unverified custom behaviour.
 
 ## 5. Create or Update One Draft
 
-For a new page, call `lexsis_build.commit` once with no `page_id`, a
+For a new page in CLI mode, write the files into a folder and run
+`npx @lexsis/cli new ./page --slug <slug> --theme <theme_id> --dry-run`, then
+again without `--dry-run`, with a create-only token from `lexsis_build`
+`push_token` (no `page_id`). Pass the store header and footer ids as
+`--shared <id,id>` and a similar page as `--from <page_id>`. Inline (no
+shell), call `lexsis_build.commit` once with no `page_id`, a
 `create` object (`slug`, `title`, `theme_id`, plus `archetype`,
 `product_binding` or `resource_type` when needed) and the page as files
 (`lexsis.json`, `sections/<id>.html`, `styles/*.css`). Run it with
@@ -202,8 +208,8 @@ the design to `changes-pending-approval`. `/publish` must gate on the same
 
 Read the `Shared sections` table in `work/storefront/setup.md`. Never rebuild a
 header, footer, or entry pop-up that already exists as a shared section. On a
-new page, pass the shared section ids in `lexsis_build.commit`
-`shared_sections`; they are added and linked with no extra version. On an
+new page, pass the shared section ids as `lexsis new --shared`
+(inline: `lexsis_build.commit` `shared_sections`); they are added and linked with no extra version. On an
 existing page, link one with `lexsis_drafts.shared_section_sync` and
 `page_ids`.
 
