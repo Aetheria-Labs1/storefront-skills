@@ -61,7 +61,11 @@ and history because a lost response does not prove the write failed.
    - Use `store_id` to list profiles.
 2. Call `lexsis_cart.capabilities` before the first design or composition edit
    in a task. Resolve island props through `lexsis_design.island_schema`.
-3. For discounts or offers, call `lexsis_cart.promotions` and report the
+3. Before adding milestone rewards, pick the reward mode in
+   `references/cart-profile-management.md` ("Choosing a reward mode"). If the
+   store's checkout app (GoKwik, Shiprocket, Rebuy…) already gives the gift,
+   set `discount_source:"external"` so Lexsis only displays it.
+   For discounts or offers, call `lexsis_cart.promotions` and report the
    configured profile values, active Shopify discounts, and readiness or
    conflict diagnostics. Apply requested changes with `cart_promotions_edit`,
    using the latest `expected_version`, then review the returned readiness.
