@@ -248,6 +248,39 @@ replace. Coupon allow-list is `coupon_settings.coupons`; manual entry is
 hidden`; `providers` is an ordered unique list. Monetary thresholds use minor
 currency units. Gift/qualifying products and collections use verified Shopify IDs.
 
+`qualification_basis` (`whole_cart | scoped`) switches the profile between the
+whole-cart milestone Function and per-reward native codes.
+
+## Choosing a reward mode
+
+Before configuring milestone rewards, find out **who will make the reward free
+at checkout**. Getting this wrong shows "unlocked" in the cart while the
+shopper is charged, or gives a gift twice.
+
+| Mode | Who enforces the reward | Use when |
+|---|---|---|
+| Native codes (default; `qualification_basis:"scoped"` or omitted) | Lexsis creates a Shopify Buy X Get Y or basic code per reward at publish; the cart applies it | The checkout accepts Shopify discount codes and the store has no gift offers of its own. Works on every Shopify plan. Free gifts need a qualifying collection or products; use an "all products" collection for whole-cart spend |
+| Milestone Function (`qualification_basis:"whole_cart"`) | The `lexsis-cart-milestones` Shopify Function, at Shopify checkout | All of: checkout is Shopify's own checkout, and the Function is installed for the app the store uses (the public Lexsis app on any plan, or a custom/enterprise app only on Shopify Plus). Needed for tiers that replace each other or mixed discount + gift ladders |
+| External (`discount_source:"external"` on each reward) | A third-party checkout or offer app (GoKwik, Shiprocket, Rebuy, etc.) | The store already gives the gift in its checkout app. Lexsis only displays the milestone: no Shopify discount is created, no gift line or code is added, readiness is `ready` without a code, and the bar labels it "Added at checkout". Keep each threshold and gift identical to the checkout app's offer |
+
+Checks before choosing:
+
+1. **Checkout provider.** Look at the store's theme for third-party checkout
+   code (for example `gokwik-checkout`, `shiprocket`, a checkout-button
+   override). A Shopify Function never runs in a third-party checkout.
+2. **Function availability.** `lexsis_cart.promotions` readiness reports
+   `milestone_function_unavailable` when the Function is not installed. Do not
+   publish whole-cart rewards on that store; a custom app on a non-Plus store
+   cannot run it.
+3. **Existing offers.** Ask whether the checkout or another app already adds
+   gifts at the same thresholds. If it does, keep thresholds identical and do
+   not let Lexsis add a second gift: set `discount_source:"external"` on
+   those rewards. Never mix `external` with `qualification_basis:"whole_cart"`
+   for the same gift.
+
+Readiness rows report `qualification_basis`; `"whole_cart"` means the Function
+mode is active for the profile.
+
 The promotion edit response includes `profile` and `readiness`. Incomplete setup
 can be saved; malformed values and stale versions fail. Shopify transport
 failure returns a saved draft with `readiness_unavailable`. No promotion edit
