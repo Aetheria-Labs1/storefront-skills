@@ -262,14 +262,14 @@ while the shopper is charged, or gives a gift twice.
 1. **Is checkout a third-party app** (GoKwik, Shiprocket, Razorpay Magic,
    Simpl, etc.)? Look for its script or a checkout-button override in the theme,
    or ask the merchant. Shopify Functions and most Shopify codes do not run
-   there. → **External**, and configure the offer in that app.
+   there. -> **External**, and configure the offer in that app.
 2. **Does another app already give these gifts** (Rebuy, GoKwik offers, a
-   Shopify automatic discount)? → **External**, with identical thresholds and
+   Shopify automatic discount)? -> **External**, with identical thresholds and
    gifts. Never let Lexsis add a second gift.
 3. **Shopify checkout, and the store uses the public Lexsis app**, and you need
-   tiers that replace each other (5% → 10%, not 15%), a single free-shipping
-   tier, or gift + discount on the same ladder? → **Milestone Function**.
-4. **Otherwise** → **Native codes** (the default).
+   tiers that replace each other (5% -> 10%, not 15%), a single free-shipping
+   tier, or gift + discount on the same ladder? -> **Milestone Function**.
+4. **Otherwise** -> **Native codes** (the default).
 
 | | Native codes | Milestone Function | External | Display-only module |
 |---|---|---|---|---|
