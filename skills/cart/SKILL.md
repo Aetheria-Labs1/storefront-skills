@@ -61,10 +61,14 @@ and history because a lost response does not prove the write failed.
    - Use `store_id` to list profiles.
 2. Call `lexsis_cart.capabilities` before the first design or composition edit
    in a task. Resolve island props through `lexsis_design.island_schema`.
-3. Before adding milestone rewards, pick the reward mode in
-   `references/cart-profile-management.md` ("Choosing a reward mode"). If the
-   store's checkout app (GoKwik, Shiprocket, Rebuy…) already gives the gift,
-   set `discount_source:"external"` so Lexsis only displays it.
+3. Before adding or changing milestone rewards, pick exactly one reward mode
+   with "Choosing a reward mode" in `references/cart-profile-management.md`:
+   third-party checkout or an app that already gives the gift -> `external`;
+   Shopify checkout on the public Lexsis app needing replacing tiers ->
+   `whole_cart` Function (never on enterprise/custom apps: no Function ships);
+   otherwise native codes. Make any custom milestone copy match that mode, keep
+   one progress bar, and for `external` confirm the real checkout gives the
+   same gift before publishing.
    For discounts or offers, call `lexsis_cart.promotions` and report the
    configured profile values, active Shopify discounts, and readiness or
    conflict diagnostics. Apply requested changes with `cart_promotions_edit`,
