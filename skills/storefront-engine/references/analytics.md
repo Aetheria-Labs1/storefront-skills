@@ -32,6 +32,7 @@ Returns: sessions, CVR, bounce, sources, devices, section engagement, abandoned 
 Drill in with `resource_funnel`, `resource_attribution`, `resource_orders`, `resource_vitals`.
 To rank the products a template serves, collect handles with `lexsis_pages.resource_routes`, then call `resource_views({ resource_type, handles: [...] })`.
 For one page, `page_funnel` and `page_attribution` give the same funnel and attribution.
+For the orders themselves, `page_orders({ page_id })` lists one page's orders and `experiment_orders({ experiment_id, variant_id? })` lists every order matched to a test (no 200 cap). Both page with `limit` (max 200) and `offset`; repeat with `next_offset` until it is null.
 
 ### Product & Collection Performance
 A product or collection can be shown by its own page or by a template. These actions combine every page that showed it.
@@ -43,6 +44,7 @@ Returns: sessions, CVR, bounce, sources, devices, section engagement, abandoned 
 Drill in with `resource_funnel`, `resource_attribution`, `resource_orders`, `resource_vitals`.
 To rank the products a template serves, collect handles with `lexsis_pages.resource_routes`, then call `resource_views({ resource_type, handles: [...] })`.
 For one page, `page_funnel` and `page_attribution` give the same funnel and attribution.
+For the orders themselves, `page_orders({ page_id })` lists one page's orders and `experiment_orders({ experiment_id, variant_id? })` lists every order matched to a test (no 200 cap). Both page with `limit` (max 200) and `offset`; repeat with `next_offset` until it is null.
 
 ## A/B Testing Flow
 
