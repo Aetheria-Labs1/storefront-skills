@@ -800,6 +800,8 @@
       "page_split_get",
       "page_funnel",
       "page_attribution",
+      "page_orders",
+      "experiment_orders",
       "resource",
       "resource_funnel",
       "resource_attribution",
