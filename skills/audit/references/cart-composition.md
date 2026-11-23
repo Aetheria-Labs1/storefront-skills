@@ -94,6 +94,8 @@ part map and inline-style exceptions.
   New modules honour `before_module_id` or `after_module_id` on the first upsert.
   Without an explicit region, the module inherits its anchor's region,
   including header and before-checkout offer placements.
+  Regions: `header`, `body`, `footer`, `above_title`, `floating_above`, `sheet`
+  (hidden until opened; see module-authoring.md, Presentation commands).
 - `data-module` equals the layout ID, including `offer-<uuid>` and custom IDs.
   `data-module-type` equals the layout type, such as `product_offer` or `custom`.
   Generated sections before `default@13` used `data-module="product-offer"`;
@@ -126,6 +128,44 @@ stays in the panel; viewport scope renders above the sheet and overlay.
 Toasts fit the panel and clear close controls. Positions are `top` (below the
 header), `bottom`, `above_header` (falls below the header when no space).
 `toast.duration_ms` overrides the inherited celebration duration.
+
+## Build the cart as files
+
+`lexsis_build` with `cart_profile_id` (instead of `page_id`) exposes the
+profile's presentation layer as a `lexsis.cart/1` tree, the cart counterpart of
+`lexsis.page/2`:
+
+```text
+lexsis.json          every module in order: {id, type, enabled, visible_when?, region (custom)}
+modules/<id>.html    one custom module source (<!-- section: id --> first)
+styles/<block>.css   one file per named CSS block
+```
+
+- `get` returns `version`, `tree` (path to sha256) and the `files` you name.
+- `commit` with `base_version` and only the changed files (`null` deletes)
+  saves one new draft version. The server diffs the tree against the draft
+  and applies it as `composition_ops` + `css_ops`, so every `cart_edit` rule
+  holds: one section per module, no cart islands inside a module, required
+  modules stay, module CSS is scoped. Diagnostics carry `file` + `line`.
+  `dry_run:true` compiles and mints a preview without saving.
+- `patch` applies `replace_text`, `upsert_css_rule`, `remove_css_rule`,
+  `set_attr`, `move_section` and `remove_section` (module ids) to the tree,
+  then commits. There is no `set_head`.
+- `diff` compares two versions of the tree.
+- Built-in modules have no file. Add, reorder, enable or condition them in
+  `lexsis.json`; configure them (offers, rewards, rules, design) with
+  `cart_edit` / `cart_promotions_edit`. Only custom modules can be added or
+  removed as files.
+- Only the current draft is readable as files; a stale `base_version` is
+  `VERSION_CONFLICT` (re-read, re-apply, resend). No create: make the profile
+  with `cart_create` first.
+- Shell users: `LEXSIS_API_KEY=... npx @lexsis/cli pull --cart <cart_profile_id> ./cart`,
+  edit, `npx @lexsis/cli push ./cart --dry-run`, then `push`. Cart profiles
+  have no scoped push token yet.
+
+Use files when a cart has several custom modules or a module is long (a sheet,
+a bundle builder, a multi-step upsell). Use `cart_edit` for one small
+composition change or anything that is configuration.
 
 ## Current cart workflow
 

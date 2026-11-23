@@ -38,6 +38,13 @@ Optional regions/controls exist only when enabled.
 | `module-frame` | Direct built-in or custom module container, in composition order | None |
 | `above-title` | Custom modules above the title, outside scrolling content | None |
 | `floating-above` | Custom modules anchored above the panel, outside scrolling content | None |
+| `sheet-layer` | Cart sheet overlay inside `content`; `data-state="open|closed"` | Pointer events and visibility |
+| `sheet-backdrop` | Sheet backdrop close button | Overlay colour, animated opacity |
+| `sheet-panel` | Bottom sheet surface over the cart; `data-sheet` names the open module | Animated transform |
+| `sheet-drag-handle` | Sheet handle | None |
+| `sheet-close` | Sheet close button | None |
+| `sheet-body` | Scrollable sheet content | None |
+| `sheet` | One sheet wrapper per `region: "sheet"` module, `data-cart-sheet="<id>"`, hidden until opened | None |
 
 The `panel` also carries `data-mode`, `data-header-layout`, `data-count-style`,
 `data-close-style`, `data-sticky-header`, `data-sticky-footer`,
@@ -57,7 +64,7 @@ controls. Scope common names like `root`, `item` and `bar` to the island's
 | CartRewardProgress | `root`, `message`, `track`, `bar`, `milestones`, `milestone`, `milestone-threshold`, `milestone-visual`, `milestone-label`, `milestone-status`, `configuration-badge`, `scoped-offer`, `offer-condition`, `gift-title`, `gift-select`, `gift-action`, `compact-track`, `milestone-dot`, `milestone-captions`, `milestone-icon` |
 | CartCoupons | `root`, `summary`, `savings`, `coupon-view` |
 | CartCheckoutButton | `root`, `cta`, `payment-logos`, `secondary-cta` |
-| CartCrossSell | `root`, `heading`, `fallback`, `item`, `item-image`, `item-info`, `item-title`, `item-price`, `add-button` |
+| CartCrossSell | `root`, `heading`, `fallback`, `item`, `item-detail-trigger` (only with `presentation.detail_sheet`), `item-image`, `item-info`, `item-title`, `item-price`, `add-button` |
 | CartProgressBar | `root`, `visual`, `track`, `bar`, `message` |
 | PaymentOptions | `root`, `provider`, `provider-logo`, `provider-fallback`, `button`, `text`, `icons-row` |
 | Shared cart status | `cart-sync-status`, `cart-action-dots` |

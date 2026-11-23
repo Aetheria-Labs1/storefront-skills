@@ -87,6 +87,14 @@ and history because a lost response does not prove the write failed.
    - `remove` deletes only custom modules.
    - Use `before_module_id: "checkout"` and `region: "footer"` for a block
      immediately above checkout.
+   - `region: "sheet"` makes a module a bottom sheet that opens over the cart
+     (`data-lx-open-sheet`, `lx:cart:open-sheet`, or an offer slot's
+     `presentation.detail_sheet` for tappable recommendation cards). See
+     `references/module-authoring.md`, Product detail sheet.
+   - For several custom modules or a long module, edit the cart as files with
+     `lexsis_build` and `cart_profile_id` (`lexsis.cart/1`: `lexsis.json`,
+     `modules/<id>.html`, `styles/<block>.css`). Same rules, same draft
+     versions. See `references/cart-composition.md`, Build the cart as files.
 6. Responses default to compact summaries. Re-read needed fields with
    `lexsis_cart.get` using `fields:["version","design_spec","layout_schema"]`,
    or `response:"full"` for all source. Use `dry_run:true` on `cart_edit` to
