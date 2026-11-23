@@ -70,6 +70,26 @@ Errors can arrive before any intermediate phase. Filter responses by requestId.
 | `lx:cart:choose-gift` | `rewardId`, `variantId` |
 | `lx:cart:swap-variant` | `lineId`, `variantId`, optional `quantity` |
 
+Presentation commands have no request lifecycle (nothing is written, so no
+`:pending` or `:success` responses):
+
+| Event | Detail fields |
+| --- | --- |
+| `lx:cart:open-sheet` | `sheetId` (a `region: "sheet"` module id), optional `context` object |
+| `lx:cart:close-sheet` | optional `sheetId` |
+
+A `region: "sheet"` module renders hidden inside the cart and slides up over the
+cart content when opened. Any element inside the cart with
+`data-lx-open-sheet="<module id>"` (plus optional `data-lx-sheet-context` JSON)
+opens it on click; `data-lx-close-sheet` closes it. An offer slot with
+`presentation.detail_sheet: "<module id>"` makes each recommendation card a
+trigger with `{product_id, variant_id, handle, title, price, image}` as context.
+The sheet module's `root` receives `lx:cart:sheet-opened` `{sheetId, context}`
+and `lx:cart:sheet-closed`, and carries the context as `data-lx-sheet-context`
+JSON. Escape, the backdrop, swipe-down and closing the cart all close the sheet.
+Sheet opens and closes are tracked automatically (`lx_cart_sheet_open` /
+`lx_cart_sheet_close` in cart analytics); a module emits nothing for that.
+
 Use the live capabilities for exact payload types, limits and error codes.
 Reuse the same requestId only to replay the identical request; a changed payload
 fails with `request_id_conflict`. A terminal replay returns the recorded outcome
@@ -167,6 +187,76 @@ Rules apply to optional built-ins as well. Required cart lines, summary and
 checkout cannot be hidden. Hidden modules use `hidden` and leave the
 accessibility tree; they remain in the DOM for live visibility changes.
 Disabled modules (`set_enabled:false`) are omitted from generated sections.
+
+## Product detail sheet opened from a recommendation card
+
+A `region: "sheet"` module. Set `presentation.detail_sheet: "product-detail"`
+on the offer slot (`cart_promotions_edit`) so each card opens it with the tapped
+product as context. The sheet reads the context on `lx:cart:sheet-opened`, adds
+the variant with the managed command and closes itself with `data-lx-close-sheet`.
+
+```html lexsis-cart-example
+<!-- section: product-detail -->
+<section class="detail">
+  <img data-detail-image alt="" hidden>
+  <h3 data-detail-title>Product</h3>
+  <p data-detail-price></p>
+  <p class="detail-copy">Free returns within 30 days. Ships in 1-2 business days.</p>
+  <button type="button" data-lx-control="add-from-sheet" disabled>Add to cart</button>
+  <button type="button" data-lx-close-sheet class="detail-close">Keep shopping</button>
+  <p data-result role="status" aria-live="polite"></p>
+  <style>
+    .detail { padding: 20px; display: grid; gap: 12px; }
+    .detail img { width: 100%; max-height: 240px; object-fit: cover; border-radius: 12px; }
+    .detail button { min-height: 44px; padding: 8px 16px; }
+    .detail-copy { color: var(--lx-muted-color, #6b7280); }
+    .detail-close { background: transparent; border: 1px solid var(--lx-border-color); }
+  </style>
+  <script>
+    const image = lifecycle.query('[data-detail-image]');
+    const title = lifecycle.query('[data-detail-title]');
+    const price = lifecycle.query('[data-detail-price]');
+    const button = lifecycle.query('[data-lx-control="add-from-sheet"]');
+    const result = lifecycle.query('[data-result]');
+    let variantId = null;
+    let requestId = null;
+    lifecycle.on(root, 'lx:cart:sheet-opened', (event) => {
+      const context = event.detail.context || {};
+      variantId = context.variant_id || null;
+      title.textContent = context.title || 'Product';
+      price.textContent = context.price || '';
+      image.hidden = !context.image;
+      if (context.image) image.src = context.image;
+      result.textContent = '';
+      button.disabled = !variantId;
+    });
+    lifecycle.on(button, 'click', () => {
+      if (!variantId || requestId) return;
+      requestId = 'detail-' + Date.now();
+      button.disabled = true;
+      root.dispatchEvent(new CustomEvent('lx:cart:add-items', {
+        bubbles: true,
+        detail: { requestId, items: [{ variantId, quantity: 1 }] }
+      }));
+    });
+    lifecycle.on(root, 'lx:cart:add-items:success', (event) => {
+      if (event.detail.requestId !== requestId) return;
+      requestId = null;
+      result.textContent = 'Added to your cart';
+      root.dispatchEvent(new CustomEvent('lx:cart:close-sheet', { bubbles: true, detail: {} }));
+    });
+    lifecycle.on(root, 'lx:cart:add-items:error', (event) => {
+      if (event.detail.requestId !== requestId) return;
+      requestId = null;
+      button.disabled = false;
+      result.textContent = event.detail.message;
+    });
+  </script>
+</section>
+```
+
+Any element inside the cart can open a sheet declaratively:
+`<button type="button" data-lx-open-sheet="product-detail" data-lx-sheet-context='{"title":"Gift wrap"}'>Details</button>`.
 
 ## Bind text and conditions without JavaScript
 
