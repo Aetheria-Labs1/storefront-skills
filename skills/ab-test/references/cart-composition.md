@@ -141,7 +141,7 @@ modules/<id>.html    one custom module source (<!-- section: id --> first)
 styles/<block>.css   one file per named CSS block
 ```
 
-- `get` returns `version`, `tree` (path → sha256) and the `files` you name.
+- `get` returns `version`, `tree` (path to sha256) and the `files` you name.
 - `commit` with `base_version` and only the changed files (`null` deletes)
   saves one new draft version. The server diffs the tree against the draft
   and applies it as `composition_ops` + `css_ops`, so every `cart_edit` rule
@@ -159,7 +159,7 @@ styles/<block>.css   one file per named CSS block
 - Only the current draft is readable as files; a stale `base_version` is
   `VERSION_CONFLICT` (re-read, re-apply, resend). No create: make the profile
   with `cart_create` first.
-- Shell users: `LEXSIS_API_KEY=… npx @lexsis/cli pull --cart <cart_profile_id> ./cart`,
+- Shell users: `LEXSIS_API_KEY=... npx @lexsis/cli pull --cart <cart_profile_id> ./cart`,
   edit, `npx @lexsis/cli push ./cart --dry-run`, then `push`. Cart profiles
   have no scoped push token yet.
 
