@@ -87,6 +87,8 @@ trigger with `{product_id, variant_id, handle, title, price, image}` as context.
 The sheet module's `root` receives `lx:cart:sheet-opened` `{sheetId, context}`
 and `lx:cart:sheet-closed`, and carries the context as `data-lx-sheet-context`
 JSON. Escape, the backdrop, swipe-down and closing the cart all close the sheet.
+Sheet opens and closes are tracked automatically (`lx_cart_sheet_open` /
+`lx_cart_sheet_close` in cart analytics); a module emits nothing for that.
 
 Use the live capabilities for exact payload types, limits and error codes.
 Reuse the same requestId only to replay the identical request; a changed payload
