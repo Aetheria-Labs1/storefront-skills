@@ -109,24 +109,63 @@ that every visible difference is covered by the approved plan. Return
 
 ## Create the Draft Experiment
 
-After variant approval, call `lexsis_drafts` action `experiment_create` using
-the live schema. Supply:
+Ask which goal the test is judged on before creating it; it cannot be changed
+later:
 
-- the original page id;
-- original blueprint as the control;
-- duplicate blueprint ids as challengers;
-- approved labels and weights summing to 1;
-- the supported primary metric and hypothesis fields.
+- `cvr` (conversion rate, the default): Lexsis nominates a winner candidate
+  when one is statistically clear.
+- `rpv` (revenue per visitor): use when the arms change price, offer, bundle
+  or anything else that moves order value. Results show the revenue leader
+  with conversion rate as a secondary metric, and never nominate a winner. A
+  person decides.
+
+After variant approval, call `lexsis_drafts.page_split_create` using the live
+schema. Supply:
+
+- the store id and a name;
+- one arm per page: the original page id as the control (`is_control`), each
+  duplicate page id as a challenger;
+- approved labels and `weight_bps` summing to 10000;
+- `primary_metric` and the hypothesis.
 
 Experiment creation is a reversible draft operation. Return
-`AB_TEST_DRAFT_CREATED` with the experiment id and variant mapping.
+`AB_TEST_DRAFT_CREATED` with the experiment id, goal metric and arm mapping.
 
-Starting traffic is separate. Before publishing variants or starting the
-experiment, require explicit approval that names the experiment and pages.
-Resolve the current start action through exact discovery if it is exposed; if
-the MCP has no start action, direct the user to activate the draft in Lexsis.
-Never treat experiment creation as permission to publish pages or route live
-traffic.
+## Prepare the Test
+
+Call `lexsis_drafts.page_split_prepare` with step `start`. Preparing freezes
+every arm at its page's current version and renders it. It does not affect
+visitors and needs no extra approval beyond the approved plan.
+
+Poll step `status` every few seconds until the run is `ready` or `failed`:
+
+- `ready`: continue to starting the test.
+- `failed`: report `error_code`, `error_message` and the failing arm. Fix the
+  page if the error names one, then call step `retry`.
+- To change arms, weights or pages after preparing, call step `reopen`, make
+  the edit with `lexsis_drafts.page_split_update` or the page tools, and
+  prepare again. Page edits made after preparing are not in the test until
+  then.
+
+## Start the Test
+
+Starting sends real visitors to the arms. Require explicit approval that names
+the experiment, its arms and traffic split. Never treat plan approval,
+experiment creation or preparation as permission to route live traffic.
+
+After approval, call `lexsis_live_ops.page_split_control` with step `start`.
+Report every URL in the response with its checked state, not only the first.
+If the call fails:
+
+- `experiment_not_prepared`: prepare first.
+- an entitlement error such as `active_experiment_limit_reached`: tell the
+  user which limit was hit; do not stop another test to make room unless
+  asked.
+- the test did not go live: repeat step `start` once, then report the error.
+
+The same action runs the test afterwards, each step after approval: `pause`
+serves the control to everyone, `resume` splits again, `stop` ends the test
+with no winner and cannot be undone.
 
 ## Evaluate
 
@@ -138,5 +177,16 @@ For later evaluation, read `lexsis_analytics` action `experiment` and report:
 - device, targeting, or data-quality concerns;
 - recommended next action: continue, pause, stop, or promote.
 
-Do not call a winner from directional movement alone. `scale_winner` is a live
-operation and requires explicit approval for the reported winning variant.
+Do not call a winner from directional movement alone. To end a page-split
+test on a winner, call `lexsis_live_ops.page_split_control` with step `winner`
+and the arm id; it is a live operation and requires explicit approval for the
+named arm.
+
+- On a `cvr` test, pick the winner candidate Lexsis reports. Any other arm
+  needs `manual: true` and the user's explicit choice.
+- On an `rpv` test there is never a candidate. Report `rpv_leader_variant_id`,
+  its revenue per visitor against the control and the conversion-rate
+  movement, let the user decide, then pass `manual: true`.
+- A holdout's theme arm cannot be the winner.
+
+`scale_winner` applies only to legacy blueprint experiments.
