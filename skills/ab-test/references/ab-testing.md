@@ -112,12 +112,13 @@ that every visible difference is covered by the approved plan. Return
 Ask which goal the test is judged on before creating it; it cannot be changed
 later:
 
-- `cvr` (conversion rate, the default): Lexsis nominates a winner candidate
-  when one is statistically clear.
+- `cvr` (conversion rate, the default): use when prices are the same across
+  arms.
 - `rpv` (revenue per visitor): use when the arms change price, offer, bundle
-  or anything else that moves order value. Results show the revenue leader
-  with conversion rate as a secondary metric, and never nominate a winner. A
-  person decides.
+  or anything else that moves order value.
+
+Lexsis nominates a winner candidate on the chosen goal when one is
+statistically clear. A person always confirms it.
 
 After variant approval, call `lexsis_drafts.page_split_create` using the live
 schema. Supply:
@@ -182,11 +183,9 @@ test on a winner, call `lexsis_live_ops.page_split_control` with step `winner`
 and the arm id; it is a live operation and requires explicit approval for the
 named arm.
 
-- On a `cvr` test, pick the winner candidate Lexsis reports. Any other arm
-  needs `manual: true` and the user's explicit choice.
-- On an `rpv` test there is never a candidate. Report `rpv_leader_variant_id`,
-  its revenue per visitor against the control and the conversion-rate
-  movement, let the user decide, then pass `manual: true`.
+- Pick the winner candidate Lexsis reports for the test's goal. On an `rpv`
+  test also report the conversion-rate movement, so the user sees both.
+- Any other arm needs `manual: true` and the user's explicit choice.
 - A holdout's theme arm cannot be the winner.
 
 `scale_winner` applies only to legacy blueprint experiments.
