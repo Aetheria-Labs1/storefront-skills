@@ -1,3 +1,5 @@
 .impeccable/
 hook.cache.json
 __pycache__/
+dist/
+.gstack/

@@ -1,5 +1,5 @@
 <!-- GENERATED from skills/ by scripts/build-distributions.py - DO NOT EDIT.
-     storefront-skills v9.12.4; 12 skills; 56 active islands -->
+     storefront-skills v9.13.1; 12 skills; 56 active islands -->
 
 # Lexsis Storefront Skills - Knowledge Base
 
@@ -7269,6 +7269,21 @@ control sizing. Native markup is not a license to recreate cart logic.
   element under `data-lx-control`, bind it through the lifecycle API, and
   listen for renderer response events on the same section. Do not create
   hidden commerce islands or drive their controls with `.click()`.
+- Every element that sells one variant carries `data-lx-variant="<variant gid>"`.
+  When the variant depends on other choices (size inside a style/pack/colour
+  builder), set the attribute from JS each time the choice changes. The runtime
+  owns sold-out state: it disables and dims unavailable variants, labels them
+  for screen readers, re-checks on tab focus and after cart rejections, and
+  refuses adds for variants it has already resolved (an unbound id still goes
+  to Shopify). Never keep a local sold-out map or learn stock from an
+  `unavailable_variant` error: publish warns with check `local_stock_state`.
+  `lifecycle.catalog.variants(ids)` is for logic only. A section that
+  dispatches `lx:cart:add-items` with no `data-lx-variant` fails publish with
+  check `variant_availability`.
+- Island internals are not observable from section scripts
+  (`lifecycle.observeMutations` drops island-internal records). React to the
+  island's host events instead: Quiz dispatches `lx:quiz:result` and
+  `lx:quiz:variant` (`{ quizKey, productKey, variantId }`) on its host.
 
 ## Section script policy
 

@@ -22,6 +22,18 @@ The compiler rejects `window` and `document` access. Do not reach outside the
 wrapper, fetch Shopify directly, write cart storage or dispatch fake response
 events. Use the cart commands below.
 
+Variant availability is owned by the runtime. Put `data-lx-variant="<variant gid>"`
+on every element that sells one variant (set it from JS when the variant follows
+other choices); the runtime disables and dims sold-out variants, labels them
+for screen readers and refuses their adds (the refusal is for variants it has
+already resolved; an unbound id still goes to Shopify). Never keep your own
+sold-out state or learn it from an `unavailable_variant` error: publish warns
+(`local_stock_state`). `lifecycle.catalog.variants(ids)` returns live
+availability keyed by gid for logic only (default selection, pack eligibility);
+it resolves to `{}` without a store token and after unmount. A module that
+dispatches `lx:cart:add-items` without `data-lx-variant` fails publish
+(`variant_availability`).
+
 `lifecycle.cart` is a deeply frozen CartSnapshot. Subscribe with
 `lifecycle.onCart((snapshot,previous) => {...})` during initialization: the
 getter throws before the store currency and prices are available. The first
@@ -106,10 +118,10 @@ updates after cart changes, and disables adding when the variant is present.
 
 ```html lexsis-cart-example
 <!-- section: matching-item -->
-<section class="upsell" data-variant-id="gid://shopify/ProductVariant/123">
+<section class="upsell">
   <h3>Add a matching item</h3>
   <p data-remaining hidden></p>
-  <button type="button" data-lx-control="add-upsell" disabled>Add item</button>
+  <button type="button" data-lx-control="add-upsell" data-lx-variant="gid://shopify/ProductVariant/123" disabled>Add item</button>
   <p data-result role="status" aria-live="polite"></p>
   <style>
     .upsell { padding: 16px; border: 1px solid var(--lx-border-color); }
@@ -117,16 +129,15 @@ updates after cart changes, and disables adding when the variant is present.
     .upsell button:disabled { opacity: 0.6; }
   </style>
   <script>
-    const content = lifecycle.query('[data-variant-id]');
     const button = lifecycle.query('[data-lx-control="add-upsell"]');
     const remaining = lifecycle.query('[data-remaining]');
     const result = lifecycle.query('[data-result]');
-    const variantId = content.dataset.variantId;
+    const variantId = button.dataset.lxVariant;
     let requestId = null;
     let sequence = 0;
     let present = false;
     const refreshButton = () => {
-      button.disabled = Boolean(requestId) || present;
+      button.disabled = Boolean(requestId) || present || button.dataset.lxAvailable === 'false';
       button.textContent = requestId ? 'Adding...' : present ? 'Already in cart' : 'Add item';
     };
     lifecycle.onCart((cart) => {
@@ -223,6 +234,8 @@ the variant with the managed command and closes itself with `data-lx-close-sheet
     lifecycle.on(root, 'lx:cart:sheet-opened', (event) => {
       const context = event.detail.context || {};
       variantId = context.variant_id || null;
+      if (variantId) button.setAttribute('data-lx-variant', variantId);
+      else button.removeAttribute('data-lx-variant');
       title.textContent = context.title || 'Product';
       price.textContent = context.price || '';
       image.hidden = !context.image;

@@ -60,6 +60,24 @@ Or zero-install: clone the repo anywhere inside your project — Codex discovers
 
 Nothing to copy. Cursor reads the Agent Skills standard from `.agents/skills/` natively — clone the repo (or use `npx skills add`) and the skills appear. The old `cursor/rules/*.mdc` file is gone as of v5.0.0.
 
+## Install (ChatGPT plugin)
+
+`chatgpt/` is a ChatGPT plugin: the same skills plus the Lexsis MCP, which
+connects with OAuth on first use.
+
+- **Business / Enterprise / Edu workspace:** run `./scripts/package-chatgpt.sh`
+  (or download the zip from the release), then a workspace admin opens
+  **Admin console → Plugins → Add → Upload plugin** and uploads
+  `lexsis-storefront-chatgpt-<version>.zip`. Members install it from the
+  Plugins directory and select **Connect**.
+- **Just the tools, any eligible account:** chatgpt.com/plugins → **+** →
+  **Add custom MCP server** → `https://mcp.trylexsis.com/mcp` → OAuth →
+  **Create as a plugin**. This gives the Lexsis tools without the skills.
+- **Plus / personal accounts:** use the Custom GPT below.
+
+`chatgpt/plugin.json` and `chatgpt/mcp.json` are generated; `chatgpt/skills`
+links to `skills/`.
+
 ## Install (Custom GPT)
 
 1. Copy `gpt/instructions.md` → paste into GPT Instructions
@@ -208,6 +226,7 @@ storefront-skills/
 ├── .mcp.json                        ← Claude plugin MCP configuration
 ├── .agents/skills → skills/         ← Codex + Cursor native discovery (symlink)
 ├── codex/                           ← Codex plugin manifest + MCP config
+├── chatgpt/                         ← GENERATED — ChatGPT plugin (manifest + OAuth MCP)
 ├── gpt/                             ← GENERATED — custom GPT instructions + knowledge
 ├── cursor/                          ← pointer README (Cursor needs no copies)
 └── scripts/build-distributions.py   ← regenerates Claude/GPT outputs and validates everything

@@ -254,6 +254,10 @@ POPULAR" ribbon, per-component reviews, the FAQ, a countdown.
   actually sold.
 - Never pad the set with a low-value item to inflate the anchor.
 - Never let a sold-out component be selectable; show "Notify me" instead.
+  Every builder control that sells one variant carries
+  `data-lx-variant="<variant gid>"` (set from JS when size, pack or colour
+  change which variant it is) so the runtime disables and dims sold-out
+  options and refuses their adds; the builder never keeps its own sold-out map.
 - Never hide builder rules (required vs optional slots) until the cart.
 - Never run a different bundle edit flow in the cart than on the page.
 - Never mix alternatives (three sizes of one product) and call it a bundle.

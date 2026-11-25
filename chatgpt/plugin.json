@@ -1,0 +1,47 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "lexsis-storefront-skills",
+  "version": "9.13.1",
+  "description": "AI-powered Shopify storefront builder with 10 focused workflows for pages, quizzes, optimization, A/B testing, carts, and publishing.",
+  "author": {
+    "name": "Aetheria Labs",
+    "email": "hello@trylexsis.com"
+  },
+  "homepage": "https://trylexsis.com",
+  "repository": "https://github.com/Aetheria-Labs1/storefront-skills",
+  "license": "MIT",
+  "keywords": [
+    "shopify",
+    "landing-page",
+    "ecommerce",
+    "storefront",
+    "cro"
+  ],
+  "mcpServers": "./mcp.json",
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Lexsis",
+        "shortDescription": "Shopify pages that convert",
+        "longDescription": "Lexsis plans, builds and improves Shopify landing pages, product pages and quizzes for your store. It writes the page plan with real copy, finds or produces the images, builds an unpublished draft and checks it on mobile, tablet and desktop. It can also audit a live page, set up A/B tests, configure cart upsells and read page analytics.\n\nBuilt for Shopify brands and the agencies that run their stores. Requires a Lexsis account with your Shopify store connected; you sign in the first time Lexsis is used.\n\nLimits: Lexsis only works with Shopify stores connected to Lexsis. It never publishes or changes a live page without your explicit approval for that page and version.",
+        "developerName": "Aetheria Labs",
+        "category": "Productivity",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "websiteURL": "https://trylexsis.com",
+        "defaultPrompt": [
+          "Plan and build a landing page for my bestselling product.",
+          "Audit this page and suggest changes that improve add-to-cart.",
+          "Set up an A/B test between my product page and a new Lexsis page."
+        ],
+        "supportURL": "https://docs.trylexsis.com/troubleshooting",
+        "privacyPolicyURL": "https://trylexsis.com/privacy-policy",
+        "termsOfServiceURL": "https://trylexsis.com/terms-of-service",
+        "logo": "./assets/logo.png",
+        "composerIcon": "./assets/logo.png"
+      }
+    }
+  }
+}
