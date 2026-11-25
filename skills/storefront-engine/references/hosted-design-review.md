@@ -54,7 +54,13 @@ Compare rendered text with the approved plan:
 Exercise every planned interaction. For commerce pages verify:
 
 - expected product and variant enter the cart;
-- sold-out variants are disabled and not silently swapped;
+- sold-out variants are disabled and slashed on first paint, before any add
+  attempt, and never silently swapped. Record this as the `verify_sold_out_variant`
+  commerce step in `qa.run`: pick a variant `lexsis_catalog` `get` reports
+  `available: false`, load the hosted preview and confirm its control is disabled
+  with `data-lx-available="false"`. When the catalog has no sold-out variant,
+  record the step as `warn` with that reason. A commerce run without this step
+  fails;
 - variant media and price remain synchronized;
 - cart opens in the intended responsive form;
 - quantity, line totals, subtotal, selling plan, discount, and checkout path
