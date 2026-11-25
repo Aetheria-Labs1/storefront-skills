@@ -560,9 +560,13 @@ def build_chatgpt() -> dict[str, str]:
         "license": codex["license"],
         "keywords": codex["keywords"],
         "mcpServers": "./mcp.json",
-        # ponytail: no privacyPolicyURL/termsOfServiceURL/logo yet; the public
-        # directory submission needs them, workspace upload does not.
-        "extensions": {"com.openai": {"interface": codex["interface"]}},
+        "extensions": {"com.openai": {"interface": {
+            **codex["interface"],
+            "privacyPolicyURL": "https://trylexsis.com/privacy-policy",
+            "termsOfServiceURL": "https://trylexsis.com/terms-of-service",
+            "logo": "./assets/logo.png",
+            "composerIcon": "./assets/logo.png",
+        }}},
     }
     mcp = {
         "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
