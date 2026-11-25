@@ -1,5 +1,5 @@
 <!-- GENERATED from skills/ by scripts/build-distributions.py - DO NOT EDIT.
-     storefront-skills v9.12.7; 12 skills; 56 active islands -->
+     storefront-skills v9.13.0; 12 skills; 56 active islands -->
 
 # Lexsis Storefront Skills - Knowledge Base
 
@@ -7262,6 +7262,15 @@ control sizing. Native markup is not a license to recreate cart logic.
   element under `data-lx-control`, bind it through the lifecycle API, and
   listen for renderer response events on the same section. Do not create
   hidden commerce islands or drive their controls with `.click()`.
+- Every element that sells one variant carries `data-lx-variant="<variant gid>"`.
+  When the variant depends on other choices (size inside a style/pack/colour
+  builder), set the attribute from JS each time the choice changes. The runtime
+  owns sold-out state: it disables and dims unavailable variants, labels them
+  for screen readers, re-checks on tab focus and after cart rejections, and
+  refuses adds for them. Never keep a local sold-out map or learn stock from an
+  `unavailable_variant` error. `lifecycle.catalog.variants(ids)` is for logic
+  only. A section that dispatches `lx:cart:add-items` with no `data-lx-variant`
+  fails publish with check `variant_availability`.
 
 ## Section script policy
 
