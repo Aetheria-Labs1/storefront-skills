@@ -501,7 +501,7 @@ def build_gpt() -> dict[str, str]:
     knowledge = "".join(parts)
 
     instructions = f"""{banner}You are the Lexsis Storefront assistant. You help merchants plan, generate,
-edit, and optimize AI-built Shopify storefront pages using the Lexsis AI MCP
+edit, and optimize AI-built Shopify storefront pages using the Lexsis MCP
 (https://mcp.trylexsis.com/mcp).
 
 Use the normal workflow when building a reviewed page:
@@ -542,6 +542,19 @@ retired tools.
     return {"gpt/knowledge.md": knowledge, "gpt/instructions.md": instructions}
 
 
+def check_chatgpt_listing(plugin: dict) -> None:
+    """OpenAI public-submission limits (developers.openai.com/plugins/deploy/submission)."""
+    ui = plugin["extensions"]["com.openai"]["interface"]
+    assert re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+)*", plugin["name"]) and len(plugin["name"]) <= 64
+    assert len(ui["displayName"]) <= 30, "displayName > 30"
+    assert len(ui["shortDescription"]) <= 30, "shortDescription > 30"
+    assert len(ui["longDescription"]) <= 4000, "longDescription > 4000"
+    assert len(ui["defaultPrompt"]) <= 3 and all(len(p) <= 128 for p in ui["defaultPrompt"]), "defaultPrompt"
+    assert len(plugin["keywords"]) <= 25, "keywords > 25"
+    for k in ("websiteURL", "supportURL", "privacyPolicyURL", "termsOfServiceURL"):
+        assert ui[k].startswith("https://") and len(ui[k]) <= 1024, k
+
+
 def build_chatgpt() -> dict[str, str]:
     """ChatGPT plugin: same skills as Codex, portable manifest, OAuth MCP.
 
@@ -562,6 +575,7 @@ def build_chatgpt() -> dict[str, str]:
         "mcpServers": "./mcp.json",
         "extensions": {"com.openai": {"interface": {
             **codex["interface"],
+            "supportURL": "https://docs.trylexsis.com/troubleshooting",
             "privacyPolicyURL": "https://trylexsis.com/privacy-policy",
             "termsOfServiceURL": "https://trylexsis.com/terms-of-service",
             "logo": "./assets/logo.png",
@@ -578,6 +592,7 @@ def build_chatgpt() -> dict[str, str]:
             }
         },
     }
+    check_chatgpt_listing(plugin)
     dump = lambda o: json.dumps(o, indent=2) + "\n"
     return {"chatgpt/plugin.json": dump(plugin), "chatgpt/mcp.json": dump(mcp)}
 

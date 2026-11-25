@@ -1,6 +1,6 @@
 {
   "name": "lexsis-storefront-skills",
-  "version": "9.12.6",
+  "version": "9.12.7",
   "description": "AI-powered Shopify storefront builder with 10 focused workflows for pages, quizzes, optimization, A/B testing, carts, and publishing.",
   "author": {
     "name": "Aetheria Labs",
@@ -19,9 +19,9 @@
   "skills": "./skills/",
   "mcpServers": "./.mcp.json",
   "interface": {
-    "displayName": "Lexsis AI Storefront Builder",
-    "shortDescription": "Build, optimize, and publish Shopify storefronts.",
-    "longDescription": "Conversion-focused Shopify storefront workflows with Codex skills, Browser-aware analysis, and Lexsis AI MCP tools.",
+    "displayName": "Lexsis",
+    "shortDescription": "Shopify pages that convert",
+    "longDescription": "Lexsis plans, builds and improves Shopify landing pages, product pages and quizzes for your store. It writes the page plan with real copy, finds or produces the images, builds an unpublished draft and checks it on mobile, tablet and desktop. It can also audit a live page, set up A/B tests, configure cart upsells and read page analytics.\n\nBuilt for Shopify brands and the agencies that run their stores. Requires a Lexsis account with your Shopify store connected; you sign in the first time Lexsis is used.\n\nLimits: Lexsis only works with Shopify stores connected to Lexsis. It never publishes or changes a live page without your explicit approval for that page and version.",
     "developerName": "Aetheria Labs",
     "category": "Productivity",
     "capabilities": [
@@ -30,10 +30,9 @@
     ],
     "websiteURL": "https://trylexsis.com",
     "defaultPrompt": [
-      "Design a storefront page and create a draft for my product.",
-      "Audit this storefront URL for CRO opportunities.",
-      "Configure a cart profile with relevant upsells.",
-      "Create and preview a product-finder Quiz from my prompt."
+      "Plan and build a landing page for my bestselling product.",
+      "Audit this page and suggest changes that improve add-to-cart.",
+      "Set up an A/B test between my product page and a new Lexsis page."
     ]
   }
 }

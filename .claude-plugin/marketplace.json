@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "lexsis",
-  "description": "AI skills for building high-converting Shopify landing pages with Lexsis AI",
+  "description": "AI skills for building high-converting Shopify landing pages with Lexsis",
   "owner": {
     "name": "Aetheria Labs",
     "email": "hello@trylexsis.com"
