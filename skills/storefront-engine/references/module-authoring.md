@@ -24,7 +24,7 @@ events. Use the cart commands below.
 
 Variant availability is owned by the runtime. Put `data-lx-variant="<variant gid>"`
 on every element that sells one variant (set it from JS when the variant follows
-other choices); the runtime disables and slashes sold-out variants, labels them
+other choices); the runtime disables and dims sold-out variants, labels them
 for screen readers and refuses their adds. Never keep your own sold-out state or
 learn it from an add error. `lifecycle.catalog.variants(ids)` returns live
 availability keyed by gid for logic only (default selection, pack eligibility);

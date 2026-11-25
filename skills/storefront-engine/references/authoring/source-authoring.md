@@ -76,7 +76,7 @@ control sizing. Native markup is not a license to recreate cart logic.
 - Every element that sells one variant carries `data-lx-variant="<variant gid>"`.
   When the variant depends on other choices (size inside a style/pack/colour
   builder), set the attribute from JS each time the choice changes. The runtime
-  owns sold-out state: it disables and slashes unavailable variants, labels them
+  owns sold-out state: it disables and dims unavailable variants, labels them
   for screen readers, re-checks on tab focus and after cart rejections, and
   refuses adds for them. Never keep a local sold-out map or learn stock from an
   `unavailable_variant` error. `lifecycle.catalog.variants(ids)` is for logic
