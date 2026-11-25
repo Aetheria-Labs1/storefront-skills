@@ -1,0 +1,43 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "lexsis-storefront-skills",
+  "version": "9.12.5",
+  "description": "AI-powered Shopify storefront builder with 10 focused workflows for pages, quizzes, optimization, A/B testing, carts, and publishing.",
+  "author": {
+    "name": "Aetheria Labs",
+    "email": "hello@trylexsis.com"
+  },
+  "homepage": "https://trylexsis.com",
+  "repository": "https://github.com/Aetheria-Labs1/storefront-skills",
+  "license": "MIT",
+  "keywords": [
+    "shopify",
+    "landing-page",
+    "ecommerce",
+    "storefront",
+    "cro"
+  ],
+  "mcpServers": "./mcp.json",
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Lexsis AI Storefront Builder",
+        "shortDescription": "Build, optimize, and publish Shopify storefronts.",
+        "longDescription": "Conversion-focused Shopify storefront workflows with Codex skills, Browser-aware analysis, and Lexsis AI MCP tools.",
+        "developerName": "Aetheria Labs",
+        "category": "Productivity",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "websiteURL": "https://trylexsis.com",
+        "defaultPrompt": [
+          "Design a storefront page and create a draft for my product.",
+          "Audit this storefront URL for CRO opportunities.",
+          "Configure a cart profile with relevant upsells.",
+          "Create and preview a product-finder Quiz from my prompt."
+        ]
+      }
+    }
+  }
+}

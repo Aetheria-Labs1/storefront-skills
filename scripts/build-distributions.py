@@ -8,6 +8,8 @@ skills/storefront-engine/references/.
 Everything else is DERIVED:
   gpt/knowledge.md      — concatenation of skill bodies + curated references
   gpt/instructions.md   — persona template with version injected
+  chatgpt/plugin.json   — ChatGPT plugin manifest (portable agent-plugins schema)
+  chatgpt/mcp.json      — Lexsis MCP over streamable HTTP with OAuth (DCR)
 
 The repository root is the Claude plugin package, so Claude, Codex, Cursor,
 and skills.sh all consume the same canonical `skills/` tree. Codex and Cursor
@@ -540,6 +542,42 @@ retired tools.
     return {"gpt/knowledge.md": knowledge, "gpt/instructions.md": instructions}
 
 
+def build_chatgpt() -> dict[str, str]:
+    """ChatGPT plugin: same skills as Codex, portable manifest, OAuth MCP.
+
+    chatgpt/skills is a checked-in symlink to ../skills; zip with
+    scripts/package-chatgpt.sh so the upload carries real folders.
+    """
+    codex = json.loads((ROOT / "codex/.codex-plugin/plugin.json").read_text())
+    plugin = {
+        "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+        "name": codex["name"],
+        "version": plugin_version(),
+        "description": codex["description"],
+        "author": codex["author"],
+        "homepage": codex["homepage"],
+        "repository": codex["repository"],
+        "license": codex["license"],
+        "keywords": codex["keywords"],
+        "mcpServers": "./mcp.json",
+        # ponytail: no privacyPolicyURL/termsOfServiceURL/logo yet; the public
+        # directory submission needs them, workspace upload does not.
+        "extensions": {"com.openai": {"interface": codex["interface"]}},
+    }
+    mcp = {
+        "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+        "mcpServers": {
+            "lexsis-ai": {
+                "type": "streamable-http",
+                "url": "https://mcp.trylexsis.com/mcp",
+                "extensions": {"com.openai": {"auth": {"type": "oauth", "client": {"mode": "dcr"}}}},
+            }
+        },
+    }
+    dump = lambda o: json.dumps(o, indent=2) + "\n"
+    return {"chatgpt/plugin.json": dump(plugin), "chatgpt/mcp.json": dump(mcp)}
+
+
 def main() -> int:
     check = "--check" in sys.argv
 
@@ -552,7 +590,7 @@ def main() -> int:
             print(f"  - {e}")
         return 1
 
-    outputs = build_gpt()
+    outputs = {**build_gpt(), **build_chatgpt()}
     # Generated output must never carry retired tools — if it does, a canonical
     # skill re-introduced one and the allowlist above needs pruning.
     for rel, content in outputs.items():
