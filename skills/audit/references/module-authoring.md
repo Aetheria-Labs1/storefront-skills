@@ -22,6 +22,16 @@ The compiler rejects `window` and `document` access. Do not reach outside the
 wrapper, fetch Shopify directly, write cart storage or dispatch fake response
 events. Use the cart commands below.
 
+Variant availability is owned by the runtime. Put `data-lx-variant="<variant gid>"`
+on every element that sells one variant (set it from JS when the variant follows
+other choices); the runtime disables and dims sold-out variants, labels them
+for screen readers and refuses their adds. Never keep your own sold-out state or
+learn it from an add error. `lifecycle.catalog.variants(ids)` returns live
+availability keyed by gid for logic only (default selection, pack eligibility);
+it resolves to `{}` without a store token and after unmount. A module that
+dispatches `lx:cart:add-items` without `data-lx-variant` fails publish
+(`variant_availability`).
+
 `lifecycle.cart` is a deeply frozen CartSnapshot. Subscribe with
 `lifecycle.onCart((snapshot,previous) => {...})` during initialization: the
 getter throws before the store currency and prices are available. The first
