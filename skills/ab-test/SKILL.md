@@ -22,13 +22,14 @@ desktop and mobile widths. For Lexsis state, use
 `lexsis_drafts.page_replace`, `lexsis_drafts.page_update_section`,
 `lexsis_drafts.page_split_create` (whole-page and product/collection template
 tests), `lexsis_analytics.page_split_get`, `lexsis_analytics.page_split_list`,
-and `lexsis_drafts.experiment_create` (legacy blueprint variants). Bring a
-running test's arms up to date with `lexsis_live_ops.experiment_refresh` only
+`lexsis_drafts.page_split_prepare` (freeze and render the arms of a draft
+test), and `lexsis_drafts.experiment_create` (legacy blueprint variants). Bring
+a running test's arms up to date with `lexsis_live_ops.experiment_refresh` only
 after explicit approval.
 
-Use `lexsis_live_ops.publish` and `lexsis_live_ops.scale_winner` only after
-explicit approval. Resolve unfamiliar or newly available start/pause arguments
-through exact router/action discovery.
+Use `lexsis_live_ops.page_split_control` (start, pause, resume, stop, winner),
+`lexsis_live_ops.publish` and `lexsis_live_ops.scale_winner` only after
+explicit approval that names the test and the step.
 
 Follow `references/ab-testing.md`:
 
@@ -40,12 +41,16 @@ Follow `references/ab-testing.md`:
 5. Confirm duplicate credits.
 6. Build challengers locally, using isolated sub-agents when available.
 7. Compile, duplicate, apply, and verify every challenger.
-8. Create the draft experiment only after variant approval.
+8. Create the draft experiment only after variant approval, with the goal
+   the user chose: conversion rate (`cvr`) or revenue per visitor (`rpv`).
+9. Prepare the draft and wait until it is ready.
+10. Ask for approval to send live traffic, then start the test and report
+    every checked URL.
 
 Default to one control and one challenger. Do not use `page_variation`, do not
 let sub-agents perform paid or remote writes, and do not publish or start live
 traffic merely because the user approved the test plan.
 
 Return the control URL and page id, plan path, variant source and preview
-paths, remote page and blueprint ids, experiment id, current state, and
-remaining activation or evaluation steps.
+paths, remote page ids, experiment id, goal metric, current state, the live
+URLs once started, and remaining evaluation steps.

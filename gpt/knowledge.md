@@ -30,13 +30,14 @@ desktop and mobile widths. For Lexsis state, use
 `lexsis_drafts.page_replace`, `lexsis_drafts.page_update_section`,
 `lexsis_drafts.page_split_create` (whole-page and product/collection template
 tests), `lexsis_analytics.page_split_get`, `lexsis_analytics.page_split_list`,
-and `lexsis_drafts.experiment_create` (legacy blueprint variants). Bring a
-running test's arms up to date with `lexsis_live_ops.experiment_refresh` only
+`lexsis_drafts.page_split_prepare` (freeze and render the arms of a draft
+test), and `lexsis_drafts.experiment_create` (legacy blueprint variants). Bring
+a running test's arms up to date with `lexsis_live_ops.experiment_refresh` only
 after explicit approval.
 
-Use `lexsis_live_ops.publish` and `lexsis_live_ops.scale_winner` only after
-explicit approval. Resolve unfamiliar or newly available start/pause arguments
-through exact router/action discovery.
+Use `lexsis_live_ops.page_split_control` (start, pause, resume, stop, winner),
+`lexsis_live_ops.publish` and `lexsis_live_ops.scale_winner` only after
+explicit approval that names the test and the step.
 
 Follow `references/ab-testing.md`:
 
@@ -48,15 +49,19 @@ Follow `references/ab-testing.md`:
 5. Confirm duplicate credits.
 6. Build challengers locally, using isolated sub-agents when available.
 7. Compile, duplicate, apply, and verify every challenger.
-8. Create the draft experiment only after variant approval.
+8. Create the draft experiment only after variant approval, with the goal
+   the user chose: conversion rate (`cvr`) or revenue per visitor (`rpv`).
+9. Prepare the draft and wait until it is ready.
+10. Ask for approval to send live traffic, then start the test and report
+    every checked URL.
 
 Default to one control and one challenger. Do not use `page_variation`, do not
 let sub-agents perform paid or remote writes, and do not publish or start live
 traffic merely because the user approved the test plan.
 
 Return the control URL and page id, plan path, variant source and preview
-paths, remote page and blueprint ids, experiment id, current state, and
-remaining activation or evaluation steps.
+paths, remote page ids, experiment id, goal metric, current state, the live
+URLs once started, and remaining evaluation steps.
 
 ---
 
@@ -6864,9 +6869,11 @@ retained responses. Reuse explicit approval already given for the same scope.
 |---|---|---|
 | `lexsis_live_ops.publish` | W ! | publish the named approved version |
 | `lexsis_analytics.page`, `.timeseries`, `.attribution` | R | performance read |
-| `lexsis_drafts.page_duplicate`, `.experiment_create` | W | draft challengers |
+| `lexsis_drafts.page_duplicate`, `.page_split_create` | W | draft challengers and the test |
+| `lexsis_drafts.page_split_prepare` | W | freeze and render the arms; poll until ready |
+| `lexsis_live_ops.page_split_control` | W ! | start, pause, resume, stop or pick the winner |
 | `lexsis_analytics.experiment` | R | evaluate |
-| `lexsis_live_ops.scale_winner` | W ! | scale after explicit approval |
+| `lexsis_live_ops.scale_winner` | W ! | legacy experiments only |
 
 ## Invariants
 
@@ -6900,9 +6907,9 @@ props; resolve an unfamiliar action schema before calling it.
 | `lexsis_catalog` | `lexsis_catalog.list`, `lexsis_catalog.get`, `lexsis_catalog.reviews_status`, `lexsis_catalog.reviews`, `lexsis_catalog.reviews_search`, `lexsis_catalog.review_collections`, `lexsis_catalog.review_collection_items` |
 | `lexsis_pages` | `lexsis_pages.list`, `lexsis_pages.find`, `lexsis_pages.get`, `lexsis_pages.edit_context`, `lexsis_pages.content`, `lexsis_pages.source`, `lexsis_pages.section_source`, `lexsis_pages.inspect`, `lexsis_pages.diff`, `lexsis_pages.integrity`, `lexsis_pages.qa`, `lexsis_pages.compile`, `lexsis_pages.compile_artifact`, `lexsis_pages.page_audiences_get` |
 | `lexsis_build` | `lexsis_build.get`, `lexsis_build.commit`, `lexsis_build.patch`, `lexsis_build.diff`, `lexsis_build.push_token` |
-| `lexsis_drafts` | `lexsis_drafts.asset_generate`, `lexsis_drafts.theme_update`, `lexsis_drafts.page_replace`, `lexsis_drafts.page_patch`, `lexsis_drafts.page_attach_bundle`, `lexsis_drafts.page_update_section`, `lexsis_drafts.page_remove_section`, `lexsis_drafts.page_move_section`, `lexsis_drafts.page_update_head`, `lexsis_drafts.page_record_qa`, `lexsis_drafts.page_duplicate`, `lexsis_drafts.page_variation`, `lexsis_drafts.template_create`, `lexsis_drafts.template_update`, `lexsis_drafts.template_apply`, `lexsis_drafts.experiment_create`, `lexsis_drafts.cart_set`, `lexsis_drafts.cart_edit`, `lexsis_drafts.review_collection_create`, `lexsis_drafts.set_resource_template`, `lexsis_drafts.set_review_fallback`, `lexsis_drafts.send_feedback`, `lexsis_drafts.quiz_prepare`, `lexsis_drafts.page_audiences_set`, `lexsis_drafts.page_audiences_clear`, `lexsis_drafts.page_split_update` |
+| `lexsis_drafts` | `lexsis_drafts.asset_generate`, `lexsis_drafts.theme_update`, `lexsis_drafts.page_replace`, `lexsis_drafts.page_patch`, `lexsis_drafts.page_attach_bundle`, `lexsis_drafts.page_update_section`, `lexsis_drafts.page_remove_section`, `lexsis_drafts.page_move_section`, `lexsis_drafts.page_update_head`, `lexsis_drafts.page_record_qa`, `lexsis_drafts.page_duplicate`, `lexsis_drafts.page_variation`, `lexsis_drafts.template_create`, `lexsis_drafts.template_update`, `lexsis_drafts.template_apply`, `lexsis_drafts.experiment_create`, `lexsis_drafts.cart_set`, `lexsis_drafts.cart_edit`, `lexsis_drafts.review_collection_create`, `lexsis_drafts.set_resource_template`, `lexsis_drafts.set_review_fallback`, `lexsis_drafts.send_feedback`, `lexsis_drafts.quiz_prepare`, `lexsis_drafts.page_audiences_set`, `lexsis_drafts.page_audiences_clear`, `lexsis_drafts.page_split_create`, `lexsis_drafts.page_split_update`, `lexsis_drafts.page_split_prepare` |
 | `lexsis_page_create` | `lexsis_page_create.create` |
-| `lexsis_live_ops` | `lexsis_live_ops.publish`, `lexsis_live_ops.unpublish`, `lexsis_live_ops.delete`, `lexsis_live_ops.rollback`, `lexsis_live_ops.template_publish`, `lexsis_live_ops.template_archive`, `lexsis_live_ops.scale_winner`, `lexsis_live_ops.quiz_activate`, `lexsis_live_ops.quiz_deactivate` |
+| `lexsis_live_ops` | `lexsis_live_ops.publish`, `lexsis_live_ops.unpublish`, `lexsis_live_ops.delete`, `lexsis_live_ops.rollback`, `lexsis_live_ops.template_publish`, `lexsis_live_ops.template_archive`, `lexsis_live_ops.scale_winner`, `lexsis_live_ops.page_split_control`, `lexsis_live_ops.quiz_activate`, `lexsis_live_ops.quiz_deactivate` |
 | `lexsis_design` | `lexsis_design.guide`, `lexsis_design.islands`, `lexsis_design.island_schema`, `lexsis_design.get_section` |
 | `lexsis_template_library` | `lexsis_template_library.search_sections`, `lexsis_template_library.search_page_kits`, `lexsis_template_library.get_kit`, `lexsis_template_library.list_mine`, `lexsis_template_library.get_mine` |
 | `lexsis_analytics` | `lexsis_analytics.timeseries`, `lexsis_analytics.page`, `lexsis_analytics.attribution`, `lexsis_analytics.experiment`, `lexsis_analytics.page_funnel`, `lexsis_analytics.page_attribution`, `lexsis_analytics.page_orders`, `lexsis_analytics.experiment_orders`, `lexsis_analytics.resource` (+ `resource_funnel`, `resource_attribution`, `resource_orders`, `resource_vitals`, `resource_views`) |

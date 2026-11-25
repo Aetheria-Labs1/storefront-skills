@@ -97,9 +97,11 @@ retained responses. Reuse explicit approval already given for the same scope.
 |---|---|---|
 | `lexsis_live_ops.publish` | W ! | publish the named approved version |
 | `lexsis_analytics.page`, `.timeseries`, `.attribution` | R | performance read |
-| `lexsis_drafts.page_duplicate`, `.experiment_create` | W | draft challengers |
+| `lexsis_drafts.page_duplicate`, `.page_split_create` | W | draft challengers and the test |
+| `lexsis_drafts.page_split_prepare` | W | freeze and render the arms; poll until ready |
+| `lexsis_live_ops.page_split_control` | W ! | start, pause, resume, stop or pick the winner |
 | `lexsis_analytics.experiment` | R | evaluate |
-| `lexsis_live_ops.scale_winner` | W ! | scale after explicit approval |
+| `lexsis_live_ops.scale_winner` | W ! | legacy experiments only |
 
 ## Invariants
 
